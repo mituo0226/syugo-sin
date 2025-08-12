@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>守護神占い｜神託</title>
+<style>
+body {
+  background: linear-gradient(to bottom, #1a0b2e, #2e1a47);
+  color: #fff;
+  font-family: 'Zen Old Mincho', serif;
+  text-align: center;
+  padding: 30px;
+}
+
+/* 結果ボックス */
+.result {
+  max-width: 600px;
+  margin: auto;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 0 20px rgba(147,51,234,0.4);
+  opacity: 0; /* 最初は非表示 */
+  transition: opacity 1s;
+}
+
+img {
+  width:120px;
+  border-radius:50%;
+  margin:10px auto;
+  display:block;
+}
+
+h1 {
+  font-size:1.5em;
+  margin-bottom:0.5em;
+}
+
+p {
+  margin:1em 0;
+  white-space: pre-wrap;
+}
+
+/* ローディング画面 */
+#loadingScreen {
+  position: fixed;
+  top:0; left:0; right:0; bottom:0;
+  background: #000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  z-index: 9999;
+  animation: fadeIn 1s forwards;
+}
+
+#loadingScreen p {
+  color:#fff;
+  font-size:1.2em;
+  margin-top:1em;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  0% {opacity:1;}
+  50% {opacity:0.4;}
+  100% {opacity:1;}
+}
+
+@keyframes fadeIn {
+  from {opacity:0;}
+  to {opacity:1;}
+}
+
+@keyframes fadeOut {
+  from {opacity:1;}
+  to {opacity:0;}
+}
+
+
+.detail-link {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 24px;
+  background: #9d4edd;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 1.1em;
+  transition: all 0.3s ease;
+}
+
+.detail-link:hover {
+  background: #c77dff;
+  transform: scale(1.05);
+}
+
+
+</style>
+</head>
+<body>
+
+<!-- ローディング画面 -->
+<div id="loadingScreen">
+  <img src="https://i.gifer.com/ZZ5H.gif" width="100" alt="Loading...">
+  <p>神託を降ろしています…</p>
+</div>
+
+<!-- 結果 -->
+<div class="result">
+  <h1>神託</h1>
+  <div id="guardian"></div>
+  <p id="oracle"></p>
+ <p><a id="detailLink" class="detail-link">さらに詳しく運命を占う</a> </p>
+  <a href="index.html" style="color:#9d4edd; text-decoration:underline;">戻る</a>
+</div>
+
+<script>
+// ローディング演出
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const loader = document.getElementById('loadingScreen');
+    loader.style.animation = 'fadeOut 1s forwards';
+    setTimeout(() => {
+      loader.remove();
+      document.querySelector('.result').style.opacity = '1';
+    }, 1000);
+  }, 3000); // 3秒ローディング
+});
+
+const params = new URLSearchParams(window.location.search);
+const year = parseInt(params.get('year'));
+const month = parseInt(params.get('month'));
+const day = parseInt(params.get('day'));
+
+const zodiacs = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const zodiac = zodiacs[(year - 4) % 12];
+
+const guardians = {
+'子': {name:'千手観音',desc:'無限の慈悲をもって汝を抱擁する者なり',image:'http://ryu02262.moo.jp/syugo-sin/photo/千手観音.jpg'},
+'丑': {name:'虚空蔵菩薩',desc:'無尽の智慧を授けし導き手なり',image:'http://ryu02262.moo.jp/syugo-sin/photo/虚空蔵菩薩.jpg'},
+'寅': {name:'虚空蔵菩薩',desc:'無尽の智慧を授けし導き手なり',image:'http://ryu02262.moo.jp/syugo-sin/photo/虚空蔵菩薩.jpg'},
+'卯': {name:'文殊菩薩',desc:'智慧の剣をもって迷いを断つ者なり',image:'http://ryu02262.moo.jp/syugo-sin/photo/文殊菩薩.jpg'},
+'辰': {name:'普賢菩薩',desc:'実践の徳を授ける者なり',image:'http://ryu02262.moo.jp/syugo-sin/photo/普賢菩薩.jpg'},
+'巳': {name:'普賢菩薩',desc:'実践の徳を授ける者なり',image:'http://ryu02262.moo.jp/syugo-sin/photo/普賢菩薩.jpg'},
+'午': {name:'勢至菩薩',desc:'智慧の光を放ち衆生を救う者なり',image:'http://ryu02262.moo.jp/syugo-sin/photo/勢至菩薩.jpg'},
+'未': {name:'大日如来',desc:'宇宙の理をもって全てを照らす者なり',image:'http://ryu02262.moo.jp/syugo-sin/photo/大日如来.jpg'},
+'申': {name:'大日如来',desc:'宇宙の理をもって全てを照らす者なり',image:'http://ryu02262.moo.jp/syugo-sin/photo/大日如来.jpg'},
+'酉': {name:'不動明王',desc:'不動の意志にて悪を退ける者なり',image:'https://via.placeholder.com/150?text=不動明王'},
+'戌': {name:'阿弥陀如来',desc:'無量の慈悲をもって救済する者なり',image:'http://ryu02262.moo.jp/syugo-sin/photo/阿弥陀如来.jpg'},
+'亥': {name:'阿弥陀如来',desc:'無量の慈悲をもって救済する者なり',image:'http://ryu02262.moo.jp/syugo-sin/photo/阿弥陀如来.jpg'}
+};
+
+const monthTraits = {
+1:"寒月に生まれし静謐の心を持ち",
+2:"雪解けを待つ忍耐の徳を授かり",
+3:"芽吹きの息吹を宿す魂を抱き",
+4:"萌ゆる命の躍動を胸に刻み",
+5:"薫風と共に歩む軽やかな心を携え",
+6:"豊穣の光を授かる運命に生まれ",
+7:"深き水面の如き洞察を得て",
+8:"烈日の炎に祝福されし者なり",
+9:"実りの秋に育まれし叡智を持ち",
+10:"黄昏に咲く決意の花を宿し",
+11:"夜霜をも溶かす感受性を抱き",
+12:"雪華の中に咲く慈愛の心を備える"
+};
+
+const dayTraits = {
+1:"新たなる道を拓く先駆者なり",
+2:"調和を重んじる清き心を持つ者",
+3:"喜びを分かち合う光の使い",
+4:"堅実に積み上げる力を授かりし者",
+5:"自由と変化を愛する風の魂",
+6:"慈しみ深き慈悲の持ち主",
+7:"深遠なる洞察を授かる者",
+8:"権威と達成の星を宿す者",
+9:"無私の奉仕を選びし者",
+11:"霊性に目覚めし導き手",
+22:"大いなる責務を担う魂"
+};
+
+const guardian = guardians[zodiac];
+const monthText = monthTraits[month] || "月の特性不明";
+const dayText = dayTraits[day] || "独自の使命を携えし者";
+
+document.getElementById('guardian').innerHTML=`
+  <img src="${guardian.image}" alt="${guardian.name}">
+  <div><strong>そなたを守護するは ${guardian.name}</strong></div>
+  <div>${guardian.desc}</div>
+`;
+
+document.getElementById('oracle').innerText=`
+「汝に告ぐ
+  ${guardian.name}は常にそなたを見守り
+  心弱き時には慈悲を注ぎ
+  道を誤る時には智慧の灯を掲げん
+
+  ${month}月に生まれし汝
+  ${monthText}
+
+  生まれしその日は「${day}」
+  ${dayText}
+
+  この運命を胸に刻み
+  恐れることなく進むがよい
+  汝の歩む道は
+  光と共に在る」
+`;
+
+// 詳細占いリンクにパラメータを付与
+document.getElementById('detailLink').href = `paid.html?year=${year}&month=${month}&day=${day}`;
+
+</script>
+</body>
+</html>

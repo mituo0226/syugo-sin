@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>守護神占い｜個別運命鑑定</title>
+<style>
+body {
+  background: linear-gradient(to bottom, #1a0b2e, #2e1a47);
+  color: #fff;
+  font-family: 'Zen Old Mincho', serif;
+  text-align: center;
+  padding: 30px;
+  overflow-x: hidden;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 0 20px rgba(147,51,234,0.4);
+  opacity: 0; /* 最初は非表示 */
+  transition: opacity 1s;
+}
+
+h1 {
+  font-size:1.5em;
+  margin-bottom:0.5em;
+}
+
+p {
+  margin:1em 0;
+  white-space: pre-wrap;
+}
+
+select, textarea {
+  width: 90%;
+  font-size: 1em;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  margin-top: 10px;
+  box-sizing: border-box;
+}
+
+textarea {
+  height: 100px;
+}
+
+.submit-button {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 24px;
+  background: #9d4edd;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 1.1em;
+  transition: all 0.3s ease;
+}
+
+.submit-button:hover {
+  background: #c77dff;
+  transform: scale(1.05);
+}
+
+.return-link {
+  display:block;
+  margin-top:20px;
+  color:#9d4edd;
+  text-decoration:underline;
+}
+
+/* ローディング画面 */
+#loadingScreen {
+  position: fixed;
+  top:0; left:0; right:0; bottom:0;
+  background: #000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  z-index:9999;
+  animation: fadeIn 1s forwards;
+}
+
+#loadingScreen p {
+  color:#fff;
+  font-size:1.2em;
+  margin-top:1em;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  0% {opacity:1;}
+  50% {opacity:0.4;}
+  100% {opacity:1;}
+}
+
+@keyframes fadeIn {
+  from {opacity:0;}
+  to {opacity:1;}
+}
+
+@keyframes fadeOut {
+  from {opacity:1;}
+  to {opacity:0;}
+}
+</style>
+</head>
+<body>
+
+<!-- ローディング画面 -->
+<div id="loadingScreen">
+  <img src="https://i.gifer.com/ZZ5H.gif" width="100" alt="Loading...">
+  <p>霊視を開始しています…</p>
+</div>
+
+<div class="container">
+  <h1>個別運命鑑定</h1>
+  <p id="deepReading"></p>
+
+  <p>
+ここから先は、番組の専属鑑定士であり霊能者でもある「龍」が、<br>
+あなたを守護する存在と交信しながら、<br>
+お一人お一人の想いや運命に寄り添い、<br>
+個別の関係鑑定をさせていただきます。
+<br><br>
+まずは今感じている不安や疑問を一度だけお伝えください。
+  </p>
+
+  <form id="questionForm">
+    <label for="category">相談のジャンルを選択してください</label><br>
+    <select name="category" id="category" required>
+      <option value="">選択してください</option>
+      <option value="恋愛相談">恋愛相談</option>
+      <option value="金銭関係">金銭関係</option>
+      <option value="人間関係">人間関係</option>
+      <option value="健康に関する相談">健康に関する相談</option>
+      <option value="将来への不安">将来への不安</option>
+      <option value="その他">その他</option>
+    </select><br><br>
+
+    <label for="question">具体的な内容を入力してください</label><br>
+    <textarea name="question" id="question" required placeholder="お悩み・質問を入力"></textarea><br>
+    <button type="submit" class="submit-button">質問を送信する</button>
+  </form>
+
+  <a href="index.html" class="return-link">最初のページに戻る</a>
+</div>
+
+<script>
+// ローディング演出
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const loader = document.getElementById('loadingScreen');
+    loader.style.animation = 'fadeOut 1s forwards';
+    setTimeout(() => {
+      loader.remove();
+      document.querySelector('.container').style.opacity = '1';
+    }, 1000);
+  }, 3000); // 3秒演出
+});
+
+// URLパラメータ取得
+const params = new URLSearchParams(window.location.search);
+const year = parseInt(params.get('year'));
+const month = parseInt(params.get('month'));
+const day = parseInt(params.get('day'));
+
+const zodiacs = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const zodiac = zodiacs[(year - 4) % 12] || "不明";
+
+const monthTraits = {
+1:"寒月に生まれし静謐の心を持ち",
+2:"雪解けを待つ忍耐の徳を授かり",
+3:"芽吹きの息吹を宿す魂を抱き",
+4:"萌ゆる命の躍動を胸に刻み",
+5:"薫風と共に歩む軽やかな心を携え",
+6:"豊穣の光を授かる運命に生まれ",
+7:"深き水面の如き洞察を得て",
+8:"烈日の炎に祝福されし者なり",
+9:"実りの秋に育まれし叡智を持ち",
+10:"黄昏に咲く決意の花を宿し",
+11:"夜霜をも溶かす感受性を抱き",
+12:"雪華の中に咲く慈愛の心を備える"
+};
+
+const dayTraits = {
+1:"新たなる道を拓く先駆者なり",
+2:"調和を重んじる清き心を持つ者",
+3:"喜びを分かち合う光の使い",
+4:"堅実に積み上げる力を授かりし者",
+5:"自由と変化を愛する風の魂",
+6:"慈しみ深き慈悲の持ち主",
+7:"深遠なる洞察を授かる者",
+8:"権威と達成の星を宿す者",
+9:"無私の奉仕を選びし者",
+11:"霊性に目覚めし導き手",
+22:"大いなる責務を担う魂"
+};
+
+const monthText = monthTraits[month] || "月の特性不明";
+const dayText = dayTraits[day] || "独自の使命を携えし者";
+
+// 鑑定テキスト
+document.getElementById('deepReading').innerText = `
+【特別神託】
+
+あなたは
+${year}年${month}月${day}日生まれ
+十二支「${zodiac}」に導かれし者。
+
+${monthText}
+「${day}」の日に
+${dayText}
+を授かりし宿命を背負う。
+
+この関係は単なる偶然ではなく、
+過去世から続く深い縁が結んだ運命。
+
+いま、あなたが抱く想いと行動が
+未来を大きく変える岐路に立っている。
+`;
+
+// フォーム送信
+document.getElementById('questionForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const category = encodeURIComponent(this.category.value.trim());
+  const question = encodeURIComponent(this.question.value.trim());
+  if (!category || !question) {
+    alert('ジャンルと内容を入力してください。');
+    return;
+  }
+  window.location.href = `confirm.html?year=${year}&month=${month}&day=${day}&category=${category}&question=${question}`;
+});
+</script>
+</body>
+</html>

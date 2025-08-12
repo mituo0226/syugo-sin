@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>守護神占い｜霊視結果確認</title>
+<style>
+body {
+  background: linear-gradient(to bottom, #1a0b2e, #2e1a47);
+  color: #fff;
+  font-family: 'Zen Old Mincho', serif;
+  text-align: center;
+  padding: 30px;
+  overflow-x: hidden;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 0 20px rgba(147,51,234,0.4);
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+h1 {
+  font-size:1.5em;
+  margin-bottom:0.5em;
+}
+
+p {
+  margin:1em 0;
+  white-space: pre-wrap;
+}
+
+.preview {
+  background: rgba(255,255,255,0.1);
+  padding: 15px;
+  border-radius:8px;
+  font-size:1em;
+  line-height:1.6;
+  position: relative;
+}
+
+.blur {
+  filter: blur(5px);
+  user-select: none;
+}
+
+.purchase-button {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 24px;
+  background: #9d4edd;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 1.1em;
+  transition: all 0.3s ease;
+}
+
+.purchase-button:hover {
+  background: #c77dff;
+  transform: scale(1.05);
+}
+
+.return-link {
+  display:block;
+  margin-top:20px;
+  color:#9d4edd;
+  text-decoration:underline;
+}
+
+/* 特典ボックス */
+.bonus {
+  margin-top:20px;
+  padding:15px;
+  background: rgba(255,255,255,0.1);
+  border:1px dashed #c77dff;
+  border-radius:8px;
+  color:#ffccff;
+  font-size:0.95em;
+}
+
+/* ローディング画面 */
+#loadingScreen {
+  position: fixed;
+  top:0; left:0; right:0; bottom:0;
+  background: #000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  z-index:9999;
+  animation: fadeIn 1s forwards;
+}
+
+#loadingScreen p {
+  color:#fff;
+  font-size:1.2em;
+  margin-top:1em;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  0% {opacity:1;}
+  50% {opacity:0.4;}
+  100% {opacity:1;}
+}
+
+@keyframes fadeIn {
+  from {opacity:0;}
+  to {opacity:1;}
+}
+
+@keyframes fadeOut {
+  from {opacity:1;}
+  to {opacity:0;}
+}
+</style>
+</head>
+<body>
+
+<!-- ローディング画面 -->
+<div id="loadingScreen">
+  <img src="https://i.gifer.com/ZZ5H.gif" width="100" alt="Loading...">
+  <p>霊視結果を準備中です…</p>
+</div>
+
+<div class="container">
+  <h1>霊視結果のご用意ができました</h1>
+  <p id="userQuestion"></p>
+
+  <p>
+「龍」が守護神と交信し、<br>
+あなた専用の詳細鑑定を用意しました。<br><br>
+下記は鑑定の一部抜粋です。
+</p>
+ <p>
+あなたが抱える問題は、過去の因縁と深く繋がっています。
+その因縁は、今この瞬間もあなたの行動や選択を支配しています。
+
+<span class="blur">
+この先に現れる人物は、あなたの魂に試練を与える存在です。
+しかし恐れることはありません。
+この人物との出会いが、あなたの未来を根本から変える
+重要な転機となるでしょう。
+
+また、過去世からの因縁により、
+心の奥底に抱えてきた迷いや恐れが
+今後、現実の出来事として表面化していく兆しが出ています。
+
+特に人間関係や金銭面において、
+あなたがこれまで選んできた道が
+新たな課題を生む可能性が示されています。
+
+その課題をどのように乗り越えるか、
+どの時期に行動を起こすべきか、
+そして守護神から授かる助言と加護について
+この鑑定書には詳細に記されています。
+
+さらに、今後の運命を好転させるために
+必要となる具体的な行動指針と
+心の在り方がここに記されております。
+
+※この全文は特別鑑定を購入された方のみご覧いただけます。
+</span>
+  </p>
+</div>
+
+<div class="bonus">
+🎁 <strong>本日中に鑑定結果を購入された方には、<br>特別な守護神の護符画像を無料で進呈いたします。</strong>
+</div>
+
+<p>
+全文を閲覧するには、鑑定料のお支払いが必要です。
+</p>
+
+<a href="purchase.html" class="purchase-button">鑑定結果を購入して全文を読む（3000円）</a>
+
+<a href="index.html" class="return-link">最初のページに戻る</a>
+</div>
+
+<script>
+// ローディング演出
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const loader = document.getElementById('loadingScreen');
+    loader.style.animation = 'fadeOut 1s forwards';
+    setTimeout(() => {
+      loader.remove();
+      document.querySelector('.container').style.opacity = '1';
+    }, 1000);
+  }, 3000); // 3秒演出
+});
+
+// URLパラメータ取得
+const params = new URLSearchParams(window.location.search);
+const category = decodeURIComponent(params.get('category') || '');
+const question = decodeURIComponent(params.get('question') || '');
+
+document.getElementById('userQuestion').innerText = `
+【相談ジャンル】
+${category}
+
+【ご相談内容】
+${question}
+`;
+</script>
+</body>
+</html>

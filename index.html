@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>守護神占い｜生年月日入力</title>
+<style>
+body {
+  margin: 0;
+  font-family: 'Zen Old Mincho', serif;
+  background: #000;
+  color: #fff;
+  text-align: center;
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* 星空 */
+body::before {
+  content: "";
+  position: absolute;
+  top:0; left:0; right:0; bottom:0;
+  background: url('https://www.transparenttextures.com/patterns/stardust.png');
+  opacity: 0.3;
+  animation: stars 60s linear infinite;
+  z-index: 0;
+}
+
+/* オーロラ */
+body::after {
+  content: "";
+  position: absolute;
+  top:0; left:0; right:0; bottom:0;
+  background: linear-gradient(120deg, rgba(128,0,128,0.2), rgba(0,0,128,0.2), rgba(0,128,128,0.2));
+  background-size: 400% 400%;
+  animation: aurora 30s ease infinite;
+  z-index: 0;
+}
+
+@keyframes stars {
+  from {background-position:0 0;}
+  to {background-position:1000px 0;}
+}
+
+@keyframes aurora {
+  0% {background-position:0% 50%;}
+  50% {background-position:100% 50%;}
+  100% {background-position:0% 50%;}
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 400px;
+  margin: 80px auto;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 0 20px rgba(147,51,234,0.4);
+  opacity:0;
+  transform:translateY(30px);
+  animation: fadeInUp 1s forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+.logo {
+  width: 150px;
+  margin: 0 auto 1em;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {transform: translateY(0);}
+  50% {transform: translateY(-5px);}
+  100% {transform: translateY(0);}
+}
+
+p {
+  font-size:1em;
+  color:#ddd;
+  margin-bottom:1.5em;
+}
+
+select {
+  width:30%;
+  padding:8px;
+  font-size:1rem;
+  margin:5px;
+  border:none;
+  border-radius:4px;
+}
+
+button {
+  margin-top:20px;
+  padding:10px 25px;
+  font-size:1rem;
+  background:#9d4edd;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  transition:all 0.3s ease;
+}
+
+button:hover {
+  background:#c77dff;
+  transform:scale(1.05);
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <img src="http://ryu02262.moo.jp/syugo-sin/photo/rogo.png" alt="ロゴ" class="logo">
+  <p>あなたの生年月日を入力してください</p>
+  <form action="result.html" method="get">
+    <select name="year" required>
+      <option value="">年</option>
+      <script>
+        for (let y = new Date().getFullYear(); y >= 1900; y--) {
+          document.write(`<option value="${y}">${y}</option>`);
+        }
+      </script>
+    </select>
+    <select name="month" required>
+      <option value="">月</option>
+      <script>
+        for (let m = 1; m <= 12; m++) {
+          document.write(`<option value="${m}">${m}</option>`);
+        }
+      </script>
+    </select>
+    <select name="day" required>
+      <option value="">日</option>
+      <script>
+        for (let d = 1; d <= 31; d++) {
+          document.write(`<option value="${d}">${d}</option>`);
+        }
+      </script>
+    </select><br>
+    <button type="submit">運勢を占う</button>
+  </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>守護神占い｜詳細相談</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body {
+  background: linear-gradient(to bottom, #1a0b2e, #2e1a47);
+  color: #fff;
+  font-family: 'Zen Old Mincho', serif;
+  text-align: center;
+  padding: 30px;
+}
+</style>
+</head>
+<body>
+<div class="max-w-lg mx-auto">
+<h1 class="text-2xl mb-4">具体的なお悩みをお聞かせください</h1>
+
+<div class="mb-4">
+  <textarea id="details" rows="4" class="w-full p-2 bg-gray-800 border border-purple-500 rounded" placeholder="例: 長年の片思いに決着をつけたい..."></textarea>
+</div>
+
+<button onclick="divine()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">鑑定する</button>
+
+<div id="result" class="mt-6 hidden">
+  <h2 class="text-xl font-semibold mb-4">鑑定結果</h2>
+  <div id="message" class="text-left whitespace-pre-wrap"></div>
+</div>
+</div>
+
+<script>
+function detectTheme(details) {
+  const t = details.toLowerCase();
+  if (/(別れ|離婚|失恋)/.test(t)) return 'breakup';
+  if (/(片思い|告白|好き)/.test(t)) return 'one_sided_love';
+  if (/(転職|就職|独立|起業)/.test(t)) return 'career_change';
+  if (/(金運|お金|財産)/.test(t)) return 'money';
+  if (/(健康|病気|体調)/.test(t)) return 'health';
+  if (/(霊|因縁|前世)/.test(t)) return 'spiritual';
+  return 'default';
+}
+
+const templates = {
+one_sided_love: d => `
+「${d}」はあなたの心に深く刻まれた想いです。
+この片思いは、魂の学びと成長を促しています。
+今は自分を信じ、心の声を大切にしてください。
+誠実な気持ちがやがて相手に届くでしょう。
+`,
+
+breakup: d => `
+「${d}」という別れの痛みは、人生の大きな通過儀礼です。
+その悲しみは終わりではなく、新たな始まりの証です。
+今は無理をせず、心を癒す時間を大切に。
+`,
+
+career_change: d => `
+「${d}」は変化と挑戦の兆しです。
+未知の道に進む勇気を持ち、自らの可能性を信じてください。
+今の一歩が未来を切り開く礎となります。
+`,
+
+money: d => `
+「${d}」は豊かさへの願いです。
+焦らずに正しい選択を重ね、心の安定を大切にしてください。
+内面の充実が財運を引き寄せます。
+`,
+
+health: d => `
+「${d}」は心身の調和を求める声です。
+体と心をいたわり、ゆっくりと癒しを受け入れてください。
+`,
+
+spiritual: d => `
+「${d}」は魂の深い問いかけです。
+不安に惑わされず、内なる光を信じてください。
+あなたは守られています。
+`,
+
+default: d => `
+「${d}」は変化の兆しです。
+自分を信じ、恐れずに一歩踏み出しましょう。
+未来は希望に満ちています。
+`
+};
+
+function divine() {
+  const details = document.getElementById('details').value.trim();
+  if (!details) {
+    alert("具体的なお悩みを入力してください。");
+    return;
+  }
+  const theme = detectTheme(details);
+  const text = templates[theme](details);
+  document.getElementById('message').innerText = text.trim();
+  document.getElementById('result').classList.remove('hidden');
+}
+</script>
+</body>
+</html>
