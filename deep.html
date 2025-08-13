@@ -428,6 +428,10 @@
         if (i < newText.length) {
           element.innerHTML = currentContent + newText.substring(0, i + 1);
           i++;
+          // タイピング中も定期的にスクロール
+          if (i % 10 === 0) { // 10文字ごとにスクロール
+            element.scrollIntoView({ behavior: 'smooth', block: 'end' });
+          }
           setTimeout(type, speed);
         } else {
           // タイピング完了後に少し待ってからコールバックを実行
@@ -539,6 +543,10 @@
               chatContinueEl.style.display = 'block';
               // スムーズにスクロール
               chatContinueEl.scrollIntoView({ behavior: 'smooth' });
+              // 最新の会話が見えるように自動スクロール
+              outEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
+              // 新しい入力フォームにフォーカス
+              continuePromptEl.focus();
             }, 500); // 0.5秒待機
           });
         } else {
@@ -619,6 +627,8 @@
             setTimeout(() => {
               continuePromptEl.value = '';
               updateContinueCount();
+              // 最新の会話が見えるように自動スクロール
+              outEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
             }, 300); // 0.3秒待機
           });
         } else {
@@ -631,6 +641,10 @@
           conversationHistory += newContent;
           outEl.innerHTML = conversationHistory;
           typeWriterAppend(outEl, newContent, 30);
+          // エラー時も最新の会話が見えるように自動スクロール
+          setTimeout(() => {
+            outEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
+          }, 500);
         }
       } catch (e) {
         continueStatusEl.innerHTML = `<span class="err">通信エラー: ${e?.message || e}</span>`;
