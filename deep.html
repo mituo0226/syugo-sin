@@ -397,7 +397,7 @@
     const chatContinueEl   = $('#chat-continue');
 
     // タイピング効果の関数
-    function typeWriter(element, text, speed = 50) {
+    function typeWriter(element, text, speed = 50, callback = null) {
       let i = 0;
       element.innerHTML = '';
       
@@ -406,6 +406,9 @@
           element.innerHTML += text.charAt(i);
           i++;
           setTimeout(type, speed);
+        } else {
+          // タイピング完了後にコールバックを実行
+          if (callback) callback();
         }
       }
       type();
@@ -495,18 +498,20 @@
         } catch {
           display += text; // JSON以外の本文
         }
-        // タイピング効果で表示
-        typeWriter(outEl, display, 30);
-
         // ステータス表示
         if (res.ok) {
           statusEl.textContent = '神託完了';
-          // チャット継続エリアを表示
-          chatContinueEl.style.display = 'block';
-          // スムーズにスクロール
-          chatContinueEl.scrollIntoView({ behavior: 'smooth' });
+          // タイピング効果で表示（完了後にチャット継続エリアを表示）
+          typeWriter(outEl, display, 30, () => {
+            // タイピング完了後にチャット継続エリアを表示
+            chatContinueEl.style.display = 'block';
+            // スムーズにスクロール
+            chatContinueEl.scrollIntoView({ behavior: 'smooth' });
+          });
         } else {
           statusEl.innerHTML = '<span class="err">エラー</span>';
+          // エラー時は即座に表示
+          typeWriter(outEl, display, 30);
         }
       } catch (e) {
         outEl.innerHTML = `<span class="err">通信エラー: ${e?.message || e}</span>`;
@@ -559,19 +564,23 @@
           display += text; // JSON以外の本文
         }
         
-        // 既存の回答に追加
-        const separator = '\n\n--- 続きの相談 ---\n\n';
-        const newContent = outEl.textContent + separator + display;
-        typeWriter(outEl, newContent, 30);
-
         // ステータス表示
         if (res.ok) {
           continueStatusEl.textContent = '神託完了';
-          // 入力欄をクリア
-          continuePromptEl.value = '';
-          updateContinueCount();
+          // 既存の回答に追加（タイピング完了後に入力欄をクリア）
+          const separator = '\n\n--- 続きの相談 ---\n\n';
+          const newContent = outEl.textContent + separator + display;
+          typeWriter(outEl, newContent, 30, () => {
+            // タイピング完了後に入力欄をクリア
+            continuePromptEl.value = '';
+            updateContinueCount();
+          });
         } else {
           continueStatusEl.innerHTML = '<span class="err">エラー</span>';
+          // エラー時は即座に表示
+          const separator = '\n\n--- 続きの相談 ---\n\n';
+          const newContent = outEl.textContent + separator + display;
+          typeWriter(outEl, newContent, 30);
         }
       } catch (e) {
         continueStatusEl.innerHTML = `<span class="err">通信エラー: ${e?.message || e}</span>`;
