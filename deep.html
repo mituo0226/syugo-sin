@@ -1,50 +1,58 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>守護神占い - 鑑定ページ</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gradient-to-b from-purple-900 to-purple-700 text-white flex flex-col items-center justify-center min-h-screen">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>守護神 個別相談</title>
+  <script>
+    async function consult() {
+      const input = document.getElementById("question").value.trim();
+      const resultBox = document.getElementById("result");
+      resultBox.innerText = "鑑定中...";
 
-    <div class="bg-purple-800 p-6 rounded-lg shadow-lg w-11/12 max-w-md">
-        <h1 class="text-xl font-bold text-center mb-4">具体的なお悩みをお聞かせください</h1>
-        <textarea id="questionInput" class="w-full p-2 rounded text-black" rows="4" placeholder="ここに入力してください"></textarea>
-        <button id="consultBtn" onclick="divine()" class="w-full bg-purple-500 hover:bg-purple-600 p-3 rounded font-bold mt-4">鑑定する</button>
-        
-        <h2 class="text-lg mt-4">鑑定結果</h2>
-        <p id="resultArea" class="mt-2">ここに結果が表示されます。</p>
-    </div>
+      if (!input) {
+        resultBox.innerText = "質問を入力してください。";
+        return;
+      }
 
-    <!-- ✅ 関数は最後に配置して確実に読み込ませる -->
-    <script>
-    function divine() {
-        const question = document.getElementById("questionInput").value.trim();
-        const resultArea = document.getElementById("resultArea");
+      try {
+        const response = await fetch("https://syugo-sin-kantei-api.mituo0226.workers.dev/consult", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt: input })
+        });
 
-        if (!question) {
-            resultArea.textContent = "質問内容を入力してください。";
-            return;
+        if (!response.ok) {
+          resultBox.innerText = `サーバーエラー (${response.status})`;
+          return;
         }
 
-        resultArea.textContent = "鑑定中です…";
+        const data = await response.json();
 
-        fetch("https://syugo-sin-kantei-api.mituo0226.workers.dev/consult", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ question })
-        })
-        .then(res => res.json())
-        .then(data => {
-            resultArea.textContent = data.answer || "結果が取得できませんでした。";
-        })
-        .catch(err => {
-            console.error(err);
-            resultArea.textContent = "サーバー通信に失敗しました。";
-        });
+        if (!data || !data.result) {
+          resultBox.innerText = "結果を取得できませんでした。";
+          return;
+        }
+
+        // 安全に表示
+        resultBox.innerText = data.result;
+      } catch (err) {
+        console.error(err);
+        resultBox.innerText = "通信エラーが発生しました。";
+      }
     }
-    </script>
-
+  </script>
+</head>
+<body style="background: #1a0026; color: white; font-family: sans-serif;">
+  <h2 style="text-align:center;">守護神 個別相談</h2>
+  <div style="max-width: 400px; margin: auto; padding: 20px;">
+    <textarea id="question" placeholder="お悩みを入力してください" 
+              style="width: 100%; height: 100px; padding: 10px;"></textarea>
+    <button onclick="consult()" 
+            style="width: 100%; margin-top: 10px; padding: 10px; background: purple; color: white; border: none;">
+      鑑定する
+    </button>
+    <div id="result" style="margin-top: 15px; min-height: 60px;"></div>
+  </div>
 </body>
 </html>
