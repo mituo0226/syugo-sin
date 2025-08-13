@@ -12,6 +12,39 @@ body {
   text-align: center;
   padding: 30px;
   overflow-x: hidden;
+  position: relative;
+}
+
+/* 霧エフェクト */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(199, 125, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, rgba(255, 107, 157, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+  animation: mistMove 20s ease-in-out infinite;
+}
+
+@keyframes mistMove {
+  0%, 100% {
+    transform: translateX(0) translateY(0);
+  }
+  25% {
+    transform: translateX(-10px) translateY(-5px);
+  }
+  50% {
+    transform: translateX(5px) translateY(-10px);
+  }
+  75% {
+    transform: translateX(-5px) translateY(5px);
+  }
 }
 
 .container {
@@ -24,6 +57,76 @@ body {
   box-shadow: 0 0 20px rgba(147,51,234,0.4);
   opacity: 0; /* 最初は非表示 */
   transition: opacity 1s;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 浮遊する光の粒子 */
+.floating-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.floating-particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: radial-gradient(circle, #c77dff, transparent);
+  border-radius: 50%;
+  animation: floatAround 8s infinite linear;
+}
+
+.floating-particle:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; }
+.floating-particle:nth-child(2) { left: 80%; top: 30%; animation-delay: 2s; }
+.floating-particle:nth-child(3) { left: 20%; top: 70%; animation-delay: 4s; }
+.floating-particle:nth-child(4) { left: 70%; top: 80%; animation-delay: 6s; }
+.floating-particle:nth-child(5) { left: 50%; top: 10%; animation-delay: 1s; }
+.floating-particle:nth-child(6) { left: 30%; top: 60%; animation-delay: 3s; }
+
+@keyframes floatAround {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(20px, -20px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.container::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  background: radial-gradient(circle, rgba(157, 78, 221, 0.3) 0%, transparent 70%);
+  animation: pulse 3s ease-in-out infinite;
+  z-index: -1;
+  border-radius: 16px;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.6;
+  }
 }
 
 h1 {
@@ -67,6 +170,38 @@ textarea {
   transform: scale(1.05);
 }
 
+/* 重要なテキストの光る演出 */
+.glow-text {
+  animation: textGlow 2s ease-in-out infinite alternate;
+  text-shadow: 0 0 10px rgba(157, 78, 221, 0.8);
+}
+
+@keyframes textGlow {
+  0% {
+    text-shadow: 0 0 10px rgba(157, 78, 221, 0.8);
+  }
+  100% {
+    text-shadow: 0 0 20px rgba(157, 78, 221, 1), 0 0 30px rgba(199, 125, 255, 0.6);
+  }
+}
+
+/* 波紋エフェクト */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(157, 78, 221, 0.6);
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  pointer-events: none;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
 .return-link {
   display:block;
   margin-top:20px;
@@ -78,7 +213,7 @@ textarea {
 #loadingScreen {
   position: fixed;
   top:0; left:0; right:0; bottom:0;
-  background: #000;
+  background: rgba(0,0,0,0.8);
   display:flex;
   align-items:center;
   justify-content:center;
@@ -92,6 +227,63 @@ textarea {
   font-size:1.2em;
   margin-top:1em;
   animation: blink 1.5s infinite;
+}
+
+.loading-spinner {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  margin: 0 auto;
+}
+
+.loading-spinner::before,
+.loading-spinner::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent, #9d4edd, #c77dff, #ff6b9d, transparent);
+  animation: spiral 3s linear infinite;
+}
+
+.loading-spinner::before {
+  animation: spiral 3s linear infinite;
+  filter: blur(2px);
+  opacity: 0.7;
+}
+
+.loading-spinner::after {
+  animation: spiral 2s linear infinite reverse;
+  filter: blur(1px);
+  opacity: 0.9;
+  width: 80%;
+  height: 80%;
+  top: 10%;
+  left: 10%;
+}
+
+@keyframes spiral {
+  0% {
+    transform: rotate(0deg) scale(1);
+    filter: hue-rotate(0deg);
+  }
+  25% {
+    transform: rotate(90deg) scale(1.1);
+    filter: hue-rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg) scale(0.9);
+    filter: hue-rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg) scale(1.1);
+    filter: hue-rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+    filter: hue-rotate(360deg);
+  }
 }
 
 @keyframes blink {
@@ -115,12 +307,20 @@ textarea {
 
 <!-- ローディング画面 -->
 <div id="loadingScreen">
-  <video src="photo/loading.mp4" width="100" autoplay loop muted playsinline></video>
+  <div class="loading-spinner"></div>
   <p>霊視を開始しています…</p>
 </div>
 
 <div class="container">
-  <h1>個別運命鑑定</h1>
+  <div class="floating-particles">
+    <div class="floating-particle"></div>
+    <div class="floating-particle"></div>
+    <div class="floating-particle"></div>
+    <div class="floating-particle"></div>
+    <div class="floating-particle"></div>
+    <div class="floating-particle"></div>
+  </div>
+  <h1 class="glow-text">個別運命鑑定</h1>
   <p id="deepReading"></p>
 
   <p>
@@ -237,6 +437,30 @@ document.getElementById('questionForm').addEventListener('submit', function(e) {
   }
   window.location.href = `confirm.html?year=${year}&month=${month}&day=${day}&category=${category}&question=${question}`;
 });
+
+// 波紋エフェクト
+function createRipple(event) {
+  const button = event.currentTarget;
+  const ripple = document.createElement('span');
+  const rect = button.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  const x = event.clientX - rect.left - size / 2;
+  const y = event.clientY - rect.top - size / 2;
+  
+  ripple.style.width = ripple.style.height = size + 'px';
+  ripple.style.left = x + 'px';
+  ripple.style.top = y + 'px';
+  ripple.classList.add('ripple');
+  
+  button.appendChild(ripple);
+  
+  setTimeout(() => {
+    ripple.remove();
+  }, 600);
+}
+
+// ボタンに波紋エフェクトを追加
+document.querySelector('.submit-button').addEventListener('click', createRipple);
 </script>
 </body>
 </html>
