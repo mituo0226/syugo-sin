@@ -87,16 +87,28 @@ default: d => `
 `
 };
 
-function divine() {
+async function divine() {
   const details = document.getElementById('details').value.trim();
-  if (!details) {
-    alert("具体的なお悩みを入力してください。");
-    return;
+  if (!details) return alert("具体的なお悩みを入力してください");
+
+  const box = document.getElementById('result');
+  const msg = document.getElementById('message');
+  box.classList.remove('hidden');
+  msg.textContent = '鑑定中...';
+
+  try {
+    const res = await fetch('https://syugo-sin-kantei-api.mituo0226.workers.dev/consult', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({ text: details })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const { message } = await res.json();
+    msg.textContent = message || '結果が空でした。';
+  } catch (e) {
+    console.error(e);
+    msg.textContent = 'サーバー通信に失敗しました。';
   }
-  const theme = detectTheme(details);
-  const text = templates[theme](details);
-  document.getElementById('message').innerText = text.trim();
-  document.getElementById('result').classList.remove('hidden');
 }
 </script>
 </body>
