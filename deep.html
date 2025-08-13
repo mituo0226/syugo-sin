@@ -396,6 +396,9 @@
     const continueCountEl  = $('#continue-count');
     const chatContinueEl   = $('#chat-continue');
 
+    // 会話履歴を管理する変数
+    let conversationHistory = '';
+
     // タイピング効果の関数（新規表示用）
     function typeWriter(element, text, speed = 50, callback = null) {
       let i = 0;
@@ -418,12 +421,12 @@
 
     // タイピング効果の関数（履歴追加用）
     function typeWriterAppend(element, newText, speed = 50, callback = null) {
-      const currentText = element.textContent;
+      const currentContent = element.innerHTML;
       let i = 0;
       
       function type() {
         if (i < newText.length) {
-          element.textContent = currentText + newText.substring(0, i + 1);
+          element.innerHTML = currentContent + newText.substring(0, i + 1);
           i++;
           setTimeout(type, speed);
         } else {
@@ -452,6 +455,7 @@
       updateCount();
       outEl.textContent = '';
       statusEl.textContent = '';
+      conversationHistory = ''; // 履歴もリセット
       promptEl.focus();
     });
 
@@ -527,6 +531,8 @@
           const userQuestion = `【相談者】\n${prompt}\n\n`;
           const aiResponse = `【AI回答】\n${display}\n\n`;
           const firstContent = userQuestion + aiResponse;
+          // 履歴に保存
+          conversationHistory = firstContent;
           typeWriter(outEl, firstContent, 30, () => {
             // タイピング完了後に少し待ってからチャット継続エリアを表示
             setTimeout(() => {
@@ -541,6 +547,7 @@
           const userQuestion = `【相談者】\n${prompt}\n\n`;
           const aiResponse = `【AI回答】\n${display}\n\n`;
           const firstContent = userQuestion + aiResponse;
+          conversationHistory = firstContent;
           typeWriter(outEl, firstContent, 30);
         }
       } catch (e) {
@@ -602,6 +609,11 @@
           const aiResponse = `【AI回答】\n${display}\n\n`;
           const separator = '--- 続きの相談 ---\n\n';
           const newContent = separator + userQuestion + aiResponse;
+          // 履歴に追加
+          conversationHistory += newContent;
+          // 履歴全体を表示
+          outEl.innerHTML = conversationHistory;
+          // 新しい部分のみをタイピング効果で表示
           typeWriterAppend(outEl, newContent, 30, () => {
             // タイピング完了後に少し待ってから入力欄をクリア
             setTimeout(() => {
@@ -616,6 +628,8 @@
           const aiResponse = `【AI回答】\n${display}\n\n`;
           const separator = '--- 続きの相談 ---\n\n';
           const newContent = separator + userQuestion + aiResponse;
+          conversationHistory += newContent;
+          outEl.innerHTML = conversationHistory;
           typeWriterAppend(outEl, newContent, 30);
         }
       } catch (e) {
