@@ -407,8 +407,10 @@
           i++;
           setTimeout(type, speed);
         } else {
-          // タイピング完了後にコールバックを実行
-          if (callback) callback();
+          // タイピング完了後に少し待ってからコールバックを実行
+          setTimeout(() => {
+            if (callback) callback();
+          }, 200); // 0.2秒待機してからコールバック実行
         }
       }
       type();
@@ -503,10 +505,12 @@
           statusEl.textContent = '神託完了';
           // タイピング効果で表示（完了後にチャット継続エリアを表示）
           typeWriter(outEl, display, 30, () => {
-            // タイピング完了後にチャット継続エリアを表示
-            chatContinueEl.style.display = 'block';
-            // スムーズにスクロール
-            chatContinueEl.scrollIntoView({ behavior: 'smooth' });
+            // タイピング完了後に少し待ってからチャット継続エリアを表示
+            setTimeout(() => {
+              chatContinueEl.style.display = 'block';
+              // スムーズにスクロール
+              chatContinueEl.scrollIntoView({ behavior: 'smooth' });
+            }, 500); // 0.5秒待機
           });
         } else {
           statusEl.innerHTML = '<span class="err">エラー</span>';
@@ -571,9 +575,11 @@
           const separator = '\n\n--- 続きの相談 ---\n\n';
           const newContent = outEl.textContent + separator + display;
           typeWriter(outEl, newContent, 30, () => {
-            // タイピング完了後に入力欄をクリア
-            continuePromptEl.value = '';
-            updateContinueCount();
+            // タイピング完了後に少し待ってから入力欄をクリア
+            setTimeout(() => {
+              continuePromptEl.value = '';
+              updateContinueCount();
+            }, 300); // 0.3秒待機
           });
         } else {
           continueStatusEl.innerHTML = '<span class="err">エラー</span>';
