@@ -503,8 +503,11 @@
         // ステータス表示
         if (res.ok) {
           statusEl.textContent = '神託完了';
-          // タイピング効果で表示（完了後にチャット継続エリアを表示）
-          typeWriter(outEl, display, 30, () => {
+          // 最初の質問と回答を表示（完了後にチャット継続エリアを表示）
+          const userQuestion = `【相談者】\n${prompt}\n\n`;
+          const aiResponse = `【AI回答】\n${display}\n\n`;
+          const firstContent = userQuestion + aiResponse;
+          typeWriter(outEl, firstContent, 30, () => {
             // タイピング完了後に少し待ってからチャット継続エリアを表示
             setTimeout(() => {
               chatContinueEl.style.display = 'block';
@@ -515,7 +518,10 @@
         } else {
           statusEl.innerHTML = '<span class="err">エラー</span>';
           // エラー時は即座に表示
-          typeWriter(outEl, display, 30);
+          const userQuestion = `【相談者】\n${prompt}\n\n`;
+          const aiResponse = `【AI回答】\n${display}\n\n`;
+          const firstContent = userQuestion + aiResponse;
+          typeWriter(outEl, firstContent, 30);
         }
       } catch (e) {
         outEl.innerHTML = `<span class="err">通信エラー: ${e?.message || e}</span>`;
@@ -571,9 +577,11 @@
         // ステータス表示
         if (res.ok) {
           continueStatusEl.textContent = '神託完了';
-          // 既存の回答に追加（タイピング完了後に入力欄をクリア）
-          const separator = '\n\n--- 続きの相談 ---\n\n';
-          const newContent = outEl.textContent + separator + display;
+          // 相談者の質問とAIの回答を追加（タイピング完了後に入力欄をクリア）
+          const userQuestion = `【相談者】\n${prompt}\n\n`;
+          const aiResponse = `【AI回答】\n${display}\n\n`;
+          const separator = '--- 続きの相談 ---\n\n';
+          const newContent = outEl.textContent + separator + userQuestion + aiResponse;
           typeWriter(outEl, newContent, 30, () => {
             // タイピング完了後に少し待ってから入力欄をクリア
             setTimeout(() => {
@@ -584,8 +592,10 @@
         } else {
           continueStatusEl.innerHTML = '<span class="err">エラー</span>';
           // エラー時は即座に表示
-          const separator = '\n\n--- 続きの相談 ---\n\n';
-          const newContent = outEl.textContent + separator + display;
+          const userQuestion = `【相談者】\n${prompt}\n\n`;
+          const aiResponse = `【AI回答】\n${display}\n\n`;
+          const separator = '--- 続きの相談 ---\n\n';
+          const newContent = outEl.textContent + separator + userQuestion + aiResponse;
           typeWriter(outEl, newContent, 30);
         }
       } catch (e) {
