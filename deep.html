@@ -32,84 +32,37 @@ body {
 </div>
 
 <script>
-function detectTheme(details) {
-  const t = details.toLowerCase();
-  if (/(別れ|離婚|失恋)/.test(t)) return 'breakup';
-  if (/(片思い|告白|好き)/.test(t)) return 'one_sided_love';
-  if (/(転職|就職|独立|起業)/.test(t)) return 'career_change';
-  if (/(金運|お金|財産)/.test(t)) return 'money';
-  if (/(健康|病気|体調)/.test(t)) return 'health';
-  if (/(霊|因縁|前世)/.test(t)) return 'spiritual';
-  return 'default';
-}
+document.getElementById("consultForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
 
-const templates = {
-one_sided_love: d => `
-「${d}」はあなたの心に深く刻まれた想いです。
-この片思いは、魂の学びと成長を促しています。
-今は自分を信じ、心の声を大切にしてください。
-誠実な気持ちがやがて相手に届くでしょう。
-`,
+    const message = document.getElementById("userMessage").value;
+    const resultDiv = document.getElementById("result");
+    resultDiv.textContent = "鑑定中です...";
 
-breakup: d => `
-「${d}」という別れの痛みは、人生の大きな通過儀礼です。
-その悲しみは終わりではなく、新たな始まりの証です。
-今は無理をせず、心を癒す時間を大切に。
-`,
+    try {
+        const response = await fetch("https://syugo-sin-kantei-api.mituo0226.workers.dev/consult", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ message: message })
+        });
 
-career_change: d => `
-「${d}」は変化と挑戦の兆しです。
-未知の道に進む勇気を持ち、自らの可能性を信じてください。
-今の一歩が未来を切り開く礎となります。
-`,
+        if (!response.ok) {
+            throw new Error("サーバーエラーが発生しました");
+        }
 
-money: d => `
-「${d}」は豊かさへの願いです。
-焦らずに正しい選択を重ね、心の安定を大切にしてください。
-内面の充実が財運を引き寄せます。
-`,
-
-health: d => `
-「${d}」は心身の調和を求める声です。
-体と心をいたわり、ゆっくりと癒しを受け入れてください。
-`,
-
-spiritual: d => `
-「${d}」は魂の深い問いかけです。
-不安に惑わされず、内なる光を信じてください。
-あなたは守られています。
-`,
-
-default: d => `
-「${d}」は変化の兆しです。
-自分を信じ、恐れずに一歩踏み出しましょう。
-未来は希望に満ちています。
-`
-};
-
-async function divine() {
-  const details = document.getElementById('details').value.trim();
-  if (!details) return alert("具体的なお悩みを入力してください");
-
-  const box = document.getElementById('result');
-  const msg = document.getElementById('message');
-  box.classList.remove('hidden');
-  msg.textContent = '鑑定中...';
-
-  try {
-    const res = await fetch('https://syugo-sin-kantei-api.mituo0226.workers.dev/consult', {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json' },
-      body: JSON.stringify({ text: details })
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const { message } = await res.json();
-    msg.textContent = message || '結果が空でした。';
-  } catch (e) {
-    console.error(e);
-    msg.textContent = 'サーバー通信に失敗しました。';
-  }
-}
+        const data = await response.json();
+        if (data.reply) {
+            resultDiv.textContent = data.reply;
+        } else {
+            resultDiv.textContent = "結果が取得できませんでした。";
+        }
+    } catch (error) {
+        console.error(error);
+        resultDiv.textContent = "サーバー通信に失敗しました。";
+    }
+});
 </script>
 </body>
 </html>
