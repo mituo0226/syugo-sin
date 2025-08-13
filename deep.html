@@ -396,7 +396,7 @@
     const continueCountEl  = $('#continue-count');
     const chatContinueEl   = $('#chat-continue');
 
-    // タイピング効果の関数
+    // タイピング効果の関数（新規表示用）
     function typeWriter(element, text, speed = 50, callback = null) {
       let i = 0;
       element.innerHTML = '';
@@ -404,6 +404,26 @@
       function type() {
         if (i < text.length) {
           element.innerHTML += text.charAt(i);
+          i++;
+          setTimeout(type, speed);
+        } else {
+          // タイピング完了後に少し待ってからコールバックを実行
+          setTimeout(() => {
+            if (callback) callback();
+          }, 200); // 0.2秒待機してからコールバック実行
+        }
+      }
+      type();
+    }
+
+    // タイピング効果の関数（履歴追加用）
+    function typeWriterAppend(element, newText, speed = 50, callback = null) {
+      const currentText = element.textContent;
+      let i = 0;
+      
+      function type() {
+        if (i < newText.length) {
+          element.textContent = currentText + newText.substring(0, i + 1);
           i++;
           setTimeout(type, speed);
         } else {
@@ -577,12 +597,12 @@
         // ステータス表示
         if (res.ok) {
           continueStatusEl.textContent = '神託完了';
-          // 相談者の質問とAIの回答を追加（タイピング完了後に入力欄をクリア）
+          // 相談者の質問とAIの回答を追加（履歴を保持）
           const userQuestion = `【相談者】\n${prompt}\n\n`;
           const aiResponse = `【AI回答】\n${display}\n\n`;
           const separator = '--- 続きの相談 ---\n\n';
-          const newContent = outEl.textContent + separator + userQuestion + aiResponse;
-          typeWriter(outEl, newContent, 30, () => {
+          const newContent = separator + userQuestion + aiResponse;
+          typeWriterAppend(outEl, newContent, 30, () => {
             // タイピング完了後に少し待ってから入力欄をクリア
             setTimeout(() => {
               continuePromptEl.value = '';
@@ -595,8 +615,8 @@
           const userQuestion = `【相談者】\n${prompt}\n\n`;
           const aiResponse = `【AI回答】\n${display}\n\n`;
           const separator = '--- 続きの相談 ---\n\n';
-          const newContent = outEl.textContent + separator + userQuestion + aiResponse;
-          typeWriter(outEl, newContent, 30);
+          const newContent = separator + userQuestion + aiResponse;
+          typeWriterAppend(outEl, newContent, 30);
         }
       } catch (e) {
         continueStatusEl.innerHTML = `<span class="err">通信エラー: ${e?.message || e}</span>`;
