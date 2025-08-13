@@ -354,6 +354,24 @@
       <div id="out" class="out" aria-live="polite"></div>
     </div>
 
+    <!-- チャット継続用の入力エリア（最初は非表示） -->
+    <div id="chat-continue" class="form-group" style="display: none;">
+      <label for="continue-prompt">さらに相談する</label>
+      <textarea id="continue-prompt" rows="4" placeholder="続けて相談したい内容を入力してください..."
+        autocomplete="off"></textarea>
+      
+      <div class="row-2col">
+        <div class="muted">前の回答を踏まえて続けて相談できます</div>
+        <div class="badge"><span id="continue-count">0</span> 文字</div>
+      </div>
+
+      <div class="actions">
+        <button id="continue-send">送信</button>
+        <button id="continue-clear" type="button">クリア</button>
+        <span class="muted" id="continue-status" aria-live="polite"></span>
+      </div>
+    </div>
+
     <a href="index.html" class="back-link">← 戻る</a>
   </div>
 
@@ -369,6 +387,14 @@
     const outEl    = $('#out');
     const statusEl = $('#status');
     const countEl  = $('#count');
+    
+    // チャット継続用の要素
+    const continuePromptEl = $('#continue-prompt');
+    const continueSendBtn  = $('#continue-send');
+    const continueClearBtn = $('#continue-clear');
+    const continueStatusEl = $('#continue-status');
+    const continueCountEl  = $('#continue-count');
+    const chatContinueEl   = $('#chat-continue');
 
     // タイピング効果の関数
     function typeWriter(element, text, speed = 50) {
@@ -390,6 +416,11 @@
     promptEl.addEventListener('input', updateCount);
     updateCount();
 
+    // チャット継続用の文字数カウンタ
+    const updateContinueCount = () => { continueCountEl.textContent = (continuePromptEl.value || '').length; };
+    continuePromptEl.addEventListener('input', updateContinueCount);
+    updateContinueCount();
+
     // クリア
     clearBtn.addEventListener('click', () => {
       promptEl.value = '';
@@ -399,11 +430,27 @@
       promptEl.focus();
     });
 
+    // チャット継続用のクリア
+    continueClearBtn.addEventListener('click', () => {
+      continuePromptEl.value = '';
+      updateContinueCount();
+      continueStatusEl.textContent = '';
+      continuePromptEl.focus();
+    });
+
     // 送信（Enter+Ctrl/Cmdで送信も可）
     promptEl.addEventListener('keydown', (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
         e.preventDefault();
         sendBtn.click();
+      }
+    });
+
+    // チャット継続用の送信（Enter+Ctrl/Cmdで送信も可）
+    continuePromptEl.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        continueSendBtn.click();
       }
     });
 
@@ -454,6 +501,10 @@
         // ステータス表示
         if (res.ok) {
           statusEl.textContent = '神託完了';
+          // チャット継続エリアを表示
+          chatContinueEl.style.display = 'block';
+          // スムーズにスクロール
+          chatContinueEl.scrollIntoView({ behavior: 'smooth' });
         } else {
           statusEl.innerHTML = '<span class="err">エラー</span>';
         }
@@ -463,6 +514,70 @@
       } finally {
         sendBtn.disabled = false;
         clearBtn.disabled = false;
+      }
+    });
+
+    // チャット継続用の送信処理
+    continueSendBtn.addEventListener('click', async () => {
+      const prompt = (continuePromptEl.value || '').trim();
+      if (!prompt) {
+        continueStatusEl.innerHTML = '<span class="err">入力が空です。内容を入力してください。</span>';
+        continuePromptEl.focus();
+        return;
+      }
+
+      // UIロック
+      continueSendBtn.disabled = true;
+      continueClearBtn.disabled = true;
+      continueStatusEl.textContent = '神託を降ろしています…';
+
+      try {
+        // タイムアウト（30秒）
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 30000);
+
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt }),
+          signal: controller.signal
+        }).finally(() => clearTimeout(timer));
+
+        const text = await res.text();
+
+        // まずはHTTPステータスを表示（デバッグ時に役立つ）
+        let display = `HTTP ${res.status}\n`;
+        try {
+          const data = JSON.parse(text);
+          if (!res.ok) {
+            // エラー時
+            display += (data?.error || text || 'エラーが発生しました。');
+          } else {
+            display += JSON.stringify(data, null, 2);
+          }
+        } catch {
+          display += text; // JSON以外の本文
+        }
+        
+        // 既存の回答に追加
+        const separator = '\n\n--- 続きの相談 ---\n\n';
+        const newContent = outEl.textContent + separator + display;
+        typeWriter(outEl, newContent, 30);
+
+        // ステータス表示
+        if (res.ok) {
+          continueStatusEl.textContent = '神託完了';
+          // 入力欄をクリア
+          continuePromptEl.value = '';
+          updateContinueCount();
+        } else {
+          continueStatusEl.innerHTML = '<span class="err">エラー</span>';
+        }
+      } catch (e) {
+        continueStatusEl.innerHTML = `<span class="err">通信エラー: ${e?.message || e}</span>`;
+      } finally {
+        continueSendBtn.disabled = false;
+        continueClearBtn.disabled = false;
       }
     });
   </script>
