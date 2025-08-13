@@ -5,10 +5,13 @@
   <title>守護神占い｜相談フォーム</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#1a0b2e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <style>
     body {
-      background: linear-gradient(to bottom, #1a0b2e, #2e1a47);
-      color: #fff;
+      background: linear-gradient(to bottom, #0a0515, #1a0b2e, #2e1a47);
+      color: #ffffff !important;
       font-family: 'Zen Old Mincho', serif;
       text-align: center;
       padding: 30px;
@@ -16,6 +19,8 @@
       overflow-x: hidden;
       margin: 0;
       min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
     }
 
     /* 霧エフェクト */
@@ -54,16 +59,18 @@
     .container {
       max-width: 600px;
       margin: 40px auto;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.1);
+      border: 2px solid rgba(255,255,255,0.3);
       border-radius: 12px;
       padding: 30px;
-      box-shadow: 0 0 20px rgba(147,51,234,0.4);
+      box-shadow: 0 0 30px rgba(147,51,234,0.6);
       position: relative;
       overflow: hidden;
       opacity: 0;
       transform: translateY(30px);
       animation: fadeInUp 1s forwards;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
 
     @keyframes fadeInUp {
@@ -144,9 +151,10 @@
     h1 {
       font-size: 1.8em;
       margin-bottom: 1em;
-      color: #fff;
-      text-shadow: 0 0 10px rgba(157, 78, 221, 0.8);
+      color: #ffffff !important;
+      text-shadow: 0 0 15px rgba(157, 78, 221, 1), 0 0 25px rgba(199, 125, 255, 0.8);
       animation: textGlow 2s ease-in-out infinite alternate;
+      font-weight: bold;
     }
 
     @keyframes textGlow {
@@ -165,34 +173,38 @@
 
     label {
       display: block;
-      font-weight: 600;
+      font-weight: 700;
       margin-bottom: 8px;
-      color: #ddd;
+      color: #ffffff !important;
       font-size: 1.1em;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
     }
 
     textarea, input[type="text"] {
       width: 100%;
       padding: 15px;
       font-size: 16px;
-      border: 1px solid rgba(157, 78, 221, 0.3);
+      border: 2px solid rgba(157, 78, 221, 0.5);
       border-radius: 8px;
       box-sizing: border-box;
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff !important;
       font-family: 'Zen Old Mincho', serif;
       transition: all 0.3s ease;
+      -webkit-appearance: none;
+      -webkit-border-radius: 8px;
     }
 
     textarea:focus, input[type="text"]:focus {
       outline: none;
       border-color: #9d4edd;
-      box-shadow: 0 0 15px rgba(157, 78, 221, 0.5);
-      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 20px rgba(157, 78, 221, 0.8);
+      background: rgba(255, 255, 255, 0.25);
     }
 
     textarea::placeholder, input[type="text"]::placeholder {
-      color: rgba(255, 255, 255, 0.6);
+      color: rgba(255, 255, 255, 0.8) !important;
+      opacity: 1;
     }
 
     button {
@@ -202,10 +214,14 @@
       border: none;
       cursor: pointer;
       background: #9d4edd;
-      color: #fff;
+      color: #ffffff !important;
       font-family: 'Zen Old Mincho', serif;
       transition: all 0.3s ease;
       margin: 5px;
+      font-weight: bold;
+      -webkit-appearance: none;
+      -webkit-border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
     }
 
     button:hover {
@@ -230,8 +246,9 @@
     }
 
     .muted {
-      color: rgba(255, 255, 255, 0.7);
+      color: rgba(255, 255, 255, 0.9) !important;
       font-size: 13px;
+      font-weight: 500;
     }
 
     .out {
@@ -241,10 +258,12 @@
       border-radius: 8px;
       min-height: 120px;
       background: transparent;
-      color: #fff;
+      color: #ffffff !important;
       font-family: 'Zen Old Mincho', serif;
       text-align: left;
       position: relative;
+      font-weight: 500;
+      line-height: 1.6;
     }
 
     .out::before {
@@ -277,29 +296,32 @@
 
     .badge {
       font-size: 12px;
-      border: 1px solid rgba(157, 78, 221, 0.5);
+      border: 2px solid rgba(157, 78, 221, 0.7);
       padding: 4px 12px;
       border-radius: 999px;
-      background: rgba(157, 78, 221, 0.2);
-      color: #fff;
+      background: rgba(157, 78, 221, 0.3);
+      color: #ffffff !important;
+      font-weight: bold;
     }
 
     .err {
-      color: #ff6b9d;
-      text-shadow: 0 0 10px rgba(255, 107, 157, 0.5);
+      color: #ff6b9d !important;
+      text-shadow: 0 0 10px rgba(255, 107, 157, 0.8);
+      font-weight: bold;
     }
 
     .back-link {
       display: inline-block;
       margin-top: 20px;
-      color: #9d4edd;
+      color: #9d4edd !important;
       text-decoration: underline;
       transition: all 0.3s ease;
+      font-weight: bold;
     }
 
     .back-link:hover {
-      color: #c77dff;
-      text-shadow: 0 0 10px rgba(157, 78, 221, 0.5);
+      color: #c77dff !important;
+      text-shadow: 0 0 10px rgba(157, 78, 221, 0.8);
     }
 
     @media (max-width: 640px) {
