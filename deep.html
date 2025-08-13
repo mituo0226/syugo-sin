@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <style>
     body {
-      background: linear-gradient(to bottom, #0a0515, #1a0b2e, #2e1a47);
+      background: linear-gradient(to bottom, #000000, #0a0515, #1a0b2e, #2e1a47) !important;
       color: #ffffff !important;
       font-family: 'Zen Old Mincho', serif;
       text-align: center;
@@ -21,6 +21,7 @@
       min-height: 100vh;
       -webkit-text-size-adjust: 100%;
       -webkit-font-smoothing: antialiased;
+      -webkit-overflow-scrolling: touch;
     }
 
     /* 霧エフェクト */
@@ -59,11 +60,11 @@
     .container {
       max-width: 600px;
       margin: 40px auto;
-      background: rgba(255,255,255,0.1);
-      border: 2px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.2) !important;
+      border: 3px solid rgba(255,255,255,0.5) !important;
       border-radius: 12px;
       padding: 30px;
-      box-shadow: 0 0 30px rgba(147,51,234,0.6);
+      box-shadow: 0 0 40px rgba(147,51,234,0.8), inset 0 0 20px rgba(255,255,255,0.1) !important;
       position: relative;
       overflow: hidden;
       opacity: 0;
@@ -152,9 +153,10 @@
       font-size: 1.8em;
       margin-bottom: 1em;
       color: #ffffff !important;
-      text-shadow: 0 0 15px rgba(157, 78, 221, 1), 0 0 25px rgba(199, 125, 255, 0.8);
+      text-shadow: 0 0 20px rgba(157, 78, 221, 1), 0 0 30px rgba(199, 125, 255, 1), 0 0 40px rgba(255, 255, 255, 0.8) !important;
       animation: textGlow 2s ease-in-out infinite alternate;
-      font-weight: bold;
+      font-weight: 900;
+      letter-spacing: 1px;
     }
 
     @keyframes textGlow {
@@ -173,38 +175,40 @@
 
     label {
       display: block;
-      font-weight: 700;
+      font-weight: 900;
       margin-bottom: 8px;
       color: #ffffff !important;
       font-size: 1.1em;
-      text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+      text-shadow: 0 0 8px rgba(255, 255, 255, 1), 0 0 15px rgba(157, 78, 221, 0.8) !important;
     }
 
     textarea, input[type="text"] {
       width: 100%;
       padding: 15px;
       font-size: 16px;
-      border: 2px solid rgba(157, 78, 221, 0.5);
+      border: 3px solid rgba(157, 78, 221, 0.8) !important;
       border-radius: 8px;
       box-sizing: border-box;
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.25) !important;
       color: #ffffff !important;
       font-family: 'Zen Old Mincho', serif;
       transition: all 0.3s ease;
       -webkit-appearance: none;
       -webkit-border-radius: 8px;
+      font-weight: 600;
     }
 
     textarea:focus, input[type="text"]:focus {
       outline: none;
-      border-color: #9d4edd;
-      box-shadow: 0 0 20px rgba(157, 78, 221, 0.8);
-      background: rgba(255, 255, 255, 0.25);
+      border-color: #9d4edd !important;
+      box-shadow: 0 0 25px rgba(157, 78, 221, 1), inset 0 0 10px rgba(255, 255, 255, 0.2) !important;
+      background: rgba(255, 255, 255, 0.35) !important;
     }
 
     textarea::placeholder, input[type="text"]::placeholder {
-      color: rgba(255, 255, 255, 0.8) !important;
+      color: rgba(255, 255, 255, 1) !important;
       opacity: 1;
+      font-weight: 500;
     }
 
     button {
@@ -213,15 +217,16 @@
       border-radius: 8px;
       border: none;
       cursor: pointer;
-      background: #9d4edd;
+      background: #9d4edd !important;
       color: #ffffff !important;
       font-family: 'Zen Old Mincho', serif;
       transition: all 0.3s ease;
       margin: 5px;
-      font-weight: bold;
+      font-weight: 900;
       -webkit-appearance: none;
       -webkit-border-radius: 8px;
-      box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
+      box-shadow: 0 4px 20px rgba(157, 78, 221, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.2) !important;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
     }
 
     button:hover {
@@ -246,9 +251,10 @@
     }
 
     .muted {
-      color: rgba(255, 255, 255, 0.9) !important;
+      color: rgba(255, 255, 255, 1) !important;
       font-size: 13px;
-      font-weight: 500;
+      font-weight: 700;
+      text-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
     }
 
     .out {
@@ -262,8 +268,9 @@
       font-family: 'Zen Old Mincho', serif;
       text-align: left;
       position: relative;
-      font-weight: 500;
+      font-weight: 700;
       line-height: 1.6;
+      text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
     }
 
     .out::before {
@@ -296,12 +303,14 @@
 
     .badge {
       font-size: 12px;
-      border: 2px solid rgba(157, 78, 221, 0.7);
+      border: 3px solid rgba(157, 78, 221, 1) !important;
       padding: 4px 12px;
       border-radius: 999px;
-      background: rgba(157, 78, 221, 0.3);
+      background: rgba(157, 78, 221, 0.5) !important;
       color: #ffffff !important;
-      font-weight: bold;
+      font-weight: 900;
+      text-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 10px rgba(157, 78, 221, 0.6);
     }
 
     .err {
@@ -327,10 +336,14 @@
     @media (max-width: 640px) {
       body {
         padding: 15px;
+        background: linear-gradient(to bottom, #000000, #0a0515, #1a0b2e, #2e1a47) !important;
+        color: #ffffff !important;
       }
       .container {
         margin: 20px auto;
         padding: 20px;
+        background: rgba(255,255,255,0.25) !important;
+        border: 3px solid rgba(255,255,255,0.6) !important;
       }
       .actions {
         flex-direction: column;
@@ -338,6 +351,34 @@
       button {
         width: 100%;
         margin: 5px 0;
+        background: #9d4edd !important;
+        color: #ffffff !important;
+        font-weight: 900;
+      }
+      h1 {
+        color: #ffffff !important;
+        font-weight: 900;
+      }
+      label {
+        color: #ffffff !important;
+        font-weight: 900;
+      }
+      textarea, input[type="text"] {
+        color: #ffffff !important;
+        background: rgba(255, 255, 255, 0.3) !important;
+        border: 3px solid rgba(157, 78, 221, 1) !important;
+      }
+      .out {
+        color: #ffffff !important;
+        font-weight: 700;
+      }
+      .muted {
+        color: #ffffff !important;
+        font-weight: 700;
+      }
+      .badge {
+        color: #ffffff !important;
+        font-weight: 900;
       }
     }
   </style>
