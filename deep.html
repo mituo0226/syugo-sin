@@ -275,7 +275,7 @@
     }
 
     .out {
-      background: rgba(0,0,0,0.8);
+      background: rgba(255,255,255,0.1);
       padding: 15px;
       border-radius: 8px;
       font-size: 1em;
@@ -285,7 +285,6 @@
       color: #fff;
       font-family: 'Zen Old Mincho', serif;
       text-align: left;
-      border: 1px solid rgba(157, 78, 221, 0.6);
     }
 
     .row-2col {
@@ -611,6 +610,16 @@
       button {
         width: 100%;
         margin: 5px 0;
+      }
+
+      /* iPhoneでの結果画面の背景色強化 */
+      .out {
+        background: rgba(255,255,255,0.15) !important;
+      }
+
+      /* iPhoneでの結果画面のコンテナ背景強化 */
+      #resultScreen {
+        background: rgba(255,255,255,0.08) !important;
       }
       
       /* スマートフォンでのアニメーション最適化 */
