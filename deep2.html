@@ -91,7 +91,7 @@
     try {
       const data = JSON.parse(text);
       if (status >= 200 && status < 300) {
-        return data?.message || text;
+        return (data?.message || data?.result || text);
       }
       const isRegion = data?.code === 'region_blocked' || data?.error?.code === 'unsupported_country_region_territory';
       if (isRegion) {
