@@ -9,7 +9,9 @@
   .w{max-width:720px;margin:32px auto;padding:16px}
   textarea{width:100%;min-height:160px;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,.08);color:#fff}
   .row{margin-top:10px;display:flex;gap:10px;align-items:center}
-  button{padding:10px 16px;border:none;border-radius:999px;background:#8b46ff;color:#fff;cursor:pointer}
+  button{padding:10px 16px;border:none;border-radius:999px;background:#8b46ff;color:#fff;cursor:pointer;transition:all 0.3s ease}
+  button:disabled{background:#666;cursor:not-allowed;opacity:0.6}
+  button:hover:not(:disabled){background:#9d4edd;transform:scale(1.05)}
   pre{white-space:pre-wrap;background:rgba(0,0,0,.25);padding:12px;border-radius:10px}
   .hint{opacity:.8;font-size:.9em}
   .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.08)}
@@ -56,7 +58,9 @@ async function __call(payload){
   var res = null;
   try {
     res = await fetch(api, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
-  } catch(e) {}
+  } catch(e) {
+    console.error('Primary API call failed:', e);
+  }
   if (!res || !res.ok) {
     var isRegion = false;
     try {
@@ -65,11 +69,16 @@ async function __call(payload){
         var d = JSON.parse(t);
         isRegion = !!(d && (d.code==='region_blocked' || (d.error && d.error.code==='unsupported_country_region_territory')));
       }
-    } catch(e){}
+    } catch(e){
+      console.error('Error parsing response:', e);
+    }
     if ((isRegion || !res) && backup) {
       try {
+        console.log('Trying backup API:', backup);
         return await fetch(backup, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
-      } catch(e) {}
+      } catch(e) {
+        console.error('Backup API call failed:', e);
+      }
     }
   }
   return res;
@@ -78,18 +87,28 @@ async function __call(payload){
 async function __send(){
   var q = document.getElementById('q'), out = document.getElementById('out'), btn=document.getElementById('go');
   var txt = (q.value||'').trim(); if (!txt) { q.focus(); return; }
-  btn.disabled=true; out.textContent='鑑定中…';
+  
+  // ボタンを無効化して鑑定中表示
+  btn.disabled=true; 
+  btn.textContent='鑑定中…';
+  out.textContent='鑑定中…';
+  
   var p = window.__SAFE, payload = { text: txt, year: p.y, month: p.m, day: p.d, mode: p.mode };
 
   try {
     var res = await __call(payload);
-    if (!res) { out.textContent='通信に失敗しました（送信先に到達できません）。?api= で送信先を指定してください。'; btn.disabled=false; return; }
+    if (!res) { 
+      out.textContent='通信に失敗しました（送信先に到達できません）。?api= で送信先を指定してください。'; 
+      return; 
+    }
     var t = await res.text();
     out.textContent = __friendly(t, res.status);
   } catch(e){
     out.textContent = '通信に失敗しました。時間を置いてお試しください。';
   } finally {
+    // 確実にボタンを有効化
     btn.disabled=false;
+    btn.textContent='鑑定する';
   }
 }
 </script>
