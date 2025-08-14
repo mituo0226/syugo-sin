@@ -1,114 +1,30 @@
 
 <!doctype html>
 <html lang="ja">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>守護神占い｜個別相談（SAFE版）</title>
-<style>
-  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP",sans-serif;background:#140826;color:#fff;margin:0}
-  .w{max-width:720px;margin:32px auto;padding:16px}
-  textarea{width:100%;min-height:160px;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,.08);color:#fff}
-  .row{margin-top:10px;display:flex;gap:10px;align-items:center}
-  button{padding:10px 16px;border:none;border-radius:999px;background:#8b46ff;color:#fff;cursor:pointer;transition:all 0.3s ease}
-  button:disabled{background:#666;cursor:not-allowed;opacity:0.6}
-  button:hover:not(:disabled){background:#9d4edd;transform:scale(1.05)}
-  pre{white-space:pre-wrap;background:rgba(0,0,0,.25);padding:12px;border-radius:10px}
-  .hint{opacity:.8;font-size:.9em}
-  .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.08)}
-</style>
-<div class="w">
-  <h1>お悩み相談フォーム（SAFE）</h1>
-  <div id="dob" class="badge" style="display:none"></div>
-  <div class="hint">送信先はURLの <code>?api=</code> / 予備 <code>?backup=</code> / 軽量 <code>?mode=basic</code> で指定できます。</div>
-  <div class="row"><textarea id="q" placeholder="例）東京在住で、交際相手は北海道です…"></textarea></div>
-  <div class="row"><button id="go" type="button" onclick="__send()">鑑定する</button></div>
-  <div class="row"><pre id="out"></pre></div>
-</div>
-<script>
-(function(){
-  // Parse query
-  var qs = new URLSearchParams(location.search);
-  var y = parseInt(qs.get('year')), m = parseInt(qs.get('month')), d = parseInt(qs.get('day'));
-  var api = qs.get('api') || '/api/consult';
-  var backup = qs.get('backup') || '';
-  var mode = qs.get('mode') || 'full';
-
-  // DOB badge
-  if (y && m && d) {
-    var b = document.getElementById('dob'); b.style.display='inline-block';
-    b.textContent = '生年月日：' + y + '年' + m + '月' + d + '日（把握済み）';
-  }
-
-  // Globals for onclick
-  window.__SAFE = { api: api, backup: backup, y:y||null, m:m||null, d:d||null, mode: mode };
-})();
-
-function __friendly(text, status){
-  try {
-    var data = JSON.parse(text);
-    if (status>=200 && status<300) return (data && (data.message || data.result)) || text;
-    var isRegion = (data && (data.code==='region_blocked' || (data.error && data.error.code==='unsupported_country_region_territory')));
-    if (isRegion) return 'ただいま接続経路の都合により鑑定サーバへ到達できません。\\nVPN/プロキシをOFF、時間を置く、または別回線でお試しください。';
-    return (data && (data.error || data.message)) || '通信エラーが発生しました。しばらくしてからお試しください。';
-  } catch(e){ return text; }
-}
-
-async function __call(payload){
-  var api = window.__SAFE.api, backup = window.__SAFE.backup;
-  var res = null;
-  try {
-    res = await fetch(api, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
-  } catch(e) {
-    console.error('Primary API call failed:', e);
-  }
-  if (!res || !res.ok) {
-    var isRegion = false;
-    try {
-      if (res) {
-        var t = await res.clone().text();
-        var d = JSON.parse(t);
-        isRegion = !!(d && (d.code==='region_blocked' || (d.error && d.error.code==='unsupported_country_region_territory')));
-      }
-    } catch(e){
-      console.error('Error parsing response:', e);
-    }
-    if ((isRegion || !res) && backup) {
-      try {
-        console.log('Trying backup API:', backup);
-        return await fetch(backup, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
-      } catch(e) {
-        console.error('Backup API call failed:', e);
-      }
-    }
-  }
-  return res;
-}
-
-async function __send(){
-  var q = document.getElementById('q'), out = document.getElementById('out'), btn=document.getElementById('go');
-  var txt = (q.value||'').trim(); if (!txt) { q.focus(); return; }
-  
-  // ボタンを無効化して鑑定中表示
-  btn.disabled=true; 
-  btn.textContent='鑑定中…';
-  out.textContent='鑑定中…';
-  
-  var p = window.__SAFE, payload = { text: txt, year: p.y, month: p.m, day: p.d, mode: p.mode };
-
-  try {
-    var res = await __call(payload);
-    if (!res) { 
-      out.textContent='通信に失敗しました（送信先に到達できません）。?api= で送信先を指定してください。'; 
-      return; 
-    }
-    var t = await res.text();
-    out.textContent = __friendly(t, res.status);
-  } catch(e){
-    out.textContent = '通信に失敗しました。時間を置いてお試しください。';
-  } finally {
-    // 確実にボタンを有効化
-    btn.disabled=false;
-    btn.textContent='鑑定する';
-  }
-}
-</script>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>守護神占い｜個別相談（deep3 CSP-safe）</title>
+  <style>
+    body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP",sans-serif;background:#140826;color:#fff;margin:0}
+    .w{max-width:720px;margin:32px auto;padding:16px}
+    textarea{width:100%;min-height:160px;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,.08);color:#fff}
+    .row{margin-top:10px;display:flex;gap:10px;align-items:center}
+    button{padding:10px 16px;border:none;border-radius:999px;background:#8b46ff;color:#fff;cursor:pointer}
+    pre{white-space:pre-wrap;background:rgba(0,0,0,.25);padding:12px;border-radius:10px}
+    .hint{opacity:.8;font-size:.9em}
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.08)}
+  </style>
+</head>
+<body>
+  <div class="w">
+    <h1>お悩み相談フォーム（deep3）</h1>
+    <div id="dob" class="badge" style="display:none"></div>
+    <div class="hint">URLに <code>?api=</code> / <code>?backup=</code> / <code>?mode=basic</code> / <code>?year&month&day</code></div>
+    <div class="row"><textarea id="q" placeholder="例）東京在住で、交際相手は北海道です…"></textarea></div>
+    <div class="row"><button id="go" type="button">鑑定する</button></div>
+    <div class="row"><pre id="out"></pre></div>
+  </div>
+  <script src="deep3.js" defer></script>
+</body>
+</html>
