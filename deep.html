@@ -612,6 +612,13 @@
         margin: 5px 0;
       }
 
+      /* iPhone Safari専用の背景固定 */
+      #resultScreen {
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid rgba(255,255,255,0.2) !important;
+        box-shadow: 0 0 20px rgba(147,51,234,0.4) !important;
+      }
+
 
       
       /* スマートフォンでのアニメーション最適化 */
@@ -788,14 +795,23 @@
     
     loadingScreen.style.display = 'none';
     resultScreen.style.display = 'block';
-    resultScreen.style.opacity = '1';
+    // iPhone Safari検出
+    const isiPhone = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
     
-
-    
-    // フェードイン効果を適用
-    setTimeout(() => {
-      resultScreen.classList.add('fade-in');
-    }, 100);
+    if (isiPhone && isSafari) {
+      // iPhone Safariではopacityアニメーションを無効化し、直接表示
+      resultScreen.style.opacity = '1';
+      resultScreen.style.background = 'rgba(255,255,255,0.05)';
+      resultScreen.style.border = '1px solid rgba(255,255,255,0.2)';
+      resultScreen.style.boxShadow = '0 0 20px rgba(147,51,234,0.4)';
+    } else {
+      // 他のブラウザでは通常のフェードイン効果を適用
+      resultScreen.style.opacity = '1';
+      setTimeout(() => {
+        resultScreen.classList.add('fade-in');
+      }, 100);
+    }
   }
 
   function showFormScreen() {
