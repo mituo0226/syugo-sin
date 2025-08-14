@@ -9,198 +9,103 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <style>
-    /* iPhone Safari 対策のためのリセット */
-    html { height: 100%; background: #1a0b2e; }
-
-    /* iPhone Safari用の結果画面専用背景固定 */
-    @media screen and (-webkit-min-device-pixel-ratio: 2) {
-      #resultScreen { background: rgba(255,255,255,0.05) !important; position: relative !important; }
-      #resultScreen::before {
-        content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-        background: linear-gradient(to bottom, #1a0b2e, #2e1a47) !important;
-        z-index: -200; pointer-events: none;
-      }
-      #resultScreen .container { background: rgba(255,255,255,0.05) !important; position: relative; z-index: 1; }
+    html{height:100%;background:#1a0b2e}
+    body{
+      background:linear-gradient(to bottom,#1a0b2e,#2e1a47);
+      color:#fff;font-family:'Zen Old Mincho',serif;text-align:center;
+      padding:30px;overflow-x:hidden;min-height:100vh;margin:0
     }
-
-    body {
-      background: linear-gradient(to bottom, #1a0b2e, #2e1a47);
-      color: #fff; font-family: 'Zen Old Mincho', serif; text-align: center;
-      padding: 30px; overflow-x: hidden; position: relative; min-height: 100vh; margin: 0;
-      background-attachment: scroll; /* iPhone Safari */
-    }
-
-    /* iPhone Safari 専用 */
-    @media screen and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait) {
-      html { background: #1a0b2e !important; }
-      body {
-        background: #1a0b2e !important;
-        background-image: linear-gradient(to bottom, #1a0b2e, #2e1a47) !important;
-        background-attachment: scroll !important;
-      }
-      body::after {
-        content: ''; position: fixed; inset: 0;
-        background: linear-gradient(to bottom, #1a0b2e, #2e1a47); z-index: -100; pointer-events: none;
-      }
-    }
-    @media screen and (-webkit-min-device-pixel-ratio: 2) and (orientation: landscape) {
-      html { background: #1a0b2e !important; }
-      body {
-        background: #1a0b2e !important;
-        background-image: linear-gradient(to bottom, #1a0b2e, #2e1a47) !important;
-      }
-      body::after {
-        content: ''; position: fixed; inset: 0;
-        background: linear-gradient(to bottom, #1a0b2e, #2e1a47); z-index: -100; pointer-events: none;
-      }
-    }
-
-    /* 霧エフェクト */
-    body::before {
-      content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    body::before{
+      content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
       background:
-        radial-gradient(circle at 20% 50%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(199, 125, 255, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 40% 80%, rgba(255, 107, 157, 0.1) 0%, transparent 50%);
-      pointer-events: none; z-index: -1; animation: mistMove 20s ease-in-out infinite;
+        radial-gradient(circle at 20% 50%,rgba(157,78,221,.1) 0%,transparent 50%),
+        radial-gradient(circle at 80% 20%,rgba(199,125,255,.1) 0%,transparent 50%),
+        radial-gradient(circle at 40% 80%,rgba(255,107,157,.1) 0%,transparent 50%);
+      animation:mistMove 20s ease-in-out infinite
     }
-    @keyframes mistMove { 0%,100%{transform:translate(0,0)} 25%{transform:translate(-10px,-5px)} 50%{transform:translate(5px,-10px)} 75%{transform:translate(-5px,5px)} }
+    @keyframes mistMove{0%,100%{transform:translate(0,0)}25%{transform:translate(-10px,-5px)}50%{transform:translate(5px,-10px)}75%{transform:translate(-5px,5px)}}
 
-    .container {
-      max-width: 600px; margin: auto;
-      background: rgba(255,255,255,0.05) !important;
-      border: 1px solid rgba(255,255,255,0.2) !important;
-      border-radius: 12px; padding: 20px;
-      box-shadow: 0 0 20px rgba(147,51,234,0.4) !important;
-      opacity: 0; transition: opacity 1s; position: relative; overflow: hidden;
+    .container{
+      max-width:600px;margin:auto;
+      background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.2);
+      border-radius:12px;padding:20px;box-shadow:0 0 20px rgba(147,51,234,.4);
+      opacity:0;transition:opacity 1s;position:relative;overflow:hidden
     }
-    .container::before {
-      content: ''; position: absolute; inset: -20px;
-      background: radial-gradient(circle, rgba(157,78,221,.3) 0%, transparent 70%);
-      animation: pulse 3s ease-in-out infinite; z-index: -1; border-radius: 16px;
-    }
-    @keyframes pulse { 0%,100%{transform:scale(1);opacity:.3} 50%{transform:scale(1.05);opacity:.6} }
-
-    /* 浮遊する光の粒子 */
+    h1{font-size:1.5em;margin-bottom:.5em}
     .floating-particles{position:absolute;inset:0;pointer-events:none;z-index:1}
-    .floating-particle{position:absolute;width:2px;height:2px;background:radial-gradient(circle,#c77dff,transparent);border-radius:50%;animation:floatAround 8s infinite linear}
-    .floating-particle:nth-child(1){left:10%;top:20%;animation-delay:0s}
+    .floating-particle{position:absolute;width:2px;height:2px;background:radial-gradient(circle,#c77dff,transparent);border-radius:50%;animation:floatAround 8s linear infinite}
+    .floating-particle:nth-child(1){left:10%;top:20%}
     .floating-particle:nth-child(2){left:80%;top:30%;animation-delay:2s}
     .floating-particle:nth-child(3){left:20%;top:70%;animation-delay:4s}
     .floating-particle:nth-child(4){left:70%;top:80%;animation-delay:6s}
     .floating-particle:nth-child(5){left:50%;top:10%;animation-delay:1s}
     .floating-particle:nth-child(6){left:30%;top:60%;animation-delay:3s}
-    @keyframes floatAround{0%{transform:translate(0,0)rotate(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translate(20px,-20px)rotate(360deg);opacity:0}}
+    @keyframes floatAround{0%{transform:translate(0,0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translate(20px,-20px);opacity:0}}
 
-    h1{font-size:1.5em;margin-bottom:.5em}
-    .form-group{margin-bottom:20px;text-align:left}
+    .form-group{text-align:left;margin-bottom:20px}
     label{display:block;font-weight:600;margin-bottom:8px;color:#ddd;font-size:1.1em}
-    textarea,input[type="text"]{width:100%;padding:15px;font-size:16px;border:1px solid rgba(157,78,221,.3);border-radius:8px;box-sizing:border-box;background:rgba(255,255,255,.1);color:#fff;font-family:'Zen Old Mincho',serif;transition:.3s}
-    textarea:focus,input[type="text"]:focus{outline:none;border-color:#9d4edd;box-shadow:0 0 15px rgba(157,78,221,.5);background:rgba(255,255,255,.15)}
-    textarea::placeholder,input[type="text"]::placeholder{color:rgba(255,255,255,.6)}
-    button{padding:12px 24px;font-size:16px;border-radius:8px;border:none;cursor:pointer;background:#9d4edd;color:#fff;font-family:'Zen Old Mincho',serif;transition:.3s;margin:5px;font-weight:bold;box-shadow:0 4px 15px rgba(157,78,221,.4)}
-    button:hover{background:#c77dff;transform:scale(1.05)}
-    button[disabled]{opacity:.6;cursor:not-allowed}
-    .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;margin:20px 0}
-    .muted{color:rgba(255,255,255,.7);font-size:13px}
-    .out{background:rgba(255,255,255,.1);padding:15px;border-radius:8px;font-size:1em;line-height:1.6;position:relative;white-space:pre-wrap;color:#fff;font-family:'Zen Old Mincho',serif;text-align:left}
+    textarea,input[type=text]{width:100%;padding:15px;font-size:16px;border:1px solid rgba(157,78,221,.3);border-radius:8px;box-sizing:border-box;background:rgba(255,255,255,.1);color:#fff;transition:.2s}
+    textarea:focus,input[type=text]:focus{outline:none;border-color:#9d4edd;box-shadow:0 0 15px rgba(157,78,221,.5);background:rgba(255,255,255,.15)}
+    textarea::placeholder{color:rgba(255,255,255,.6)}
     .row-2col{display:flex;justify-content:space-between;align-items:center;margin:10px 0}
-    .badge{font-size:12px;border:1px solid rgba(157,78,221,.5);padding:4px 12px;border-radius:999px;background:rgba(157,78,221,.2);color:#fff}
-    .back-link{display:inline-block;margin-top:20px;color:#9d4edd!important;text-decoration:underline;transition:.3s;font-weight:bold}
-    .back-link:hover{color:#c77dff!important;text-shadow:0 0 10px rgba(157,78,221,.8)}
-
-    /* ローディング画面 */
-    #loadingScreen{position:fixed;inset:0;background:radial-gradient(circle at center,rgba(0,0,0,.9),rgba(26,11,46,.95));display:none;align-items:center;justify-content:center;flex-direction:column;z-index:9999;animation:fadeIn 1s forwards;overflow:hidden}
-    .mystical-particles{position:absolute;inset:0;pointer-events:none}
-    .mystical-particle{position:absolute;width:3px;height:3px;background:radial-gradient(circle,#c77dff,transparent);border-radius:50%;animation:mysticalFloat 12s infinite linear;box-shadow:0 0 10px rgba(199,125,255,.8);will-change:transform,opacity}
-    .mystical-particle:nth-child(1){left:10%;top:20%;animation-delay:0s}
-    .mystical-particle:nth-child(2){left:80%;top:30%;animation-delay:2s}
-    .mystical-particle:nth-child(3){left:20%;top:70%;animation-delay:4s}
-    .mystical-particle:nth-child(4){left:70%;top:80%;animation-delay:6s}
-    .mystical-particle:nth-child(5){left:50%;top:10%;animation-delay:1s}
-    .mystical-particle:nth-child(6){left:30%;top:60%;animation-delay:3s}
-    .mystical-particle:nth-child(7){left:90%;top:50%;animation-delay:5s}
-    .mystical-particle:nth-child(8){left:5%;top:40%;animation-delay:7s}
-    @keyframes mysticalFloat{0%{transform:translate(0,0) rotate(0) scale(1);opacity:0}10%{opacity:1;transform:translate(0,0) rotate(0) scale(1.2)}50%{opacity:1;transform:translate(30px,-30px) rotate(180deg) scale(.8)}90%{opacity:1;transform:translate(60px,-60px) rotate(360deg) scale(1.5)}100%{transform:translate(80px,-80px) rotate(720deg) scale(.5);opacity:0}}
-    #loadingScreen::before{
-      content:'';position:absolute;top:50%;left:50%;width:200%;height:200%;
-      background:conic-gradient(from 0deg,transparent,rgba(157,78,221,.1),transparent,rgba(199,125,255,.1),transparent,rgba(255,107,157,.1),transparent);
-      animation:rotateBackground 30s linear infinite;transform:translate(-50%,-50%);will-change:transform;
-    }
-    @keyframes rotateBackground{0%{transform:translate(-50%,-50%) rotate(0)}100%{transform:translate(-50%,-50%) rotate(360deg)}}
-    #loadingScreen p{color:#fff;font-size:1.4em;margin-top:2em;animation:mysticalText 3s ease-in-out infinite;text-shadow:0 0 20px rgba(157,78,221,1),0 0 40px rgba(199,125,255,.8);font-weight:bold;letter-spacing:2px}
-    @keyframes mysticalText{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.05);text-shadow:0 0 30px rgba(157,78,221,1),0 0 50px rgba(199,125,255,1),0 0 70px rgba(255,107,157,.6)}}
-    .loading-spinner{width:120px;height:120px;position:relative;margin:0 auto;animation:float 4s ease-in-out infinite;will-change:transform}
-    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-    .loading-spinner::before,.loading-spinner::after{content:'';position:absolute;width:100%;height:100%;border-radius:50%;background:conic-gradient(from 0deg,transparent,#9d4edd,#c77dff,#ff6b9d,#9d4edd,transparent);animation:spiral 4s linear infinite;will-change:transform}
-    .loading-spinner::before{filter:blur(3px);opacity:.8}
-    .loading-spinner::after{animation-duration:3s;filter:blur(1px);opacity:1;width:70%;height:70%;top:15%;left:15%}
-    @keyframes spiral{0%{transform:rotate(0) scale(1);filter:hue-rotate(0)}25%{transform:rotate(90deg) scale(1.1);filter:hue-rotate(90deg)}50%{transform:rotate(180deg) scale(.9);filter:hue-rotate(180deg)}75%{transform:rotate(270deg) scale(1.1);filter:hue-rotate(270deg)}100%{transform:rotate(360deg) scale(1);filter:hue-rotate(360deg)}}
-
-    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-    .fade-in{animation:fadeInResult 2s ease-in-out forwards}
-    @keyframes fadeInResult{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
-    .typing-text{overflow:hidden;border-right:2px solid rgba(157,78,221,.8);white-space:pre-wrap;animation:blink 1s infinite}
+    .badge{font-size:12px;border:1px solid rgba(157,78,221,.5);padding:4px 12px;border-radius:999px;background:rgba(157,78,221,.2)}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;margin:20px 0}
+    button{padding:12px 24px;font-size:16px;border-radius:8px;border:none;cursor:pointer;background:#9d4edd;color:#fff;font-weight:bold;box-shadow:0 4px 15px rgba(157,78,221,.4);transition:.2s}
+    button:hover{background:#c77dff;transform:scale(1.03)}
+    button[disabled]{opacity:.6;cursor:not-allowed}
+    .out{background:rgba(255,255,255,.1);padding:15px;border-radius:8px;text-align:left;white-space:pre-wrap}
+    .back-link{display:inline-block;margin-top:20px;color:#9d4edd!important;text-decoration:underline}
+    #loadingScreen{position:fixed;inset:0;background:radial-gradient(circle at center,rgba(0,0,0,.9),rgba(26,11,46,.95));display:none;align-items:center;justify-content:center;flex-direction:column;z-index:9999}
+    .typing-text{overflow:hidden;border-right:2px solid rgba(157,78,221,.8);animation:blink 1s infinite}
     @keyframes blink{0%,50%{border-color:rgba(157,78,221,.8)}51%,100%{border-color:transparent}}
-
-    @media (max-width:640px){
-      body{padding:15px}
-      .container{margin:20px auto;padding:20px}
-      .actions{flex-direction:column}
-      button{width:100%;margin:5px 0}
-      #resultScreen{background:rgba(255,255,255,.05)!important;border:1px solid rgba(255,255,255,.2)!important;box-shadow:0 0 20px rgba(147,51,234,.4)!important}
-      .mystical-particle{animation-duration:16s;box-shadow:0 0 5px rgba(199,125,255,.6)}
-      .loading-spinner{width:100px;height:100px;animation-duration:5s}
-      .loading-spinner::before,.loading-spinner::after{animation-duration:5s}
-      .loading-spinner::after{animation-duration:4s}
-      #loadingScreen::before{animation-duration:40s}
-    }
+    .fade-in{animation:fadeIn 1s forwards}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @media(max-width:640px){body{padding:15px}.container{margin:20px auto;padding:20px}.actions{flex-direction:column}button{width:100%}}
   </style>
 </head>
 <body>
 
-<!-- ローディング画面 -->
+<!-- ローディング -->
 <div id="loadingScreen">
-  <div class="mystical-particles">
-    <div class="mystical-particle"></div><div class="mystical-particle"></div>
-    <div class="mystical-particle"></div><div class="mystical-particle"></div>
-    <div class="mystical-particle"></div><div class="mystical-particle"></div>
-    <div class="mystical-particle"></div><div class="mystical-particle"></div>
+  <div class="floating-particles">
+    <div class="floating-particle"></div><div class="floating-particle"></div>
+    <div class="floating-particle"></div><div class="floating-particle"></div>
+    <div class="floating-particle"></div><div class="floating-particle"></div>
   </div>
-  <div class="loading-spinner"></div>
-  <p>神託を降ろしています…</p>
+  <div style="width:100px;height:100px;border-radius:50%;border:6px solid rgba(255,255,255,.2);border-top-color:#c77dff;animation:spin 1s linear infinite"></div>
+  <p style="margin-top:16px">神託を降ろしています…</p>
 </div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 
 <!-- 相談フォーム -->
 <div id="formScreen" class="container">
   <div class="floating-particles">
-    <div class="floating-particle"></div><div class="floating-particle"></div><div class="floating-particle"></div>
-    <div class="floating-particle"></div><div class="floating-particle"></div><div class="floating-particle"></div>
+    <div class="floating-particle"></div><div class="floating-particle"></div>
+    <div class="floating-particle"></div><div class="floating-particle"></div>
   </div>
 
   <h1>お悩み相談フォーム</h1>
-  <div id="dobBadge" class="badge" style="display:none;margin:6px 0 0;font-size:.95em;opacity:.9;"></div>
+  <div id="dobBadge" class="badge" style="display:none;margin:6px 0 0;opacity:.9"></div>
 
   <div class="form-group">
     <label for="prompt">相談内容</label>
-    <textarea id="prompt" rows="6" placeholder="ここに相談内容を入力してください。例）今の仕事を続けるべきか迷っています。" autocomplete="off"></textarea>
+    <textarea id="prompt" rows="6" placeholder="例）東京在住で、交際相手は北海道。今後の展開は？" autocomplete="off"></textarea>
     <div class="row-2col"><div class="badge"><span id="count">0</span> 文字</div></div>
   </div>
 
   <div class="actions">
     <button id="send">送信</button>
     <button id="clear" type="button">クリア</button>
-    <span class="muted" id="status" aria-live="polite"></span>
+    <span class="badge" id="status" aria-live="polite" style="background:transparent;border-color:transparent"></span>
   </div>
 
   <a href="index.html" class="back-link">← 戻る</a>
 </div>
 
 <!-- 結果画面 -->
-<div id="resultScreen" class="container" style="display:none;opacity:0;">
+<div id="resultScreen" class="container" style="display:none;opacity:0">
   <div class="floating-particles">
-    <div class="floating-particle"></div><div class="floating-particle"></div><div class="floating-particle"></div>
-    <div class="floating-particle"></div><div class="floating-particle"></div><div class="floating-particle"></div>
+    <div class="floating-particle"></div><div class="floating-particle"></div>
   </div>
   <h1>鑑定結果</h1>
   <div class="form-group"><div id="out" class="out" aria-live="polite"></div></div>
@@ -211,105 +116,91 @@
 </div>
 
 <script>
-  /* === デフォルト & URL 上書き（deep3互換） === */
+  /* ===== deep3 互換：デフォルト + URL上書き + 予備API ===== */
   const DEFAULT_API = 'https://syugo-sin-kantei-api.mituo0226.workers.dev/consult';
   const qs  = new URLSearchParams(location.search);
   const CFG = {
     api:    qs.get('api')    || DEFAULT_API,
-    backup: qs.get('backup') || '',    // 予備 API があれば指定
+    backup: qs.get('backup') || '',
     mode:   qs.get('mode')   || 'full' // 'full' or 'basic'
   };
-  const API_URL = CFG.api; // 互換用
 
-  // 要素取得
-  const $ = (s)=>document.querySelector(s);
+  // 要素
+  const $=(s)=>document.querySelector(s);
   const promptEl=$('#prompt'), sendBtn=$('#send'), clearBtn=$('#clear'), outEl=$('#out'), statusEl=$('#status'), countEl=$('#count');
 
   // 初期表示
-  window.addEventListener('load', () => {
-    const form = document.getElementById('formScreen');
-    form.style.display='block'; form.style.opacity='1';
-    // iPhone Safari 背景保守
-    const isiPhone=/iPhone|iPad|iPod/.test(navigator.userAgent);
-    const isSafari=/Safari/.test(navigator.userAgent)&&!/Chrome/.test(navigator.userAgent);
-    if(isiPhone&&isSafari){
-      const keep=()=>{document.documentElement.style.setProperty('background-color','#1a0b2e','important');
-        document.body.style.setProperty('background','linear-gradient(to bottom,#1a0b2e,#2e1a47)','important');};
-      ['orientationchange','resize','scroll','touchmove','pageshow','focus'].forEach(ev=>window.addEventListener(ev,keep));
-      setInterval(keep,500);
-    }
+  window.addEventListener('load',()=>{
+    const f=document.getElementById('formScreen');
+    f.style.display='block'; f.style.opacity='1';
     document.getElementById('loadingScreen').style.display='none';
   });
 
   // 画面切替
-  function showLoadingScreen(){ document.getElementById('formScreen').style.display='none'; document.getElementById('loadingScreen').style.display='flex'; }
-  function showResultScreen(){ document.getElementById('loadingScreen').style.display='none'; const r=document.getElementById('resultScreen'); r.style.display='block'; r.style.opacity='1'; setTimeout(()=>r.classList.add('fade-in'),100); }
-  function showFormScreen(){ document.getElementById('resultScreen').style.display='none'; const f=document.getElementById('formScreen'); f.style.display='block'; f.style.opacity='1'; }
+  const showLoading = ()=>{ $('#formScreen').style.display='none'; $('#loadingScreen').style.display='flex'; };
+  const showResult  = ()=>{ $('#loadingScreen').style.display='none'; const r=$('#resultScreen'); r.style.display='block'; r.classList.add('fade-in'); r.style.opacity='1'; };
+  const showForm    = ()=>{ $('#resultScreen').style.display='none'; const f=$('#formScreen'); f.style.display='block'; f.style.opacity='1'; };
 
-  // タイピング演出（textContent 版）
-  function typeWriter(el, text, speed=30, cb=null){
-    let i=0; el.textContent=''; el.classList.add('typing-text');
-    (function t(){ if(i<text.length){ el.textContent += text.charAt(i++); setTimeout(t,speed); }
-      else{ el.classList.remove('typing-text'); cb&&cb(); } })();
-  }
+  // タイピング演出（安全に textContent を加算）
+  function typeWriter(el,text,speed=30){ let i=0; el.textContent=''; el.classList.add('typing-text'); (function t(){ if(i<text.length){ el.textContent+=text.charAt(i++); setTimeout(t,speed);} else{ el.classList.remove('typing-text'); } })(); }
 
-  // 文字数カウント
+  // 文字数
   const updateCount=()=>{ countEl.textContent=(promptEl.value||'').length; };
   promptEl.addEventListener('input',updateCount); updateCount();
-
-  // クリア
   clearBtn.addEventListener('click',()=>{ promptEl.value=''; updateCount(); outEl.textContent=''; statusEl.textContent=''; promptEl.focus(); });
-
-  // Ctrl/Cmd+Enter 送信
   promptEl.addEventListener('keydown',(e)=>{ if((e.metaKey||e.ctrlKey)&&e.key==='Enter'){ e.preventDefault(); sendBtn.click(); } });
 
   // 生年月日（URL or sessionStorage）
   (function initDOB(){
     const p=new URLSearchParams(location.search);
     let y=+p.get('year'), m=+p.get('month'), d=+p.get('day');
-    if(!(y&&m&&d)){ try{ const saved=JSON.parse(sessionStorage.getItem('ss_user_profile')||"null"); if(saved){ y=+saved.year; m=+saved.month; d=+saved.day; } }catch(_){ } }
+    if(!(y&&m&&d)){ try{ const saved=JSON.parse(sessionStorage.getItem('ss_user_profile')||"null"); if(saved){ y=+saved.year; m=+saved.month; d=+saved.day; } }catch(_){ }
+    }
     window.__DOB__={year:y||null,month:m||null,day:d||null};
-    const badge=document.getElementById('dobBadge');
-    if(badge&&y&&m&&d){ badge.style.display='inline-block'; badge.textContent=`生年月日：${y}年${m}月${d}日（把握済み）`; }
+    const badge=$('#dobBadge'); if(badge&&y&&m&&d){ badge.style.display='inline-block'; badge.textContent=`生年月日：${y}年${m}月${d}日（把握済み）`; }
   })();
 
   // 送信
-  sendBtn.addEventListener('click', async () => {
+  sendBtn.addEventListener('click', async ()=>{
     const prompt=(promptEl.value||'').trim();
     if(!prompt){ alert('入力が空です。内容を入力してください。'); promptEl.focus(); return; }
 
-    showLoadingScreen();
+    showLoading();
+
+    const payload={
+      text: prompt,
+      year: (__DOB__?.year||null),
+      month:(__DOB__?.month||null),
+      day:  (__DOB__?.day||null),
+      mode: CFG.mode
+    };
+
+    // タイムアウト
+    const controller=new AbortController(); const timer=setTimeout(()=>controller.abort(),30000);
+
+    async function postOnce(url){
+      return fetch(url,{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload), signal:controller.signal });
+    }
 
     try{
-      // タイムアウト 30s
-      const controller=new AbortController();
-      const timer=setTimeout(()=>controller.abort(),30000);
+      // 1発目（主系）
+      let res  = await postOnce(CFG.api);
+      let text = await res.text();
 
-      const payload={
-        text: prompt,
-        year: (__DOB__?.year||null),
-        month:(__DOB__?.month||null),
-        day:  (__DOB__?.day||null),
-        mode: CFG.mode
-      };
-
-      async function postOnce(url){
-        return fetch(url,{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload), signal:controller.signal });
-      }
-
-      // 主系へ送信
-      let res=await postOnce(API_URL);
-      let text=await res.text();
-
-      // 地域ブロックなら予備へ自動再送
+      // 失敗時の条件判定
+      let isRegionBlocked=false;
       if(!res.ok){
         try{
           const j=JSON.parse(text);
-          if(j?.code==='region_blocked' && CFG.backup){
-            res=await postOnce(CFG.backup);
-            text=await res.text();
-          }
+          isRegionBlocked = j?.code==='region_blocked' || j?.error?.code==='unsupported_country_region_territory';
         }catch{}
+      }
+      const shouldRetry = (!res.ok) && (res.status>=500 || res.status===429);
+
+      // 自動フォールバック
+      if((isRegionBlocked||shouldRetry) && CFG.backup){
+        res  = await postOnce(CFG.backup);
+        text = await res.text();
       }
 
       clearTimeout(timer);
@@ -319,25 +210,31 @@
       try{
         const data=JSON.parse(text);
         if(!res.ok){
-          const isRegionBlocked = data?.code==='region_blocked' || data?.error?.code==='unsupported_country_region_territory';
-          display = isRegionBlocked
-            ? 'ただいま接続経路の都合により鑑定サーバへ到達できません。\nVPN/プロキシをOFFにする、時間を置く、別の回線でお試しください。'
-            : (data?.error || data?.message || '通信エラーが発生しました。しばらくしてからお試しください。');
+          const region = data?.code==='region_blocked' || data?.error?.code==='unsupported_country_region_territory';
+          if(region){
+            display='ただいま接続経路の都合により鑑定サーバへ到達できません。\nVPN/プロキシをOFFにする、時間を置く、別の回線でお試しください。';
+          }else if(res.status>=500 || res.status===429){
+            display=`サーバが一時的に混み合っています（${res.status}）。\n時間を置いて再度お試しください。`;
+          }else{
+            display=data?.error || data?.message || '通信エラーが発生しました。しばらくしてからお試しください。';
+          }
         }else{
-          display = data?.message || text;
+          display=data?.message || text;
         }
-      }catch{ display=text; }
+      }catch{
+        display=text;
+      }
 
-      // 3秒演出 → 結果
-      setTimeout(()=>{ showResultScreen(); setTimeout(()=>typeWriter(outEl,display,30),500); },3000);
+      setTimeout(()=>{ showResult(); setTimeout(()=>typeWriter(outEl,display,30),250); },800);
 
     }catch(e){
-      setTimeout(()=>{ showResultScreen(); setTimeout(()=>typeWriter(outEl,`通信エラー: ${e?.message||e}`,30),500); },3000);
+      clearTimeout(timer);
+      setTimeout(()=>{ showResult(); setTimeout(()=>typeWriter(outEl,`通信エラー: ${e?.message||e}`,30),250); },800);
     }
   });
 
   // 新しい相談
-  document.getElementById('newConsultation').addEventListener('click',()=>{ promptEl.value=''; updateCount(); outEl.textContent=''; showFormScreen(); });
+  document.getElementById('newConsultation').addEventListener('click',()=>{ promptEl.value=''; updateCount(); outEl.textContent=''; showForm(); });
 </script>
 </body>
 </html>
