@@ -537,6 +537,27 @@ const monthText = monthTraits[month] || "月の特性不明";
 const dayText = dayTraits[day] || "独自の使命を携えし者";
 
 document.getElementById('guardian').innerHTML=`
+// 保存：有料鑑定ページで把握させるため
+try {
+  const western = (function(m,d){
+    const t = [
+      [1,20,'山羊座'],[2,19,'水瓶座'],[3,21,'魚座'],[4,20,'牡羊座'],
+      [5,21,'牡牛座'],[6,22,'双子座'],[7,23,'蟹座'],[8,23,'獅子座'],
+      [9,23,'乙女座'],[10,24,'天秤座'],[11,23,'蠍座'],[12,22,'射手座'],[12,32,'山羊座']
+    ];
+    for (let i=0;i<t.length-1;i++){
+      const [sm,sd,name] = t[i]; const [nm,nd] = t[i+1];
+      const afterStart = (month>sm) || (month===sm && day>=sd);
+      const beforeNext = (month<nm) || (month===nm && day<nd);
+      if (afterStart && beforeNext) return name;
+    }
+    return '不明';
+  })(month, day);
+  sessionStorage.setItem('ss_user_profile', JSON.stringify({
+    year, month, day, zodiac, guardianName: guardian.name, westernSign: western, ts: Date.now()
+  }));
+} catch(e) {}
+
   <img src="${guardian.image}" alt="${guardian.name}">
   <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
   <div>${guardian.desc}</div>
