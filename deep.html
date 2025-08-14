@@ -1031,21 +1031,36 @@
           signal: controller.signal
         }).finally(() => clearTimeout(timer));
 
+        
         const text = await res.text();
 
-        // まずはHTTPステータスを表示（デバッグ時に役立つ）
-        let display = `HTTP ${res.status}\n`;
+        // 画面に出す文面（フレンドリーに整形）
+        let display = "";
         try {
           const data = JSON.parse(text);
+
           if (!res.ok) {
-            // エラー時
-            display += (data?.error || text || 'エラーが発生しました。');
+            // 地域ブロックの各パターンを吸収
+            const isRegionBlocked =
+              data?.code === 'region_blocked' ||
+              data?.error?.code === 'unsupported_country_region_territory';
+
+            if (isRegionBlocked) {
+              display =
+                'ただいま接続経路の都合により鑑定サーバへ到達できません。\n' +
+                'VPN/プロキシをOFFにする、時間を置く、別の回線でお試しください。';
+            } else {
+              display = data?.error || data?.message || '通信エラーが発生しました。しばらくしてからお試しください。';
+            }
           } else {
-            display += JSON.stringify(data, null, 2);
+            // 正常時は message を優先して本文だけを表示
+            display = data?.message || text;
           }
         } catch {
-          display += text; // JSON以外の本文
+          // JSONでない場合はそのまま
+          display = text;
         }
+
 
       // 3秒間ローディングを表示してから結果画面に切り替え
       setTimeout(() => {
