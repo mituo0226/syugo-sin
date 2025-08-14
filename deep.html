@@ -475,6 +475,35 @@
       to {opacity:0;}
     }
 
+    /* 結果表示用のフェードイン効果 */
+    .fade-in {
+      animation: fadeInResult 2s ease-in-out forwards;
+    }
+
+    @keyframes fadeInResult {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* タイピング効果用のスタイル */
+    .typing-text {
+      overflow: hidden;
+      border-right: 2px solid rgba(157, 78, 221, 0.8);
+      white-space: pre-wrap;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 50% { border-color: rgba(157, 78, 221, 0.8); }
+      51%, 100% { border-color: transparent; }
+    }
+
     /* 波紋エフェクト */
     .ripple-effect {
       position: absolute;
@@ -615,7 +644,7 @@
 </div>
 
 <!-- 結果表示画面（最初は非表示） -->
-<div id="resultScreen" class="container" style="display: none;">
+<div id="resultScreen" class="container" style="display: none; opacity: 0;">
   <div class="floating-particles">
     <div class="floating-particle"></div>
     <div class="floating-particle"></div>
@@ -625,7 +654,7 @@
     <div class="floating-particle"></div>
   </div>
   
-  <h1>神託結果</h1>
+  <h1>鑑定結果</h1>
   
   <div class="form-group">
     <div id="out" class="out" aria-live="polite"></div>
@@ -666,13 +695,36 @@
     loadingScreen.style.display = 'flex';
   }
 
+  // タイピング効果の関数
+  function typeWriter(element, text, speed = 50, callback = null) {
+    let i = 0;
+    element.innerHTML = '';
+    element.classList.add('typing-text');
+    
+    function type() {
+      if (i < text.length) {
+        element.innerHTML += text.charAt(i);
+        i++;
+        setTimeout(type, speed);
+      } else {
+        element.classList.remove('typing-text');
+        if (callback) callback();
+      }
+    }
+    type();
+  }
+
   function showResultScreen() {
     const loadingScreen = document.getElementById('loadingScreen');
     const resultScreen = document.getElementById('resultScreen');
     
     loadingScreen.style.display = 'none';
     resultScreen.style.display = 'block';
-    resultScreen.style.opacity = '1';
+    
+    // フェードイン効果を適用
+    setTimeout(() => {
+      resultScreen.classList.add('fade-in');
+    }, 100);
   }
 
   function showFormScreen() {
@@ -748,14 +800,20 @@
 
       // 3秒間ローディングを表示してから結果画面に切り替え
       setTimeout(() => {
-        outEl.textContent = display;
         showResultScreen();
+        // フェードイン完了後にタイピング効果で結果を表示
+        setTimeout(() => {
+          typeWriter(outEl, display, 30);
+        }, 500);
       }, 3000);
 
     } catch (e) {
       setTimeout(() => {
-        outEl.innerHTML = `<span class="err">通信エラー: ${e?.message || e}</span>`;
         showResultScreen();
+        // フェードイン完了後にタイピング効果でエラーを表示
+        setTimeout(() => {
+          typeWriter(outEl, `通信エラー: ${e?.message || e}`, 30);
+        }, 500);
       }, 3000);
     }
   });
