@@ -104,6 +104,14 @@
       box-shadow: 0 0 20px rgba(147,51,234,0.4) !important;
     }
 
+    /* iPhoneでの結果画面の表示状態の強制リセット */
+    #resultScreen.container[style*="display: block"] {
+      background: rgba(255,255,255,0.05) !important;
+      border: 1px solid rgba(255,255,255,0.2) !important;
+      box-shadow: 0 0 20px rgba(147,51,234,0.4) !important;
+      opacity: 1 !important;
+    }
+
     .container::before {
       content: '';
       position: absolute;
@@ -791,14 +799,22 @@
     
     loadingScreen.style.display = 'none';
     resultScreen.style.display = 'block';
-    
-
+    resultScreen.style.opacity = '1';
     
     // iPhoneでのキャッシュ問題を回避するための強制リセット
     if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
       resultScreen.style.background = 'rgba(255,255,255,0.05)';
       resultScreen.style.border = '1px solid rgba(255,255,255,0.2)';
       resultScreen.style.boxShadow = '0 0 20px rgba(147,51,234,0.4)';
+      resultScreen.style.opacity = '1';
+      
+      // さらに確実にするための遅延実行
+      setTimeout(() => {
+        resultScreen.style.background = 'rgba(255,255,255,0.05)';
+        resultScreen.style.border = '1px solid rgba(255,255,255,0.2)';
+        resultScreen.style.boxShadow = '0 0 20px rgba(147,51,234,0.4)';
+        resultScreen.style.opacity = '1';
+      }, 50);
     }
     
     // フェードイン効果を適用
