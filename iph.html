@@ -9,42 +9,16 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <style>
-    /* iPhone対応のためのリセット */
-    html {
-      height: 100%;
-      -webkit-text-size-adjust: 100%;
-    }
-
     body {
-      min-height: 100vh;
-      height: 100%;
-      background: linear-gradient(to bottom, #1a0b2e, #2e1a47) !important;
-      background-attachment: fixed !important;
+      background: linear-gradient(to bottom, #1a0b2e, #2e1a47);
       color: #fff;
       font-family: 'Zen Old Mincho', serif;
       text-align: center;
       padding: 30px;
       overflow-x: hidden;
       position: relative;
+      min-height: 100vh;
       margin: 0;
-      /* iPhone Safari特有の問題を修正 */
-      -webkit-background-size: cover;
-      background-size: cover;
-      -webkit-transform: translate3d(0,0,0);
-      transform: translate3d(0,0,0);
-    }
-
-    /* iPhone Safari用の追加背景固定 */
-    body::after {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(to bottom, #1a0b2e, #2e1a47);
-      z-index: -10;
-      pointer-events: none;
     }
 
     /* 霧エフェクト */
@@ -65,35 +39,24 @@
     }
 
     @keyframes mistMove {
-      0%, 100% {
-        transform: translateX(0) translateY(0);
-      }
-      25% {
-        transform: translateX(-10px) translateY(-5px);
-      }
-      50% {
-        transform: translateX(5px) translateY(-10px);
-      }
-      75% {
-        transform: translateX(-5px) translateY(5px);
-      }
+      0%, 100% { transform: translateX(0) translateY(0); }
+      25% { transform: translateX(-10px) translateY(-5px); }
+      50% { transform: translateX(5px) translateY(-10px); }
+      75% { transform: translateX(-5px) translateY(5px); }
     }
 
     .container {
       max-width: 600px;
       margin: auto;
-      background: rgba(255,255,255,0.05) !important;
-      border: 1px solid rgba(255,255,255,0.2) !important;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.2);
       border-radius: 12px;
       padding: 20px;
-      box-shadow: 0 0 20px rgba(147,51,234,0.4) !important;
-      opacity: 0;
+      box-shadow: 0 0 20px rgba(147,51,234,0.4);
+      opacity: 1;
       transition: opacity 1s;
       position: relative;
       overflow: hidden;
-      /* iPhone用の背景固定 */
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
     }
 
     .container::before {
@@ -110,14 +73,8 @@
     }
 
     @keyframes pulse {
-      0%, 100% {
-        transform: scale(1);
-        opacity: 0.3;
-      }
-      50% {
-        transform: scale(1.05);
-        opacity: 0.6;
-      }
+      0%, 100% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.05); opacity: 0.6; }
     }
 
     /* 浮遊する光の粒子 */
@@ -148,20 +105,10 @@
     .floating-particle:nth-child(6) { left: 30%; top: 60%; animation-delay: 3s; }
 
     @keyframes floatAround {
-      0% {
-        transform: translate(0, 0) rotate(0deg);
-        opacity: 0;
-      }
-      10% {
-        opacity: 1;
-      }
-      90% {
-        opacity: 1;
-      }
-      100% {
-        transform: translate(20px, -20px) rotate(360deg);
-        opacity: 0;
-      }
+      0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translate(20px, -20px) rotate(360deg); opacity: 0; }
     }
 
     h1 {
@@ -193,9 +140,6 @@
       color: #fff;
       font-family: 'Zen Old Mincho', serif;
       transition: all 0.3s ease;
-      /* iPhone用のスタイル修正 */
-      -webkit-appearance: none;
-      appearance: none;
     }
 
     textarea:focus, input[type="text"]:focus {
@@ -222,9 +166,6 @@
       margin: 5px;
       font-weight: bold;
       box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
-      /* iPhone用のボタンスタイル */
-      -webkit-appearance: none;
-      appearance: none;
     }
 
     button:hover {
@@ -288,45 +229,29 @@
     .back-link {
       display: inline-block;
       margin-top: 20px;
-      color: #9d4edd !important;
+      color: #9d4edd;
       text-decoration: underline;
       transition: all 0.3s ease;
       font-weight: bold;
     }
 
     .back-link:hover {
-      color: #c77dff !important;
+      color: #c77dff;
       text-shadow: 0 0 10px rgba(157, 78, 221, 0.8);
     }
 
     /* ローディング画面 */
     #loadingScreen {
       position: fixed;
-      top:0; left:0; right:0; bottom:0;
-      background: radial-gradient(circle at center, rgba(0,0,0,0.9), rgba(26,11,46,0.95)) !important;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      flex-direction:column;
-      z-index:9999;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at center, rgba(0,0,0,0.9), rgba(26,11,46,0.95));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 9999;
       animation: fadeIn 1s forwards;
       overflow: hidden;
-      /* iPhone用の背景固定 */
-      -webkit-transform: translate3d(0,0,0);
-      transform: translate3d(0,0,0);
-    }
-
-    /* iPhone用のローディング画面背景固定 */
-    #loadingScreen::after {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: radial-gradient(circle at center, rgba(0,0,0,0.9), rgba(26,11,46,0.95));
-      z-index: -1;
-      pointer-events: none;
     }
 
     /* 神秘的な光の粒子 */
@@ -347,7 +272,6 @@
       border-radius: 50%;
       animation: mysticalFloat 12s infinite linear;
       box-shadow: 0 0 10px rgba(199, 125, 255, 0.8);
-      will-change: transform, opacity;
     }
 
     .mystical-particle:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; }
@@ -360,26 +284,11 @@
     .mystical-particle:nth-child(8) { left: 5%; top: 40%; animation-delay: 7s; }
 
     @keyframes mysticalFloat {
-      0% {
-        transform: translate(0, 0) rotate(0deg) scale(1);
-        opacity: 0;
-      }
-      10% {
-        opacity: 1;
-        transform: translate(0, 0) rotate(0deg) scale(1.2);
-      }
-      50% {
-        opacity: 1;
-        transform: translate(30px, -30px) rotate(180deg) scale(0.8);
-      }
-      90% {
-        opacity: 1;
-        transform: translate(60px, -60px) rotate(360deg) scale(1.5);
-      }
-      100% {
-        transform: translate(80px, -80px) rotate(720deg) scale(0.5);
-        opacity: 0;
-      }
+      0% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 0; }
+      10% { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1.2); }
+      50% { opacity: 1; transform: translate(30px, -30px) rotate(180deg) scale(0.8); }
+      90% { opacity: 1; transform: translate(60px, -60px) rotate(360deg) scale(1.5); }
+      100% { transform: translate(80px, -80px) rotate(720deg) scale(0.5); opacity: 0; }
     }
 
     /* 背景の神秘的な光の渦 */
@@ -401,8 +310,6 @@
       );
       animation: rotateBackground 30s linear infinite;
       transform: translate(-50%, -50%);
-      will-change: transform;
-      z-index: -2;
     }
 
     @keyframes rotateBackground {
@@ -411,9 +318,9 @@
     }
 
     #loadingScreen p {
-      color:#fff;
-      font-size:1.4em;
-      margin-top:2em;
+      color: #fff;
+      font-size: 1.4em;
+      margin-top: 2em;
       animation: mysticalText 3s ease-in-out infinite;
       text-shadow: 0 0 20px rgba(157, 78, 221, 1), 0 0 40px rgba(199, 125, 255, 0.8);
       font-weight: bold;
@@ -439,7 +346,6 @@
       position: relative;
       margin: 0 auto;
       animation: float 4s ease-in-out infinite;
-      will-change: transform;
     }
 
     @keyframes float {
@@ -463,7 +369,6 @@
         transparent
       );
       animation: spiral 4s linear infinite;
-      will-change: transform;
     }
 
     .loading-spinner::before {
@@ -483,42 +388,21 @@
     }
 
     @keyframes spiral {
-      0% {
-        transform: rotate(0deg) scale(1);
-        filter: hue-rotate(0deg);
-      }
-      25% {
-        transform: rotate(90deg) scale(1.1);
-        filter: hue-rotate(90deg);
-      }
-      50% {
-        transform: rotate(180deg) scale(0.9);
-        filter: hue-rotate(180deg);
-      }
-      75% {
-        transform: rotate(270deg) scale(1.1);
-        filter: hue-rotate(270deg);
-      }
-      100% {
-        transform: rotate(360deg) scale(1);
-        filter: hue-rotate(360deg);
-      }
-    }
-
-    @keyframes blink {
-      0% {opacity:1;}
-      50% {opacity:0.4;}
-      100% {opacity:1;}
+      0% { transform: rotate(0deg) scale(1); filter: hue-rotate(0deg); }
+      25% { transform: rotate(90deg) scale(1.1); filter: hue-rotate(90deg); }
+      50% { transform: rotate(180deg) scale(0.9); filter: hue-rotate(180deg); }
+      75% { transform: rotate(270deg) scale(1.1); filter: hue-rotate(270deg); }
+      100% { transform: rotate(360deg) scale(1); filter: hue-rotate(360deg); }
     }
 
     @keyframes fadeIn {
-      from {opacity:0;}
-      to {opacity:1;}
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     @keyframes fadeOut {
-      from {opacity:1;}
-      to {opacity:0;}
+      from { opacity: 1; }
+      to { opacity: 0; }
     }
 
     /* 結果表示用のフェードイン効果 */
@@ -527,14 +411,8 @@
     }
 
     @keyframes fadeInResult {
-      0% {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
 
     /* タイピング効果用のスタイル */
@@ -574,79 +452,24 @@
     }
 
     @keyframes ripple {
-      0% {
-        width: 0;
-        height: 0;
-        opacity: 1;
-      }
-      100% {
-        width: 300px;
-        height: 300px;
-        opacity: 0;
-      }
+      0% { width: 0; height: 0; opacity: 1; }
+      100% { width: 300px; height: 300px; opacity: 0; }
     }
 
     @media (max-width: 640px) {
       body {
         padding: 15px;
-        /* iPhone用の追加設定 */
-        min-height: -webkit-fill-available;
       }
-      
       .container {
         margin: 20px auto;
         padding: 20px;
       }
-      
       .actions {
         flex-direction: column;
       }
-      
       button {
         width: 100%;
         margin: 5px 0;
-      }
-
-      /* スマートフォンでのアニメーション最適化 */
-      .mystical-particle {
-        animation-duration: 16s;
-        box-shadow: 0 0 5px rgba(199, 125, 255, 0.6);
-      }
-      
-      .loading-spinner {
-        width: 100px;
-        height: 100px;
-        animation-duration: 5s;
-      }
-      
-      .loading-spinner::before,
-      .loading-spinner::after {
-        animation-duration: 5s;
-      }
-      
-      .loading-spinner::after {
-        animation-duration: 4s;
-      }
-      
-      #loadingScreen::before {
-        animation-duration: 40s;
-      }
-      
-      .ripple-effect {
-        animation-duration: 3s;
-      }
-    }
-
-    /* iPhone Safari特有の問題に対する追加修正 */
-    @supports (-webkit-appearance: none) {
-      body {
-        background: #1a0b2e !important;
-        background-image: linear-gradient(to bottom, #1a0b2e, #2e1a47) !important;
-      }
-      
-      #loadingScreen {
-        background: #000 !important;
-        background-image: radial-gradient(circle at center, rgba(0,0,0,0.9), rgba(26,11,46,0.95)) !important;
       }
     }
   </style>
@@ -687,20 +510,19 @@
   <h1>お悩み相談フォーム</h1>
   
   <div class="form-group">
-      <label for="prompt">相談内容</label>
-      <textarea id="prompt" rows="6" placeholder="ここに相談内容を入力してください。例）今の仕事を続けるべきか迷っています。"
-        autocomplete="off"></textarea>
+    <label for="prompt">相談内容</label>
+    <textarea id="prompt" rows="6" placeholder="ここに相談内容を入力してください。例）今の仕事を続けるべきか迷っています。" autocomplete="off"></textarea>
 
-      <div class="row-2col">
-        <div class="badge"><span id="count">0</span> 文字</div>
-      </div>
+    <div class="row-2col">
+      <div class="badge"><span id="count">0</span> 文字</div>
     </div>
+  </div>
 
-    <div class="actions">
-      <button id="send">送信</button>
-      <button id="clear" type="button">クリア</button>
-      <span class="muted" id="status" aria-live="polite"></span>
-    </div>
+  <div class="actions">
+    <button id="send">送信</button>
+    <button id="clear" type="button">クリア</button>
+    <span class="muted" id="status" aria-live="polite"></span>
+  </div>
 
   <a href="index.html" class="back-link">← 戻る</a>
 </div>
@@ -725,150 +547,27 @@
   <div class="actions">
     <button id="newConsultation">新しい相談をする</button>
     <a href="index.html" class="back-link">← 戻る</a>
-    </div>
   </div>
+</div>
 
-  <script>
-    // 文字数カウンタ
-    const updateCount = () => { countEl.textContent = (promptEl.value || '').length; };
-    promptEl.addEventListener('input', updateCount);
-    updateCount();
+<script>
+  // === 設定（あなたの Worker API） ===
+  const API_URL = 'https://syugo-sin-kantei-api.mituo0226.workers.dev/consult';
 
-    // クリア
-    clearBtn.addEventListener('click', () => {
-      promptEl.value = '';
-      updateCount();
-      outEl.textContent = '';
-      statusEl.textContent = '';
-      promptEl.focus();
-    });
-
-    // 送信（Enter+Ctrl/Cmdで送信も可）
-    promptEl.addEventListener('keydown', (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-        e.preventDefault();
-        sendBtn.click();
-      }
-    });
-
-    // メイン送信処理
-    sendBtn.addEventListener('click', async () => {
-      const prompt = (promptEl.value || '').trim();
-      if (!prompt) {
-        alert('入力が空です。内容を入力してください。');
-        promptEl.focus();
-        return;
-      }
-
-      // ローディング画面を表示
-      showLoadingScreen();
-
-      try {
-        // タイムアウト（30秒）
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 30000);
-
-        const res = await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt }),
-          signal: controller.signal
-        }).finally(() => clearTimeout(timer));
-
-        const text = await res.text();
-
-        // まずはHTTPステータスを表示（デバッグ時に役立つ）
-        let display = `HTTP ${res.status}\n`;
-        try {
-          const data = JSON.parse(text);
-          if (!res.ok) {
-            // エラー時
-            display += (data?.error || text || 'エラーが発生しました。');
-          } else {
-            display += JSON.stringify(data, null, 2);
-          }
-        } catch {
-          display += text; // JSON以外の本文
-        }
-
-        // 3秒間ローディングを表示してから結果画面に切り替え
-        setTimeout(() => {
-          showResultScreen();
-          // フェードイン完了後にタイピング効果で結果を表示
-          setTimeout(() => {
-            typeWriter(outEl, display, 30);
-          }, 500);
-        }, 3000);
-
-      } catch (e) {
-        setTimeout(() => {
-          showResultScreen();
-          // フェードイン完了後にタイピング効果でエラーを表示
-          setTimeout(() => {
-            typeWriter(outEl, `通信エラー: ${e?.message || e}`, 30);
-          }, 500);
-        }, 3000);
-      }
-    });
-
-    // 新しい相談ボタンのイベントリスナー
-    document.getElementById('newConsultation').addEventListener('click', () => {
-      // フォームをクリアして相談フォーム画面に戻る
-      promptEl.value = '';
-      updateCount();
-      outEl.textContent = '';
-      showFormScreen();
-    });
-
-    // iPhone用の追加対策：画面回転時やスクロール時の背景色維持
-    if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
-      const maintainBackground = () => {
-        document.body.style.setProperty('background', 'linear-gradient(to bottom, #1a0b2e, #2e1a47)', 'important');
-        document.body.style.setProperty('background-attachment', 'fixed', 'important');
-      };
-
-      // 各種イベントで背景色を維持
-      window.addEventListener('orientationchange', maintainBackground);
-      window.addEventListener('resize', maintainBackground);
-      window.addEventListener('scroll', maintainBackground);
-      window.addEventListener('touchmove', maintainBackground);
-      
-      // 定期的に背景色をチェック
-      setInterval(maintainBackground, 1000);
-    }
-  </script>
-</body>
-</html> === 設定（あなたの Worker API） ===
-    const API_URL = 'https://syugo-sin-kantei-api.mituo0226.workers.dev/consult';
-
-    // === 要素参照 ===
-    const $ = (s) => document.querySelector(s);
-    const promptEl = $('#prompt');
-    const sendBtn  = $('#send');
-    const clearBtn = $('#clear');
-    const outEl    = $('#out');
-    const statusEl = $('#status');
-    const countEl  = $('#count');
+  // === 要素参照 ===
+  const $ = (s) => document.querySelector(s);
+  const promptEl = $('#prompt');
+  const sendBtn = $('#send');
+  const clearBtn = $('#clear');
+  const outEl = $('#out');
+  const statusEl = $('#status');
+  const countEl = $('#count');
 
   // ページ読み込み時の初期化
   window.addEventListener('load', () => {
     // 最初の画面（相談フォーム）を表示
     document.getElementById('formScreen').style.display = 'block';
     document.getElementById('formScreen').style.opacity = '1';
-    
-    // iPhone用の背景色強制設定
-    if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
-      document.body.style.setProperty('background', 'linear-gradient(to bottom, #1a0b2e, #2e1a47)', 'important');
-      document.body.style.setProperty('background-attachment', 'fixed', 'important');
-      
-      // 結果画面の背景も事前に設定
-      const resultScreen = document.getElementById('resultScreen');
-      resultScreen.style.setProperty('background', 'rgba(255,255,255,0.05)', 'important');
-      
-      // ローディング画面の背景も設定
-      const loadingScreen = document.getElementById('loadingScreen');
-      loadingScreen.style.setProperty('background', 'radial-gradient(circle at center, rgba(0,0,0,0.9), rgba(26,11,46,0.95))', 'important');
-    }
   });
 
   // 画面切り替え関数
@@ -878,14 +577,6 @@
     
     formScreen.style.display = 'none';
     loadingScreen.style.display = 'flex';
-    
-    // iPhone用の背景色強制再設定
-    if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
-      setTimeout(() => {
-        loadingScreen.style.setProperty('background', 'radial-gradient(circle at center, rgba(0,0,0,0.9), rgba(26,11,46,0.95))', 'important');
-        document.body.style.setProperty('background', 'linear-gradient(to bottom, #1a0b2e, #2e1a47)', 'important');
-      }, 50);
-    }
   }
 
   // タイピング効果の関数
@@ -915,14 +606,6 @@
     resultScreen.style.display = 'block';
     resultScreen.style.opacity = '1';
     
-    // iPhone用の背景色強制再設定
-    if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
-      setTimeout(() => {
-        document.body.style.setProperty('background', 'linear-gradient(to bottom, #1a0b2e, #2e1a47)', 'important');
-        resultScreen.style.setProperty('background', 'rgba(255,255,255,0.05)', 'important');
-      }, 50);
-    }
-    
     // フェードイン効果を適用
     setTimeout(() => {
       resultScreen.classList.add('fade-in');
@@ -936,13 +619,99 @@
     resultScreen.style.display = 'none';
     formScreen.style.display = 'block';
     formScreen.style.opacity = '1';
-    
-    // iPhone用の背景色強制再設定
-    if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
-      setTimeout(() => {
-        document.body.style.setProperty('background', 'linear-gradient(to bottom, #1a0b2e, #2e1a47)', 'important');
-      }, 50);
-    }
   }
 
-    //
+  // 文字数カウンタ
+  const updateCount = () => { countEl.textContent = (promptEl.value || '').length; };
+  promptEl.addEventListener('input', updateCount);
+  updateCount();
+
+  // クリア
+  clearBtn.addEventListener('click', () => {
+    promptEl.value = '';
+    updateCount();
+    outEl.textContent = '';
+    statusEl.textContent = '';
+    promptEl.focus();
+  });
+
+  // 送信（Enter+Ctrl/Cmdで送信も可）
+  promptEl.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      sendBtn.click();
+    }
+  });
+
+  // メイン送信処理
+  sendBtn.addEventListener('click', async () => {
+    const prompt = (promptEl.value || '').trim();
+    if (!prompt) {
+      alert('入力が空です。内容を入力してください。');
+      promptEl.focus();
+      return;
+    }
+
+    // ローディング画面を表示
+    showLoadingScreen();
+
+    try {
+      // タイムアウト（30秒）
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 30000);
+
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt }),
+        signal: controller.signal
+      }).finally(() => clearTimeout(timer));
+
+      const text = await res.text();
+
+      // まずはHTTPステータスを表示（デバッグ時に役立つ）
+      let display = `HTTP ${res.status}\n`;
+      try {
+        const data = JSON.parse(text);
+        if (!res.ok) {
+          // エラー時
+          display += (data?.error || text || 'エラーが発生しました。');
+        } else {
+          display += JSON.stringify(data, null, 2);
+        }
+      } catch {
+        display += text; // JSON以外の本文
+      }
+
+      // 3秒間ローディングを表示してから結果画面に切り替え
+      setTimeout(() => {
+        showResultScreen();
+        // フェードイン完了後にタイピング効果で結果を表示
+        setTimeout(() => {
+          typeWriter(outEl, display, 30);
+        }, 500);
+      }, 3000);
+
+    } catch (e) {
+      setTimeout(() => {
+        showResultScreen();
+        // フェードイン完了後にタイピング効果でエラーを表示
+        setTimeout(() => {
+          typeWriter(outEl, `通信エラー: ${e?.message || e}`, 30);
+        }, 500);
+      }, 3000);
+    }
+  });
+
+  // 新しい相談ボタンのイベントリスナー
+  document.getElementById('newConsultation').addEventListener('click', () => {
+    // フォームをクリアして相談フォーム画面に戻る
+    promptEl.value = '';
+    updateCount();
+    outEl.textContent = '';
+    showFormScreen();
+  });
+</script>
+
+</body>
+</html>
