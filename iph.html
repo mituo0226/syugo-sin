@@ -286,6 +286,18 @@
       text-align: left;
     }
 
+    .out.error {
+      background: rgba(255, 107, 157, 0.1);
+      border: 1px solid rgba(255, 107, 157, 0.3);
+      color: #ffb3d1;
+    }
+
+    .out.success {
+      background: rgba(157, 78, 221, 0.1);
+      border: 1px solid rgba(157, 78, 221, 0.3);
+      color: #e0c3fc;
+    }
+
     .row-2col {
       display: flex;
       justify-content: space-between;
@@ -850,18 +862,45 @@
 
       const text = await res.text();
 
-      // まずはHTTPステータスを表示（デバッグ時に役立つ）
-      let display = `HTTP ${res.status}\n`;
+      let display = '';
       try {
         const data = JSON.parse(text);
         if (!res.ok) {
-          // エラー時
-          display += (data?.error || text || 'エラーが発生しました。');
+          // エラー時の処理を改善
+          if (res.status === 403) {
+            if (data?.code === 'unsupported_country_region_territory') {
+              display = '申し訳ございません。\n\n現在、お客様の地域からのアクセスが制限されております。\n\nサービスの利用可能地域については、運営チームまでお問い合わせください。';
+            } else {
+              display = 'アクセスが制限されています。\n\nしばらく時間をおいてから再度お試しください。';
+            }
+          } else if (res.status === 429) {
+            display = 'アクセスが集中しています。\n\nしばらく時間をおいてから再度お試しください。';
+          } else if (res.status >= 500) {
+            display = 'サーバーで一時的な問題が発生しています。\n\nしばらく時間をおいてから再度お試しください。';
+          } else {
+            display = `エラーが発生しました。\n\nエラーコード: ${res.status}\n${data?.message || data?.error || 'しばらく時間をおいてから再度お試しください。'}`;
+          }
         } else {
-          display += JSON.stringify(data, null, 2);
+          // 成功時の処理
+          if (data?.result) {
+            display = data.result;
+          } else if (data?.message) {
+            display = data.message;
+          } else {
+            display = JSON.stringify(data, null, 2);
+          }
         }
       } catch {
-        display += text; // JSON以外の本文
+        // JSONでない場合
+        if (!res.ok) {
+          if (res.status === 403) {
+            display = '申し訳ございません。\n\n現在、お客様の地域からのアクセスが制限されております。\n\nサービスの利用可能地域については、運営チームまでお問い合わせください。';
+          } else {
+            display = `エラーが発生しました。\n\nエラーコード: ${res.status}\nしばらく時間をおいてから再度お試しください。`;
+          }
+        } else {
+          display = text;
+        }
       }
 
       // 3秒間ローディングを表示してから結果画面に切り替え
@@ -869,6 +908,12 @@
         showResultScreen();
         // フェードイン完了後にタイピング効果で結果を表示
         setTimeout(() => {
+          // エラーかどうかでスタイルを変更
+          if (!res.ok) {
+            outEl.className = 'out error';
+          } else {
+            outEl.className = 'out success';
+          }
           typeWriter(outEl, display, 30);
         }, 500);
       }, 3000);
@@ -878,7 +923,9 @@
         showResultScreen();
         // フェードイン完了後にタイピング効果でエラーを表示
         setTimeout(() => {
-          typeWriter(outEl, `通信エラー: ${e?.message || e}`, 30);
+          outEl.className = 'out error';
+          const errorMessage = `通信エラーが発生しました。\n\nネットワーク接続を確認して、再度お試しください。\n\nエラー詳細: ${e?.message || e}`;
+          typeWriter(outEl, errorMessage, 30);
         }, 500);
       }, 3000);
     }
@@ -890,6 +937,7 @@
     promptEl.value = '';
     updateCount();
     outEl.textContent = '';
+    outEl.className = 'out'; // スタイルをリセット
     showFormScreen();
   });
 </script>
