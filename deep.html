@@ -274,27 +274,128 @@
     #loadingScreen {
       position: fixed;
       top:0; left:0; right:0; bottom:0;
-      background: rgba(0,0,0,0.8);
+      background: radial-gradient(circle at center, rgba(0,0,0,0.9), rgba(26,11,46,0.95));
       display:flex;
       align-items:center;
       justify-content:center;
       flex-direction:column;
       z-index:9999;
       animation: fadeIn 1s forwards;
+      overflow: hidden;
+    }
+
+    /* 神秘的な光の粒子 */
+    .mystical-particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .mystical-particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: radial-gradient(circle, #c77dff, transparent);
+      border-radius: 50%;
+      animation: mysticalFloat 8s infinite linear;
+      box-shadow: 0 0 10px rgba(199, 125, 255, 0.8);
+    }
+
+    .mystical-particle:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; }
+    .mystical-particle:nth-child(2) { left: 80%; top: 30%; animation-delay: 2s; }
+    .mystical-particle:nth-child(3) { left: 20%; top: 70%; animation-delay: 4s; }
+    .mystical-particle:nth-child(4) { left: 70%; top: 80%; animation-delay: 6s; }
+    .mystical-particle:nth-child(5) { left: 50%; top: 10%; animation-delay: 1s; }
+    .mystical-particle:nth-child(6) { left: 30%; top: 60%; animation-delay: 3s; }
+    .mystical-particle:nth-child(7) { left: 90%; top: 50%; animation-delay: 5s; }
+    .mystical-particle:nth-child(8) { left: 5%; top: 40%; animation-delay: 7s; }
+
+    @keyframes mysticalFloat {
+      0% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+        transform: translate(0, 0) rotate(0deg) scale(1.2);
+      }
+      50% {
+        opacity: 1;
+        transform: translate(30px, -30px) rotate(180deg) scale(0.8);
+      }
+      90% {
+        opacity: 1;
+        transform: translate(60px, -60px) rotate(360deg) scale(1.5);
+      }
+      100% {
+        transform: translate(80px, -80px) rotate(720deg) scale(0.5);
+        opacity: 0;
+      }
+    }
+
+    /* 背景の神秘的な光の渦 */
+    #loadingScreen::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(from 0deg, 
+        transparent, 
+        rgba(157, 78, 221, 0.1), 
+        transparent, 
+        rgba(199, 125, 255, 0.1), 
+        transparent, 
+        rgba(255, 107, 157, 0.1), 
+        transparent
+      );
+      animation: rotateBackground 20s linear infinite;
+      transform: translate(-50%, -50%);
+    }
+
+    @keyframes rotateBackground {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
     }
 
     #loadingScreen p {
       color:#fff;
-      font-size:1.2em;
-      margin-top:1em;
-      animation: blink 1.5s infinite;
+      font-size:1.4em;
+      margin-top:2em;
+      animation: mysticalText 3s ease-in-out infinite;
+      text-shadow: 0 0 20px rgba(157, 78, 221, 1), 0 0 40px rgba(199, 125, 255, 0.8);
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    @keyframes mysticalText {
+      0%, 100% {
+        opacity: 0.7;
+        transform: scale(1);
+        text-shadow: 0 0 20px rgba(157, 78, 221, 1), 0 0 40px rgba(199, 125, 255, 0.8);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.05);
+        text-shadow: 0 0 30px rgba(157, 78, 221, 1), 0 0 50px rgba(199, 125, 255, 1), 0 0 70px rgba(255, 107, 157, 0.6);
+      }
     }
 
     .loading-spinner {
-      width: 100px;
-      height: 100px;
+      width: 120px;
+      height: 120px;
       position: relative;
       margin: 0 auto;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
     }
 
     .loading-spinner::before,
@@ -304,24 +405,31 @@
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      background: conic-gradient(from 0deg, transparent, #9d4edd, #c77dff, #ff6b9d, transparent);
+      background: conic-gradient(from 0deg, 
+        transparent, 
+        #9d4edd, 
+        #c77dff, 
+        #ff6b9d, 
+        #9d4edd, 
+        transparent
+      );
       animation: spiral 3s linear infinite;
     }
 
     .loading-spinner::before {
       animation: spiral 3s linear infinite;
-      filter: blur(2px);
-      opacity: 0.7;
+      filter: blur(3px);
+      opacity: 0.8;
     }
 
     .loading-spinner::after {
       animation: spiral 2s linear infinite reverse;
       filter: blur(1px);
-      opacity: 0.9;
-      width: 80%;
-      height: 80%;
-      top: 10%;
-      left: 10%;
+      opacity: 1;
+      width: 70%;
+      height: 70%;
+      top: 15%;
+      left: 15%;
     }
 
     @keyframes spiral {
@@ -363,6 +471,81 @@
       to {opacity:0;}
     }
 
+    /* 波紋エフェクト */
+    .ripple-effect {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border: 2px solid rgba(157, 78, 221, 0.6);
+      border-radius: 50%;
+      animation: ripple 2s ease-out infinite;
+      transform: translate(-50%, -50%);
+    }
+
+    .ripple-effect:nth-child(2) {
+      animation-delay: 0.5s;
+      border-color: rgba(199, 125, 255, 0.6);
+    }
+
+    .ripple-effect:nth-child(3) {
+      animation-delay: 1s;
+      border-color: rgba(255, 107, 157, 0.6);
+    }
+
+    @keyframes ripple {
+      0% {
+        width: 0;
+        height: 0;
+        opacity: 1;
+      }
+      100% {
+        width: 300px;
+        height: 300px;
+        opacity: 0;
+      }
+    }
+
+    /* 光の柱エフェクト */
+    .light-pillars {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .light-pillar {
+      position: absolute;
+      width: 2px;
+      height: 100%;
+      background: linear-gradient(to bottom, 
+        transparent, 
+        rgba(157, 78, 221, 0.8), 
+        rgba(199, 125, 255, 0.6), 
+        transparent
+      );
+      animation: lightPillar 4s ease-in-out infinite;
+    }
+
+    .light-pillar:nth-child(1) { left: 20%; animation-delay: 0s; }
+    .light-pillar:nth-child(2) { left: 40%; animation-delay: 1s; }
+    .light-pillar:nth-child(3) { left: 60%; animation-delay: 2s; }
+    .light-pillar:nth-child(4) { left: 80%; animation-delay: 3s; }
+
+    @keyframes lightPillar {
+      0%, 100% {
+        opacity: 0.3;
+        transform: scaleY(1);
+      }
+      50% {
+        opacity: 1;
+        transform: scaleY(1.5);
+      }
+    }
+
     @media (max-width: 640px) {
       body {
         padding: 15px;
@@ -385,6 +568,25 @@
 
 <!-- ローディング画面（最初は非表示） -->
 <div id="loadingScreen" style="display: none;">
+  <div class="mystical-particles">
+    <div class="mystical-particle"></div>
+    <div class="mystical-particle"></div>
+    <div class="mystical-particle"></div>
+    <div class="mystical-particle"></div>
+    <div class="mystical-particle"></div>
+    <div class="mystical-particle"></div>
+    <div class="mystical-particle"></div>
+    <div class="mystical-particle"></div>
+  </div>
+  <div class="light-pillars">
+    <div class="light-pillar"></div>
+    <div class="light-pillar"></div>
+    <div class="light-pillar"></div>
+    <div class="light-pillar"></div>
+  </div>
+  <div class="ripple-effect"></div>
+  <div class="ripple-effect"></div>
+  <div class="ripple-effect"></div>
   <div class="loading-spinner"></div>
   <p>神託を降ろしています…</p>
 </div>
