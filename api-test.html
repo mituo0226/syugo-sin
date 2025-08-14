@@ -51,7 +51,7 @@
         const res = await fetch(API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt })
+          body: JSON.stringify({ text: prompt })
         });
 
         const text = await res.text(); // まずは生テキストを表示（デバッグしやすい）
