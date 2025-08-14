@@ -537,7 +537,13 @@ const monthText = monthTraits[month] || "月の特性不明";
 const dayText = dayTraits[day] || "独自の使命を携えし者";
 
 document.getElementById('guardian').innerHTML=`
-// 保存：有料鑑定ページで把握させるため
+
+
+  <img src="${guardian.image}" alt="${guardian.name}">
+  <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
+  <div>${guardian.desc}</div>
+`;
+// 保存：有料鑑定ページで把握させるため（innerHTML設定のあとに実行）
 try {
   const western = (function(m,d){
     const t = [
@@ -558,10 +564,6 @@ try {
   }));
 } catch(e) {}
 
-  <img src="${guardian.image}" alt="${guardian.name}">
-  <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
-  <div>${guardian.desc}</div>
-`;
 
 // タイピング効果の関数
 function typeWriter(element, text, speed = 50) {
