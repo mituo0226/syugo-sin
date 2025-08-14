@@ -1027,7 +1027,8 @@
         const res = await fetch(API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: prompt, year: (__DOB__?.year||null), month: (__DOB__?.month||null), day: (__DOB__?.day||null) }),
+         body: JSON.stringify({ text: prompt, year: (__DOB__?.year||null), month: (__DOB__?.month||null), day: (__DOB__?.day||null), mode: 'full' }),
+
           signal: controller.signal
         }).finally(() => clearTimeout(timer));
 
