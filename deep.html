@@ -229,11 +229,11 @@
 
     .out {
       white-space: pre-wrap;
-      border: 1px solid rgba(255,255,255,0.2);
+      border: 1px solid rgba(157, 78, 221, 0.3);
       padding: 15px;
       border-radius: 8px;
       min-height: 120px;
-      background: rgba(255,255,255,0.05);
+      background: rgba(255, 255, 255, 0.1);
       color: #fff;
       font-family: 'Zen Old Mincho', serif;
       text-align: left;
@@ -241,6 +241,8 @@
       font-weight: 600;
       line-height: 1.6;
       text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+      box-sizing: border-box;
+      transition: all 0.3s ease;
     }
 
     .row-2col {
@@ -610,8 +612,8 @@
 
       .out {
         color: #fff !important;
-        background: rgba(255,255,255,0.1) !important;
-        border: 1px solid rgba(255,255,255,0.3) !important;
+        background: rgba(255, 255, 255, 0.15) !important;
+        border: 1px solid rgba(157, 78, 221, 0.5) !important;
         font-weight: 600;
         text-shadow: 0 0 3px rgba(255, 255, 255, 0.8) !important;
       }
@@ -666,20 +668,20 @@
   <h1>お悩み相談フォーム</h1>
   
   <div class="form-group">
-    <label for="prompt">相談内容</label>
-    <textarea id="prompt" rows="6" placeholder="ここに相談内容を入力してください。例）今の仕事を続けるべきか迷っています。"
-      autocomplete="off"></textarea>
+      <label for="prompt">相談内容</label>
+      <textarea id="prompt" rows="6" placeholder="ここに相談内容を入力してください。例）今の仕事を続けるべきか迷っています。"
+        autocomplete="off"></textarea>
 
-    <div class="row-2col">
-      <div class="badge"><span id="count">0</span> 文字</div>
+      <div class="row-2col">
+        <div class="badge"><span id="count">0</span> 文字</div>
+      </div>
     </div>
-  </div>
 
-  <div class="actions">
-    <button id="send">送信</button>
-    <button id="clear" type="button">クリア</button>
-    <span class="muted" id="status" aria-live="polite"></span>
-  </div>
+    <div class="actions">
+      <button id="send">送信</button>
+      <button id="clear" type="button">クリア</button>
+      <span class="muted" id="status" aria-live="polite"></span>
+    </div>
 
   <a href="index.html" class="back-link">← 戻る</a>
 </div>
@@ -704,21 +706,21 @@
   <div class="actions">
     <button id="newConsultation">新しい相談をする</button>
     <a href="index.html" class="back-link">← 戻る</a>
+    </div>
   </div>
-</div>
 
-<script>
-  // === 設定（あなたの Worker API） ===
-  const API_URL = 'https://syugo-sin-kantei-api.mituo0226.workers.dev/consult';
+  <script>
+    // === 設定（あなたの Worker API） ===
+    const API_URL = 'https://syugo-sin-kantei-api.mituo0226.workers.dev/consult';
 
-  // === 要素参照 ===
-  const $ = (s) => document.querySelector(s);
-  const promptEl = $('#prompt');
-  const sendBtn  = $('#send');
-  const clearBtn = $('#clear');
-  const outEl    = $('#out');
-  const statusEl = $('#status');
-  const countEl  = $('#count');
+    // === 要素参照 ===
+    const $ = (s) => document.querySelector(s);
+    const promptEl = $('#prompt');
+    const sendBtn  = $('#send');
+    const clearBtn = $('#clear');
+    const outEl    = $('#out');
+    const statusEl = $('#status');
+    const countEl  = $('#count');
 
   // ページ読み込み時の初期化
   window.addEventListener('load', () => {
@@ -777,67 +779,67 @@
     formScreen.style.opacity = '1';
   }
 
-  // 文字数カウンタ
-  const updateCount = () => { countEl.textContent = (promptEl.value || '').length; };
-  promptEl.addEventListener('input', updateCount);
-  updateCount();
-
-  // クリア
-  clearBtn.addEventListener('click', () => {
-    promptEl.value = '';
+    // 文字数カウンタ
+    const updateCount = () => { countEl.textContent = (promptEl.value || '').length; };
+    promptEl.addEventListener('input', updateCount);
     updateCount();
+
+    // クリア
+    clearBtn.addEventListener('click', () => {
+      promptEl.value = '';
+      updateCount();
     outEl.textContent = '';
-    statusEl.textContent = '';
-    promptEl.focus();
-  });
-
-  // 送信（Enter+Ctrl/Cmdで送信も可）
-  promptEl.addEventListener('keydown', (e) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-      e.preventDefault();
-      sendBtn.click();
-    }
-  });
-
-  // メイン送信処理
-  sendBtn.addEventListener('click', async () => {
-    const prompt = (promptEl.value || '').trim();
-    if (!prompt) {
-      alert('入力が空です。内容を入力してください。');
+      statusEl.textContent = '';
       promptEl.focus();
-      return;
-    }
+    });
+
+    // 送信（Enter+Ctrl/Cmdで送信も可）
+    promptEl.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        sendBtn.click();
+      }
+    });
+
+    // メイン送信処理
+    sendBtn.addEventListener('click', async () => {
+      const prompt = (promptEl.value || '').trim();
+      if (!prompt) {
+      alert('入力が空です。内容を入力してください。');
+        promptEl.focus();
+        return;
+      }
 
     // ローディング画面を表示
     showLoadingScreen();
 
-    try {
-      // タイムアウト（30秒）
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 30000);
-
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt }),
-        signal: controller.signal
-      }).finally(() => clearTimeout(timer));
-
-      const text = await res.text();
-
-      // まずはHTTPステータスを表示（デバッグ時に役立つ）
-      let display = `HTTP ${res.status}\n`;
       try {
-        const data = JSON.parse(text);
-        if (!res.ok) {
-          // エラー時
-          display += (data?.error || text || 'エラーが発生しました。');
-        } else {
-          display += JSON.stringify(data, null, 2);
+        // タイムアウト（30秒）
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 30000);
+
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt }),
+          signal: controller.signal
+        }).finally(() => clearTimeout(timer));
+
+        const text = await res.text();
+
+        // まずはHTTPステータスを表示（デバッグ時に役立つ）
+        let display = `HTTP ${res.status}\n`;
+        try {
+          const data = JSON.parse(text);
+          if (!res.ok) {
+            // エラー時
+            display += (data?.error || text || 'エラーが発生しました。');
+          } else {
+            display += JSON.stringify(data, null, 2);
+          }
+        } catch {
+          display += text; // JSON以外の本文
         }
-      } catch {
-        display += text; // JSON以外の本文
-      }
 
       // 3秒間ローディングを表示してから結果画面に切り替え
       setTimeout(() => {
@@ -848,7 +850,7 @@
         }, 500);
       }, 3000);
 
-    } catch (e) {
+      } catch (e) {
       setTimeout(() => {
         showResultScreen();
         // フェードイン完了後にタイピング効果でエラーを表示
@@ -867,6 +869,6 @@
     outEl.textContent = '';
     showFormScreen();
   });
-</script>
+  </script>
 </body>
 </html>
