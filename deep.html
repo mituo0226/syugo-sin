@@ -9,6 +9,38 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <style>
+    /* iPhone Safari 対策のためのリセット */
+    html {
+      height: 100%;
+      background: #1a0b2e;
+    }
+
+    /* iPhone Safari用の結果画面専用背景固定 */
+    @media screen and (-webkit-min-device-pixel-ratio: 2) {
+      #resultScreen {
+        background: rgba(255,255,255,0.05) !important;
+        position: relative !important;
+      }
+
+      #resultScreen::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, #1a0b2e, #2e1a47) !important;
+        z-index: -200;
+        pointer-events: none;
+      }
+
+      #resultScreen .container {
+        background: rgba(255,255,255,0.05) !important;
+        position: relative;
+        z-index: 1;
+      }
+    }
+
     body {
       background: linear-gradient(to bottom, #1a0b2e, #2e1a47);
       color: #fff;
@@ -17,6 +49,59 @@
       padding: 30px;
       overflow-x: hidden;
       position: relative;
+      min-height: 100vh;
+      margin: 0;
+      /* iPhone Safari専用の背景固定 */
+      background-attachment: scroll;
+    }
+
+    /* iPhone Safari専用の背景色強制設定 */
+    @media screen and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait) {
+      html {
+        background: #1a0b2e !important;
+      }
+      
+      body {
+        background: #1a0b2e !important;
+        background-image: linear-gradient(to bottom, #1a0b2e, #2e1a47) !important;
+        background-attachment: scroll !important;
+      }
+
+      body::after {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, #1a0b2e, #2e1a47);
+        z-index: -100;
+        pointer-events: none;
+      }
+    }
+
+    /* iPhone Safari（横向き）専用 */
+    @media screen and (-webkit-min-device-pixel-ratio: 2) and (orientation: landscape) {
+      html {
+        background: #1a0b2e !important;
+      }
+      
+      body {
+        background: #1a0b2e !important;
+        background-image: linear-gradient(to bottom, #1a0b2e, #2e1a47) !important;
+      }
+
+      body::after {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, #1a0b2e, #2e1a47);
+        z-index: -100;
+        pointer-events: none;
+      }
     }
 
     /* 霧エフェクト */
@@ -720,6 +805,9 @@
 
 <!-- 結果表示画面（最初は非表示） -->
 <div id="resultScreen" class="container" style="display: none; opacity: 0;">
+  <!-- iPhone Safari専用の背景固定要素 -->
+  <div class="iphone-bg-fix" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, #1a0b2e, #2e1a47); z-index: -200; pointer-events: none; display: none;"></div>
+  
   <div class="floating-particles">
     <div class="floating-particle"></div>
     <div class="floating-particle"></div>
@@ -759,6 +847,35 @@
     // 最初の画面（相談フォーム）を表示
     document.getElementById('formScreen').style.display = 'block';
     document.getElementById('formScreen').style.opacity = '1';
+    
+    // iPhone Safari専用の背景色強制設定
+    const isiPhone = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+    
+    if (isiPhone && isSafari) {
+      // htmlとbodyの背景色を強制設定
+      document.documentElement.style.setProperty('background-color', '#1a0b2e', 'important');
+      document.documentElement.style.setProperty('background', '#1a0b2e', 'important');
+      document.body.style.setProperty('background-color', '#1a0b2e', 'important');
+      document.body.style.setProperty('background', 'linear-gradient(to bottom, #1a0b2e, #2e1a47)', 'important');
+      
+      // 継続的に背景色を監視・修正
+      const maintainBackground = () => {
+        document.documentElement.style.setProperty('background-color', '#1a0b2e', 'important');
+        document.body.style.setProperty('background', 'linear-gradient(to bottom, #1a0b2e, #2e1a47)', 'important');
+      };
+      
+      // 各種イベントで背景色を維持
+      window.addEventListener('orientationchange', maintainBackground);
+      window.addEventListener('resize', maintainBackground);
+      window.addEventListener('scroll', maintainBackground);
+      window.addEventListener('touchmove', maintainBackground);
+      window.addEventListener('pageshow', maintainBackground);
+      window.addEventListener('focus', maintainBackground);
+      
+      // 定期的な背景色チェック
+      setInterval(maintainBackground, 500);
+    }
   });
 
   // 画面切り替え関数
@@ -794,20 +911,34 @@
     const resultScreen = document.getElementById('resultScreen');
     
     loadingScreen.style.display = 'none';
-    resultScreen.style.display = 'block';
-    // iPhone Safari検出
+    
+    // iPhone Safari用: opacity変更を避けて、直接表示する
     const isiPhone = /iPhone|iPad|iPod/.test(navigator.userAgent);
     const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
     
     if (isiPhone && isSafari) {
-      // iPhone Safariではopacityアニメーションを無効化し、直接表示
+      // iPhone専用背景要素を表示
+      const iphoneBgFix = resultScreen.querySelector('.iphone-bg-fix');
+      if (iphoneBgFix) {
+        iphoneBgFix.style.display = 'block';
+      }
+      
+      // iPhone Safariでは opacity アニメーションを使わない
+      resultScreen.style.display = 'block';
       resultScreen.style.opacity = '1';
-      resultScreen.style.background = 'rgba(255,255,255,0.05)';
-      resultScreen.style.border = '1px solid rgba(255,255,255,0.2)';
-      resultScreen.style.boxShadow = '0 0 20px rgba(147,51,234,0.4)';
+      resultScreen.style.visibility = 'visible';
+      
+      // 背景色を強制再設定
+      document.documentElement.style.setProperty('background-color', '#1a0b2e', 'important');
+      document.body.style.setProperty('background', 'linear-gradient(to bottom, #1a0b2e, #2e1a47)', 'important');
+      
+      // fade-inクラスは追加しない（アニメーションが背景に影響する可能性があるため）
     } else {
-      // 他のブラウザでは通常のフェードイン効果を適用
+      // その他のブラウザでは通常の表示
+      resultScreen.style.display = 'block';
       resultScreen.style.opacity = '1';
+      
+      // フェードイン効果を適用
       setTimeout(() => {
         resultScreen.classList.add('fade-in');
       }, 100);
@@ -821,6 +952,17 @@
     resultScreen.style.display = 'none';
     formScreen.style.display = 'block';
     formScreen.style.opacity = '1';
+    
+    // iPhone Safari用の背景色強制再設定
+    const isiPhone = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+    
+    if (isiPhone && isSafari) {
+      setTimeout(() => {
+        document.documentElement.style.setProperty('background-color', '#1a0b2e', 'important');
+        document.body.style.setProperty('background', 'linear-gradient(to bottom, #1a0b2e, #2e1a47)', 'important');
+      }, 50);
+    }
   }
 
     // 文字数カウンタ
