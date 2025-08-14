@@ -22,7 +22,7 @@
   <div class="wrap">
     <h1>お悩み相談フォーム</h1>
     <div id="dobBadge" class="badge" style="display:none;"></div>
-    <div class="hint">（動かない場合は、このページのURLに <code>&api=https://your-backup/api/consult</code> を付けると送信先を上書きできます）</div>
+    <div class="hint">（動かない場合は、このページのURLに <code>&api=https://your-backup/api/consult</code> を付けると送信先を上書きできます。軽量テストは <code>&mode=basic</code> を付与）</div>
 
     <div class="row"><textarea id="q" placeholder="例）東京在住で、交際相手は北海道です。今後の距離の壁の乗り越え方と、後押しになる神社を知りたいです。"></textarea></div>
     <div class="row">
@@ -55,7 +55,8 @@
 
   // --- 送信先設定：クエリで上書き可 (?api=..., ?backup=...)
   const qs = new URLSearchParams(location.search);
-  const PRIMARY = qs.get('api') || window.SYUGO_PRIMARY_URL || "/api/consult"; // Cloudflare Pages Functions: /functions/api/consult.js
+  const PRIMARY = qs.get('api') || window.SYUGO_PRIMARY_URL || "/api/consult";
+  const mode = qs.get('mode') || 'full'; // Cloudflare Pages Functions: /functions/api/consult.js
   const BACKUP  = qs.get('backup') || window.SYUGO_BACKUP_URL  || "";           // 例: https://your-app.onrender.com/api/consult
 
   async function callAPI(payload){
@@ -108,7 +109,7 @@
     if (!prompt) { qEl.focus(); return; }
     sendBtn.disabled = true; out.textContent = '鑑定中…';
 
-    const payload = { text: prompt, year: (__DOB__?.year||null), month: (__DOB__?.month||null), day: (__DOB__?.day||null) };
+    const payload = { text: prompt, year: (__DOB__?.year||null), month: (__DOB__?.month||null), day: (__DOB__?.day||null), mode };
 
     try{
       const res = await callAPI(payload);
