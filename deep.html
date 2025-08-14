@@ -783,6 +783,7 @@
   </div>
   
   <h1>お悩み相談フォーム</h1>
+  <div id="dobBadge" class="badge" style="display:none;margin:6px 0 0;font-size:.95em;opacity:.9;"></div>
   
   <div class="form-group">
       <label for="prompt">相談内容</label>
@@ -988,7 +989,26 @@
     });
 
     // メイン送信処理
-    sendBtn.addEventListener('click', async () => {
+    
+// --- 生年月日（URLまたはsessionStorage）を取得してバッジ表示 ---
+(function initDOB(){
+  const p = new URLSearchParams(location.search);
+  let y = parseInt(p.get('year')), m = parseInt(p.get('month')), d = parseInt(p.get('day'));
+  if (!(y&&m&&d)) {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem('ss_user_profile')||"null");
+      if (saved) { y = +saved.year; m = +saved.month; d = +saved.day; }
+    } catch(_) {}
+  }
+  window.__DOB__ = { year: y||null, month: m||null, day: d||null };
+  const badge = document.getElementById('dobBadge');
+  if (badge && y && m && d) {
+    badge.style.display = 'inline-block';
+    badge.textContent = `生年月日：${y}年${m}月${d}日（把握済み）`;
+  }
+})();
+
+  sendBtn.addEventListener('click', async () => {
       const prompt = (promptEl.value || '').trim();
       if (!prompt) {
       alert('入力が空です。内容を入力してください。');
@@ -1007,7 +1027,7 @@
         const res = await fetch(API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt }),
+          body: JSON.stringify({ text: prompt, year: (__DOB__?.year||null), month: (__DOB__?.month||null), day: (__DOB__?.day||null) }),
           signal: controller.signal
         }).finally(() => clearTimeout(timer));
 
