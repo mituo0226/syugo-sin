@@ -59,7 +59,7 @@
       border-radius: 12px;
       padding: 30px;
       box-shadow: 0 0 20px rgba(147,51,234,0.4);
-      opacity: 0;
+      opacity: 1;
       transition: opacity 1s;
       position: relative;
       overflow: hidden;
@@ -457,6 +457,13 @@
   const outEl    = $('#out');
   const statusEl = $('#status');
   const countEl  = $('#count');
+
+  // ページ読み込み時の初期化
+  window.addEventListener('load', () => {
+    // 最初の画面（相談フォーム）を表示
+    document.getElementById('formScreen').style.display = 'block';
+    document.getElementById('formScreen').style.opacity = '1';
+  });
 
   // 画面切り替え関数
   function showLoadingScreen() {
