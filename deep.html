@@ -606,6 +606,23 @@
         box-shadow: 0 0 30px rgba(147,51,234,0.8), inset 0 0 15px rgba(255,255,255,0.1) !important;
       }
 
+      /* iPhoneでの結果画面専用強化 */
+      #resultScreen {
+        background: rgba(255,255,255,0.15) !important;
+        border: 2px solid rgba(255,255,255,0.4) !important;
+        box-shadow: 0 0 30px rgba(147,51,234,0.8), inset 0 0 15px rgba(255,255,255,0.1) !important;
+      }
+
+      /* iPhoneでの結果画面のより強力な強化 */
+      #resultScreen.container {
+        background: rgba(255,255,255,0.2) !important;
+        -webkit-background: rgba(255,255,255,0.2) !important;
+        border: 3px solid rgba(255,255,255,0.6) !important;
+        -webkit-border: 3px solid rgba(255,255,255,0.6) !important;
+        box-shadow: 0 0 40px rgba(147,51,234,1), inset 0 0 20px rgba(255,255,255,0.15) !important;
+        -webkit-box-shadow: 0 0 40px rgba(147,51,234,1), inset 0 0 20px rgba(255,255,255,0.15) !important;
+      }
+
       h1 {
         color: #fff !important;
         font-weight: 900;
@@ -770,6 +787,13 @@
     
     loadingScreen.style.display = 'none';
     resultScreen.style.display = 'block';
+    
+    // iPhoneでの結果画面の背景色を強制的に設定
+    if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+      resultScreen.style.background = 'rgba(255,255,255,0.2)';
+      resultScreen.style.border = '3px solid rgba(255,255,255,0.6)';
+      resultScreen.style.boxShadow = '0 0 40px rgba(147,51,234,1), inset 0 0 20px rgba(255,255,255,0.15)';
+    }
     
     // フェードイン効果を適用
     setTimeout(() => {
