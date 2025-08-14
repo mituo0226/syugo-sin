@@ -22,7 +22,7 @@
   <div class="wrap">
     <h1>お悩み相談フォーム</h1>
     <div id="dobBadge" class="badge" style="display:none;"></div>
-    <div class="hint">（動かない場合は、このページのURLに <code>&api=https://your-backup/api/consult</code> を付けると送信先を上書きできます。軽量テストは <code>&mode=basic</code> を付与）</div>
+    <div class="hint">（動かない場合：URLに <code>&api=送信先</code> / <code>&backup=予備</code> / 軽量テストは <code>&mode=basic</code> を付与）</div>
 
     <div class="row"><textarea id="q" placeholder="例）東京在住で、交際相手は北海道です。今後の距離の壁の乗り越え方と、後押しになる神社を知りたいです。"></textarea></div>
     <div class="row">
@@ -32,8 +32,10 @@
   </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', () => {
   const $ = (s)=>document.querySelector(s);
   const qEl = $('#q'), sendBtn = $('#send'), out = $('#out');
+  if (sendBtn) sendBtn.disabled = false;
 
   // --- DOB取得（URL or sessionStorage）
   (function initDOB(){
@@ -56,8 +58,8 @@
   // --- 送信先設定：クエリで上書き可 (?api=..., ?backup=...)
   const qs = new URLSearchParams(location.search);
   const PRIMARY = qs.get('api') || window.SYUGO_PRIMARY_URL || "/api/consult";
-  const mode = qs.get('mode') || 'full'; // Cloudflare Pages Functions: /functions/api/consult.js
-  const BACKUP  = qs.get('backup') || window.SYUGO_BACKUP_URL  || "";           // 例: https://your-app.onrender.com/api/consult
+  const mode = qs.get('mode') || 'full';
+  const BACKUP  = qs.get('backup') || window.SYUGO_BACKUP_URL  || "";
 
   async function callAPI(payload){
     // 1st: Primary
@@ -72,17 +74,22 @@
     }
 
     if (!res || !res.ok) {
+      let t = null;
       try {
-        const t = await res?.clone()?.json?.();
-        const regionBlocked = t?.code === 'region_blocked' || t?.error?.code === 'unsupported_country_region_territory';
-        if ((regionBlocked || !res) && BACKUP) {
+        if (res) { t = await res.clone().json(); }
+      } catch(_) { t = null; }
+      const regionBlocked = !!(t && (t.code === 'region_blocked' || (t.error && t.error.code === 'unsupported_country_region_territory')));
+      if ((regionBlocked || !res) && BACKUP) {
+        try {
           const r2 = await fetch(BACKUP, {
             method:'POST', headers:{'Content-Type':'application/json'},
             body: JSON.stringify(payload)
           });
           return r2;
+        } catch(e) {
+          console.warn("BACKUP fetch error:", e);
         }
-      } catch(_){ /* ignore */ }
+      }
     }
     return res;
   }
@@ -103,11 +110,12 @@
     }
   }
 
-  sendBtn.addEventListener('click', async (ev)=>{
+  async function handleSend(ev){
     ev.preventDefault();
     const prompt = (qEl.value||'').trim();
     if (!prompt) { qEl.focus(); return; }
-    sendBtn.disabled = true; out.textContent = '鑑定中…';
+    if (sendBtn) sendBtn.disabled = true;
+    out.textContent = '鑑定中…';
 
     const payload = { text: prompt, year: (__DOB__?.year||null), month: (__DOB__?.month||null), day: (__DOB__?.day||null), mode };
 
@@ -123,9 +131,21 @@
       console.error(e);
       out.textContent = '通信に失敗しました。時間を置いてお試しください。';
     }finally{
-      sendBtn.disabled = false;
+      if (sendBtn) sendBtn.disabled = false;
     }
-  });
+  }
+
+  // クリック／タップどちらでも発火（念のため二重登録を防ぐ）
+  if (sendBtn) {
+    sendBtn.addEventListener('click', handleSend, { once: false });
+    sendBtn.addEventListener('pointerup', (e)=>{
+      // クリックがブロックされる環境向けの保険
+      if (e.pointerType && e.pointerType !== 'mouse') handleSend(e);
+    });
+    // 最終保険：古典的 onclick
+    sendBtn.onclick = sendBtn.onclick || handleSend;
+  }
+});
 </script>
 </body>
 </html>
