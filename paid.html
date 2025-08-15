@@ -1,138 +1,177 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>守護神占い｜個別運命鑑定</title>
-<style>
-/* デザイン・演出すべて含む完全版 */
-body{background:linear-gradient(to bottom,#1a0b2e,#2e1a47);color:#fff;font-family:'Zen Old Mincho',serif;text-align:center;padding:30px;overflow-x:hidden;position:relative}
-body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:
-radial-gradient(circle at 20% 50%, rgba(157,78,221,.1) 0%, transparent 50%),
-radial-gradient(circle at 80% 20%, rgba(199,125,255,.1) 0%, transparent 50%),
-radial-gradient(circle at 40% 80%, rgba(255,107,157,.1) 0%, transparent 50%);pointer-events:none;z-index:-1;animation:mistMove 20s ease-in-out infinite}
-@keyframes mistMove{0%,100%{transform:translateX(0) translateY(0)}25%{transform:translateX(-10px) translateY(-5px)}50%{transform:translateX(5px) translateY(-10px)}75%{transform:translateX(-5px) translateY(5px)}}
-.container{max-width:600px;margin:auto;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:20px;box-shadow:0 0 20px rgba(147,51,234,.4);opacity:0;transition:opacity 1s;position:relative;overflow:hidden}
-.floating-particles{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}
-.floating-particle{position:absolute;width:2px;height:2px;background:radial-gradient(circle,#c77dff,transparent);border-radius:50%;animation:floatAround 8s infinite linear}
-.floating-particle:nth-child(1){left:10%;top:20%;animation-delay:0s}.floating-particle:nth-child(2){left:80%;top:30%;animation-delay:2s}.floating-particle:nth-child(3){left:20%;top:70%;animation-delay:4s}.floating-particle:nth-child(4){left:70%;top:80%;animation-delay:6s}.floating-particle:nth-child(5){left:50%;top:10%;animation-delay:1s}.floating-particle:nth-child(6){left:30%;top:60%;animation-delay:3s}
-@keyframes floatAround{0%{transform:translate(0,0) rotate(0deg);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translate(20px,-20px) rotate(360deg);opacity:0}}
-.container::before{content:'';position:absolute;top:-20px;left:-20px;right:-20px;bottom:-20px;background:radial-gradient(circle, rgba(157,78,221,.3) 0%, transparent 70%);animation:pulse 3s ease-in-out infinite;z-index:-1;border-radius:16px}
-@keyframes pulse{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.05);opacity:.6}}
-h1{font-size:1.5em;margin-bottom:.5em} p{margin:1em 0;white-space:pre-wrap}
-select,textarea{width:90%;font-size:1em;border:none;border-radius:6px;padding:10px;margin-top:10px;box-sizing:border-box}
-textarea{height:100px}
-.submit-button{display:inline-block;margin-top:20px;padding:12px 24px;background:#9d4edd;color:#fff;border-radius:8px;text-decoration:none;font-size:1.1em;transition:all .3s ease}
-.submit-button:hover{background:#c77dff;transform:scale(1.05)}
-.glow-text{animation:textGlow 2s ease-in-out infinite alternate;text-shadow:0 0 10px rgba(157,78,221,.8)}
-@keyframes textGlow{0%{text-shadow:0 0 10px rgba(157,78,221,.8)}100%{text-shadow:0 0 20px rgba(157,78,221,1),0 0 30px rgba(199,125,255,.6)}}
-.ripple{position:absolute;border-radius:50%;background:rgba(157,78,221,.6);transform:scale(0);animation:ripple .6s linear;pointer-events:none}
-@keyframes ripple{to{transform:scale(4);opacity:0}}
-.return-link{display:block;margin-top:20px;color:#9d4edd;text-decoration:underline}
-#loadingScreen{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:9999;animation:fadeIn 1s forwards}
-#loadingScreen p{color:#fff;font-size:1.2em;margin-top:1em;animation:blink 1.5s infinite}
-.loading-spinner{width:100px;height:100px;position:relative;margin:0 auto}
-.loading-spinner::before,.loading-spinner::after{content:'';position:absolute;width:100%;height:100%;border-radius:50%;background:conic-gradient(from 0deg,transparent,#9d4edd,#c77dff,#ff6b9d,transparent);animation:spiral 3s linear infinite}
-.loading-spinner::before{filter:blur(2px);opacity:.7}
-.loading-spinner::after{animation:spiral 2s linear infinite reverse;filter:blur(1px);opacity:.9;width:80%;height:80%;top:10%;left:10%}
-@keyframes spiral{0%{transform:rotate(0) scale(1);filter:hue-rotate(0)}25%{transform:rotate(90deg) scale(1.1);filter:hue-rotate(90deg)}50%{transform:rotate(180deg) scale(.9);filter:hue-rotate(180deg)}75%{transform:rotate(270deg) scale(1.1);filter:hue-rotate(270deg)}100%{transform:rotate(360deg) scale(1);filter:hue-rotate(360deg)}}
-@keyframes blink{0%{opacity:1}50%{opacity:.4}100%{opacity:1}} @keyframes fadeIn{from{opacity:0}to{opacity:1}} @keyframes fadeOut{from{opacity:1}to{opacity:0}}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>有料鑑定 | ◆守護神占い◆</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { margin:0; font-family: system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif; background:#0b0f17; color:#e6ecff; }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 24px; }
+    header { display:flex; align-items:center; gap:12px; }
+    h1 { font-size:1.5rem; margin:12px 0 8px; }
+    .sub { opacity:.75; }
+    .panel { background:#121829; border:1px solid #1f2a44; border-radius:14px; padding:18px; box-shadow:0 6px 24px rgba(0,0,0,.25); }
+    .grid { display:grid; grid-template-columns:1fr 2fr; gap:12px; }
+    label { font-size:.92rem; opacity:.9; }
+    input[type="text"], textarea { width:100%; padding:10px 12px; border-radius:10px; border:1px solid #2a3657; background:#0d1220; color:#e6ecff; outline:none; }
+    textarea { min-height: 120px; resize: vertical; }
+    .btn { display:inline-block; padding:12px 18px; border-radius:999px; border:1px solid #3751ff; background:#4b63ff; color:#fff; text-decoration:none; cursor:pointer; font-weight:600; box-shadow:0 6px 18px rgba(75,99,255,.35); transition:transform .06s ease; text-align:center; }
+    .btn:active { transform: translateY(1px); }
+    .muted { font-size:.9rem; opacity:.75; }
+    #deepReading { white-space: pre-wrap; line-height:1.9; font-size:1.02rem; }
+    .spacer { height:16px; }
+    #loading { position:fixed; inset:0; background:rgba(7,10,18,.75); display:none; align-items:center; justify-content:center; z-index:999; }
+    .spinner { width:72px; height:72px; border-radius:50%; border:6px solid #2a3657; border-top-color:#7f96ff; animation:spin .9s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg);} }
+    @media (max-width:680px){ .grid{ grid-template-columns:1fr; } }
+  </style>
 </head>
 <body>
-<div id="loadingScreen"><div class="loading-spinner"></div><p>霊視を開始しています…</p></div>
+  <div id="loading"><div class="spinner"></div></div>
 
-<div class="container">
-  <div class="floating-particles">
-    <div class="floating-particle"></div><div class="floating-particle"></div><div class="floating-particle"></div>
-    <div class="floating-particle"></div><div class="floating-particle"></div><div class="floating-particle"></div>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>本鑑定（購入済み）</h1>
+        <div class="sub">プレビューと同じ文頭から、そのまま全文が展開されます。</div>
+      </div>
+    </header>
+
+    <div class="spacer"></div>
+
+    <!-- 入力確認・追加入力（足りなければここで補完） -->
+    <section class="panel" id="formPanel">
+      <div class="grid">
+        <div><label>生年月日</label></div>
+        <div id="dob" class="muted">-</div>
+
+        <div><label for="category">相談ジャンル</label></div>
+        <div><input id="category" type="text" placeholder="例）恋愛 / 仕事 / 金運 など"></div>
+
+        <div><label for="question">ご相談内容</label></div>
+        <div><textarea id="question" placeholder="例）最近の距離感に悩んでいます。今後どう向き合えば良いでしょうか。"></textarea></div>
+      </div>
+      <div style="margin-top:10px;">
+        <button id="submitBtn" class="btn">本鑑定の全文を表示する</button>
+        <span class="muted" style="margin-left:8px;">※ 情報が揃っていれば、ページ表示直後に自動で取得します。</span>
+      </div>
+    </section>
+
+    <div class="spacer"></div>
+
+    <!-- 本文表示 -->
+    <section class="panel">
+      <h2 style="margin:0 0 8px;font-size:1.1rem;">鑑定結果</h2>
+      <div id="deepReading" class="muted">（ここに本鑑定の全文が表示されます）</div>
+    </section>
+
+    <div class="spacer"></div>
   </div>
-  <h1 class="glow-text">個別運命鑑定</h1>
-  <p id="deepReading"></p>
 
-  <p>
-ここから先は、番組の専属鑑定士であり霊能者でもある「龍」が、<br>
-あなたを守護する存在と交信しながら、<br>
-お一人お一人の想いや運命に寄り添い、<br>
-個別の関係鑑定をさせていただきます。<br><br>
-まずは今感じている不安や疑問を一度だけお伝えください。
-  </p>
+  <script>
+    // ===== 設定 =====
+    const API_URL = 'https://syugo-sin-kantei-api.mituo0226.workers.dev/consult';
+    const SKEY = 'kanteiContext';
 
-  <form id="questionForm">
-    <label for="category">相談のジャンルを選択してください</label><br>
-    <select name="category" id="category" required>
-      <option value="">選択してください</option>
-      <option value="恋愛相談">恋愛相談</option>
-      <option value="金銭関係">金銭関係</option>
-      <option value="人間関係">人間関係</option>
-      <option value="健康に関する相談">健康に関する相談</option>
-      <option value="将来への不安">将来への不安</option>
-      <option value="その他">その他</option>
-    </select><br><br>
+    const $ = sel => document.querySelector(sel);
+    const loading = $('#loading');
+    const deepReading = $('#deepReading');
+    const formPanel = $('#formPanel');
 
-    <label for="question">具体的な内容を入力してください</label><br>
-    <textarea name="question" id="question" required placeholder="お悩み・質問を入力"></textarea><br>
-    <button type="submit" class="submit-button">質問を送信する</button>
-  </form>
+    function loadSS(){ try{ return JSON.parse(sessionStorage.getItem(SKEY)||'{}'); }catch{ return {}; } }
+    function saveSS(obj){ try{ sessionStorage.setItem(SKEY, JSON.stringify(obj)); }catch{} }
 
-  <a href="index.html" class="return-link">最初のページに戻る</a>
-</div>
+    // URL + sessionStorage から文脈を復元
+    const qs = new URLSearchParams(location.search);
+    const ctx = {
+      year:  Number(qs.get('year'))  || loadSS().year  || 0,
+      month: Number(qs.get('month')) || loadSS().month || 0,
+      day:   Number(qs.get('day'))   || loadSS().day   || 0,
+      category: (qs.get('category') || loadSS().category || '').toString(),
+      question: (qs.get('question') || loadSS().question || '').toString()
+    };
 
-<script>
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    const loader = document.getElementById('loadingScreen');
-    loader.style.animation = 'fadeOut 1s forwards';
-    setTimeout(() => { loader.remove(); document.querySelector('.container').style.opacity = '1'; }, 1000);
-  }, 3000);
-});
+    // 画面へ初期反映
+    $('#dob').textContent = (ctx.year && ctx.month && ctx.day)
+      ? `${ctx.year}年${ctx.month}月${ctx.day}日 生まれ`
+      : '生年月日が未設定です（前のページから引き継いでください）';
+    $('#category').value = ctx.category || '';
+    $('#question').value = ctx.question || '';
 
-const params = new URLSearchParams(location.search);
-const year  = parseInt(params.get('year'));
-const month = parseInt(params.get('month'));
-const day   = parseInt(params.get('day'));
-const zodiacs=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
-const zodiac=zodiacs[(year-4)%12]||"不明";
-const monthTraits={1:"寒月に生まれし静謐の心を持ち",2:"雪解けを待つ忍耐の徳を授かり",3:"芽吹きの息吹を宿す魂を抱き",4:"萌ゆる命の躍動を胸に刻み",5:"薫風と共に歩む軽やかな心を携え",6:"豊穣の光を授かる運命に生まれ",7:"深き水面の如き洞察を得て",8:"烈日の炎に祝福されし者なり",9:"実りの秋に育まれし叡智を持ち",10:"黄昏に咲く決意の花を宿し",11:"夜霜をも溶かす感受性を抱き",12:"雪華の中に咲く慈愛の心を備える"};
-const dayTraits={1:"新たなる道を拓く先駆者なり",2:"調和を重んじる清き心を持つ者",3:"喜びを分かち合う光の使い",4:"堅実に積み上げる力を授かりし者",5:"自由と変化を愛する風の魂",6:"慈しみ深き慈悲の持ち主",7:"深遠なる洞察を授かる者",8:"権威と達成の星を宿す者",9:"無私の奉仕を選びし者",11:"霊性に目覚めし導き手",22:"大いなる責務を担う魂"};
+    // API 呼び出し本体
+    async function fetchFull() {
+      if (!ctx.year || !ctx.month || !ctx.day) {
+        alert('生年月日（年・月・日）が不足しています。戻って入力してください。');
+        return;
+      }
+      // 入力欄の最新値を採用
+      ctx.category = $('#category').value.trim() || ctx.category || '総合';
+      ctx.question = $('#question').value.trim() || ctx.question || '最近の運気と具体行動を教えてください。';
+      saveSS(ctx);
 
-const monthText=monthTraits[month]||"月の特性不明";
-const dayText=dayTraits[day]||"独自の使命を携えし者";
+      // ローディング
+      loading.style.display = 'flex';
+      deepReading.classList.add('muted');
+      deepReading.textContent = '鑑定を生成しています…';
 
-document.getElementById('deepReading').innerText = `
-【特別神託】
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            mode: 'full',
+            year: ctx.year,
+            month: ctx.month,
+            day: ctx.day,
+            text: `【相談ジャンル】${ctx.category}\n【相談内容】${ctx.question}`
+          })
+        });
 
-あなたは
-${year}年${month}月${day}日生まれ
-十二支「${zodiac}」に導かれし者。
+        const text = await res.text();
+        loading.style.display = 'none';
 
-${monthText}
-「${day}」の日に
-${dayText}
-を授かりし宿命を背負う。
+        if (!res.ok) {
+          let err = '';
+          try { err = (JSON.parse(text)?.error) || ''; } catch {}
+          deepReading.textContent = `エラー: ${err || '取得に失敗しました'}`;
+          return;
+        }
 
-この関係は単なる偶然ではなく、
-過去世から続く深い縁が結んだ運命。
+        // Workerの返却フォーマットを吸収（{message} or chat.completions互換）
+        let message = text;
+        try {
+          const data = JSON.parse(text);
+          message = data?.full_text || data?.message || data?.choices?.[0]?.message?.content || text;
+        } catch { /* 非JSONならそのまま */ }
 
-いま、あなたが抱く想いと行動が
-未来を大きく変える岐路に立っている。
-`;
+        deepReading.textContent = message || '(本文を取得できませんでした)';
+        deepReading.classList.remove('muted');
+        // 取得後はフォームを隠す（任意）
+        formPanel.style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        loading.style.display = 'none';
+        deepReading.textContent = `通信エラー: ${err?.message || err}`;
+      }
+    }
 
-// フォーム送信：confirm.htmlに「年/月/日 + ジャンル + 相談文」を引き継ぎ
-document.getElementById('questionForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  const category = encodeURIComponent(this.category.value.trim());
-  const question = encodeURIComponent(this.question.value.trim());
-  if(!category || !question){ alert('ジャンルと内容を入力してください。'); return; }
-  // ★ ここで生年月日も一緒に引き継ぎます
-  location.href = `confirm.html?year=${year}&month=${month}&day=${day}&category=${category}&question=${question}`;
-});
+    // ボタン押下で取得
+    $('#submitBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      fetchFull();
+    });
 
-// 波紋演出
-document.querySelector('.submit-button').addEventListener('click', e=>{
-  const b=e.currentTarget,r=document.createElement('span'),rect=b.getBoundingClientRect(),size=Math.max(rect.width,rect.height),x=e.clientX-rect.left-size/2,y=e.clientY-rect.top-size/2;
-  r.style.width=r.style.height=size+'px';r.style.left=x+'px';r.style.top=y+'px';r.classList.add('ripple');b.appendChild(r);setTimeout(()=>r.remove(),600);
-});
-</script>
+    // 条件が揃っていれば自動取得（決済後に戻ってきた直後向け）
+    const shouldAuto =
+      (ctx.year && ctx.month && ctx.day) &&
+      (ctx.category || $('#category').value) &&
+      (ctx.question || $('#question').value);
+
+    if (shouldAuto || qs.get('autofetch') === '1' || qs.get('paid') === '1') {
+      // 初回レンダ後に少し待って実行（描画のチラつき防止）
+      setTimeout(fetchFull, 200);
+    }
+  </script>
 </body>
 </html>
