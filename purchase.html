@@ -5,100 +5,46 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>守護神占い｜鑑定結果購入</title>
 <style>
-body {
-  background: linear-gradient(to bottom, #1a0b2e, #2e1a47);
-  color: #fff;
-  font-family: 'Zen Old Mincho', serif;
-  text-align: center;
-  padding: 30px;
-}
-
-.container {
-  max-width: 600px;
-  margin: auto;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 0 20px rgba(147,51,234,0.4);
-}
-
-h1 {
-  font-size:1.5em;
-  margin-bottom:0.5em;
-}
-
-p {
-  margin:1em 0;
-  white-space: pre-wrap;
-}
-
-.purchase-button {
-  display: inline-block;
-  margin-top: 20px;
-  padding: 15px 30px;
-  background: #9d4edd;
-  color: #fff;
-  border-radius: 8px;
-  text-decoration: none;
-  font-size: 1.2em;
-  transition: all 0.3s ease;
-}
-
-.purchase-button:hover {
-  background: #c77dff;
-  transform: scale(1.05);
-}
-
-.return-link {
-  display:block;
-  margin-top:20px;
-  color:#9d4edd;
-  text-decoration:underline;
-}
-
-.bonus {
-  margin-top:20px;
-  padding:15px;
-  background: rgba(255,255,255,0.1);
-  border:1px dashed #c77dff;
-  border-radius:8px;
-  color:#ffccff;
-  font-size:0.95em;
-}
+body{background:linear-gradient(to bottom,#1a0b2e,#2e1a47);color:#fff;font-family:'Zen Old Mincho',serif;text-align:center;padding:30px}
+.container{max-width:600px;margin:auto;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:20px;box-shadow:0 0 20px rgba(147,51,234,.4)}
+h1{font-size:1.5em;margin-bottom:.5em}
+p{margin:1em 0;white-space:pre-wrap}
+.purchase-button{display:inline-block;margin-top:20px;padding:15px 30px;background:#9d4edd;color:#fff;border-radius:8px;text-decoration:none;font-size:1.2em;transition:all .3s ease}
+.purchase-button:hover{background:#c77dff;transform:scale(1.05)}
+.return-link{display:block;margin-top:20px;color:#9d4edd;text-decoration:underline}
+.bonus{margin-top:20px;padding:15px;background:rgba(255,255,255,.1);border:1px dashed #c77dff;border-radius:8px;color:#ffccff;font-size:.95em}
+.small{font-size:.9em;color:#ccc}
 </style>
 </head>
 <body>
 <div class="container">
   <h1>鑑定結果の購入手続き</h1>
-  <p>
-おめでとうございます。<br>
-あなた専用の詳細鑑定結果が用意されています。
-<br><br>
-この鑑定書には、<br>
-・守護神からの具体的な行動指針<br>
-・未来を好転させるための特別な助言<br>
-・今後3か月間の運命の流れ<br>
-が詳細に記されています。
-  </p>
+  <p>おめでとうございます。あなた専用の詳細鑑定結果が用意されています。</p>
 
-  <div class="bonus">
-🎁 <strong>本日中にご購入いただいた方限定で、<br>
-守護神の護符画像を無料でプレゼントいたします。</strong>
-  </div>
+  <div class="bonus">🎁 <strong>本日中にご購入の方へ守護神の護符画像を進呈</strong></div>
 
-  <p>
-以下のボタンからお手続きください。
-  </p>
+  <p>以下のボタンからお手続きください。</p>
 
-  <a href="#" class="purchase-button">今すぐ鑑定結果を購入する（3000円）</a>
+  <!-- 本番では決済ページへ。テスト簡略化のため onclick でフラグを立てて戻します -->
+  <a href="#" id="fakePay" class="purchase-button">今すぐ鑑定結果を購入する（テスト決済）</a>
 
-  <p style="font-size:0.9em; color:#ccc;">
-※決済後すぐに全文が表示されます。<br>
-※決済には各種クレジットカード、コンビニ払いがご利用いただけます。
-  </p>
+  <p class="small">※本番では実際の決済完了後、confirm.html にリダイレクトしてフラグを付与します。</p>
 
   <a href="index.html" class="return-link">最初のページに戻る</a>
 </div>
+
+<script>
+// 決済“完了”をシミュレート：フラグを立てて元の confirm.html に戻す
+document.getElementById('fakePay').addEventListener('click', (e) => {
+  e.preventDefault();
+  // 支払いフラグ
+  localStorage.setItem('ss_paid', '1');
+
+  // 直前の confirm.html のパラメータに戻る（history.back() だと跨いだ時に崩れるので手組み）
+  // ここでは、もし purchase.html にも query が付いていればそれを流用し、なければ paid=1 だけ付ける
+  const params = location.search || '?paid=1';
+  location.href = 'confirm.html' + params;
+});
+</script>
 </body>
 </html>
