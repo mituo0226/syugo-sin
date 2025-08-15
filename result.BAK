@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>守護神の啓示（プレビュー） | ◆守護神占い◆</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { margin: 0; font-family: system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif; background: #0b0f17; color: #e6ecff; }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 24px; }
+    header { display: flex; align-items: center; gap: 12px; }
+    h1 { font-size: 1.6rem; margin: 8px 0; }
+    .panel { background: #121829; border: 1px solid #1f2a44; border-radius: 14px; padding: 18px; box-shadow: 0 6px 24px rgba(0,0,0,.25); }
+    .muted { opacity: .78; }
+    .btn { display:inline-block; padding:12px 18px; border-radius:999px; border:1px solid #3751ff; background:#4b63ff; color:#fff; text-decoration:none; font-weight:600; box-shadow:0 6px 18px rgba(75,99,255,.35); }
+    .grid { display:grid; grid-template-columns:1fr 2fr; gap:12px; }
+    input[type="text"], textarea { width:100%; padding:10px 12px; border-radius:10px; border:1px solid #2a3657; background:#0d1220; color:#e6ecff; outline:none; }
+    textarea { min-height: 96px; resize: vertical; }
+    #teaser { white-space: pre-wrap; line-height:1.9; font-size:1.04rem; }
+    .blur { filter: blur(6px); user-select:none; }
+    .spacer { height: 16px; }
+    #loadingScreen { position: fixed; inset: 0; background: rgba(7,10,18,.75); display: none; align-items: center; justify-content: center; z-index: 999; }
+    .loader { width: 64px; height: 64px; border-radius: 50%; border: 6px solid #2a3657; border-top-color: #7f96ff; animation: spin .9s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg);} }
+    @media (max-width:680px){ .grid{ grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <div id="loadingScreen"><div class="loader"></div></div>
+
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>守護神の啓示（プレビュー）</h1>
+        <div class="muted">この文頭は、有料解放後の本鑑定と<strong>完全に同じ</strong>です。</div>
+      </div>
+    </header>
+
+    <div class="spacer"></div>
+
+    <!-- DOB と 相談入力（ここで入れた内容を paid.html へ渡す） -->
+    <section class="panel">
+      <div class="grid">
+        <div class="muted">生年月日</div>
+        <div id="dob">-</div>
+
+        <div><label for="category">相談ジャンル</label></div>
+        <div><input id="category" type="text" placeholder="例）恋愛 / 仕事 / 金運"></div>
+
+        <div><label for="question">ご相談内容</label></div>
+        <div><textarea id="question" placeholder="例）最近の関係に不安があります。具体的な行動指針を知りたいです。"></textarea></div>
+      </div>
+      <div class="muted" style="margin-top:8px;">※ ここで入力した内容は有料ページに引き継がれ、具体的な助言（1〜3ヶ月の行動など）に反映されます。</div>
+    </section>
+
+    <div class="spacer"></div>
+
+    <!-- プレビュー文頭（Worker: mode=preview） -->
+    <section class="panel">
+      <h2 style="margin:0 0 8px;font-size:1.1rem;">神託（プレビュー）</h2>
+      <div id="teaser">（プレビューを取得しています…）</div>
+      <div class="muted" style="margin-top:10px;">※ この先の詳細は有料で解禁されます。</div>
+    </section>
+
+    <div class="spacer"></div>
+
+    <section class="panel" style="display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
+      <div class="muted">購入後は、上のプレビュー文頭の<strong>続き</strong>がそのまま開きます。</div>
+      <a id="toPaid" class="btn">鑑定結果を購入して全文を読む</a>
+    </section>
+
+    <div class="spacer"></div>
+  </div>
+
+  <script>
+  /********** 設定 **********/
+  const API_URL = 'https://syugo-sin-kantei-api.mituo0226.workers.dev/consult';
+  const SKEY = 'kanteiContext';
+
+  function loadSS(){ try{ return JSON.parse(sessionStorage.getItem(SKEY) || '{}'); }catch{ return {}; } }
+  function saveSS(obj){ try{ sessionStorage.setItem(SKEY, JSON.stringify(obj)); }catch{} }
+
+  const qs = new URLSearchParams(location.search);
+  const ctx = {
+    year:  Number(qs.get('year'))  || loadSS().year  || 0,
+    month: Number(qs.get('month')) || loadSS().month || 0,
+    day:   Number(qs.get('day'))   || loadSS().day   || 0,
+    category: (qs.get('category') || loadSS().category || '').toString(),
+    question: (qs.get('question') || loadSS().question || '').toString()
+  };
+
+  // DOB 表示
+  const dobEl = document.getElementById('dob');
+  if (ctx.year && ctx.month && ctx.day) {
+    dobEl.textContent = `${ctx.year}年${ctx.month}月${ctx.day}日 生まれ`;
+  } else {
+    dobEl.textContent = '生年月日が未設定です（年・月・日を付けてこのページに遷移してください）';
+  }
+
+  // 入力初期値
+  document.getElementById('category').value = ctx.category;
+  document.getElementById('question').value = ctx.question;
+
+  // プレビュー取得（mode: preview）
+  (async () => {
+    if (!ctx.year || !ctx.month || !ctx.day) return;
+    try {
+      const r = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'preview', year: ctx.year, month: ctx.month, day: ctx.day })
+      });
+      const data = await r.json().catch(()=> ({}));
+      document.getElementById('teaser').textContent = data?.teaser || '（プレビューの取得に失敗しました）';
+    } catch (e) {
+      document.getElementById('teaser').textContent = '（通信エラー：' + (e?.message || e) + '）';
+    }
+  })();
+
+  // 購入ボタンクリック：paid.html へクエリ付与して遷移 & sessionStorage保存
+  document.getElementById('toPaid').addEventListener('click', (e) => {
+    e.preventDefault();
+    const category = document.getElementById('category').value.trim();
+    const question = document.getElementById('question').value.trim();
+    const merged = { ...ctx, category, question };
+    saveSS(merged);
+
+    if (!merged.year || !merged.month || !merged.day) {
+      alert('生年月日（年・月・日）が不足しています。');
+      return;
+    }
+    const p = new URLSearchParams();
+    p.set('year', merged.year);
+    p.set('month', merged.month);
+    p.set('day', merged.day);
+    if (merged.category) p.set('category', merged.category);
+    if (merged.question) p.set('question', merged.question);
+    location.href = 'paid.html?' + p.toString();
+  });
+  </script>
+</body>
+</html>
