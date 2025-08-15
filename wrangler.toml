@@ -1,0 +1,17 @@
+name = "syugo-sin"
+main = "consult.js" # Workerのエントリーポイント（必要に応じて変更）
+compatibility_date = "2025-08-15"
+
+account_id = "22a595c9b4d4017afe09d00fc1157fa"
+
+# Pagesではbuildは不要ですが、Workersでビルドする場合は指定
+# build.command = "npm run build"
+
+# 環境変数やシークレット（Pages側で設定したものは不要）
+# [vars]
+# API_KEY = "your_api_key_here"
+
+# ローカルでのプレビュー設定
+[dev]
+port = 8787
+local_protocol = "http"
