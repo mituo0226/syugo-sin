@@ -3,87 +3,132 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>有料鑑定 | ◆守護神占い◆</title>
+  <title>有料鑑定｜◆守護神占い◆</title>
   <style>
-    :root { color-scheme: light dark; }
-    body { margin:0; font-family: system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif; background:#0b0f17; color:#e6ecff; }
-    .wrap { max-width: 860px; margin: 0 auto; padding: 24px; }
-    header { display:flex; align-items:center; gap:12px; }
-    h1 { font-size:1.5rem; margin:12px 0 8px; }
-    .sub { opacity:.75; }
-    .panel { background:#121829; border:1px solid #1f2a44; border-radius:14px; padding:18px; box-shadow:0 6px 24px rgba(0,0,0,.25); }
-    .grid { display:grid; grid-template-columns:1fr 2fr; gap:12px; }
-    label { font-size:.92rem; opacity:.9; }
-    input[type="text"], textarea { width:100%; padding:10px 12px; border-radius:10px; border:1px solid #2a3657; background:#0d1220; color:#e6ecff; outline:none; }
-    textarea { min-height: 120px; resize: vertical; }
-    .btn { display:inline-block; padding:12px 18px; border-radius:999px; border:1px solid #3751ff; background:#4b63ff; color:#fff; text-decoration:none; cursor:pointer; font-weight:600; box-shadow:0 6px 18px rgba(75,99,255,.35); transition:transform .06s ease; text-align:center; }
-    .btn:active { transform: translateY(1px); }
-    .muted { font-size:.9rem; opacity:.75; }
-    #deepReading { white-space: pre-wrap; line-height:1.9; font-size:1.02rem; }
-    .spacer { height:16px; }
-    #loading { position:fixed; inset:0; background:rgba(7,10,18,.75); display:none; align-items:center; justify-content:center; z-index:999; }
-    .spinner { width:72px; height:72px; border-radius:50%; border:6px solid #2a3657; border-top-color:#7f96ff; animation:spin .9s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg);} }
-    @media (max-width:680px){ .grid{ grid-template-columns:1fr; } }
+    /* ===== confirm/result と同系のスキン ===== */
+    body {
+      background: linear-gradient(to bottom, #1a0b2e, #2e1a47);
+      color: #fff;
+      font-family: 'Zen Old Mincho', serif;
+      text-align: center;
+      padding: 30px;
+      overflow-x: hidden;
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background:
+        radial-gradient(circle at 20% 50%, rgba(157,78,221,.10) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(199,125,255,.10) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(255,107,157,.10) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+      animation: mistMove 20s ease-in-out infinite;
+    }
+    @keyframes mistMove {
+      0%,100% { transform: translate(0,0); }
+      25%     { transform: translate(-10px,-5px); }
+      50%     { transform: translate(5px,-10px); }
+      75%     { transform: translate(-5px,5px); }
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(147,51,234,0.4);
+      opacity: 0;               /* ローディング後に 1 へ */
+      transition: opacity 1s;
+      position: relative;
+      overflow: hidden;
+    }
+    .container::before{
+      content:'';
+      position:absolute; inset:-20px;
+      background: radial-gradient(circle, rgba(157,78,221,.3) 0%, transparent 70%);
+      animation: pulse 3s ease-in-out infinite;
+      z-index:-1; border-radius:16px;
+    }
+    @keyframes pulse { 0%,100%{transform:scale(1);opacity:.3} 50%{transform:scale(1.05);opacity:.6} }
+
+    h1{ font-size:1.5em; margin:0 0 .5em; }
+    .muted{ opacity:.8; font-size:.95rem; }
+    .btn{
+      display:inline-block; margin-top:12px; padding:12px 24px;
+      background:#9d4edd; color:#fff; border-radius:8px; text-decoration:none;
+      font-size:1.05rem; transition:.3s; border:0; cursor:pointer; font-weight:600;
+    }
+    .btn:hover{ background:#c77dff; transform:scale(1.05); }
+    #deepReading{ white-space:pre-wrap; line-height:1.9; text-align:left; }
+    .field{ text-align:left; margin:14px 0; }
+    .field label{ display:block; margin-bottom:6px; opacity:.9; }
+    .field input, .field textarea{
+      width:100%; box-sizing:border-box; border:1px solid rgba(255,255,255,.25);
+      background:rgba(255,255,255,.08); color:#fff; border-radius:8px; padding:10px 12px;
+      font-family:inherit; font-size:1rem;
+    }
+    textarea{ min-height:110px; resize:vertical; }
+    .space{ height:14px; }
+
+    /* ローディング */
+    #loading{ position:fixed; inset:0; background:rgba(0,0,0,.8); display:flex;
+      align-items:center; justify-content:center; flex-direction:column; z-index:9999; }
+    #loading .spinner{ width:100px; height:100px; position:relative; }
+    #loading .spinner::before,#loading .spinner::after{
+      content:''; position:absolute; inset:0; border-radius:50%;
+      background: conic-gradient(from 0deg, transparent, #9d4edd, #c77dff, #ff6b9d, transparent);
+      animation:spin 3s linear infinite;
+    }
+    #loading .spinner::after{ inset:10%; animation:spin 2s linear infinite reverse; }
+    @keyframes spin{ to{ transform:rotate(360deg);} }
   </style>
 </head>
 <body>
-  <div id="loading"><div class="spinner"></div></div>
+  <div id="loading">
+    <div class="spinner"></div>
+    <p class="muted" style="margin-top:10px;">霊視を開始しています…</p>
+  </div>
 
-  <div class="wrap">
-    <header>
-      <div>
-        <h1>本鑑定（購入済み）</h1>
-        <div class="sub">プレビューと同じ文頭から、そのまま全文が展開されます。</div>
-      </div>
-    </header>
+  <div class="container" id="box">
+    <h1>個別運命鑑定</h1>
+    <p class="muted" id="dob">-</p>
 
-    <div class="spacer"></div>
+    <div class="space"></div>
 
-    <!-- 入力確認・追加入力（足りなければここで補完） -->
-    <section class="panel" id="formPanel">
-      <div class="grid">
-        <div><label>生年月日</label></div>
-        <div id="dob" class="muted">-</div>
+    <!-- 本文（APIで取得した全文を表示） -->
+    <div id="deepReading">（ここに本鑑定の全文が表示されます）</div>
 
-        <div><label for="category">相談ジャンル</label></div>
-        <div><input id="category" type="text" placeholder="例）恋愛 / 仕事 / 金運 など"></div>
+    <div class="space"></div><div class="space"></div>
 
-        <div><label for="question">ご相談内容</label></div>
-        <div><textarea id="question" placeholder="例）最近の距離感に悩んでいます。今後どう向き合えば良いでしょうか。"></textarea></div>
-      </div>
-      <div style="margin-top:10px;">
-        <button id="submitBtn" class="btn">本鑑定の全文を表示する</button>
-        <span class="muted" style="margin-left:8px;">※ 情報が揃っていれば、ページ表示直後に自動で取得します。</span>
-      </div>
-    </section>
+    <!-- 追加情報（足りなければ入力→再取得） -->
+    <div class="field">
+      <label for="category">相談ジャンル</label>
+      <input id="category" type="text" placeholder="例）恋愛 / 仕事 / 金運 など">
+    </div>
+    <div class="field">
+      <label for="question">ご相談内容</label>
+      <textarea id="question" placeholder="例）最近の距離感に悩んでいます。今後どう向き合えば良いでしょうか。"></textarea>
+    </div>
+    <button id="fetchBtn" class="btn">本鑑定の全文を取得する</button>
 
-    <div class="spacer"></div>
-
-    <!-- 本文表示 -->
-    <section class="panel">
-      <h2 style="margin:0 0 8px;font-size:1.1rem;">鑑定結果</h2>
-      <div id="deepReading" class="muted">（ここに本鑑定の全文が表示されます）</div>
-    </section>
-
-    <div class="spacer"></div>
+    <div class="space"></div>
+    <a href="index.html" class="muted" style="display:inline-block; margin-top:8px; text-decoration:underline;">最初のページに戻る</a>
   </div>
 
   <script>
-    // ===== 設定 =====
+    // ===== API エンドポイント =====
     const API_URL = 'https://syugo-sin-kantei-api.mituo0226.workers.dev/consult';
-    const SKEY = 'kanteiContext';
 
-    const $ = sel => document.querySelector(sel);
-    const loading = $('#loading');
-    const deepReading = $('#deepReading');
-    const formPanel = $('#formPanel');
-
-    function loadSS(){ try{ return JSON.parse(sessionStorage.getItem(SKEY)||'{}'); }catch{ return {}; } }
-    function saveSS(obj){ try{ sessionStorage.setItem(SKEY, JSON.stringify(obj)); }catch{} }
-
-    // URL + sessionStorage から文脈を復元
+    // URLパラメータ & sessionStorage から文脈を復元
     const qs = new URLSearchParams(location.search);
+    const SKEY = 'kanteiContext';
+    const loadSS = () => { try { return JSON.parse(sessionStorage.getItem(SKEY)||'{}'); } catch { return {}; } };
+    const saveSS = (o) => { try { sessionStorage.setItem(SKEY, JSON.stringify(o)); } catch {} };
+
     const ctx = {
       year:  Number(qs.get('year'))  || loadSS().year  || 0,
       month: Number(qs.get('month')) || loadSS().month || 0,
@@ -92,86 +137,75 @@
       question: (qs.get('question') || loadSS().question || '').toString()
     };
 
-    // 画面へ初期反映
+    // 画面初期化
+    const $ = s => document.querySelector(s);
+    const loading = $('#loading');
+    const box = $('#box');
+    const deep = $('#deepReading');
+
     $('#dob').textContent = (ctx.year && ctx.month && ctx.day)
       ? `${ctx.year}年${ctx.month}月${ctx.day}日 生まれ`
       : '生年月日が未設定です（前のページから引き継いでください）';
     $('#category').value = ctx.category || '';
     $('#question').value = ctx.question || '';
 
-    // API 呼び出し本体
-    async function fetchFull() {
-      if (!ctx.year || !ctx.month || !ctx.day) {
+    // 取得関数
+    async function fetchFull(){
+      if (!ctx.year || !ctx.month || !ctx.day){
         alert('生年月日（年・月・日）が不足しています。戻って入力してください。');
         return;
       }
-      // 入力欄の最新値を採用
+      // 入力欄の最新値で上書き
       ctx.category = $('#category').value.trim() || ctx.category || '総合';
       ctx.question = $('#question').value.trim() || ctx.question || '最近の運気と具体行動を教えてください。';
       saveSS(ctx);
 
-      // ローディング
       loading.style.display = 'flex';
-      deepReading.classList.add('muted');
-      deepReading.textContent = '鑑定を生成しています…';
+      deep.textContent = '鑑定を生成しています…';
 
-      try {
+      try{
         const res = await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method:'POST',
+          headers:{ 'Content-Type':'application/json' },
           body: JSON.stringify({
             mode: 'full',
-            year: ctx.year,
-            month: ctx.month,
-            day: ctx.day,
+            year: ctx.year, month: ctx.month, day: ctx.day,
             text: `【相談ジャンル】${ctx.category}\n【相談内容】${ctx.question}`
           })
         });
-
-        const text = await res.text();
+        const raw = await res.text();
         loading.style.display = 'none';
+        box.style.opacity = '1';
 
-        if (!res.ok) {
-          let err = '';
-          try { err = (JSON.parse(text)?.error) || ''; } catch {}
-          deepReading.textContent = `エラー: ${err || '取得に失敗しました'}`;
+        if(!res.ok){
+          let msg = '';
+          try{ msg = JSON.parse(raw)?.error || ''; }catch{}
+          deep.textContent = `エラー: ${msg || '取得に失敗しました'}`;
           return;
         }
+        let message = raw;
+        try{
+          const data = JSON.parse(raw);
+          message = data?.full_text || data?.message || data?.choices?.[0]?.message?.content || raw;
+        }catch{/* 非JSONはそのまま */}
 
-        // Workerの返却フォーマットを吸収（{message} or chat.completions互換）
-        let message = text;
-        try {
-          const data = JSON.parse(text);
-          message = data?.full_text || data?.message || data?.choices?.[0]?.message?.content || text;
-        } catch { /* 非JSONならそのまま */ }
-
-        deepReading.textContent = message || '(本文を取得できませんでした)';
-        deepReading.classList.remove('muted');
-        // 取得後はフォームを隠す（任意）
-        formPanel.style.display = 'none';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } catch (err) {
+        deep.textContent = message || '(本文を取得できませんでした)';
+      }catch(e){
         loading.style.display = 'none';
-        deepReading.textContent = `通信エラー: ${err?.message || err}`;
+        box.style.opacity = '1';
+        deep.textContent = `通信エラー: ${e?.message || e}`;
       }
     }
 
-    // ボタン押下で取得
-    $('#submitBtn').addEventListener('click', (e) => {
-      e.preventDefault();
-      fetchFull();
+    // ボタン
+    $('#fetchBtn').addEventListener('click', (e)=>{ e.preventDefault(); fetchFull(); });
+
+    // 初回オート取得（決済後遷移など）
+    window.addEventListener('load', () => {
+      setTimeout(()=>{ loading.style.display='none'; box.style.opacity='1'; }, 1000);
+      const shouldAuto = (ctx.year && ctx.month && ctx.day);
+      if (shouldAuto) setTimeout(fetchFull, 200);
     });
-
-    // 条件が揃っていれば自動取得（決済後に戻ってきた直後向け）
-    const shouldAuto =
-      (ctx.year && ctx.month && ctx.day) &&
-      (ctx.category || $('#category').value) &&
-      (ctx.question || $('#question').value);
-
-    if (shouldAuto || qs.get('autofetch') === '1' || qs.get('paid') === '1') {
-      // 初回レンダ後に少し待って実行（描画のチラつき防止）
-      setTimeout(fetchFull, 200);
-    }
   </script>
 </body>
 </html>
