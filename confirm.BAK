@@ -5,21 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>守護神占い｜霊視結果確認</title>
 <style>
-/* デザイン・演出すべて含む完全版 */
-body{background:linear-gradient(to bottom,#1a0b2e,#2e1a47);color:#fff;font-family:'Zen Old Mincho',serif;text-align:center;padding:30px;overflow-x:hidden;position:relative}
+/* --- 既存スタイル（そのまま） --- */
+body{background:linear-gradient(to bottom,#1a0b2e,#2e1a47);color:#fff;font-family:'Zen Old Mincho',serif;text-align:center;padding:30px;overflow-x:hidden;position:relative;}
 body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:
-radial-gradient(circle at 20% 50%, rgba(157,78,221,.1) 0%, transparent 50%),
-radial-gradient(circle at 80% 20%, rgba(199,125,255,.1) 0%, transparent 50%),
-radial-gradient(circle at 40% 80%, rgba(255,107,157,.1) 0%, transparent 50%);pointer-events:none;z-index:-1;animation:mistMove 20s ease-in-out infinite}
+radial-gradient(circle at 20% 50%,rgba(157,78,221,.1) 0%,transparent 50%),
+radial-gradient(circle at 80% 20%,rgba(199,125,255,.1) 0%,transparent 50%),
+radial-gradient(circle at 40% 80%,rgba(255,107,157,.1) 0%,transparent 50%);pointer-events:none;z-index:-1;animation:mistMove 20s ease-in-out infinite;}
 @keyframes mistMove{0%,100%{transform:translateX(0) translateY(0)}25%{transform:translateX(-10px) translateY(-5px)}50%{transform:translateX(5px) translateY(-10px)}75%{transform:translateX(-5px) translateY(5px)}}
-.container{max-width:600px;margin:auto;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:20px;box-shadow:0 0 20px rgba(147,51,234,.4);opacity:0;transition:opacity 1s;position:relative;overflow:hidden}
+.container{max-width:600px;margin:auto;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:20px;box-shadow:0 0 20px rgba(147,51,234,.4);opacity:0;transition:opacity 1s;position:relative;overflow:hidden;}
 .floating-particles{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}
 .floating-particle{position:absolute;width:2px;height:2px;background:radial-gradient(circle,#c77dff,transparent);border-radius:50%;animation:floatAround 8s infinite linear}
 .floating-particle:nth-child(1){left:10%;top:20%;animation-delay:0s}.floating-particle:nth-child(2){left:80%;top:30%;animation-delay:2s}.floating-particle:nth-child(3){left:20%;top:70%;animation-delay:4s}.floating-particle:nth-child(4){left:70%;top:80%;animation-delay:6s}.floating-particle:nth-child(5){left:50%;top:10%;animation-delay:1s}.floating-particle:nth-child(6){left:30%;top:60%;animation-delay:3s}
 @keyframes floatAround{0%{transform:translate(0,0) rotate(0deg);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translate(20px,-20px) rotate(360deg);opacity:0}}
-.container::before{content:'';position:absolute;top:-20px;left:-20px;right:-20px;bottom:-20px;background:radial-gradient(circle, rgba(157,78,221,.3) 0%, transparent 70%);animation:pulse 3s ease-in-out infinite;z-index:-1;border-radius:16px}
+.container::before{content:'';position:absolute;top:-20px;left:-20px;right:-20px;bottom:-20px;background:radial-gradient(circle,rgba(157,78,221,.3) 0%,transparent 70%);animation:pulse 3s ease-in-out infinite;z-index:-1;border-radius:16px}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.05);opacity:.6}}
-h1{font-size:1.5em;margin-bottom:.5em} p{margin:1em 0;white-space:pre-wrap}
+h1{font-size:1.5em;margin-bottom:.5em}
+p{margin:1em 0;white-space:pre-wrap}
 .preview{background:rgba(255,255,255,.1);padding:15px;border-radius:8px;font-size:1em;line-height:1.6;position:relative}
 .blur{filter:blur(5px);user-select:none}
 .purchase-button{display:inline-block;margin-top:20px;padding:12px 24px;background:#9d4edd;color:#fff;border-radius:8px;text-decoration:none;font-size:1.1em;transition:all .3s ease}
@@ -37,11 +38,18 @@ h1{font-size:1.5em;margin-bottom:.5em} p{margin:1em 0;white-space:pre-wrap}
 .loading-spinner::before{filter:blur(2px);opacity:.7}
 .loading-spinner::after{animation:spiral 2s linear infinite reverse;filter:blur(1px);opacity:.9;width:80%;height:80%;top:10%;left:10%}
 @keyframes spiral{0%{transform:rotate(0) scale(1);filter:hue-rotate(0)}25%{transform:rotate(90deg) scale(1.1);filter:hue-rotate(90deg)}50%{transform:rotate(180deg) scale(.9);filter:hue-rotate(180deg)}75%{transform:rotate(270deg) scale(1.1);filter:hue-rotate(270deg)}100%{transform:rotate(360deg) scale(1);filter:hue-rotate(360deg)}}
-@keyframes blink{0%{opacity:1}50%{opacity:.4}100%{opacity:1}} @keyframes fadeIn{from{opacity:0}to{opacity:1}} @keyframes fadeOut{from{opacity:1}to{opacity:0}}
+@keyframes blink{0%{opacity:1}50%{opacity:.4}100%{opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeOut{from{opacity:1}to{opacity:0}}
 </style>
 </head>
 <body>
-<div id="loadingScreen"><div class="loading-spinner"></div><p>霊視結果を準備中です…</p></div>
+
+<!-- ローディング画面 -->
+<div id="loadingScreen">
+  <div class="loading-spinner"></div>
+  <p>霊視結果を準備中です…</p>
+</div>
 
 <div class="container">
   <div class="floating-particles">
@@ -55,10 +63,9 @@ h1{font-size:1.5em;margin-bottom:.5em} p{margin:1em 0;white-space:pre-wrap}
   <p>「龍」が守護神と交信し、<br>あなた専用の詳細鑑定を用意しました。<br><br>下記は鑑定の一部抜粋です。</p>
 
   <p class="preview">
-あなたが抱える問題は、過去の因縁と深く繋がっています。
-その因縁は、今この瞬間もあなたの行動や選択を支配しています。
-
-<span class="blur">
+    あなたが抱える問題は、過去の因縁と深く繋がっています。<br>
+    その因縁は、今この瞬間もあなたの行動や選択を支配しています。<br><br>
+    <span class="blur" id="paidBlock">
 この先に現れる人物は、あなたの魂に試練を与える存在です。
 しかし恐れることはありません。
 この人物との出会いが、あなたの未来を根本から変える
@@ -82,52 +89,61 @@ h1{font-size:1.5em;margin-bottom:.5em} p{margin:1em 0;white-space:pre-wrap}
 心の在り方がここに記されております。
 
 ※この全文は特別鑑定を購入された方のみご覧いただけます。
-</span>
+    </span>
+  </p>
+
+  <div class="bonus">🎁 <strong>本日中のご購入で守護神の護符画像を進呈</strong></div>
+
+  <p>全文を閲覧するには、鑑定料のお支払いが必要です。</p>
+
+  <a href="purchase.html" id="buyBtn" class="purchase-button">鑑定結果を購入して全文を読む（3000円）</a>
+
+  <a href="index.html" class="return-link">最初のページに戻る</a>
+
+  <!-- テスト便利リンク（本番では削除OK） -->
+  <p style="margin-top:14px;font-size:12px;color:#ccc">
+    デバッグ: <a href="#" id="resetPaid" style="color:#9d4edd">支払いフラグを消す</a>
   </p>
 </div>
 
-<div class="bonus">🎁 <strong>本日中に鑑定結果を購入された方には、<br>特別な守護神の護符画像を無料で進呈いたします。</strong></div>
-
-<p>全文を閲覧するには、鑑定料のお支払いが必要です。</p>
-
-<!-- ★ purchase.htmlへ遷移（年/月/日/ジャンル/質問をそのまま付与） -->
-<a id="purchaseLink" class="purchase-button">鑑定結果を購入して全文を読む（3000円）</a>
-
-<a href="index.html" class="return-link">最初のページに戻る</a>
-
 <script>
-window.addEventListener('load', ()=>{
-  setTimeout(()=>{
-    const loader=document.getElementById('loadingScreen');
-    loader.style.animation='fadeOut 1s forwards';
-    setTimeout(()=>{ loader.remove(); document.querySelector('.container').style.opacity='1'; },1000);
-  },3000);
+// ローディング演出
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const loader = document.getElementById('loadingScreen');
+    loader.style.animation = 'fadeOut 1s forwards';
+    setTimeout(() => {
+      loader.remove();
+      document.querySelector('.container').style.opacity = '1';
+    }, 1000);
+  }, 1000);
 });
 
-const params  = new URLSearchParams(location.search);
-const year    = params.get('year')  || '';
-const month   = params.get('month') || '';
-const day     = params.get('day')   || '';
-const category= decodeURIComponent(params.get('category')||'');
-const question= decodeURIComponent(params.get('question')||'');
+// URLパラメータ（質問表示）
+const params = new URLSearchParams(location.search);
+const category = decodeURIComponent(params.get('category') || '');
+const question = decodeURIComponent(params.get('question') || '');
+document.getElementById('userQuestion').innerText = `【相談ジャンル】\n${category}\n\n【ご相談内容】\n${question}`;
 
-// 相談内容の見出し
-document.getElementById('userQuestion').innerText = `
-【相談ジャンル】
-${category}
+// === ここがポイント：支払い済みかどうかの判定（テスト用） ===
+// 1) localStorage の ss_paid === '1' なら解除
+// 2) もしくは URL に ?paid=1 が付いていても解除（手動デバッグ用）
+const paidBlock = document.getElementById('paidBlock');
+const isPaid = (localStorage.getItem('ss_paid') === '1') || (params.get('paid') === '1');
 
-【ご相談内容】
-${question}
-`;
+if (isPaid) {
+  // モザイク解除
+  paidBlock.classList.remove('blur');
+  // コピーも許可
+  paidBlock.style.userSelect = 'text';
+}
 
-// 購入ボタン：purchase.htmlへクエリをそのまま引き継ぎ
-const q = new URLSearchParams({ year, month, day, category: encodeURIComponent(category), question: encodeURIComponent(question) });
-document.getElementById('purchaseLink').href = `purchase.html?${q.toString()}`;
-
-// 波紋演出
-document.getElementById('purchaseLink').addEventListener('click', e=>{
-  const b=e.currentTarget,r=document.createElement('span'),rect=b.getBoundingClientRect(),size=Math.max(rect.width,rect.height),x=e.clientX-rect.left-size/2,y=e.clientY-rect.top-size/2;
-  r.style.width=r.style.height=size+'px';r.style.left=x+'px';r.style.top=y+'px';r.classList.add('ripple');b.appendChild(r);setTimeout(()=>r.remove(),600);
+// 「購入」ボタンはそのまま purchase.html へ
+// デバッグ用：支払いフラグのリセット
+document.getElementById('resetPaid').addEventListener('click', (e) => {
+  e.preventDefault();
+  localStorage.removeItem('ss_paid');
+  alert('支払いフラグを消去しました。ページを再読み込みすると再びモザイク表示になります。');
 });
 </script>
 </body>
