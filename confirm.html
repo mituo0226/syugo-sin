@@ -310,9 +310,20 @@ window.addEventListener('load', () => {
   const dobBadge = document.getElementById('dobBadge');
   if (year && month && day) dobBadge.textContent = `生年月日：${year}年${month}月${day}日`;
 
-  // purchase.html へ誘導（クエリ引き継ぎ）
-  const purchaseUrl = `purchase.html?year=${year}&month=${month}&day=${day}&category=${encodeURIComponent(category)}&question=${encodeURIComponent(question)}`;
-  document.getElementById('toDeep').addEventListener('click', ()=> location.href = purchaseUrl);
+  // ボタンの設定（paid=1の場合は鑑定を進める、そうでなければ全文を読む）
+  const btn = document.getElementById('toDeep');
+  
+  if (paid) {
+    // モザイクが外れた場合：鑑定を進める
+    btn.textContent = '鑑定を進める';
+    const deepUrl = `deep.html?year=${year}&month=${month}&day=${day}&category=${encodeURIComponent(category)}`;
+    btn.addEventListener('click', ()=> location.href = deepUrl);
+  } else {
+    // モザイクがかかっている場合：全文を読む
+    btn.textContent = '全文を読む';
+    const purchaseUrl = `purchase.html?year=${year}&month=${month}&day=${day}&category=${encodeURIComponent(category)}&question=${encodeURIComponent(question)}`;
+    btn.addEventListener('click', ()=> location.href = purchaseUrl);
+  }
 
   // モザイク本文の描画関数
   const contentEl = document.getElementById('mosaicContent');
