@@ -1,5 +1,5 @@
 name = "syugo-sin"
-main = "consult.js" # Workerのエントリーポイント（必要に応じて変更）
+main = "api.js" # Workerのエントリーポイント
 compatibility_date = "2025-08-15"
 
 account_id = "22a595c9b4d4017afe09d00fc1157fa"
