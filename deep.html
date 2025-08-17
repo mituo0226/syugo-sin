@@ -54,6 +54,7 @@
 
     <div class="actions">
       <button id="send">鑑定を依頼する</button>
+      <button id="reset">新しい鑑定を始める</button>
       <span class="muted">※ テスト時は <span class="ok">deep.html?year=1990&month=4&day=15</span> で開いてください</span>
     </div>
 
@@ -84,6 +85,26 @@
 })();
 
 // --- 送信処理 ---------------------------------------------------------------
+// スレッドID: ブラウザ側に保存（無ければ発行）
+function getThreadId() {
+  const key = "kantei_thread_id";
+  let id = localStorage.getItem(key);
+  if (!id) {
+    id = "t_" + Date.now() + "_" + Math.random().toString(36).slice(2,8);
+    localStorage.setItem(key, id);
+  }
+  return id;
+}
+
+// 履歴: 直近4往復だけを保存/送信
+function loadHistory() {
+  try { return JSON.parse(localStorage.getItem("kantei_history")||"[]"); }
+  catch(e){ return []; }
+}
+function saveHistory(hist) {
+  localStorage.setItem("kantei_history", JSON.stringify(hist.slice(-8)));
+}
+
 document.getElementById('send').addEventListener('click', async () => {
   const btn = document.getElementById('send');
   const out = document.getElementById('result');
@@ -100,14 +121,22 @@ document.getElementById('send').addEventListener('click', async () => {
   btn.disabled = true;
   out.innerHTML = `<span class="loading"></span>鑑定中です。しばらくお待ちください…`;
 
+  const history = loadHistory(); // [{role, content}]
+  const threadId = getThreadId();
+
   // 送信ペイロード
   const payload = {
     year: window.__DOB__?.year,
     month: window.__DOB__?.month,
     day: window.__DOB__?.day,
     category,
-    question
+    question,
+    threadId: threadId,
+    history: history   // 直近をAPIに渡す
   };
+
+  // 送信前にユーザー発話を履歴に追加（表示テキストから作成）
+  history.push({ role: "user", content: question });
 
   try {
     const res = await fetch(api, {
@@ -125,11 +154,24 @@ document.getElementById('send').addEventListener('click', async () => {
     const msg = (data && (data.message || data.reply)) ? (data.message || data.reply) : JSON.stringify(data, null, 2);
     typeWriter(out, msg);
 
+    // 返信メッセージを履歴に追加
+    history.push({ role: "assistant", content: data.message || "" });
+    saveHistory(history);
+
   } catch (err) {
     out.innerHTML = `<span class="err">エラー:</span> ${err.message || err}`;
   } finally {
     btn.disabled = false;
   }
+});
+
+// --- 新しい鑑定を始める -----------------------------------------------------
+document.getElementById('reset').addEventListener('click', () => {
+  localStorage.removeItem("kantei_history");
+  localStorage.removeItem("kantei_thread_id");
+  document.getElementById('question').value = '';
+  document.getElementById('result').textContent = '';
+  alert("過去の鑑定履歴をリセットしました。新しい鑑定を始められます。");
 });
 
 // --- タイプライター演出（読みやすさのため軽めに） ---------------------------
