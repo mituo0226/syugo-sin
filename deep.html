@@ -537,8 +537,26 @@ document.getElementById('send').addEventListener('click', async () => {
       throw new Error(`API ${res.status} ${res.statusText} ${text?'- '+text:''}`);
     }
 
-    const data = await res.json();
-    const msg = (data && (data.message || data.reply)) ? (data.message || data.reply) : JSON.stringify(data, null, 2);
+    const text = await res.text();
+    
+    // 成功時の表示テキストの決定ロジックを差し替え
+    let display = '';
+    try {
+      const data = JSON.parse(text);
+      if (!res.ok) {
+        throw new Error(`API ${res.status} ${res.statusText} ${text?'- '+text:''}`);
+      } else {
+        if (Array.isArray(data?.paragraphs) && data.paragraphs.length) {
+          display = data.paragraphs.join('\n\n'); // APIが段落配列を返す将来拡張にも対応
+        } else if (typeof data?.message === 'string') {
+          display = toParagraphText(data.message); // ← 段落化してからタイピング
+        } else {
+          display = toParagraphText(text);
+        }
+      }
+    } catch {
+      display = toParagraphText(text);
+    }
     
     // ローディング画面を非表示
     loader.style.display = 'none';
@@ -547,14 +565,21 @@ document.getElementById('send').addEventListener('click', async () => {
     questionInput.style.display = 'none';
     btn.style.display = 'none';
     
-    // 結果を表示
-    typeWriter(out, msg);
+    // 結果を表示（タイピング演出）
+    setTimeout(()=>{ 
+      typeWriter(out, display, 30); 
+    }, 250);
     
     // 新しい鑑定ボタンを表示
     newConsultation.style.display = 'block';
 
-    // 返信メッセージを履歴に追加
-    history.push({ role: "assistant", content: data.message || "" });
+    // 返信メッセージを履歴に追加（元のメッセージを保存）
+    try {
+      const data = JSON.parse(text);
+      history.push({ role: "assistant", content: data.message || "" });
+    } catch {
+      history.push({ role: "assistant", content: text });
+    }
     saveHistory(history);
 
   } catch (err) {
@@ -588,6 +613,22 @@ document.getElementById('newConsultBtn').addEventListener('click', () => {
 });
 
 
+
+// 追加：段落テキストを作る（タイピング演出用。段落間に空行）
+function toParagraphText(text) {
+  const t = String(text || '').replace(/\r\n/g, '\n').trim();
+  let paras = t.split(/\n{2,}/).map(s => s.trim()).filter(Boolean);
+  if (paras.length <= 1) {
+    const sents = t.split(/(?<=[。！？])/);
+    paras = [];
+    for (let i = 0; i < sents.length; ) {
+      const take = Math.min(4, Math.max(2, sents.length - i));
+      paras.push(sents.slice(i, i + take).join('').trim());
+      i += take;
+    }
+  }
+  return paras.join('\n\n');
+}
 
 // --- タイプライター演出（result.htmlと同じ表現） ---------------------------
 function typeWriter(el, text, speed=80){
