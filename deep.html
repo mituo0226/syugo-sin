@@ -167,11 +167,32 @@ document.getElementById('send').addEventListener('click', async () => {
 
 // --- 新しい鑑定を始める -----------------------------------------------------
 document.getElementById('reset').addEventListener('click', () => {
+  // 履歴とスレッドIDをクリア
   localStorage.removeItem("kantei_history");
   localStorage.removeItem("kantei_thread_id");
+  
+  // 画面をリセット
   document.getElementById('question').value = '';
   document.getElementById('result').textContent = '';
-  alert("過去の鑑定履歴をリセットしました。新しい鑑定を始められます。");
+  
+  // カテゴリをデフォルトに戻す
+  document.getElementById('category').value = '仕事';
+  
+  // 入力欄にフォーカスを当てて、新しい鑑定の準備を整える
+  document.getElementById('question').focus();
+  
+  // 結果表示エリアに新しい鑑定開始のメッセージを表示
+  document.getElementById('result').innerHTML = `
+    <div style="color: #67e8f9; font-weight: bold; margin-bottom: 10px;">
+      ✨ 新しい鑑定を開始します ✨
+    </div>
+    <div style="font-size: 14px; opacity: 0.8;">
+      上記の入力欄に新しいご相談内容を入力して「鑑定を依頼する」ボタンを押してください。
+    </div>
+  `;
+  
+  // ページ上部にスクロールして入力欄が見えるようにする
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
 // --- タイプライター演出（読みやすさのため軽めに） ---------------------------
