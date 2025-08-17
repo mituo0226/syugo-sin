@@ -1,185 +1,142 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>守護神占い｜霊視結果確認</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>霊視結果のご用意ができました｜龍の鑑定 確認</title>
 <style>
-/* ===== 既存デザイン（必要箇所だけ要約なしで収録） ===== */
-body{background:linear-gradient(to bottom,#1a0b2e,#2e1a47);color:#fff;font-family:'Zen Old Mincho',serif;text-align:center;padding:30px;overflow-x:hidden;position:relative}
-body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:
-radial-gradient(circle at 20% 50%, rgba(157,78,221,.1) 0%, transparent 50%),
-radial-gradient(circle at 80% 20%, rgba(199,125,255,.1) 0%, transparent 50%),
-radial-gradient(circle at 40% 80%, rgba(255,107,157,.1) 0%, transparent 50%);pointer-events:none;z-index:-1;animation:mistMove 20s ease-in-out infinite}
-@keyframes mistMove{0%,100%{transform:translateX(0) translateY(0)}25%{transform:translateX(-10px) translateY(-5px)}50%{transform:translateX(5px) translateY(-10px)}75%{transform:translateX(-5px) translateY(5px)}}
-.container{max-width:600px;margin:auto;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:20px;box-shadow:0 0 20px rgba(147,51,234,.4);opacity:0;transition:opacity 1s;position:relative;overflow:hidden}
-.floating-particles{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}
-.floating-particle{position:absolute;width:2px;height:2px;background:radial-gradient(circle,#c77dff,transparent);border-radius:50%;animation:floatAround 8s infinite linear}
-.floating-particle:nth-child(1){left:10%;top:20%;animation-delay:0s}.floating-particle:nth-child(2){left:80%;top:30%;animation-delay:2s}.floating-particle:nth-child(3){left:20%;top:70%;animation-delay:4s}.floating-particle:nth-child(4){left:70%;top:80%;animation-delay:6s}.floating-particle:nth-child(5){left:50%;top:10%;animation-delay:1s}.floating-particle:nth-child(6){left:30%;top:60%;animation-delay:3s}
-@keyframes floatAround{0%{transform:translate(0,0) rotate(0deg);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translate(20px,-20px) rotate(360deg);opacity:0}}
-.container::before{content:'';position:absolute;top:-20px;left:-20px;right:-20px;bottom:-20px;background:radial-gradient(circle, rgba(157,78,221,.3) 0%, transparent 70%);animation:pulse 3s ease-in-out infinite;z-index:-1;border-radius:16px}
-@keyframes pulse{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.05);opacity:.6}}
-h1{font-size:1.5em;margin-bottom:.5em}p{margin:1em 0;white-space:pre-wrap}
-.preview{background:rgba(255,255,255,.1);padding:15px;border-radius:8px;font-size:1em;line-height:1.6;position:relative}
-.blur{filter:blur(5px);user-select:none}
-.purchase-button{display:inline-block;margin-top:20px;padding:12px 24px;background:#9d4edd;color:#fff;border-radius:8px;text-decoration:none;font-size:1.1em;transition:all .3s ease}
-.purchase-button:hover{background:#c77dff;transform:scale(1.05)}
-.glow-text{animation:textGlow 2s ease-in-out infinite alternate;text-shadow:0 0 10px rgba(157,78,221,.8)}
-@keyframes textGlow{0%{text-shadow:0 0 10px rgba(157,78,221,.8)}100%{text-shadow:0 0 20px rgba(157,78,221,1),0 0 30px rgba(199,125,255,.6)}}
-.ripple{position:absolute;border-radius:50%;background:rgba(157,78,221,.6);transform:scale(0);animation:ripple .6s linear;pointer-events:none}
-@keyframes ripple{to{transform:scale(4);opacity:0}}
-.return-link{display:block;margin-top:20px;color:#9d4edd;text-decoration:underline}
-.bonus{margin-top:20px;padding:15px;background:rgba(255,255,255,.1);border:1px dashed #c77dff;border-radius:8px;color:#ffccff;font-size:.95em}
-#loadingScreen{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:9999;animation:fadeIn 1s forwards}
-#loadingScreen p{color:#fff;font-size:1.2em;margin-top:1em;animation:blink 1.5s infinite}
-.loading-spinner{width:100px;height:100px;position:relative;margin:0 auto}
-.loading-spinner::before,.loading-spinner::after{content:'';position:absolute;width:100%;height:100%;border-radius:50%;background:conic-gradient(from 0deg,transparent,#9d4edd,#c77dff,#ff6b9d,transparent);animation:spiral 3s linear infinite}
-.loading-spinner::before{filter:blur(2px);opacity:.7}
-.loading-spinner::after{animation:spiral 2s linear infinite reverse;filter:blur(1px);opacity:.9;width:80%;height:80%;top:10%;left:10%}
-@keyframes spiral{0%{transform:rotate(0) scale(1);filter:hue-rotate(0)}25%{transform:rotate(90deg) scale(1.1);filter:hue-rotate(90deg)}50%{transform:rotate(180deg) scale(.9);filter:hue-rotate(180deg)}75%{transform:rotate(270deg) scale(1.1);filter:hue-rotate(270deg)}100%{transform:rotate(360deg) scale(1);filter:hue-rotate(360deg)}}
-@keyframes blink{0%{opacity:1}50%{opacity:.4}100%{opacity:1}}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes fadeOut{from{opacity:1}to{opacity:0}}
+  :root{
+    --bg:#140b25; --panel:#281a4b; --ink:#f3eaff; --muted:#b9a9d9; --accent:#8b5cf6;
+    --lead-bg:#2f2b77; --lead-ink:#d7e6ff;
+  }
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Segoe UI,Roboto,Arial,Meiryo,sans-serif}
+  .wrap{max-width:900px;margin:56px auto;padding:0 20px}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.12);border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.35);padding:40px}
+  h1{font-size:28px;text-align:center;margin:0 0 12px;font-weight:700;letter-spacing:.08em}
+  .meta{color:var(--muted);text-align:center;margin-bottom:18px}
+  .lead{
+    background:var(--lead-bg);color:var(--lead-ink);
+    border-radius:12px;padding:14px 16px;line-height:1.8;margin:18px 0 14px;font-weight:600
+  }
+  .mosaic{
+    position:relative;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);
+    border-radius:14px;padding:22px;min-height:220px;line-height:1.9
+  }
+  .mosaic.is-blurred .mosaic__veil{
+    position:absolute;inset:0;background:rgba(20,11,37,.45);backdrop-filter:blur(8px);
+    border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;
+    text-align:center;padding:18px;font-weight:600
+  }
+  .actions{margin-top:22px;text-align:center}
+  .btn{appearance:none;border:none;background:var(--accent);color:#fff;padding:12px 18px;border-radius:12px;font-weight:700;cursor:pointer}
+  .note{margin:22px 0;color:var(--muted);text-align:center}
+  .back{display:inline-block;margin-top:10px;color:#cdbaf7;text-decoration:underline}
+  code.badge{background:#3a2f65;color:#e9e3ff;border-radius:999px;padding:4px 10px;font-size:12px;margin-left:6px}
 </style>
 </head>
 <body>
+<div class="wrap">
+  <div class="card">
+    <h1>霊視結果のご用意ができました</h1>
+    <div class="meta">
+      <div>【相談ジャンル】<span id="viewCategory">—</span></div>
+      <div>【ご相談内容】<span id="viewQuestion">—</span></div>
+      <div id="dobBadge" class="meta"></div>
+    </div>
 
-<div id="loadingScreen"><div class="loading-spinner"></div><p>霊視結果を準備中です…</p></div>
+    <!-- 常に見える固定二行 -->
+    <div class="lead">
+      あなたが抱える問題は、過去の因縁と深く繋がっています。<br />
+      その因縁は、今この瞬間もあなたの行動や選択を支配しています。
+    </div>
 
-<div class="container">
-  <div class="floating-particles">
-    <div class="floating-particle"></div><div class="floating-particle"></div><div class="floating-particle"></div>
-    <div class="floating-particle"></div><div class="floating-particle"></div><div class="floating-particle"></div>
-  </div>
+    <!-- モザイク領域（paid=1 で解除／未入金は定型文＋ぼかしのまま） -->
+    <div id="mosaic" class="mosaic is-blurred">
+      <div id="mosaicContent"></div>
+      <div class="mosaic__veil" id="veil">この先は有料区画です。<br/>お支払い完了後に全文が表示されます。</div>
+    </div>
 
-  <h1 class="glow-text">霊視結果のご用意ができました</h1>
-  <p id="userQuestion"></p>
-
-  <p>「龍」が守護神と交信し、<br>あなた専用の詳細鑑定を用意しました。<br><br>下記は鑑定の一部抜粋です。</p>
-
-  <!-- ★ 購入前は blur、購入後はここをAPI結果で置き換える -->
-  <div id="previewBox" class="preview">
-    <div>あなたが抱える問題は、過去の因縁と深く繋がっています。<br>その因縁は、今この瞬間もあなたの行動や選択を支配しています。</div>
-    <div id="paidBlock" class="blur" style="margin-top:10px">
-この先に現れる人物は、あなたの魂に試練を与える存在です。
-しかし恐れることはありません。
-この人物との出会いが、あなたの未来を根本から変える
-重要な転機となるでしょう。
-
-また、過去世からの因縁により、
-心の奥底に抱えてきた迷いや恐れが
-今後、現実の出来事として表面化していく兆しが出ています。
-
-特に人間関係や金銭面において、
-あなたがこれまで選んできた道が
-新たな課題を生む可能性が示されています。
-
-その課題をどのように乗り越えるか、
-どの時期に行動を起こすべきか、
-そして守護神から授かる助言と加護について
-この鑑定書には詳細に記されています。
-
-さらに、今後の運命を好転させるために
-必要となる具体的な行動指針と
-心の在り方がここに記されております。
-
-※この全文は特別鑑定を購入された方のみご覧いただけます。
+    <div class="actions">
+      <button id="toDeep" class="btn">さらに詳しい個別鑑定へ進む</button>
+      <a id="backLink" href="index.html" class="back">最初のページに戻る</a>
+      <div class="note">本日中のご購入で守護神の護符画像を進呈 <code class="badge">特典</code></div>
     </div>
   </div>
 </div>
 
-<div class="bonus">🎁 <strong>本日中のご購入で守護神の護符画像を進呈</strong></div>
-
-<p id="purchaseArea">全文を閲覧するには、鑑定料のお支払いが必要です。</p>
-<a id="purchaseLink" class="purchase-button">鑑定結果を購入して全文を読む（3000円）</a>
-<a href="index.html" class="return-link">最初のページに戻る</a>
-
 <script>
-/** ===== 設定 ===== */
-const API_URL = 'https://syugo-sin-kantei-api.mituo0226.workers.dev/consult'; // あなたのWorker
+(function(){
+  const q = new URLSearchParams(location.search);
+  const year  = +q.get('year');
+  const month = +q.get('month');
+  const day   = +q.get('day');
+  const paid  = q.get('paid') === '1';
+  const category = q.get('category') || q.get('cat') || '総合';
+  const question = q.get('text') || q.get('question') || '';
 
-const SKEY = 'kanteiContext';
-const $ = (s) => document.querySelector(s);
+  const apiEndpoint = q.get('api') || 'https://syugo-sin-kantei-api.mituo0226.workers.dev/api/consult';
 
-/** 共通：ローディング解除 */
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    const loader = $('#loadingScreen');
-    loader.style.animation = 'fadeOut 1s forwards';
-    setTimeout(() => { loader.remove(); $('.container').style.opacity = '1'; }, 800);
-  }, 800);
-});
+  // 表示
+  document.getElementById('viewCategory').textContent = category;
+  document.getElementById('viewQuestion').textContent = question || '—';
+  const dobBadge = document.getElementById('dobBadge');
+  if (year && month && day) dobBadge.textContent = `生年月日：${year}年${month}月${day}日`;
 
-/** URL & sessionStorage から引き継ぎ */
-const params = new URLSearchParams(location.search);
-const ctxSS = (()=>{ try{ return JSON.parse(sessionStorage.getItem(SKEY)||'{}'); }catch{ return {}; }})();
-const ctx = {
-  year:   Number(params.get('year'))  || Number(ctxSS.year)  || 0,
-  month:  Number(params.get('month')) || Number(ctxSS.month) || 0,
-  day:    Number(params.get('day'))   || Number(ctxSS.day)   || 0,
-  category: decodeURIComponent(params.get('category') || ctxSS.category || ''),
-  question: decodeURIComponent(params.get('question') || ctxSS.question || '')
-};
-// 画面にも反映
-$('#userQuestion').innerText = `【相談ジャンル】\n${ctx.category}\n\n【ご相談内容】\n${ctx.question}`;
-// つねに保存（戻ってきた時の保険）
-try{ sessionStorage.setItem(SKEY, JSON.stringify(ctx)); }catch{}
+  // deep.html へ誘導（クエリ引き継ぎ）
+  const deepUrl = `deep.html?year=${year}&month=${month}&day=${day}&category=${encodeURIComponent(category)}`;
+  document.getElementById('toDeep').addEventListener('click', ()=> location.href = deepUrl);
 
-/** 購入ボタン：purchase.htmlへ遷移する前に保存してから移動 */
-$('#purchaseLink').addEventListener('click', (e)=>{
-  e.preventDefault();
-  try{ sessionStorage.setItem(SKEY, JSON.stringify(ctx)); }catch{}
-  // そのままクエリでDOBだけを付ける（質問はsessionStorage運搬）
-  const p = new URLSearchParams({year:String(ctx.year), month:String(ctx.month), day:String(ctx.day)});
-  location.href = 'purchase.html?' + p.toString();
-});
+  // モザイク本文の描画関数
+  const contentEl = document.getElementById('mosaicContent');
+  const mosaicEl  = document.getElementById('mosaic');
+  const veilEl    = document.getElementById('veil');
 
-/** 購入後ならAPIを叩いて全文を表示（モザイク解除） */
-const isPaid = params.get('paid') === '1'; // 本番は決済リダイレクトで ?paid=1 を付ける
-if (isPaid) {
-  // CTA領域を非表示に
-  $('#purchaseArea').style.display = 'none';
-  $('#purchaseLink').style.display = 'none';
+  // 未入金：APIは呼ばず、定型文のみ（コスト回避）
+  const TEMPLATE = `あなたの内側に繰り返し現れる迷いは、日々の選択の癖と深く結びついております。
+一度立ち止まり、心身のリズムを整え、言葉・行動・環境のいずれから小さな修正を始めてください。
+三日・七日・二十一日の周期で見直すほど、因縁の結び目はほどけてまいります。`;
 
-  // ローディングの代わりにプレビュー枠を「読込中」に
-  const box = $('#previewBox');
-  box.innerHTML = '全文を読み込み中…';
+  if (!paid) {
+    contentEl.textContent = TEMPLATE;
+    // ぼかしは維持（is-blurredのまま）
+    return;
+  }
 
-  // APIに投げる本文（ユーザーの相談文が核）
-  const prompt = ctx.question || '相談内容なし';
+  // 入金済み：APIを呼んで本文を差し替え、モザイク解除
+  if (!(year && month && day)) {
+    contentEl.textContent = '生年月日が不足しています。最初のページからやり直してください。';
+    return;
+  }
 
-  // Workerが拡張版（year/month/day/mode対応）でも、簡易版でも動くようフィールドは冗長に同梱
-  const payload = {
-    prompt, text: prompt,
-    year: ctx.year, month: ctx.month, day: ctx.day,
-    category: ctx.category,
-    mode: 'full'
-  };
-
-  (async () => {
-    try {
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify(payload)
+  // deep.html と同じ鑑定APIに投げる
+  (async ()=>{
+    try{
+      const res = await fetch(apiEndpoint, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          year, month, day,
+          category,
+          question,
+          // confirmでは初回扱いで十分なので履歴は送らない（コスト最小化＆確実性）
+          history: [],
+          threadId: `confirm_${Date.now()}`
+        })
       });
-      const text = await res.text();
-      let message = text;
-      try {
-        const data = JSON.parse(text);
-        // New/OldどちらのWorkerでも message or choices[0] を吸収
-        message = data?.message || data?.choices?.[0]?.message?.content || text;
-      } catch(_) {}
-
-      // ★ モザイク解除＋本文差し替え
-      box.classList.remove('preview'); // 枠スタイルは任意で解除
-      box.innerHTML = message.replace(/\n/g,'<br>');
-
-      // 使い終わったら機微情報は消してもOK（任意）
-      // sessionStorage.removeItem(SKEY);
-    } catch (err) {
-      box.innerHTML = `<span style="color:#ff6b9d">読み込みに失敗しました: ${err?.message||err}</span>`;
+      if(!res.ok){
+        contentEl.textContent = `鑑定文の取得に失敗しました（${res.status}）`;
+        return;
+      }
+      const data = await res.json();
+      contentEl.textContent = (data && data.message) ? data.message : '鑑定文を取得できませんでした。';
+      // モザイク解除
+      mosaicEl.classList.remove('is-blurred');
+      if (veilEl) veilEl.remove();
+    }catch(e){
+      contentEl.textContent = '通信エラーにより鑑定文の取得に失敗しました。時間をおいてお試しください。';
     }
   })();
-}
+})();
 </script>
 </body>
 </html>
