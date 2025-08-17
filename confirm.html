@@ -545,6 +545,24 @@ window.addEventListener('load', () => {
     btn.addEventListener('click', ()=> location.href = purchaseUrl);
   }
 
+  // 追加：段落レンダリング関数（空行で<p>を作る。空行が無ければ句点でまとめる）
+  function renderParagraphsFrom(text) {
+    const t = String(text || '').replace(/\r\n/g, '\n').trim();
+    let paras = t.split(/\n{2,}/).map(s => s.trim()).filter(Boolean);
+
+    if (paras.length <= 1) {
+      // 空行が無いときは句点区切りを2〜4文ずつ束ねて段落化
+      const sents = t.split(/(?<=[。！？])/);
+      paras = [];
+      for (let i = 0; i < sents.length; ) {
+        const take = Math.min(4, Math.max(2, sents.length - i));
+        paras.push(sents.slice(i, i + take).join('').trim());
+        i += take;
+      }
+    }
+    return paras.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+  }
+
   // モザイク本文の描画関数
   const contentEl = document.getElementById('mosaicContent');
   const mosaicEl  = document.getElementById('mosaic');
@@ -592,14 +610,16 @@ window.addEventListener('load', () => {
         return;
       }
       const data = await res.json();
-      contentEl.textContent = (data && data.message) ? data.message : '鑑定文を取得できませんでした。';
+      const message = (data && data.message) ? data.message : '鑑定文を取得できませんでした。';
+      
+      // ★ モザイク解除＋本文差し替え（段落対応）
+      mosaicEl.classList.remove('is-blurred');
+      contentEl.innerHTML = renderParagraphsFrom(message);
       
       // ローディングアニメーションをフェードアウト
       loader.style.animation = 'fadeOut 1s forwards';
       setTimeout(() => {
         loader.style.display = 'none';
-        // モザイク解除
-        mosaicEl.classList.remove('is-blurred');
         if (veilEl) veilEl.remove();
       }, 1000);
       
