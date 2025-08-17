@@ -279,7 +279,7 @@ p {
   </div>
 
   <div class="actions">
-    <button id="toDeep" class="btn">さらに詳しい個別鑑定へ進む</button>
+    <button id="toDeep" class="btn">全文を読む</button>
     <a id="backLink" href="index.html" class="back">最初のページに戻る</a>
     <div class="note">本日中のご購入で守護神の護符画像を進呈 <span class="badge">特典</span></div>
   </div>
@@ -310,9 +310,9 @@ window.addEventListener('load', () => {
   const dobBadge = document.getElementById('dobBadge');
   if (year && month && day) dobBadge.textContent = `生年月日：${year}年${month}月${day}日`;
 
-  // deep.html へ誘導（クエリ引き継ぎ）
-  const deepUrl = `deep.html?year=${year}&month=${month}&day=${day}&category=${encodeURIComponent(category)}`;
-  document.getElementById('toDeep').addEventListener('click', ()=> location.href = deepUrl);
+  // purchase.html へ誘導（クエリ引き継ぎ）
+  const purchaseUrl = `purchase.html?year=${year}&month=${month}&day=${day}&category=${encodeURIComponent(category)}&question=${encodeURIComponent(question)}`;
+  document.getElementById('toDeep').addEventListener('click', ()=> location.href = purchaseUrl);
 
   // モザイク本文の描画関数
   const contentEl = document.getElementById('mosaicContent');
