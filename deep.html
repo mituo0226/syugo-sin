@@ -195,6 +195,26 @@ button:hover {
   transform: scale(1.05);
 }
 
+.btn {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 24px;
+  background: #9d4edd;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 1.1em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  background: #c77dff;
+  transform: scale(1.05);
+}
+
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -279,9 +299,110 @@ button:disabled {
     text-shadow: 0 0 20px rgba(157, 78, 221, 1), 0 0 30px rgba(199, 125, 255, 0.6);
   }
 }
+
+/* ローディング画面 */
+#loadingScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.8);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 9999;
+  animation: fadeIn 1s forwards;
+}
+
+#loadingScreen p {
+  color: #fff;
+  font-size: 1.2em;
+  margin-top: 1em;
+  animation: blink 1.5s infinite;
+}
+
+.loading-spinner {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  margin: 0 auto;
+}
+
+.loading-spinner::before,
+.loading-spinner::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent, #9d4edd, #c77dff, #ff6b9d, transparent);
+  animation: spiral 3s linear infinite;
+}
+
+.loading-spinner::before {
+  filter: blur(2px);
+  opacity: 0.7;
+}
+
+.loading-spinner::after {
+  animation: spiral 2s linear infinite reverse;
+  filter: blur(1px);
+  opacity: 0.9;
+  width: 80%;
+  height: 80%;
+  top: 10%;
+  left: 10%;
+}
+
+@keyframes spiral {
+  0% {
+    transform: rotate(0deg) scale(1);
+    filter: hue-rotate(0deg);
+  }
+  25% {
+    transform: rotate(90deg) scale(1.1);
+    filter: hue-rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg) scale(0.9);
+    filter: hue-rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg) scale(1.1);
+    filter: hue-rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+    filter: hue-rotate(360deg);
+  }
+}
+
+@keyframes blink {
+  0% {opacity: 1;}
+  50% {opacity: 0.4;}
+  100% {opacity: 1;}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+@keyframes fadeOut {
+  from {opacity: 1;}
+  to {opacity: 0;}
+}
 </style>
 </head>
 <body>
+
+<!-- ローディング画面 -->
+<div id="loadingScreen">
+  <div class="loading-spinner"></div>
+  <p>霊視を開始しています…</p>
+</div>
 
 <div class="container">
   <div class="floating-particles">
@@ -304,6 +425,11 @@ button:disabled {
   </div>
 
   <div id="result" class="out" aria-live="polite"></div>
+  
+  <!-- 新しい鑑定ボタン（結果表示後に表示） -->
+  <div id="newConsultation" style="display: none; margin-top: 30px;">
+    <button id="newConsultBtn" class="btn">新しい鑑定を始める</button>
+  </div>
 </div>
 
 <script>
@@ -365,18 +491,20 @@ function detectTopicShift(text){
 document.getElementById('send').addEventListener('click', async () => {
   const btn = document.getElementById('send');
   const out = document.getElementById('result');
+  const questionInput = document.getElementById('question');
+  const newConsultation = document.getElementById('newConsultation');
   const api = 'https://syugo-sin-kantei-api.mituo0226.workers.dev/api/consult';
   const category = '総合';
-  const question = document.getElementById('question').value.trim();
+  const question = questionInput.value.trim();
 
   if(!question){
     alert("ご相談内容を入力してください。");
     return;
   }
 
-  // 表示を「鑑定中…」に
-  btn.disabled = true;
-  out.innerHTML = `<span class="loading"></span>鑑定中です。しばらくお待ちください…`;
+  // ローディング画面を表示
+  const loader = document.getElementById('loadingScreen');
+  loader.style.display = 'flex';
 
   const topicShift = detectTopicShift(question);
   const history = loadHistory(); // [{role, content}]
@@ -411,17 +539,52 @@ document.getElementById('send').addEventListener('click', async () => {
 
     const data = await res.json();
     const msg = (data && (data.message || data.reply)) ? (data.message || data.reply) : JSON.stringify(data, null, 2);
+    
+    // ローディング画面を非表示
+    loader.style.display = 'none';
+    
+    // 鑑定フォームを非表示
+    questionInput.style.display = 'none';
+    btn.style.display = 'none';
+    
+    // 結果を表示
     typeWriter(out, msg);
+    
+    // 新しい鑑定ボタンを表示
+    newConsultation.style.display = 'block';
 
     // 返信メッセージを履歴に追加
     history.push({ role: "assistant", content: data.message || "" });
     saveHistory(history);
 
   } catch (err) {
+    loader.style.display = 'none';
     out.innerHTML = `<span class="err">エラー:</span> ${err.message || err}`;
-  } finally {
     btn.disabled = false;
   }
+});
+
+// 新しい鑑定を始めるボタンのイベント
+document.getElementById('newConsultBtn').addEventListener('click', () => {
+  const questionInput = document.getElementById('question');
+  const btn = document.getElementById('send');
+  const out = document.getElementById('result');
+  const newConsultation = document.getElementById('newConsultation');
+  
+  // フォームをリセット
+  questionInput.value = '';
+  questionInput.style.display = 'block';
+  btn.style.display = 'inline-block';
+  btn.disabled = false;
+  
+  // 結果をクリア
+  out.textContent = '';
+  
+  // 新しい鑑定ボタンを非表示
+  newConsultation.style.display = 'none';
+  
+  // 入力欄にフォーカス
+  questionInput.focus();
 });
 
 
