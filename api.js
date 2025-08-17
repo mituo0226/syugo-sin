@@ -21,7 +21,7 @@ export default {
     }
 
     // ---- consult endpoint（末尾スラッシュ許容、GET/POST 受け付け）----
-    const isConsultPath = url.pathname === "/consult" || url.pathname.startsWith("/consult/");
+    const isConsultPath = url.pathname === "/api/consult" || url.pathname === "/consult" || url.pathname.startsWith("/consult/");
     if (isConsultPath && (request.method === "POST" || request.method === "GET")) {
       try {
         const payload = await safeJson(request);
