@@ -1,333 +1,148 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <title>守護神占い｜相談フォーム</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="color-scheme" content="light dark" />
-  <meta name="theme-color" content="#1a0b2e" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <style>
-    /* ===== 基本背景・霧エフェクト ===== */
-    html{height:100%;background:#1a0b2e}
-    body{
-      background:linear-gradient(to bottom,#1a0b2e,#2e1a47);
-      color:#fff;font-family:'Zen Old Mincho',serif;text-align:center;
-      padding:30px;overflow-x:hidden;min-height:100vh;margin:0;position:relative
-    }
-    body::before{
-      content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
-      background:
-        radial-gradient(circle at 20% 50%,rgba(157,78,221,.10) 0%,transparent 50%),
-        radial-gradient(circle at 80% 20%,rgba(199,125,255,.10) 0%,transparent 50%),
-        radial-gradient(circle at 40% 80%,rgba(255,107,157,.10) 0%,transparent 50%);
-      animation:mistMove 20s ease-in-out infinite
-    }
-    @keyframes mistMove{
-      0%,100%{transform:translate(0,0)}
-      25%{transform:translate(-10px,-5px)}
-      50%{transform:translate(5px,-10px)}
-      75%{transform:translate(-5px,5px)}
-    }
-
-    /* ===== カード ===== */
-    .container{
-      max-width:600px;margin:auto;
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.20);
-      border-radius:12px;padding:20px;
-      box-shadow:0 0 20px rgba(147,51,234,.40);
-      opacity:0;transition:opacity 1s;position:relative;overflow:hidden
-    }
-    h1{font-size:1.5em;margin-bottom:.5em}
-
-    /* 浮遊粒子（カード内部） */
-    .floating-particles{position:absolute;inset:0;pointer-events:none;z-index:1}
-    .floating-particle{position:absolute;width:2px;height:2px;border-radius:50%;background:radial-gradient(circle,#c77dff,transparent);animation:floatAround 8s linear infinite}
-    .floating-particle:nth-child(1){left:10%;top:20%}
-    .floating-particle:nth-child(2){left:80%;top:30%;animation-delay:2s}
-    .floating-particle:nth-child(3){left:20%;top:70%;animation-delay:4s}
-    .floating-particle:nth-child(4){left:70%;top:80%;animation-delay:6s}
-    .floating-particle:nth-child(5){left:50%;top:10%;animation-delay:1s}
-    .floating-particle:nth-child(6){left:30%;top:60%;animation-delay:3s}
-    @keyframes floatAround{0%{transform:translate(0,0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translate(20px,-20px);opacity:0}}
-
-    /* ===== フォーム ===== */
-    .form-group{text-align:left;margin-bottom:20px}
-    label{display:block;font-weight:600;margin-bottom:8px;color:#ddd;font-size:1.1em}
-    textarea,input[type=text]{width:100%;padding:15px;font-size:16px;border:1px solid rgba(157,78,221,.3);border-radius:8px;box-sizing:border-box;background:rgba(255,255,255,.1);color:#fff;transition:.2s}
-    textarea:focus,input[type=text]:focus{outline:none;border-color:#9d4edd;box-shadow:0 0 15px rgba(157,78,221,.5);background:rgba(255,255,255,.15)}
-    textarea::placeholder{color:rgba(255,255,255,.6)}
-    .row-2col{display:flex;justify-content:space-between;align-items:center;margin:10px 0}
-    .badge{font-size:12px;border:1px solid rgba(157,78,221,.5);padding:4px 12px;border-radius:999px;background:rgba(157,78,221,.2)}
-    .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;margin:20px 0}
-    button{
-      padding:12px 24px;font-size:16px;border-radius:8px;border:none;cursor:pointer;
-      background:#9d4edd;color:#fff;font-weight:bold;box-shadow:0 4px 15px rgba(157,78,221,.4);transition:.2s
-    }
-    button:hover{background:#c77dff;transform:scale(1.03)}
-    button[disabled]{opacity:.6;cursor:not-allowed}
-    .out{background:rgba(255,255,255,.1);padding:15px;border-radius:8px;text-align:left;white-space:pre-wrap}
-    .back-link{display:inline-block;margin-top:20px;color:#9d4edd!important;text-decoration:underline}
-
-    /* ===== ローディング（豪華版：粒子＋渦＋波紋） ===== */
-    #loadingScreen{
-      position:fixed;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;
-      background:radial-gradient(circle at center,rgba(0,0,0,.9),rgba(26,11,46,.95));z-index:9999;overflow:hidden
-    }
-    /* 光の粒子 */
-    .mystical-particles{position:absolute;inset:0;pointer-events:none}
-    .mystical-particle{
-      position:absolute;width:3px;height:3px;border-radius:50%;
-      background:radial-gradient(circle,#c77dff,transparent);
-      box-shadow:0 0 10px rgba(199,125,255,.8);
-      animation:mysticalFloat 12s linear infinite;will-change:transform,opacity
-    }
-    .mystical-particle:nth-child(1){left:10%;top:20%}
-    .mystical-particle:nth-child(2){left:80%;top:30%;animation-delay:2s}
-    .mystical-particle:nth-child(3){left:20%;top:70%;animation-delay:4s}
-    .mystical-particle:nth-child(4){left:70%;top:80%;animation-delay:6s}
-    .mystical-particle:nth-child(5){left:50%;top:10%;animation-delay:1s}
-    .mystical-particle:nth-child(6){left:30%;top:60%;animation-delay:3s}
-    .mystical-particle:nth-child(7){left:90%;top:50%;animation-delay:5s}
-    .mystical-particle:nth-child(8){left:5%;top:40%;animation-delay:7s}
-    @keyframes mysticalFloat{
-      0%{transform:translate(0,0) rotate(0) scale(1);opacity:0}
-      10%{opacity:1;transform:translate(0,0) rotate(0) scale(1.2)}
-      50%{opacity:1;transform:translate(30px,-30px) rotate(180deg) scale(.8)}
-      90%{opacity:1;transform:translate(60px,-60px) rotate(360deg) scale(1.5)}
-      100%{transform:translate(80px,-80px) rotate(720deg) scale(.5);opacity:0}
-    }
-    /* 背景の渦 */
-    #loadingScreen::before{
-      content:'';position:absolute;top:50%;left:50%;width:200%;height:200%;
-      background:conic-gradient(from 0deg,transparent,#9d4edd1a,transparent,#c77dff1a,transparent,#ff6b9d1a,transparent);
-      transform:translate(-50%,-50%);animation:rotateBackground 30s linear infinite;will-change:transform
-    }
-    @keyframes rotateBackground{0%{transform:translate(-50%,-50%) rotate(0)}100%{transform:translate(-50%,-50%) rotate(360deg)}}
-    /* 波紋 */
-    .ripple-effect{
-      position:absolute;top:50%;left:50%;width:0;height:0;border:2px solid rgba(157,78,221,.6);
-      border-radius:50%;transform:translate(-50%,-50%);animation:ripple 2s ease-out infinite
-    }
-    .ripple-effect:nth-child(2){animation-delay:.5s;border-color:rgba(199,125,255,.6)}
-    .ripple-effect:nth-child(3){animation-delay:1s;border-color:rgba(255,107,157,.6)}
-    @keyframes ripple{0%{width:0;height:0;opacity:1}100%{width:300px;height:300px;opacity:0}}
-    /* スピナー（二重渦） */
-    .loading-spinner{width:120px;height:120px;position:relative;margin:0 auto;animation:float 4s ease-in-out infinite;will-change:transform}
-    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-    .loading-spinner::before,
-    .loading-spinner::after{
-      content:'';position:absolute;inset:0;border-radius:50%;
-      background:conic-gradient(from 0deg,transparent,#9d4edd,#c77dff,#ff6b9d,#9d4edd,transparent);
-      animation:spiral 4s linear infinite;will-change:transform;opacity:.8
-    }
-    .loading-spinner::before{filter:blur(3px)}
-    .loading-spinner::after{
-      animation:spiral 3s linear infinite reverse;filter:blur(1px);opacity:1;
-      width:70%;height:70%;top:15%;left:15%
-    }
-    @keyframes spiral{0%{transform:rotate(0) scale(1)}25%{transform:rotate(90deg) scale(1.1)}50%{transform:rotate(180deg) scale(.9)}75%{transform:rotate(270deg) scale(1.1)}100%{transform:rotate(360deg) scale(1)}}
-    /* ローディング文言 */
-    #loadingScreen p{
-      color:#fff;font-size:1.4em;margin-top:2em;font-weight:bold;letter-spacing:2px;
-      text-shadow:0 0 20px rgba(157,78,221,1),0 0 40px rgba(199,125,255,.8);
-      animation:mysticalText 3s ease-in-out infinite
-    }
-    @keyframes mysticalText{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
-
-    /* ===== タイピング演出 ===== */
-    .typing-text{overflow:hidden;border-right:2px solid rgba(157,78,221,.8);animation:blink 1s infinite}
-    @keyframes blink{0%,50%{border-color:rgba(157,78,221,.8)}51%,100%{border-color:transparent}}
-
-    /* ===== レスポンシブ ===== */
-    @media(max-width:640px){
-      body{padding:15px}
-      .container{margin:20px auto;padding:20px}
-      .actions{flex-direction:column} button{width:100%}
-      .mystical-particle{animation-duration:16s;box-shadow:0 0 5px rgba(199,125,255,.6)}
-      .loading-spinner{width:100px;height:100px;animation-duration:5s}
-      .loading-spinner::before,.loading-spinner::after{animation-duration:5s}
-      .loading-spinner::after{animation-duration:4s}
-      #loadingScreen::before{animation-duration:40s}
-      .ripple-effect{animation-duration:3s}
-    }
-  </style>
+<meta charset="UTF-8">
+<title>龍の個別鑑定（API検証版）</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif; margin:0; background:#0b0b10; color:#e9e9f1; }
+  .wrap { max-width: 860px; margin: 40px auto; padding: 0 16px; }
+  h1 { font-size: 22px; margin: 0 0 12px; }
+  .badge { display:none; font-size: 14px; opacity:.85; background:#1a1a24; border:1px solid #2d2d3a; border-radius:8px; padding:8px 10px; margin: 8px 0 16px; }
+  label { display:block; margin: 16px 0 6px; font-weight: 600; }
+  textarea { width:100%; min-height:120px; padding:10px; border-radius:8px; border:1px solid #2d2d3a; outline:none; background:#12121a; color:#e9e9f1; }
+  select, input[type="text"] { width:100%; padding:10px; border-radius:8px; border:1px solid #2d2d3a; outline:none; background:#12121a; color:#e9e9f1; }
+  .row { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+  .actions { margin-top: 18px; display:flex; gap:12px; align-items:center; }
+  button { cursor:pointer; border:0; border-radius:10px; padding:12px 18px; background:#7c3aed; color:white; font-weight:700; }
+  button:disabled { opacity:.6; cursor:not-allowed; }
+  .muted { font-size: 12px; opacity:.8; }
+  .out { margin-top: 22px; background:#0f0f15; border:1px solid #2d2d3a; border-radius:12px; padding:16px; min-height:140px; white-space:pre-wrap; line-height:1.8; }
+  .loading { display:inline-block; width:1em; height:1em; border:.18em solid #ffffff44; border-top-color:#fff; border-radius:50%; animation:spin 1s linear infinite; vertical-align:-2px; margin-right:8px; }
+  @keyframes spin { to { transform:rotate(360deg);} }
+  .hint { margin-top:8px; font-size:12px; opacity:.75; }
+  .ok { color:#67e8f9; }
+  .err { color:#fca5a5; }
+</style>
 </head>
 <body>
+  <div class="wrap">
+    <h1>龍の個別鑑定（API 接続テスト）</h1>
+    <div id="dobBadge" class="badge"></div>
 
-<!-- ===== ローディング画面（豪華版・最初は非表示） ===== -->
-<div id="loadingScreen">
-  <div class="mystical-particles">
-    <div class="mystical-particle"></div>
-    <div class="mystical-particle"></div>
-    <div class="mystical-particle"></div>
-    <div class="mystical-particle"></div>
-    <div class="mystical-particle"></div>
-    <div class="mystical-particle"></div>
-    <div class="mystical-particle"></div>
-    <div class="mystical-particle"></div>
+    <label for="question">ご相談内容</label>
+    <textarea id="question" placeholder="例）仕事の方向性に迷っています。今後の流れと具体的な一歩を知りたいです。"></textarea>
+
+    <div class="row">
+      <div>
+        <label for="category">カテゴリ</label>
+        <select id="category">
+          <option value="仕事" selected>仕事</option>
+          <option value="恋愛">恋愛</option>
+          <option value="健康">健康</option>
+          <option value="金運">金運</option>
+          <option value="家族">家族</option>
+        </select>
+      </div>
+      <div>
+        <label for="api">API エンドポイント</label>
+        <!-- 必要なら差し替え可。基本はこのままでOK -->
+        <input id="api" type="text" value="https://syugo-sin-kantei-api.mituo0226.workers.dev/api/consult">
+        <div class="hint">通常は変更不要です。/api/consult を含んでいることを確認してください。</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="send">鑑定を依頼する</button>
+      <span class="muted">※ テスト時は <span class="ok">deep.html?year=1990&month=4&day=15</span> で開いてください</span>
+    </div>
+
+    <div id="result" class="out" aria-live="polite"></div>
   </div>
-  <div class="ripple-effect"></div>
-  <div class="ripple-effect"></div>
-  <div class="ripple-effect"></div>
-  <div class="loading-spinner"></div>
-  <p>神託を降ろしています…</p>
-</div>
-
-<!-- ===== フォーム画面 ===== -->
-<div id="formScreen" class="container">
-  <div class="floating-particles">
-    <div class="floating-particle"></div><div class="floating-particle"></div>
-    <div class="floating-particle"></div><div class="floating-particle"></div>
-    <div class="floating-particle"></div><div class="floating-particle"></div>
-  </div>
-
-  <h1>お悩み相談フォーム</h1>
-  <div id="dobBadge" class="badge" style="display:none;margin:6px 0 0;opacity:.9"></div>
-
-  <div class="form-group">
-    <label for="prompt">相談内容</label>
-    <textarea id="prompt" rows="6" placeholder="例）東京在住、相手は北海道。今後どうなりますか？" autocomplete="off"></textarea>
-    <div class="row-2col"><div class="badge"><span id="count">0</span> 文字</div></div>
-  </div>
-
-  <div class="actions">
-    <button id="send">送信</button>
-    <button id="clear" type="button">クリア</button>
-    <span class="badge" id="status" aria-live="polite" style="background:transparent;border-color:transparent"></span>
-  </div>
-
-  <a href="index.html" class="back-link">← 戻る</a>
-</div>
-
-<!-- ===== 結果画面 ===== -->
-<div id="resultScreen" class="container" style="display:none;opacity:0">
-  <div class="floating-particles">
-    <div class="floating-particle"></div><div class="floating-particle"></div>
-  </div>
-  <h1>鑑定結果</h1>
-  <div class="form-group"><div id="out" class="out" aria-live="polite"></div></div>
-  <div class="actions">
-    <button id="newConsultation">新しい相談をする</button>
-    <a href="index.html" class="back-link">← 戻る</a>
-  </div>
-</div>
 
 <script>
-  /* ===== deep3 互換：デフォルト + URL上書き + 予備API ===== */
-  const DEFAULT_API = 'https://syugo-sin-kantei-api.mituo0226.workers.dev/consult';
-  const qs  = new URLSearchParams(location.search);
-  const CFG = {
-    api:    qs.get('api')    || DEFAULT_API,
-    backup: qs.get('backup') || '',
-    mode:   qs.get('mode')   || 'full' // 'full' または 'basic'
+'use strict';
+
+// --- DOB 必須チェック（無ければ index.html に戻す） -------------------------
+(function initDOB(){
+  const p = new URLSearchParams(location.search);
+  const y = +p.get('year'), m = +p.get('month'), d = +p.get('day');
+
+  if(!(y && m && d)){
+    alert("生年月日が未指定です。index.html から入力してお進みください。\n\nテストの場合は:\n deep.html?year=1990&month=4&day=15 で開けます。");
+    location.href = "index.html";
+    return;
+  }
+
+  // 以降の送信用に保存
+  window.__DOB__ = { year: y, month: m, day: d };
+
+  // 画面表示
+  const badge = document.getElementById('dobBadge');
+  badge.style.display = 'inline-block';
+  badge.textContent = `生年月日：${y}年${m}月${d}日（取得済み）`;
+})();
+
+// --- 送信処理 ---------------------------------------------------------------
+document.getElementById('send').addEventListener('click', async () => {
+  const btn = document.getElementById('send');
+  const out = document.getElementById('result');
+  const api = document.getElementById('api').value.trim();
+  const category = document.getElementById('category').value;
+  const question = document.getElementById('question').value.trim();
+
+  if(!question){
+    alert("ご相談内容を入力してください。");
+    return;
+  }
+
+  // 表示を「鑑定中…」に
+  btn.disabled = true;
+  out.innerHTML = `<span class="loading"></span>鑑定中です。しばらくお待ちください…`;
+
+  // 送信ペイロード
+  const payload = {
+    year: window.__DOB__?.year,
+    month: window.__DOB__?.month,
+    day: window.__DOB__?.day,
+    category,
+    question
   };
 
-  // 要素
-  const $=(s)=>document.querySelector(s);
-  const promptEl=$('#prompt'), sendBtn=$('#send'), clearBtn=$('#clear'), outEl=$('#out'), statusEl=$('#status'), countEl=$('#count');
+  try {
+    const res = await fetch(api, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify(payload)
+    });
 
-  // 初期表示
-  window.addEventListener('load',()=>{
-    const f=document.getElementById('formScreen');
-    f.style.display='block'; f.style.opacity='1';
-    document.getElementById('loadingScreen').style.display='none';
-  });
-
-  // 画面切替
-  const showLoading = ()=>{ $('#formScreen').style.display='none'; $('#loadingScreen').style.display='flex'; };
-  const showResult  = ()=>{ $('#loadingScreen').style.display='none'; const r=$('#resultScreen'); r.style.display='block'; r.classList.add('fade-in'); r.style.opacity='1'; };
-  const showForm    = ()=>{ $('#resultScreen').style.display='none'; const f=$('#formScreen'); f.style.display='block'; f.style.opacity='1'; };
-
-  // タイピング演出（安全に textContent を加算）
-  function typeWriter(el,text,speed=30){ let i=0; el.textContent=''; el.classList.add('typing-text'); (function t(){ if(i<text.length){ el.textContent+=text.charAt(i++); setTimeout(t,speed);} else{ el.classList.remove('typing-text'); } })(); }
-
-  // 文字数
-  const updateCount=()=>{ countEl.textContent=(promptEl.value||'').length; };
-  promptEl.addEventListener('input',updateCount); updateCount();
-  clearBtn.addEventListener('click',()=>{ promptEl.value=''; updateCount(); outEl.textContent=''; statusEl.textContent=''; promptEl.focus(); });
-  promptEl.addEventListener('keydown',(e)=>{ if((e.metaKey||e.ctrlKey)&&e.key==='Enter'){ e.preventDefault(); sendBtn.click(); } });
-
-  // 生年月日（URL or sessionStorage）バッジ
-  (function initDOB(){
-    const p=new URLSearchParams(location.search);
-    let y=+p.get('year'), m=+p.get('month'), d=+p.get('day');
-    if(!(y&&m&&d)){ try{ const saved=JSON.parse(sessionStorage.getItem('ss_user_profile')||"null"); if(saved){ y=+saved.year; m=+saved.month; d=+saved.day; } }catch(_){ }
+    if(!res.ok){
+      const text = await res.text().catch(()=> '');
+      throw new Error(`API ${res.status} ${res.statusText} ${text?'- '+text:''}`);
     }
-    window.__DOB__={year:y||null,month:m||null,day:d||null};
-    const badge=$('#dobBadge'); if(badge&&y&&m&&d){ badge.style.display='inline-block'; badge.textContent=`生年月日：${y}年${m}月${d}日（把握済み）`; }
+
+    const data = await res.json();
+    const msg = (data && (data.message || data.reply)) ? (data.message || data.reply) : JSON.stringify(data, null, 2);
+    typeWriter(out, msg);
+
+  } catch (err) {
+    out.innerHTML = `<span class="err">エラー:</span> ${err.message || err}`;
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+// --- タイプライター演出（読みやすさのため軽めに） ---------------------------
+function typeWriter(el, text){
+  el.textContent = '';
+  let i = 0;
+  (function tick(){
+    if(i < text.length){
+      el.textContent += text.charAt(i++);
+      setTimeout(tick, 18);
+    }
   })();
-
-  // 送信
-  sendBtn.addEventListener('click', async ()=>{
-    const prompt=(promptEl.value||'').trim();
-    if(!prompt){ alert('入力が空です。内容を入力してください。'); promptEl.focus(); return; }
-
-    showLoading();
-
-    const payload={
-      text: prompt,
-      year: (__DOB__?.year||null),
-      month:(__DOB__?.month||null),
-      day:  (__DOB__?.day||null),
-      mode: CFG.mode
-    };
-
-    const controller=new AbortController(); const timer=setTimeout(()=>controller.abort(),30000);
-    async function postOnce(url){
-      return fetch(url,{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload), signal:controller.signal });
-    }
-
-    try{
-      let res  = await postOnce(CFG.api);
-      let text = await res.text();
-
-      let isRegionBlocked=false;
-      if(!res.ok){
-        try{
-          const j=JSON.parse(text);
-          isRegionBlocked = j?.code==='region_blocked' || j?.error?.code==='unsupported_country_region_territory';
-        }catch{}
-      }
-      const shouldRetry = (!res.ok) && (res.status>=500 || res.status===429);
-
-      if((isRegionBlocked||shouldRetry) && CFG.backup){
-        res  = await postOnce(CFG.backup);
-        text = await res.text();
-      }
-      clearTimeout(timer);
-
-      let display="";
-      try{
-        const data=JSON.parse(text);
-        if(!res.ok){
-          const region = data?.code==='region_blocked' || data?.error?.code==='unsupported_country_region_territory';
-          if(region){
-            display='ただいま接続経路の都合により鑑定サーバへ到達できません。\nVPN/プロキシをOFFにする、時間を置く、別の回線でお試しください。';
-          }else if(res.status>=500 || res.status===429){
-            display=`サーバが一時的に混み合っています（${res.status}）。\n時間を置いて再度お試しください。`;
-          }else{
-            display=data?.error || data?.message || '通信エラーが発生しました。しばらくしてからお試しください。';
-          }
-        }else{
-          display=data?.message || text;
-        }
-      }catch{
-        display=text;
-      }
-
-      setTimeout(()=>{ showResult(); setTimeout(()=>typeWriter(outEl,display,30),250); },800);
-
-    }catch(e){
-      clearTimeout(timer);
-      setTimeout(()=>{ showResult(); setTimeout(()=>typeWriter(outEl,`通信エラー: ${e?.message||e}`,30),250); },800);
-    }
-  });
-
-  // 新しい相談
-  document.getElementById('newConsultation').addEventListener('click',()=>{ promptEl.value=''; updateCount(); outEl.textContent=''; showForm(); });
+}
 </script>
 </body>
 </html>
