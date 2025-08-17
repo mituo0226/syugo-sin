@@ -480,6 +480,9 @@ p {
   
   <h1 class="glow-text">霊視結果のご用意ができました</h1>
   
+  <!-- h1 のすぐ下あたりに以下を追加 -->
+  <p id="purchasedPlan" style="opacity:.9;margin-top:.2em"></p>
+  
   <div class="meta">
     <div>【相談ジャンル】<span id="viewCategory">—</span></div>
     <div>【ご相談内容】<span id="viewQuestion">—</span></div>
@@ -523,6 +526,21 @@ window.addEventListener('load', () => {
   const question = q.get('text') || q.get('question') || '';
 
   const apiEndpoint = q.get('api') || 'https://syugo-sin-kantei-api.mituo0226.workers.dev/api/consult';
+
+  // 既存の params 取得の直後に追記
+  const planMap = {
+    P5:"お試し5分（¥1,000）",
+    P10:"お手軽10分（¥3,000）",
+    P30:"人気ナンバーワン30分（¥5,000）",
+    P60:"お買い得60分（¥8,000）",
+    P120:"超お買い得120分（¥12,000）",
+    P240:"まとめ買い超お得240分（¥20,000）"
+  };
+  const planId = new URLSearchParams(location.search).get('plan');
+  if (planId && planMap[planId]) {
+    const el = document.getElementById('purchasedPlan');
+    el.textContent = `ご購入プラン：${planMap[planId]}`;
+  }
 
   // 表示
   document.getElementById('viewCategory').textContent = category;
