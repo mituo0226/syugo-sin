@@ -244,9 +244,229 @@ p {
     text-shadow: 0 0 20px rgba(157, 78, 221, 1), 0 0 30px rgba(199, 125, 255, 0.6);
   }
 }
+
+/* 幻想的なローディングアニメーション */
+#loadingScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.8);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 9999;
+  animation: fadeIn 1s forwards;
+  overflow: hidden;
+}
+
+.particles, .mystical-orbs {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle, #9d4edd, transparent);
+  border-radius: 50%;
+  animation: float 6s infinite linear;
+}
+
+.particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+.particle:nth-child(2) { left: 20%; animation-delay: 1s; }
+.particle:nth-child(3) { left: 30%; animation-delay: 2s; }
+.particle:nth-child(4) { left: 40%; animation-delay: 3s; }
+.particle:nth-child(5) { left: 50%; animation-delay: 4s; }
+.particle:nth-child(6) { left: 60%; animation-delay: 5s; }
+.particle:nth-child(7) { left: 70%; animation-delay: 0.5s; }
+.particle:nth-child(8) { left: 80%; animation-delay: 1.5s; }
+.particle:nth-child(9) { left: 90%; animation-delay: 2.5s; }
+.particle:nth-child(10) { left: 15%; animation-delay: 3.5s; }
+
+@keyframes float {
+  0% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(157,78,221,0.8), transparent);
+  box-shadow: 0 0 20px rgba(157,78,221,0.6);
+  animation: orbFloat 4s ease-in-out infinite;
+}
+
+.orb1 {
+  width: 30px;
+  height: 30px;
+  top: 20%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.orb2 {
+  width: 20px;
+  height: 20px;
+  top: 60%;
+  right: 25%;
+  animation-delay: 1.5s;
+  background: radial-gradient(circle, rgba(199,125,255,0.8), transparent);
+  box-shadow: 0 0 15px rgba(199,125,255,0.6);
+}
+
+.orb3 {
+  width: 25px;
+  height: 25px;
+  bottom: 30%;
+  left: 60%;
+  animation-delay: 3s;
+  background: radial-gradient(circle, rgba(255,107,157,0.8), transparent);
+  box-shadow: 0 0 18px rgba(255,107,157,0.6);
+}
+
+@keyframes orbFloat {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.7;
+  }
+  25% {
+    transform: translateY(-20px) scale(1.2);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-10px) scale(0.8);
+    opacity: 0.5;
+  }
+  75% {
+    transform: translateY(-30px) scale(1.1);
+    opacity: 0.9;
+  }
+}
+
+#loadingScreen p {
+  color: #fff;
+  font-size: 1.2em;
+  margin-top: 1em;
+  animation: blink 1.5s infinite;
+}
+
+.loading-spinner {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  margin: 0 auto;
+}
+
+.loading-spinner::before,
+.loading-spinner::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent, #9d4edd, #c77dff, #ff6b9d, transparent);
+  animation: spiral 3s linear infinite;
+}
+
+.loading-spinner::before {
+  filter: blur(2px);
+  opacity: 0.7;
+}
+
+.loading-spinner::after {
+  animation: spiral 2s linear infinite reverse;
+  filter: blur(1px);
+  opacity: 0.9;
+  width: 80%;
+  height: 80%;
+  top: 10%;
+  left: 10%;
+}
+
+@keyframes spiral {
+  0% {
+    transform: rotate(0deg) scale(1);
+    filter: hue-rotate(0deg);
+  }
+  25% {
+    transform: rotate(90deg) scale(1.1);
+    filter: hue-rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg) scale(0.9);
+    filter: hue-rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg) scale(1.1);
+    filter: hue-rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+    filter: hue-rotate(360deg);
+  }
+}
+
+@keyframes blink {
+  0% {opacity: 1;}
+  50% {opacity: 0.4;}
+  100% {opacity: 1;}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+@keyframes fadeOut {
+  from {opacity: 1;}
+  to {opacity: 0;}
+}
 </style>
 </head>
 <body>
+
+<!-- ローディング画面 -->
+<div id="loadingScreen">
+  <div class="particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+  <div class="mystical-orbs">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+  </div>
+  <div class="loading-spinner"></div>
+  <p>神託を降ろしています…</p>
+</div>
 
 <div class="container">
   <div class="floating-particles">
@@ -349,6 +569,10 @@ window.addEventListener('load', () => {
 
   // deep.html と同じ鑑定APIに投げる
   (async ()=>{
+    // ローディングアニメーションを表示
+    const loader = document.getElementById('loadingScreen');
+    loader.style.display = 'flex';
+    
     try{
       const res = await fetch(apiEndpoint, {
         method:'POST',
@@ -364,15 +588,24 @@ window.addEventListener('load', () => {
       });
       if(!res.ok){
         contentEl.textContent = `鑑定文の取得に失敗しました（${res.status}）`;
+        loader.style.display = 'none';
         return;
       }
       const data = await res.json();
       contentEl.textContent = (data && data.message) ? data.message : '鑑定文を取得できませんでした。';
-      // モザイク解除
-      mosaicEl.classList.remove('is-blurred');
-      if (veilEl) veilEl.remove();
+      
+      // ローディングアニメーションをフェードアウト
+      loader.style.animation = 'fadeOut 1s forwards';
+      setTimeout(() => {
+        loader.style.display = 'none';
+        // モザイク解除
+        mosaicEl.classList.remove('is-blurred');
+        if (veilEl) veilEl.remove();
+      }, 1000);
+      
     }catch(e){
       contentEl.textContent = '通信エラーにより鑑定文の取得に失敗しました。時間をおいてお試しください。';
+      loader.style.display = 'none';
     }
   })();
 })();
