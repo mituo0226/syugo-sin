@@ -589,14 +589,14 @@ document.getElementById('newConsultBtn').addEventListener('click', () => {
 
 
 
-// --- タイプライター演出（読みやすさのため軽めに） ---------------------------
-function typeWriter(el, text){
-  el.textContent = '';
+// --- タイプライター演出（result.htmlと同じ表現） ---------------------------
+function typeWriter(el, text, speed=80){
   let i = 0;
+  el.innerHTML = '';
   (function tick(){
     if(i < text.length){
-      el.textContent += text.charAt(i++);
-      setTimeout(tick, 18);
+      el.innerHTML += text.charAt(i++);
+      setTimeout(tick, speed);
     }
   })();
 }
