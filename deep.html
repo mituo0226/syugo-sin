@@ -2,65 +2,336 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>龍の個別鑑定（API検証版）</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>守護神占い｜個別鑑定</title>
 <style>
-  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif; margin:0; background:#0b0b10; color:#e9e9f1; }
-  .wrap { max-width: 860px; margin: 40px auto; padding: 0 16px; }
-  h1 { font-size: 22px; margin: 0 0 12px; }
-  .badge { display:none; font-size: 14px; opacity:.85; background:#1a1a24; border:1px solid #2d2d3a; border-radius:8px; padding:8px 10px; margin: 8px 0 16px; }
-  label { display:block; margin: 16px 0 6px; font-weight: 600; }
-  textarea { width:100%; min-height:120px; padding:10px; border-radius:8px; border:1px solid #2d2d3a; outline:none; background:#12121a; color:#e9e9f1; }
-  select, input[type="text"] { width:100%; padding:10px; border-radius:8px; border:1px solid #2d2d3a; outline:none; background:#12121a; color:#e9e9f1; }
-  .row { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
-  .actions { margin-top: 18px; display:flex; gap:12px; align-items:center; }
-  button { cursor:pointer; border:0; border-radius:10px; padding:12px 18px; background:#7c3aed; color:white; font-weight:700; }
-  button:disabled { opacity:.6; cursor:not-allowed; }
-  .muted { font-size: 12px; opacity:.8; }
-  .out { margin-top: 22px; background:#0f0f15; border:1px solid #2d2d3a; border-radius:12px; padding:16px; min-height:140px; white-space:pre-wrap; line-height:1.8; }
-  .loading { display:inline-block; width:1em; height:1em; border:.18em solid #ffffff44; border-top-color:#fff; border-radius:50%; animation:spin 1s linear infinite; vertical-align:-2px; margin-right:8px; }
-  @keyframes spin { to { transform:rotate(360deg);} }
-  .hint { margin-top:8px; font-size:12px; opacity:.75; }
-  .ok { color:#67e8f9; }
-  .err { color:#fca5a5; }
+body {
+  background: linear-gradient(to bottom, #1a0b2e, #2e1a47);
+  color: #fff;
+  font-family: 'Zen Old Mincho', serif;
+  text-align: center;
+  padding: 30px;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* 霧エフェクト */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(199, 125, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, rgba(255, 107, 157, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+  animation: mistMove 20s ease-in-out infinite;
+}
+
+@keyframes mistMove {
+  0%, 100% {
+    transform: translateX(0) translateY(0);
+  }
+  25% {
+    transform: translateX(-10px) translateY(-5px);
+  }
+  50% {
+    transform: translateX(5px) translateY(-10px);
+  }
+  75% {
+    transform: translateX(-5px) translateY(5px);
+  }
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 0 20px rgba(147,51,234,0.4);
+  opacity: 0; /* 最初は非表示 */
+  transition: opacity 1s;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 浮遊する光の粒子 */
+.floating-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.floating-particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: radial-gradient(circle, #c77dff, transparent);
+  border-radius: 50%;
+  animation: floatAround 8s infinite linear;
+}
+
+.floating-particle:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; }
+.floating-particle:nth-child(2) { left: 80%; top: 30%; animation-delay: 2s; }
+.floating-particle:nth-child(3) { left: 20%; top: 70%; animation-delay: 4s; }
+.floating-particle:nth-child(4) { left: 70%; top: 80%; animation-delay: 6s; }
+.floating-particle:nth-child(5) { left: 50%; top: 10%; animation-delay: 1s; }
+.floating-particle:nth-child(6) { left: 30%; top: 60%; animation-delay: 3s; }
+
+@keyframes floatAround {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(20px, -20px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.container::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  background: radial-gradient(circle, rgba(157, 78, 221, 0.3) 0%, transparent 70%);
+  animation: pulse 3s ease-in-out infinite;
+  z-index: -1;
+  border-radius: 16px;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.6;
+  }
+}
+
+h1 {
+  font-size: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+p {
+  margin: 1em 0;
+  white-space: pre-wrap;
+}
+
+label {
+  display: block;
+  margin: 16px 0 6px;
+  font-weight: 600;
+  text-align: left;
+}
+
+textarea, select, input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.2);
+  outline: none;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  font-size: 1em;
+  box-sizing: border-box;
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.actions {
+  margin-top: 18px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+button {
+  cursor: pointer;
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 18px;
+  background: #9d4edd;
+  color: white;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background: #c77dff;
+  transform: scale(1.05);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.muted {
+  font-size: 12px;
+  opacity: 0.8;
+  color: #b9a9d9;
+}
+
+.out {
+  margin-top: 22px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 16px;
+  min-height: 140px;
+  white-space: pre-wrap;
+  line-height: 1.8;
+  text-align: left;
+}
+
+.loading {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border: 0.18em solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  vertical-align: -2px;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.hint {
+  margin-top: 8px;
+  font-size: 12px;
+  opacity: 0.75;
+  color: #b9a9d9;
+}
+
+.ok {
+  color: #67e8f9;
+}
+
+.err {
+  color: #fca5a5;
+}
+
+.badge {
+  display: none;
+  font-size: 14px;
+  opacity: 0.85;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin: 8px 0 16px;
+}
+
+/* 重要なテキストの光る演出 */
+.glow-text {
+  animation: textGlow 2s ease-in-out infinite alternate;
+  text-shadow: 0 0 10px rgba(157, 78, 221, 0.8);
+}
+
+@keyframes textGlow {
+  0% {
+    text-shadow: 0 0 10px rgba(157, 78, 221, 0.8);
+  }
+  100% {
+    text-shadow: 0 0 20px rgba(157, 78, 221, 1), 0 0 30px rgba(199, 125, 255, 0.6);
+  }
+}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>龍の個別鑑定（API 接続テスト）</h1>
-    <div id="dobBadge" class="badge"></div>
 
-    <label for="question">ご相談内容</label>
-    <textarea id="question" placeholder="例）仕事の方向性に迷っています。今後の流れと具体的な一歩を知りたいです。"></textarea>
+<div class="container">
+  <div class="floating-particles">
+    <div class="floating-particle"></div>
+    <div class="floating-particle"></div>
+    <div class="floating-particle"></div>
+    <div class="floating-particle"></div>
+    <div class="floating-particle"></div>
+    <div class="floating-particle"></div>
+  </div>
+  
+  <h1 class="glow-text">個別鑑定</h1>
+  <div id="dobBadge" class="badge"></div>
 
-    <div class="row">
-      <div>
-        <label for="category">カテゴリ</label>
-        <select id="category">
-          <option value="仕事" selected>仕事</option>
-          <option value="恋愛">恋愛</option>
-          <option value="健康">健康</option>
-          <option value="金運">金運</option>
-          <option value="家族">家族</option>
-        </select>
-      </div>
-      <div>
-        <label for="api">API エンドポイント</label>
-        <!-- 必要なら差し替え可。基本はこのままでOK -->
-        <input id="api" type="text" value="https://syugo-sin-kantei-api.mituo0226.workers.dev/api/consult">
-        <div class="hint">通常は変更不要です。/api/consult を含んでいることを確認してください。</div>
-      </div>
+  <label for="question">ご相談内容</label>
+  <textarea id="question" placeholder="例）仕事の方向性に迷っています。今後の流れと具体的な一歩を知りたいです。"></textarea>
+
+  <div class="row">
+    <div>
+      <label for="category">カテゴリ</label>
+      <select id="category">
+        <option value="仕事" selected>仕事</option>
+        <option value="恋愛">恋愛</option>
+        <option value="健康">健康</option>
+        <option value="金運">金運</option>
+        <option value="家族">家族</option>
+      </select>
     </div>
-
-    <div class="actions">
-      <button id="send">鑑定を依頼する</button>
-      <span class="muted">※ テスト時は <span class="ok">deep.html?year=1990&month=4&day=15</span> で開いてください</span>
+    <div>
+      <label for="api">API エンドポイント</label>
+      <!-- 必要なら差し替え可。基本はこのままでOK -->
+      <input id="api" type="text" value="https://syugo-sin-kantei-api.mituo0226.workers.dev/api/consult">
+      <div class="hint">通常は変更不要です。/api/consult を含んでいることを確認してください。</div>
     </div>
-
-    <div id="result" class="out" aria-live="polite"></div>
   </div>
 
+  <div class="actions">
+    <button id="send">鑑定を依頼する</button>
+    <span class="muted">※ テスト時は <span class="ok">deep.html?year=1990&month=4&day=15</span> で開いてください</span>
+  </div>
+
+  <div id="result" class="out" aria-live="polite"></div>
+</div>
+
 <script>
+/* ローディング演出 */
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelector('.container').style.opacity = '1';
+  }, 500);
+});
+
 'use strict';
 
 // --- DOB 必須チェック（無ければ index.html に戻す） -------------------------
