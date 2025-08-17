@@ -54,7 +54,6 @@
 
     <div class="actions">
       <button id="send">鑑定を依頼する</button>
-      <button id="reset">新しい鑑定を始める</button>
       <span class="muted">※ テスト時は <span class="ok">deep.html?year=1990&month=4&day=15</span> で開いてください</span>
     </div>
 
@@ -105,6 +104,11 @@ function saveHistory(hist) {
   localStorage.setItem("kantei_history", JSON.stringify(hist.slice(-8)));
 }
 
+// 話題変更検出
+function detectTopicShift(text){
+  return /別件|話題を変える|次の相談|新しい相談|ところで|ちなみに/.test(text);
+}
+
 document.getElementById('send').addEventListener('click', async () => {
   const btn = document.getElementById('send');
   const out = document.getElementById('result');
@@ -121,6 +125,7 @@ document.getElementById('send').addEventListener('click', async () => {
   btn.disabled = true;
   out.innerHTML = `<span class="loading"></span>鑑定中です。しばらくお待ちください…`;
 
+  const topicShift = detectTopicShift(question);
   const history = loadHistory(); // [{role, content}]
   const threadId = getThreadId();
 
@@ -132,7 +137,8 @@ document.getElementById('send').addEventListener('click', async () => {
     category,
     question,
     threadId: threadId,
-    history: history   // 直近をAPIに渡す
+    history: history,   // 直近をAPIに渡す
+    topicShift          // ★ 追加
   };
 
   // 送信前にユーザー発話を履歴に追加（表示テキストから作成）
@@ -165,35 +171,7 @@ document.getElementById('send').addEventListener('click', async () => {
   }
 });
 
-// --- 新しい鑑定を始める -----------------------------------------------------
-document.getElementById('reset').addEventListener('click', () => {
-  // 履歴とスレッドIDをクリア
-  localStorage.removeItem("kantei_history");
-  localStorage.removeItem("kantei_thread_id");
-  
-  // 画面をリセット
-  document.getElementById('question').value = '';
-  document.getElementById('result').textContent = '';
-  
-  // カテゴリをデフォルトに戻す
-  document.getElementById('category').value = '仕事';
-  
-  // 入力欄にフォーカスを当てて、新しい鑑定の準備を整える
-  document.getElementById('question').focus();
-  
-  // 結果表示エリアに新しい鑑定開始のメッセージを表示
-  document.getElementById('result').innerHTML = `
-    <div style="color: #67e8f9; font-weight: bold; margin-bottom: 10px;">
-      ✨ 新しい鑑定を開始します ✨
-    </div>
-    <div style="font-size: 14px; opacity: 0.8;">
-      上記の入力欄に新しいご相談内容を入力して「鑑定を依頼する」ボタンを押してください。
-    </div>
-  `;
-  
-  // ページ上部にスクロールして入力欄が見えるようにする
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-});
+
 
 // --- タイプライター演出（読みやすさのため軽めに） ---------------------------
 function typeWriter(el, text){
