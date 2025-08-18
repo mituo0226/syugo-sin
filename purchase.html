@@ -1,111 +1,59 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>守護神占い｜鑑定結果購入</title>
 <style>
 body{background:linear-gradient(to bottom,#1a0b2e,#2e1a47);color:#fff;font-family:'Zen Old Mincho',serif;text-align:center;padding:30px}
-.container{max-width:760px;margin:auto}
-h1{font-size:1.6em;margin-bottom:.5em}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}
-.card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:18px;box-shadow:0 0 20px rgba(147,51,234,.4);text-align:left;display:flex;flex-direction:column;justify-content:space-between}
-.card h3{margin:.2em 0 .4em;font-size:1.15em}
-.price{font-weight:bold;font-size:1.15em;margin:.2em 0 .6em}
-.badge{display:inline-block;font-size:.85em;border:1px solid rgba(157,78,221,.5);padding:3px 10px;border-radius:999px;background:rgba(157,78,221,.2);margin-right:8px}
-.purchase-button{display:inline-block;margin-top:12px;padding:12px 18px;background:#9d4edd;color:#fff;border-radius:8px;text-decoration:none;font-size:1.05em;transition:all .25s ease;text-align:center}
+.container{max-width:600px;margin:auto;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:20px;box-shadow:0 0 20px rgba(147,51,234,.4)}
+h1{font-size:1.5em;margin-bottom:.5em}
+p{margin:1em 0;white-space:pre-wrap}
+.purchase-button{display:inline-block;margin-top:20px;padding:15px 30px;background:#9d4edd;color:#fff;border-radius:8px;text-decoration:none;font-size:1.1em;transition:.25s}
 .purchase-button:hover{background:#c77dff;transform:translateY(-1px)}
 .return-link{display:block;margin-top:20px;color:#9d4edd;text-decoration:underline}
-.bonus{margin-top:14px;padding:12px;background:rgba(255,255,255,.08);border:1px dashed #c77dff;border-radius:10px;color:#ffccff;font-size:.95em;text-align:left}
-.small{font-size:.9em;color:#ccc;margin-top:10px}
-@media (max-width:680px){.grid{grid-template-columns:1fr}}
+.bonus{margin-top:20px;padding:15px;background:rgba(255,255,255,.1);border:1px dashed #c77dff;border-radius:8px;color:#ffccff;font-size:.95em}
+.small{font-size:.9em;color:#ccc}
+#afterPay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;align-items:center;justify-content:center}
+#afterPay>div{max-width:520px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:20px}
 </style>
 </head>
 <body>
 <div class="container">
   <h1>鑑定結果の購入手続き</h1>
-  <p>ご希望のチケットをお選びください。決済完了後、自動的に全文を表示します。</p>
+  <p>このボタンから STORES の決済ページを開きます。お支払い完了後に全文を表示できます。</p>
 
-  <div class="grid" id="plans"></div>
+  <!-- ★ 5分チケット（STORES 商品ページURL） -->
+  <a id="buy5" class="purchase-button" href="https://iga35jagvuxd3kwakqjv.stores.jp/items/68a274e19253666dcfe7d8db" target="_blank" rel="noopener">
+    占いチケット［お試し5分］を購入する（¥1,000）
+  </a>
 
-  <div class="bonus">🎁 <strong>本日中のご購入で守護神の護符画像を進呈</strong><br>購入後の画面にダウンロード案内を表示します。</div>
-
-  <p class="small">※各ボタンは決済サービス（STORES / PayPal など）のリンクです。<br>
-  成功時リダイレクトURLを <code>confirm.html?paid=1</code> に設定してください（本ページのスクリプトが DOB とプラン情報を付与します）。</p>
-
+  <div class="bonus">🎁 <strong>本日中のご購入で守護神の護符画像を進呈</strong></div>
+  <p class="small">※決済ページは新しいタブで開きます。お支払い後は下の「全文を表示する」ボタンからお戻りください。</p>
   <a href="index.html" class="return-link">最初のページに戻る</a>
 </div>
 
+<!-- 支払い後に戻る導線（モーダル） -->
+<div id="afterPay">
+  <div>
+    <p>決済ページを新しいタブで開きました。<br>お支払い完了後、下のボタンを押して全文を表示してください。</p>
+    <p><a id="gotoConfirm" class="purchase-button">お支払い完了 → 全文を表示する</a></p>
+  </div>
+</div>
+
 <script>
-// ==== 設定 ====
-// 各プランの決済リンク（STORESやPayPal.me等のURLに入れ替えてください）
-const PAYMENT_LINKS = {
-  P5:  "https://example.com/pay/try-5min",     // お試し5分 1000円
-  P10: "https://example.com/pay/easy-10min",   // お手軽10分 3000円
-  P30: "https://example.com/pay/pop-30min",    // 人気30分 5000円
-  P60: "https://example.com/pay/value-60min",  // お買い得60分 8000円
-  P120:"https://example.com/pay/super-120min", // 超お買い得120分 12000円
-  P240:"https://example.com/pay/mega-240min"   // まとめ買い240分 20000円
-};
+  // confirm.html へ DOB を引き継ぎ（?paid=1 でモザイク解除）
+  const urlParams = new URLSearchParams(location.search);
+  const ret = new URL(location.origin + location.pathname.replace('purchase.html','confirm.html'));
+  ret.searchParams.set('paid','1');
+  ['year','month','day'].forEach(k => { const v=urlParams.get(k); if(v) ret.searchParams.set(k,v); });
 
-// プラン一覧（表示と plan ID）
-const PLANS = [
-  { id:"P5",   title:"お試し5分チケット",      price:1000,  badges:["まずは体験"] },
-  { id:"P10",  title:"お手軽10分チケット",      price:3000,  badges:["定番"] },
-  { id:"P30",  title:"人気ナンバーワン30分",   price:5000,  badges:["推奨","満足度◎"] },
-  { id:"P60",  title:"お買い得60分チケット",    price:8000,  badges:["コスパ良"] },
-  { id:"P120", title:"超お買い得120分",        price:12000, badges:["長め相談"] },
-  { id:"P240", title:"まとめ買い超お得240分",   price:20000, badges:["ヘビーユース"] },
-];
-
-// 現在URLから DOB を拾う（confirm.html→purchase.html 遷移時に付与される想定）
-const urlParams = new URLSearchParams(location.search);
-const dob = {
-  year:  urlParams.get('year') || '',
-  month: urlParams.get('month') || '',
-  day:   urlParams.get('day') || ''
-};
-
-// ボタン生成
-const wrap = document.getElementById('plans');
-wrap.innerHTML = PLANS.map(p => {
-  const link = PAYMENT_LINKS[p.id] || "#";
-  const badges = (p.badges||[]).map(b => `<span class="badge">${b}</span>`).join('');
-  return `
-    <div class="card">
-      <div>
-        ${badges}
-        <h3>${p.title}</h3>
-        <div class="price">¥${p.price.toLocaleString()}</div>
-        <div style="font-size:.95em;opacity:.9">鑑定時間：${p.title.replace(/.*?(\d+分).*/, '$1')}</div>
-      </div>
-      <a class="purchase-button" href="${link}" data-plan="${p.id}">このプランを購入する</a>
-    </div>
-  `;
-}).join('');
-
-// クリック時に DOB / plan を成功時の戻りURLへ引き継ぐ補助
-// 多くの決済サービスは「成功時リダイレクトURL」を事前設定します。
-// そのURLを confirm.html?paid=1 にしておけばOK。
-// もしサービス側が「return_url のクエリ上書き」を許すなら、以下のように付与します。
-wrap.addEventListener('click', (e) => {
-  const a = e.target.closest('a.purchase-button');
-  if(!a) return;
-  const plan = a.getAttribute('data-plan');
-
-  // 例）決済サービスが return_url をクエリ指定できる場合のサンプル
-  // const ret = new URL(location.origin + location.pathname.replace('purchase.html','confirm.html'));
-  // ret.searchParams.set('paid','1');
-  // if (dob.year && dob.month && dob.day) {
-  //   ret.searchParams.set('year', dob.year);
-  //   ret.searchParams.set('month', dob.month);
-  //   ret.searchParams.set('day', dob.day);
-  // }
-  // ret.searchParams.set('plan', plan);
-  // const payUrl = new URL(a.href);
-  // payUrl.searchParams.set('return_url', ret.toString());
-  // a.href = payUrl.toString();
-});
+  // ボタンクリック時：新タブでSTORESを開き、元タブに戻り導線を出す
+  document.getElementById('buy5').addEventListener('click', (e) => {
+    // 新タブは a[target=_blank] で開くので、ここは「戻る導線」を表示するだけ
+    document.getElementById('gotoConfirm').setAttribute('href', ret.toString());
+    document.getElementById('afterPay').style.display = 'flex';
+  }, false);
 </script>
 </body>
 </html>
