@@ -641,6 +641,40 @@ function typeWriter(el, text, speed=80){
     }
   })();
 }
+
+const CREDIT_KEY = 'ss_credit_minutes';
+const getCredit = () => +(sessionStorage.getItem(CREDIT_KEY) || 0);
+const setCredit = (v) => sessionStorage.setItem(CREDIT_KEY, Math.max(0, +v));
+const useCredit = (m) => setCredit(getCredit() - (+m||0));
+
+// URLに ?add=XX があれば加算（後から追加購入した場合など）
+(() => {
+  const p = new URLSearchParams(location.search);
+  const add = +p.get('add') || 0;
+  if (add > 0) setCredit(getCredit() + add);
+})();
+
+// 残り時間バッジを表示（フォームのバッジ行に足す）
+(function renderCreditBadge(){
+  const holder = document.querySelector('.row-2col');
+  if (!holder) return;
+  const b = document.createElement('span');
+  b.className = 'badge';
+  b.id = 'creditBadge';
+  b.style.marginLeft = '8px';
+  b.textContent = `残り鑑定時間：${getCredit()}分`;
+  holder.appendChild(b);
+
+  // 送信のたびに5分消費（必要なら値を調整）
+  const send = document.getElementById('send');
+  send?.addEventListener('click', () => {
+    // ここで不足ならアラートして中断する運用にもできる
+    // if (getCredit() <= 0) { alert('鑑定時間がありません。追加購入してください。'); return; }
+    useCredit(5);
+    const badge = document.getElementById('creditBadge');
+    if (badge) badge.textContent = `残り鑑定時間：${getCredit()}分`;
+  }, { capture: true });
+})();
 </script>
 </body>
 </html>
