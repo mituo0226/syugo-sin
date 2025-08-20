@@ -600,7 +600,7 @@ window.addEventListener('load', () => {
   if (!paid) {
     contentEl.textContent = TEMPLATE;
     // ぼかしは維持（is-blurredのまま）
-    return;
+    // 早期リターンを削除してボタン設定を確実に実行
   }
 
   // 入金済み：APIを呼んで本文を差し替え、モザイク解除
