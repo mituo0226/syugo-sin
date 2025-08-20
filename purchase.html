@@ -46,7 +46,7 @@ p{margin:1em 0;white-space:pre-wrap}
   const urlParams = new URLSearchParams(location.search);
   const ret = new URL(location.origin + location.pathname.replace('purchase.html','confirm.html'));
   ret.searchParams.set('paid','1');
-  ['year','month','day'].forEach(k => { const v=urlParams.get(k); if(v) ret.searchParams.set(k,v); });
+  ['year','month','day','category','question'].forEach(k => { const v=urlParams.get(k); if(v) ret.searchParams.set(k,v); });
 
   // ボタンクリック時：新タブでSTORESを開き、元タブに戻り導線を出す
   document.getElementById('buy5').addEventListener('click', (e) => {
