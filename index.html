@@ -120,7 +120,7 @@ button:hover {
 <div class="container">
   <img src="./photo/logo.png" alt="ロゴ" class="logo">
   <p>あなたの生年月日を入力してください</p>
-  <form action="result.html" method="get">
+  <form id="fortuneForm" action="result.html" method="get">
     <select name="year" required>
       <option value="">年</option>
       <script>
@@ -147,6 +147,19 @@ button:hover {
     </select><br>
     <button type="submit">運勢を占う</button>
   </form>
+
+  <script>
+    document.getElementById("fortuneForm").addEventListener("submit", function() {
+      const year = this.year.value;
+      const month = this.month.value;
+      const day = this.day.value;
+
+      // localStorage に保存
+      localStorage.setItem("year", year);
+      localStorage.setItem("month", month);
+      localStorage.setItem("day", day);
+    });
+  </script>
 </div>
 </body>
 </html>
