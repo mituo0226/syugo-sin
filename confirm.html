@@ -597,16 +597,16 @@ window.addEventListener('load', () => {
 一度立ち止まり、心身のリズムを整え、言葉・行動・環境のいずれから小さな修正を始めてください。
 三日・七日・二十一日の周期で見直すほど、因縁の結び目はほどけてまいります。`;
 
-  if (!paid) {
-    contentEl.textContent = TEMPLATE;
-    // ぼかしは維持（is-blurredのまま）
-    // 早期リターンを削除してボタン設定を確実に実行
-  }
-
   // 入金済み：APIを呼んで本文を差し替え、モザイク解除
   if (!(year && month && day)) {
     contentEl.textContent = '生年月日が不足しています。最初のページからやり直してください。';
     return;
+  }
+
+  if (!paid) {
+    contentEl.textContent = TEMPLATE;
+    // ぼかしは維持（is-blurredのまま）
+    // 早期リターンを削除してボタン設定を確実に実行
   }
 
   // deep.html と同じ鑑定APIに投げる
