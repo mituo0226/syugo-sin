@@ -1,59 +1,106 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>守護神占い｜鑑定結果購入</title>
-<style>
-body{background:linear-gradient(to bottom,#1a0b2e,#2e1a47);color:#fff;font-family:'Zen Old Mincho',serif;text-align:center;padding:30px}
-.container{max-width:600px;margin:auto;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:20px;box-shadow:0 0 20px rgba(147,51,234,.4)}
-h1{font-size:1.5em;margin-bottom:.5em}
-p{margin:1em 0;white-space:pre-wrap}
-.purchase-button{display:inline-block;margin-top:20px;padding:15px 30px;background:#9d4edd;color:#fff;border-radius:8px;text-decoration:none;font-size:1.1em;transition:.25s}
-.purchase-button:hover{background:#c77dff;transform:translateY(-1px)}
-.return-link{display:block;margin-top:20px;color:#9d4edd;text-decoration:underline}
-.bonus{margin-top:20px;padding:15px;background:rgba(255,255,255,.1);border:1px dashed #c77dff;border-radius:8px;color:#ffccff;font-size:.95em}
-.small{font-size:.9em;color:#ccc}
-#afterPay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;align-items:center;justify-content:center}
-#afterPay>div{max-width:520px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:20px}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>守護神占い｜鑑定チケット購入（テスト用）</title>
+  <style>
+    body{font-family:sans-serif;background:#0f0a1e;color:#fff;margin:0;padding:0;line-height:1.6}
+    h1{text-align:center;padding:1em 0}
+    .container{max-width:900px;margin:0 auto;padding:1em;display:grid;gap:1em}
+    .card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);
+          border-radius:14px;padding:20px;display:flex;flex-direction:column;justify-content:space-between}
+    .price{margin:0.5em 0}
+    a.purchase-button{display:inline-block;text-align:center;padding:12px 14px;border-radius:8px;
+      background:#9d4edd;color:#fff;text-decoration:none;font-weight:700}
+    a.purchase-button:hover{background:#c77dff}
+    /* overlay */
+    .overlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);
+      align-items:center;justify-content:center}
+    .ovcard{max-width:560px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);
+      border-radius:14px;padding:22px}
+    .bigbtn{display:block;margin:10px 0;padding:14px 16px;border-radius:10px;text-align:center;
+      text-decoration:none;font-weight:700}
+    .bigbtn.primary{background:#9d4edd;color:#fff}
+    .bigbtn.secondary{background:#3c2b57;color:#fff}
+  </style>
 </head>
 <body>
-<div class="container">
-  <h1>鑑定結果の購入手続き</h1>
-  <p>このボタンから STORES の決済ページを開きます。お支払い完了後に全文を表示できます。</p>
+  <h1>鑑定チケット購入（テスト）</h1>
+  <div id="plans" class="container"></div>
 
-  <!-- ★ 5分チケット（STORES 商品ページURL） -->
-  <a id="buy5" class="purchase-button" href="https://iga35jagvuxd3kwakqjv.stores.jp/items/68a274e19253666dcfe7d8db" target="_blank" rel="noopener">
-    占いチケット［お試し5分］を購入する（¥1,000）
-  </a>
-
-  <div class="bonus">🎁 <strong>本日中のご購入で守護神の護符画像を進呈</strong></div>
-  <p class="small">※決済ページは新しいタブで開きます。お支払い後は下の「全文を表示する」ボタンからお戻りください。</p>
-  <a href="index.html" class="return-link">最初のページに戻る</a>
-</div>
-
-<!-- 支払い後に戻る導線（モーダル） -->
-<div id="afterPay">
-  <div>
-    <p>決済ページを新しいタブで開きました。<br>お支払い完了後、下のボタンを押して全文を表示してください。</p>
-    <p><a id="gotoConfirm" class="purchase-button">お支払い完了 → 全文を表示する</a></p>
+  <!-- overlay -->
+  <div id="afterPay" class="overlay">
+    <div class="ovcard">
+      <p>決済ページを新しいタブで開きました。<br>お支払い完了後、次のどちらかをお選びください。</p>
+      <a id="btnFull" class="bigbtn primary">① モザイクを外して全文を見て鑑定を進める</a>
+      <a id="btnAdd"  class="bigbtn secondary">② 追加で鑑定時間を購入する / 使ってみる</a>
+      <p style="font-size:.9em;opacity:.85">※ 決済が完了していなくても押せます。完了後に押すとスムーズです。</p>
+    </div>
   </div>
-</div>
 
 <script>
-  // confirm.html へ DOB を引き継ぎ（?paid=1 でモザイク解除）
-  const urlParams = new URLSearchParams(location.search);
-  const ret = new URL(location.origin + location.pathname.replace('purchase.html','confirm.html'));
-  ret.searchParams.set('paid','1');
-  ['year','month','day','category','question'].forEach(k => { const v=urlParams.get(k); if(v) ret.searchParams.set(k,v); });
+const PAYMENT_LINKS = {
+  P5  : "https://iga35jagvuxd3kwakqjv.stores.jp/items/68a274e19253666dcfe7d8db", // 5分チケットURL
+  P10 : "", // 10分
+  P30 : "", // 30分
+  P60 : "", // 60分
+  P120: "", // 120分
+  P240: ""  // 240分
+};
 
-  // ボタンクリック時：新タブでSTORESを開き、元タブに戻り導線を出す
-  document.getElementById('buy5').addEventListener('click', (e) => {
-    // 新タブは a[target=_blank] で開くので、ここは「戻る導線」を表示するだけ
-    document.getElementById('gotoConfirm').setAttribute('href', ret.toString());
-    document.getElementById('afterPay').style.display = 'flex';
-  }, false);
+const PLANS = [
+  { id:"P5",   minutes:5,   label:"お試し5分チケット（¥1,000）" },
+  { id:"P10",  minutes:10,  label:"お手軽10分チケット（¥3,000）" },
+  { id:"P30",  minutes:30,  label:"人気30分チケット（¥5,000）" },
+  { id:"P60",  minutes:60,  label:"お買い得60分チケット（¥8,000）" },
+  { id:"P120", minutes:120, label:"超お買い得120分チケット（¥12,000）" },
+  { id:"P240", minutes:240, label:"まとめ買い240分チケット（¥20,000）" }
+];
+
+const params = new URLSearchParams(location.search);
+const dob = { y:params.get('year'), m:params.get('month'), d:params.get('day') };
+
+(function ensurePlanButtons(){
+  const grid = document.getElementById('plans');
+  grid.innerHTML = PLANS.map(p => {
+    const canBuy = !!(PAYMENT_LINKS[p.id] || "").trim();
+    const href = canBuy ? PAYMENT_LINKS[p.id] : "#";
+    const dis  = canBuy ? "" : ' style="pointer-events:none;opacity:.5"';
+    return `
+      <div class="card">
+        <div>
+          <h3>${p.label}</h3>
+          <div class="price">鑑定時間：${p.minutes}分</div>
+        </div>
+        <a class="purchase-button" href="${href}" data-plan="${p.id}" data-min="${p.minutes}" target="_blank" rel="noopener"${dis}>
+          ${canBuy ? "このプランを購入する" : "準備中"}
+        </a>
+      </div>`;
+  }).join('');
+})();
+
+document.getElementById('plans')?.addEventListener('click', (e) => {
+  const a = e.target.closest('a.purchase-button');
+  if (!a) return;
+  if (!a.href || a.href === "#") { e.preventDefault(); return; }
+  const min = +a.getAttribute('data-min') || 0;
+
+  const full = new URL('confirm.html', location.href);
+  full.searchParams.set('paid','1');
+  if (min > 0) full.searchParams.set('min', String(min));
+  if (dob.y && dob.m && dob.d) {
+    full.searchParams.set('year', dob.y); full.searchParams.set('month', dob.m); full.searchParams.set('day', dob.d);
+  }
+
+  const add = new URL('deep.html', location.href);
+  if (min > 0) add.searchParams.set('add', String(min));
+  add.searchParams.set('mode','trial');
+
+  document.getElementById('btnFull').setAttribute('href', full.toString());
+  document.getElementById('btnAdd').setAttribute('href', add.toString());
+  document.getElementById('afterPay').style.display = 'flex';
+}, true);
 </script>
 </body>
 </html>
