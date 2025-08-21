@@ -5,12 +5,22 @@
   <title>守護神占い 鑑定チケット</title>
   <script>
     window.onload = function() {
-      // localStorage からデータを取得
-      const year     = localStorage.getItem('year') || localStorage.getItem('ss_year');
-      const month    = localStorage.getItem('month') || localStorage.getItem('ss_month');
-      const day      = localStorage.getItem('day') || localStorage.getItem('ss_day');
-      const category = localStorage.getItem('ss_category') || localStorage.getItem('category');
-      const question = localStorage.getItem('ss_question') || localStorage.getItem('question');
+      // デバッグ: localStorageの全内容を確認
+      console.log('=== ticket5.html localStorage デバッグ ===');
+      console.log('localStorage全体:', localStorage);
+      
+      // localStorage からデータを取得（実際のキー名に合わせて修正）
+      const year     = localStorage.getItem('year') || localStorage.getItem('ss_year') || localStorage.getItem('birthYear');
+      const month    = localStorage.getItem('month') || localStorage.getItem('ss_month') || localStorage.getItem('birthMonth');
+      const day      = localStorage.getItem('day') || localStorage.getItem('ss_day') || localStorage.getItem('birthDay');
+      const category = localStorage.getItem('ss_category') || localStorage.getItem('category') || '総合';
+      // textキーを最優先に変更
+      const question = localStorage.getItem('text') || localStorage.getItem('ss_question') || localStorage.getItem('question') || localStorage.getItem('concern') || '';
+
+      // デバッグ: 取得したデータを確認
+      console.log('取得したデータ:', {
+        year, month, day, category, question
+      });
 
       // 基本のURL（購入済み・5分チケット）
       let url = "https://syugo-sin.com/confirm.html?paid=1&min=5";
@@ -22,9 +32,12 @@
       if (category) {
         url += `&category=${encodeURIComponent(category)}`;
       }
-      if (question) {
+      if (question && question.trim()) {
         url += `&text=${encodeURIComponent(question)}`;
       }
+
+      // デバッグ: 最終的なURLを確認
+      console.log('リダイレクト先URL:', url);
 
       // 自動リダイレクト
       window.location.href = url;
