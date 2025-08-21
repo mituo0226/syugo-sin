@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>守護神占い 鑑定チケット</title>
+  <script>
+    window.onload = function() {
+      // localStorage からデータを取得
+      const year     = localStorage.getItem('year') || localStorage.getItem('ss_year');
+      const month    = localStorage.getItem('month') || localStorage.getItem('ss_month');
+      const day      = localStorage.getItem('day') || localStorage.getItem('ss_day');
+      const category = localStorage.getItem('ss_category') || localStorage.getItem('category');
+      const question = localStorage.getItem('ss_question') || localStorage.getItem('question');
+
+      // 基本のURL（購入済み・5分チケット）
+      let url = "https://syugo-sin.com/confirm.html?paid=1&min=5";
+
+      // 保存されていればクエリに追加
+      if (year && month && day) {
+        url += `&year=${encodeURIComponent(year)}&month=${encodeURIComponent(month)}&day=${encodeURIComponent(day)}`;
+      }
+      if (category) {
+        url += `&category=${encodeURIComponent(category)}`;
+      }
+      if (question) {
+        url += `&text=${encodeURIComponent(question)}`;
+      }
+
+      // 自動リダイレクト
+      window.location.href = url;
+    };
+  </script>
+</head>
+<body>
+  <p>守護神占いの鑑定ページに移動します…</p>
+  <p>もし自動で移動しない場合は <a href="https://syugo-sin.com/">こちらをクリック</a> してください。</p>
+</body>
+</html>
