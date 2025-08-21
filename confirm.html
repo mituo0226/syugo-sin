@@ -607,7 +607,6 @@ window.addEventListener('load', () => {
     contentEl.textContent = TEMPLATE;
     // ぼかしは維持（is-blurredのまま）
     // 早期リターンを削除してボタン設定を確実に実行
-    return; // 未入金の場合はここで終了
   }
 
   // 入金済みの場合のみAPIを呼び出す
