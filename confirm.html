@@ -700,7 +700,7 @@ window.addEventListener('load', () => {
   });
 
     // API 呼び出し時に利用（paidに関係なく実行）
-  if (year && month && day) {
+  if (year && month && day && question && question.trim()) {
     console.log('localStorageから取得したデータでAPI呼び出しを実行');
     
     const payload = { 
@@ -749,7 +749,13 @@ window.addEventListener('load', () => {
     });
   } else {
     console.log('localStorageに必要なデータが不足しているため、API呼び出しをスキップ');
-    console.log('不足データ:', { year: !!year, month: !!month, day: !!day });
+    console.log('不足データ:', { 
+      year: !!year, 
+      month: !!month, 
+      day: !!day, 
+      question: !!question,
+      questionValue: question
+    });
   }
 })();
 </script>
