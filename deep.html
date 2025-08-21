@@ -460,6 +460,13 @@ window.addEventListener('load', () => {
   const badge = document.getElementById('dobBadge');
   badge.style.display = 'inline-block';
   badge.textContent = `生年月日：${y}年${m}月${d}日`;
+  
+  // localStorageから相談内容を取得して初期値として設定
+  const savedQuestion = localStorage.getItem("ss_question") || localStorage.getItem("question") || "";
+  if (savedQuestion) {
+    const questionInput = document.getElementById('question');
+    questionInput.value = savedQuestion;
+  }
 })();
 
 // --- 送信処理 ---------------------------------------------------------------
@@ -494,7 +501,7 @@ document.getElementById('send').addEventListener('click', async () => {
   const questionInput = document.getElementById('question');
   const newConsultation = document.getElementById('newConsultation');
   const api = 'https://syugo-sin-kantei-api.mituo0226.workers.dev/api/consult';
-  const category = '総合';
+  const category = localStorage.getItem("ss_category") || localStorage.getItem("category") || '総合';
   const question = questionInput.value.trim();
 
   if(!question){
@@ -516,7 +523,7 @@ document.getElementById('send').addEventListener('click', async () => {
     month: window.__DOB__?.month,
     day: window.__DOB__?.day,
     category,
-    question,
+    text: question || "相談内容なし",
     threadId: threadId,
     history: history,   // 直近をAPIに渡す
     topicShift          // ★ 追加
