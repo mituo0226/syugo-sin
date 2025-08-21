@@ -679,5 +679,25 @@ window.addEventListener('load', () => {
   }
 })();
 </script>
+
+<script>
+// localStorage から値を復元
+const year = localStorage.getItem("year");
+const month = localStorage.getItem("month");
+const day = localStorage.getItem("day");
+
+// API 呼び出し時に利用
+if (year && month && day) {
+  fetch("/api/consult", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ year, month, day, text: "購入済みユーザー用の鑑定" })
+  })
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("fortuneResult").innerHTML = data.html;
+  });
+}
+</script>
 </body>
 </html>
