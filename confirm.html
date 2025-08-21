@@ -687,9 +687,9 @@ window.addEventListener('load', () => {
   
   console.log('paidパラメータ:', paid);
   
-  const year = +localStorage.getItem("year");
-  const month = +localStorage.getItem("month");
-  const day = +localStorage.getItem("day");
+  const year = +localStorage.getItem("year") || +localStorage.getItem("ss_year");
+  const month = +localStorage.getItem("month") || +localStorage.getItem("ss_month");
+  const day = +localStorage.getItem("day") || +localStorage.getItem("ss_day");
   const question = localStorage.getItem("ss_question") || localStorage.getItem("question") || '';
   const category = localStorage.getItem("ss_category") || localStorage.getItem("category") || '総合';
   const apiEndpoint = q.get('api') || 'https://syugo-sin-kantei-api.mituo0226.workers.dev/api/consult';
