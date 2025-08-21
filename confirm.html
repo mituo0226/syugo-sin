@@ -623,7 +623,7 @@ window.addEventListener('load', () => {
         body: JSON.stringify({
           year, month, day,
           category,
-          question,
+          text: question,
           // confirmでは初回扱いで十分なので履歴は送らない（コスト最小化＆確実性）
           history: [],
           threadId: `confirm_${Date.now()}`
