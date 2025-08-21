@@ -607,6 +607,7 @@ window.addEventListener('load', () => {
     contentEl.textContent = TEMPLATE;
     // ぼかしは維持（is-blurredのまま）
     // 早期リターンを削除してボタン設定を確実に実行
+    return; // 未入金の場合はここで終了
   }
 
   // 入金済みの場合のみAPIを呼び出す
@@ -622,7 +623,7 @@ window.addEventListener('load', () => {
         body: JSON.stringify({
           year, month, day,
           category,
-          text: question,
+          question,
           // confirmでは初回扱いで十分なので履歴は送らない（コスト最小化＆確実性）
           history: [],
           threadId: `confirm_${Date.now()}`
