@@ -681,11 +681,17 @@ window.addEventListener('load', () => {
 <script>
 // localStorage から値を復元（既存のAPI呼び出しがない場合のみ実行）
 (function(){
+  console.log('localStorage API呼び出し処理開始');
   const q = new URLSearchParams(location.search);
   const paid = q.get('paid') === '1';
   
+  console.log('paidパラメータ:', paid);
+  
   // 既存のAPI呼び出しがある場合は実行しない
-  if (paid) return;
+  if (paid) {
+    console.log('paid=trueのため、localStorage API呼び出しをスキップ');
+    return;
+  }
   
   const year = +localStorage.getItem("year");
   const month = +localStorage.getItem("month");
@@ -694,30 +700,48 @@ window.addEventListener('load', () => {
   const category = localStorage.getItem("category") || '総合';
   const apiEndpoint = q.get('api') || 'https://syugo-sin-kantei-api.mituo0226.workers.dev/api/consult';
 
+  // デバッグ: localStorageの値を確認
+  console.log('localStorage確認:', {
+    year, month, day, question, category, apiEndpoint
+  });
+
   // API 呼び出し時に利用
   if (year && month && day) {
+    const payload = { 
+      year, 
+      month, 
+      day, 
+      text: question,
+      category: category,
+      mode: "full"
+    };
+    
+    console.log('API送信データ:', payload);
+    
     fetch(apiEndpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        year, 
-        month, 
-        day, 
-        text: question,
-        category: category,
-        mode: "full"
-      })
+      body: JSON.stringify(payload)
     })
     .then(res => {
+      console.log('APIレスポンスステータス:', res.status);
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
       return res.json();
     })
     .then(data => {
+      console.log('APIレスポンスデータ:', data);
       const contentEl = document.getElementById("mosaicContent");
-      if (contentEl && data.html) {
-        contentEl.innerHTML = data.html;
+      const message = (data && data.message) ? data.message : '鑑定文を取得できませんでした。';
+      
+      if (contentEl) {
+        // シンプルな段落化処理
+        const formattedMessage = message.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
+        contentEl.innerHTML = `<p>${formattedMessage}</p>`;
+        console.log('HTMLコンテンツを更新しました');
+      } else {
+        console.log('mosaicContent要素が見つかりません');
       }
     })
     .catch(error => {
