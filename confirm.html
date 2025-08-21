@@ -524,9 +524,9 @@ window.addEventListener('load', () => {
 
 (function(){
   const q = new URLSearchParams(location.search);
-  const year  = +q.get('year') || localStorage.getItem("year");
-  const month = +q.get('month') || localStorage.getItem("month");
-  const day   = +q.get('day') || localStorage.getItem("day");
+  const year  = +q.get('year') || +localStorage.getItem("year");
+  const month = +q.get('month') || +localStorage.getItem("month");
+  const day   = +q.get('day') || +localStorage.getItem("day");
   const paid  = q.get('paid') === '1';
   const category = q.get('category') || q.get('cat') || '総合';
   const question = q.get('text') || q.get('question') || localStorage.getItem("question") || '';
@@ -681,23 +681,55 @@ window.addEventListener('load', () => {
 </script>
 
 <script>
-// localStorage から値を復元
-const year = localStorage.getItem("year");
-const month = localStorage.getItem("month");
-const day = localStorage.getItem("day");
+// localStorage から値を復元（既存のAPI呼び出しがない場合のみ実行）
+(function(){
+  const q = new URLSearchParams(location.search);
+  const paid = q.get('paid') === '1';
+  
+  // 既存のAPI呼び出しがある場合は実行しない
+  if (paid) return;
+  
+  const year = +localStorage.getItem("year");
+  const month = +localStorage.getItem("month");
+  const day = +localStorage.getItem("day");
+  const apiEndpoint = q.get('api') || 'https://syugo-sin-kantei-api.mituo0226.workers.dev/api/consult';
 
-// API 呼び出し時に利用
-if (year && month && day) {
-  fetch("/api/consult", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ year, month, day, text: "購入済みユーザー用の鑑定" })
-  })
-  .then(res => res.json())
-  .then(data => {
-    document.getElementById("mosaicContent").innerHTML = data.html;
-  });
-}
+  // API 呼び出し時に利用
+  if (year && month && day) {
+    fetch(apiEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        year, 
+        month, 
+        day, 
+        text: "購入済みユーザー用の鑑定",
+        category: q.get('category') || q.get('cat') || '総合',
+        history: [],
+        threadId: `localStorage_${Date.now()}`
+      })
+    })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.json();
+    })
+    .then(data => {
+      const contentEl = document.getElementById("mosaicContent");
+      if (contentEl && data.html) {
+        contentEl.innerHTML = data.html;
+      }
+    })
+    .catch(error => {
+      console.error('API呼び出しエラー:', error);
+      const contentEl = document.getElementById("mosaicContent");
+      if (contentEl) {
+        contentEl.textContent = '鑑定文の取得に失敗しました。時間をおいてお試しください。';
+      }
+    });
+  }
+})();
 </script>
 </body>
 </html>
