@@ -529,7 +529,7 @@ window.addEventListener('load', () => {
   const day   = +q.get('day') || +localStorage.getItem("day");
   const paid  = q.get('paid') === '1';
   const category = q.get('category') || q.get('cat') || localStorage.getItem("ss_category") || localStorage.getItem("category") || '総合';
-  const question = q.get('text') || q.get('question') || localStorage.getItem("ss_question") || localStorage.getItem("question") || '';
+  const question = q.get('text') || q.get('question') || localStorage.getItem("text") || localStorage.getItem("ss_question") || localStorage.getItem("question") || '';
 
   // デバッグ: URLパラメータの確認
   console.log('URLパラメータ確認:', {
@@ -703,7 +703,7 @@ window.addEventListener('load', () => {
   const year = +localStorage.getItem("year") || +localStorage.getItem("ss_year");
   const month = +localStorage.getItem("month") || +localStorage.getItem("ss_month");
   const day = +localStorage.getItem("day") || +localStorage.getItem("ss_day");
-  const question = localStorage.getItem("ss_question") || localStorage.getItem("question") || '';
+  const question = localStorage.getItem("text") || localStorage.getItem("ss_question") || localStorage.getItem("question") || '';
   const category = localStorage.getItem("ss_category") || localStorage.getItem("category") || '総合';
   const apiEndpoint = q.get('api') || 'https://syugo-sin-kantei-api.mituo0226.workers.dev/api/consult';
 
