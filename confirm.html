@@ -531,6 +531,17 @@ window.addEventListener('load', () => {
   const category = q.get('category') || q.get('cat') || localStorage.getItem("ss_category") || localStorage.getItem("category") || '総合';
   const question = q.get('text') || q.get('question') || localStorage.getItem("ss_question") || localStorage.getItem("question") || '';
 
+  // デバッグ: URLパラメータの確認
+  console.log('URLパラメータ確認:', {
+    year: q.get('year'),
+    month: q.get('month'),
+    day: q.get('day'),
+    category: q.get('category'),
+    text: q.get('text'),
+    question: q.get('question'),
+    paid: paid
+  });
+
   const apiEndpoint = q.get('api') || 'https://syugo-sin-kantei-api.mituo0226.workers.dev/api/consult';
 
   // 既存の params 取得の直後に追記
@@ -612,6 +623,8 @@ window.addEventListener('load', () => {
 
   // 入金済みの場合のみAPIを呼び出す
   (async ()=>{
+    console.log('メインAPI呼び出し開始:', { year, month, day, category, question });
+    
     // ローディングアニメーションを表示
     const loader = document.getElementById('loadingScreen');
     loader.style.display = 'flex';
