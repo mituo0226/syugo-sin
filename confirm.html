@@ -690,6 +690,8 @@ window.addEventListener('load', () => {
   const year = +localStorage.getItem("year");
   const month = +localStorage.getItem("month");
   const day = +localStorage.getItem("day");
+  const question = localStorage.getItem("question") || '';
+  const category = localStorage.getItem("category") || '総合';
   const apiEndpoint = q.get('api') || 'https://syugo-sin-kantei-api.mituo0226.workers.dev/api/consult';
 
   // API 呼び出し時に利用
@@ -701,10 +703,9 @@ window.addEventListener('load', () => {
         year, 
         month, 
         day, 
-        text: "購入済みユーザー用の鑑定",
-        category: q.get('category') || q.get('cat') || '総合',
-        history: [],
-        threadId: `localStorage_${Date.now()}`
+        text: question,
+        category: category,
+        mode: "full"
       })
     })
     .then(res => {
