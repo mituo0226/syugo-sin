@@ -36,27 +36,23 @@ export default {
           paragraphsPerBlock = 0, // 0=自動（将来拡張用）
         } = payload || {};
 
-        // 生年月日の検証
-        if (!year || !month || !day) {
-          return json({ 
-            ok: false, 
-            error: "生年月日が不完全です" 
-          }, env, request, 400);
-        }
+        // 生年月日の検証（個別鑑定の場合は必須ではない）
+        let yearNum = null, monthNum = null, dayNum = null;
+        
+        if (year && month && day) {
+          yearNum = Number(year);
+          monthNum = Number(month);
+          dayNum = Number(day);
 
-        // 数値変換と範囲チェック
-        const yearNum = Number(year);
-        const monthNum = Number(month);
-        const dayNum = Number(day);
-
-        if (isNaN(yearNum) || isNaN(monthNum) || isNaN(dayNum) ||
-            yearNum < 1900 || yearNum > 2100 ||
-            monthNum < 1 || monthNum > 12 ||
-            dayNum < 1 || dayNum > 31) {
-          return json({ 
-            ok: false, 
-            error: "生年月日の形式が不正です" 
-          }, env, request, 400);
+          if (isNaN(yearNum) || isNaN(monthNum) || isNaN(dayNum) ||
+              yearNum < 1900 || yearNum > 2100 ||
+              monthNum < 1 || monthNum > 12 ||
+              dayNum < 1 || dayNum > 31) {
+            return json({ 
+              ok: false, 
+              error: "生年月日の形式が不正です" 
+            }, env, request, 400);
+          }
         }
 
         // 1) 本文生成：OpenAI に中継 or Fallback
@@ -94,7 +90,8 @@ export default {
             day: dayNum, 
             category, 
             mode,
-            seed: seed.substring(0, 50) + (seed.length > 50 ? '...' : '')
+            seed: seed.substring(0, 50) + (seed.length > 50 ? '...' : ''),
+            hasBirthDate: !!(yearNum && monthNum && dayNum)
           },
         };
         return json(body, env, request);
