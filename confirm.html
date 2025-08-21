@@ -524,12 +524,12 @@ window.addEventListener('load', () => {
 
 (function(){
   const q = new URLSearchParams(location.search);
-  const year  = +q.get('year');
-  const month = +q.get('month');
-  const day   = +q.get('day');
+  const year  = +q.get('year') || localStorage.getItem("year");
+  const month = +q.get('month') || localStorage.getItem("month");
+  const day   = +q.get('day') || localStorage.getItem("day");
   const paid  = q.get('paid') === '1';
   const category = q.get('category') || q.get('cat') || '総合';
-  const question = q.get('text') || q.get('question') || '';
+  const question = q.get('text') || q.get('question') || localStorage.getItem("question") || '';
 
   const apiEndpoint = q.get('api') || 'https://syugo-sin-kantei-api.mituo0226.workers.dev/api/consult';
 
@@ -695,7 +695,7 @@ if (year && month && day) {
   })
   .then(res => res.json())
   .then(data => {
-    document.getElementById("fortuneResult").innerHTML = data.html;
+    document.getElementById("mosaicContent").innerHTML = data.html;
   });
 }
 </script>
