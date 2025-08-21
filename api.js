@@ -36,9 +36,45 @@ export default {
           paragraphsPerBlock = 0, // 0=自動（将来拡張用）
         } = payload || {};
 
+        // 生年月日の検証
+        if (!year || !month || !day) {
+          return json({ 
+            ok: false, 
+            error: "生年月日が不完全です" 
+          }, env, request, 400);
+        }
+
+        // 数値変換と範囲チェック
+        const yearNum = Number(year);
+        const monthNum = Number(month);
+        const dayNum = Number(day);
+
+        if (isNaN(yearNum) || isNaN(monthNum) || isNaN(dayNum) ||
+            yearNum < 1900 || yearNum > 2100 ||
+            monthNum < 1 || monthNum > 12 ||
+            dayNum < 1 || dayNum > 31) {
+          return json({ 
+            ok: false, 
+            error: "生年月日の形式が不正です" 
+          }, env, request, 400);
+        }
+
         // 1) 本文生成：OpenAI に中継 or Fallback
-        const seed = String(prompt || text || "相談内容なし").trim();
-        const fullText = await generateText(seed, { year, month, day, category, mode }, env);
+        const seed = String(prompt || text || "").trim();
+        if (!seed) {
+          return json({ 
+            ok: false, 
+            error: "相談内容が指定されていません" 
+          }, env, request, 400);
+        }
+
+        // デバッグ情報のログ
+        console.log('API Request:', {
+          seed: seed.substring(0, 100) + (seed.length > 100 ? '...' : ''),
+          year: yearNum, month: monthNum, day: dayNum, category, mode
+        });
+
+        const fullText = await generateText(seed, { year: yearNum, month: monthNum, day: dayNum, category, mode }, env);
 
         // 2) 段落分割
         const paragraphs = toParagraphs(fullText, { minSentences: 2, maxSentences: 4 });
@@ -52,7 +88,14 @@ export default {
           message: fullText,        // 従来互換
           paragraphs,               // 推奨：段落配列
           html,                     // すぐ表示したいとき用
-          meta: { year, month, day, category, mode },
+          meta: { 
+            year: yearNum, 
+            month: monthNum, 
+            day: dayNum, 
+            category, 
+            mode,
+            seed: seed.substring(0, 50) + (seed.length > 50 ? '...' : '')
+          },
         };
         return json(body, env, request);
       } catch (err) {
@@ -105,8 +148,23 @@ async function generateText(seed, meta, env) {
     });
 
     const txt = await r.text();
-    if (!r.ok) throw new Error(`OpenAI error ${r.status}: ${txt}`);
-    const data = JSON.parse(txt);
+    if (!r.ok) {
+      console.error('OpenAI API Error:', {
+        status: r.status,
+        statusText: r.statusText,
+        response: txt.substring(0, 500)
+      });
+      throw new Error(`OpenAI API error ${r.status}: ${txt.substring(0, 200)}`);
+    }
+    
+    let data;
+    try {
+      data = JSON.parse(txt);
+    } catch (parseError) {
+      console.error('OpenAI Response Parse Error:', parseError);
+      throw new Error('OpenAI API response format error');
+    }
+    
     const content =
       data?.choices?.[0]?.message?.content?.trim?.() ||
       env.FALLBACK_TEXT ||
