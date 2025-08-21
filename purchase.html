@@ -60,6 +60,8 @@ const PLANS = [
 
 const params = new URLSearchParams(location.search);
 const dob = { y:params.get('year'), m:params.get('month'), d:params.get('day') };
+const category = params.get('category');
+const question = params.get('question') || params.get('text');
 
 (function ensurePlanButtons(){
   const grid = document.getElementById('plans');
@@ -90,7 +92,15 @@ document.getElementById('plans')?.addEventListener('click', (e) => {
   full.searchParams.set('paid','1');
   if (min > 0) full.searchParams.set('min', String(min));
   if (dob.y && dob.m && dob.d) {
-    full.searchParams.set('year', dob.y); full.searchParams.set('month', dob.m); full.searchParams.set('day', dob.d);
+    full.searchParams.set('year', dob.y); 
+    full.searchParams.set('month', dob.m); 
+    full.searchParams.set('day', dob.d);
+  }
+  if (category) {
+    full.searchParams.set('category', category);
+  }
+  if (question) {
+    full.searchParams.set('text', question);
   }
 
   const add = new URL('deep.html', location.href);
