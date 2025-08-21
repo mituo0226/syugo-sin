@@ -98,29 +98,7 @@ select {
   border-radius:4px;
 }
 
-label {
-  display: block;
-  margin: 15px 0 5px 0;
-  color: #ddd;
-  font-size: 0.9rem;
-}
 
-textarea {
-  width: 100%;
-  padding: 10px;
-  font-size: 1rem;
-  margin: 5px 0;
-  border: none;
-  border-radius: 4px;
-  resize: vertical;
-  font-family: inherit;
-  background: rgba(255,255,255,0.1);
-  color: #fff;
-}
-
-textarea::placeholder {
-  color: rgba(255,255,255,0.6);
-}
 
 button {
   margin-top:20px;
@@ -169,8 +147,6 @@ button:hover {
         }
       </script>
     </select><br>
-    <label for="text">相談内容</label>
-    <textarea id="text" name="text" rows="4" placeholder="今のお悩みをご記入ください"></textarea><br>
     <button type="submit">運勢を占う</button>
   </form>
 
@@ -179,13 +155,11 @@ button:hover {
       const year = this.year.value;
       const month = this.month.value;
       const day = this.day.value;
-      const text = this.text.value;
 
       // localStorage に保存
       localStorage.setItem("year", year);
       localStorage.setItem("month", month);
       localStorage.setItem("day", day);
-      localStorage.setItem("text", text);
     });
   </script>
 </div>
