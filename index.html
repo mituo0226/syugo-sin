@@ -54,11 +54,36 @@
     }
     #storyText p { margin: 15px 0; }
 
+    /* 次のステップボタン */
+    .next-button {
+      margin-top: 30px;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    .next-button button {
+      padding: 16px 50px;
+      font-size: 1.3em;
+      background: linear-gradient(90deg, #66ccff, #3399ff);
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #000;
+      box-shadow: 0 4px 15px rgba(102,204,255,0.3);
+      transition: all 0.3s ease;
+    }
+    .next-button button:hover {
+      background: linear-gradient(90deg, #99e0ff, #66ccff);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102,204,255,0.4);
+    }
+
     /* 生年月日入力フォーム */
     .birth-form {
       margin-top: 40px;
       opacity: 0;
       transition: opacity 1.5s ease;
+      display: none; /* 初期状態では非表示 */
     }
     .birth-form label {
       display: block;
@@ -111,6 +136,11 @@
         text-align: center; 
         margin: 20px auto;
       }
+      .next-button button {
+        font-size: 1.2em;
+        padding: 18px 40px;
+        -webkit-appearance: none;
+      }
       .birth-form select { font-size: 1.1em; }
       .birth-form button { 
         font-size: 1.2em; 
@@ -140,6 +170,11 @@
 
     <!-- セリフ表示 -->
     <div id="storyText"></div>
+
+    <!-- 次のステップボタン -->
+    <div class="next-button" id="nextButton">
+      <button type="button">次へ進む</button>
+    </div>
 
     <!-- 生年月日入力フォーム -->
     <form class="birth-form" id="birthForm">
@@ -185,7 +220,8 @@
           }
         }, 50);
       } else {
-        document.querySelector(".birth-form").style.opacity = 1;
+        // メッセージ終了後、次のステップボタンを表示
+        document.getElementById("nextButton").style.opacity = 1;
       }
     }
 
@@ -223,6 +259,22 @@
       opt.textContent = d;
       daySelect.appendChild(opt);
     }
+
+    // 次のステップボタンのクリックイベント
+    document.getElementById("nextButton").addEventListener("click", function() {
+      // 現在のコンテンツをフェードアウト
+      document.getElementById("ryuImage").style.opacity = 0;
+      document.getElementById("storyText").style.opacity = 0;
+      document.getElementById("nextButton").style.opacity = 0;
+      
+      setTimeout(() => {
+        // 生年月日入力フォームを表示
+        document.getElementById("birthForm").style.display = "block";
+        setTimeout(() => {
+          document.getElementById("birthForm").style.opacity = 1;
+        }, 100);
+      }, 500);
+    });
 
     // フォーム送信で result.html に遷移
     document.getElementById("birthForm").addEventListener("submit", function(e) {
