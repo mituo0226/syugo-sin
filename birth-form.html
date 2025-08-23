@@ -80,15 +80,15 @@
       .result { display:none; max-width:600px; margin:auto; background:rgba(255,255,255,.05);
         border:1px solid rgba(255,255,255,.2); border-radius:12px; padding:20px;
         box-shadow:0 0 20px rgba(147,51,234,.4); position:relative; }
-      #oracle {
-        line-height: 2.5;
-        font-size: 1.1em;
-        text-align: left;
-        white-space: pre-line;
-        opacity: 0;
-        transform: translateY(20px);
-        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-      }
+             #oracle {
+         line-height: 1.8;
+         font-size: 1.1em;
+         text-align: left;
+         white-space: pre-line;
+         opacity: 0;
+         transform: translateY(20px);
+         transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+       }
      img.guardian { 
        width:120px; 
        border-radius:50%; 
@@ -414,14 +414,14 @@
        function revealNextWord() {
          if (currentIndex < words.length) {
            if (currentIndex > 0) {
-             el.innerHTML += '<br><br>';
+             el.innerHTML += '<br>';
            }
            el.innerHTML += words[currentIndex];
            el.style.opacity = '1';
            el.style.transform = 'translateY(0)';
            
            currentIndex++;
-           setTimeout(revealNextWord, speed * 3);
+           setTimeout(revealNextWord, speed * 2);
          }
        }
        
@@ -480,36 +480,36 @@
            
            // 画像の読み込みを確認
            const img = new Image();
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               img.onload = function() {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               img.onload = function() {
                  document.getElementById("guardian").innerHTML =
                    `<img class="guardian" src="${guardian.image}" alt="${guardian.name}">
                     <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
                     <div>${guardian.desc}</div>`;
               
-                 const oracleText = `「汝に告ぐ
+                  const oracleText = `「汝に告ぐ
 
-       ${guardian.name}は常にそなたを見守り
-       心弱き時には慈悲を注ぎ
-       道を誤る時には智慧の灯を掲げん
+        ${guardian.name}は常にそなたを見守り
+        心弱き時には慈悲を注ぎ
+        道を誤る時には智慧の灯を掲げん
 
-       ${m}月に生まれし汝
-       ${monthText}
+        ${m}月に生まれし汝
+        ${monthText}
 
-       生まれしその日は「${d}」
-       ${dayText}
+        生まれしその日は「${d}」
+        ${dayText}
 
-       この運命を胸に刻み
-       恐れることなく進むがよい
-       汝の歩む道は
-       光と共に在る
+        この運命を胸に刻み
+        恐れることなく進むがよい
+        汝の歩む道は
+        光と共に在る
 
-       ${guardian.personal}」`;
+        ${guardian.personal}」`;
               
-                 document.getElementById("resultBox").style.display="block";
-                 mysticalReveal(document.getElementById("oracle"), oracleText, 150);
-                 
-                 document.getElementById("detailLink").onclick=()=>{ window.location.href=`confirm.html?year=${y}&month=${m}&day=${d}`; }
-               };
+                  document.getElementById("resultBox").style.display="block";
+                  mysticalReveal(document.getElementById("oracle"), oracleText, 120);
+                  
+                  document.getElementById("detailLink").onclick=()=>{ window.location.href=`confirm.html?year=${y}&month=${m}&day=${d}`; }
+                };
            
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                img.onerror = function() {
                 // 画像読み込みエラー時の処理
@@ -537,7 +537,7 @@
      ${guardian.personal}」`;
               
                document.getElementById("resultBox").style.display="block";
-               mysticalReveal(document.getElementById("oracle"), oracleText, 150);
+                               mysticalReveal(document.getElementById("oracle"), oracleText, 120);
                
                document.getElementById("detailLink").onclick=()=>{ window.location.href=`confirm.html?year=${y}&month=${m}&day=${d}`; }
              };
