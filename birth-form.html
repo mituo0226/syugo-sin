@@ -447,65 +447,73 @@
            
            // 画像の読み込みを確認
            const img = new Image();
-                                               img.onload = function() {
-               document.getElementById("guardian").innerHTML =
-                 `<img class="guardian" src="${guardian.image}" alt="${guardian.name}">
-                  <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
-                  <div>${guardian.desc}</div>
-                  <p style="margin-top:20px; line-height:2.2; font-size:1.05em; color:#eee; white-space:pre-line; text-align: left; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px; border-left: 3px solid rgba(102,204,255,0.6);">
-                    ${guardian.personal}
-                  </p>`;
-             
-             const oracleText = `「汝に告ぐ
-   ${guardian.name}は常にそなたを見守り
-   心弱き時には慈悲を注ぎ
-   道を誤る時には智慧の灯を掲げん
+                                                                                               img.onload = function() {
+                document.getElementById("guardian").innerHTML =
+                  `<img class="guardian" src="${guardian.image}" alt="${guardian.name}">
+                   <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
+                   <div>${guardian.desc}</div>
+                   <p id="personalMessage" style="margin-top:20px; line-height:2.2; font-size:1.05em; color:#eee; white-space:pre-line; text-align: left; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px; border-left: 3px solid rgba(102,204,255,0.6);"></p>`;
+              
+              const oracleText = `「汝に告ぐ
+    ${guardian.name}は常にそなたを見守り
+    心弱き時には慈悲を注ぎ
+    道を誤る時には智慧の灯を掲げん
 
-   ${m}月に生まれし汝
-   ${monthText}
+    ${m}月に生まれし汝
+    ${monthText}
 
-   生まれしその日は「${d}」
-   ${dayText}
+    生まれしその日は「${d}」
+    ${dayText}
 
-   この運命を胸に刻み
-   恐れることなく進むがよい
-   汝の歩む道は
-   光と共に在る」`;
-             
-             document.getElementById("resultBox").style.display="block";
-             typeWriter(document.getElementById("oracle"), oracleText, 70);
-             document.getElementById("detailLink").onclick=()=>{ window.location.href=`confirm.html?year=${y}&month=${m}&day=${d}`; }
-           };
+    この運命を胸に刻み
+    恐れることなく進むがよい
+    汝の歩む道は
+    光と共に在る」`;
+              
+              document.getElementById("resultBox").style.display="block";
+              typeWriter(document.getElementById("oracle"), oracleText, 70);
+              
+              // 神託の表示が完了した後に個人的メッセージを表示
+              setTimeout(() => {
+                typeWriter(document.getElementById("personalMessage"), guardian.personal, 60);
+              }, oracleText.length * 70 + 500);
+              
+              document.getElementById("detailLink").onclick=()=>{ window.location.href=`confirm.html?year=${y}&month=${m}&day=${d}`; }
+            };
            
-                                               img.onerror = function() {
-               // 画像読み込みエラー時の処理
-               document.getElementById("guardian").innerHTML =
-                 `<div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
-                  <div>${guardian.desc}</div>
-                  <p style="margin-top:20px; line-height:2.2; font-size:1.05em; color:#eee; white-space:pre-line; text-align: left; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px; border-left: 3px solid rgba(102,204,255,0.6);">
-                    ${guardian.personal}
-                  </p>`;
-             
-             const oracleText = `「汝に告ぐ
-   ${guardian.name}は常にそなたを見守り
-   心弱き時には慈悲を注ぎ
-   道を誤る時には智慧の灯を掲げん
+                                                                                               img.onerror = function() {
+                // 画像読み込みエラー時の処理
+                document.getElementById("guardian").innerHTML =
+                  `<div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
+                   <div>${guardian.desc}</div>
+                   <p id="personalMessage" style="margin-top:20px; line-height:2.2; font-size:1.05em; color:#eee; white-space:pre-line; text-align: left; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px; border-left: 3px solid rgba(102,204,255,0.6);"></p>`;
+              
+              const oracleText = `「汝に告ぐ
+    ${guardian.name}は常にそなたを見守り
+    心弱き時には慈悲を注ぎ
+    道を誤る時には智慧の灯を掲げん
 
-   ${m}月に生まれし汝
-   ${monthText}
+    ${m}月に生まれし汝
+    ${monthText}
 
-   生まれしその日は「${d}」
-   ${dayText}
+    生まれしその日は「${d}」
+    ${dayText}
 
-   この運命を胸に刻み
-   恐れることなく進むがよい
-   汝の歩む道は
-   光と共に在る」`;
-             
-             document.getElementById("resultBox").style.display="block";
-             typeWriter(document.getElementById("oracle"), oracleText, 70);
-             document.getElementById("detailLink").onclick=()=>{ window.location.href=`confirm.html?year=${y}&month=${m}&day=${d}`; }
-           };
+    この運命を胸に刻み
+    恐れることなく進むがよい
+    汝の歩む道は
+    光と共に在る」`;
+              
+              document.getElementById("resultBox").style.display="block";
+              typeWriter(document.getElementById("oracle"), oracleText, 70);
+              
+              // 神託の表示が完了した後に個人的メッセージを表示
+              setTimeout(() => {
+                typeWriter(document.getElementById("personalMessage"), guardian.personal, 60);
+              }, oracleText.length * 70 + 500);
+              
+              document.getElementById("detailLink").onclick=()=>{ window.location.href=`confirm.html?year=${y}&month=${m}&day=${d}`; }
+            };
            
            img.src = guardian.image;
            
