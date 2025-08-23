@@ -146,8 +146,27 @@
     #loadingScreen p{color:#fff;font-size:1.2em;margin-top:1em;animation:blink 1.5s infinite}
     @keyframes blink{0%{opacity:1}50%{opacity:.4}100%{opacity:1}}
     
+    /* エラー時のアニメーション */
+    @keyframes errorShake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+    
+    /* 成功時のアニメーション */
+    @keyframes successFade {
+      0% { opacity: 0; transform: translateY(-10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    
          /* iPhone向け調整 */
      @media (max-width: 600px) {
+       .error-message, .success-message {
+         margin: 10px 5px;
+         padding: 10px;
+         font-size: 0.9em;
+       }
+       
        body {
          position: fixed;
          overflow: hidden;
@@ -291,6 +310,84 @@
         const opt = document.createElement("option");
         opt.value = d; opt.textContent = d + "日"; daySelect.appendChild(opt);
       }
+      
+      // リアルタイムバリデーションの設定
+      setupRealTimeValidation();
+    }
+    
+    // リアルタイムバリデーション設定
+    function setupRealTimeValidation() {
+      const yearSelect = document.getElementById("year");
+      const monthSelect = document.getElementById("month");
+      const daySelect = document.getElementById("day");
+      
+      // 月が変更されたときに日の選択肢を調整
+      monthSelect.addEventListener("change", function() {
+        adjustDayOptions();
+        validateCurrentInput();
+      });
+      
+      // 年が変更されたときに日の選択肢を調整（うるう年のため）
+      yearSelect.addEventListener("change", function() {
+        adjustDayOptions();
+        validateCurrentInput();
+      });
+      
+      // 日が変更されたときにバリデーション
+      daySelect.addEventListener("change", function() {
+        validateCurrentInput();
+      });
+    }
+    
+    // 日の選択肢を調整（うるう年と月の日数に応じて）
+    function adjustDayOptions() {
+      const yearSelect = document.getElementById("year");
+      const monthSelect = document.getElementById("month");
+      const daySelect = document.getElementById("day");
+      
+      const year = parseInt(yearSelect.value);
+      const month = parseInt(monthSelect.value);
+      
+      if (!year || !month) {
+        // 年または月が選択されていない場合は31日まで表示
+        daySelect.innerHTML = '<option value="">選択</option>';
+        for (let d = 1; d <= 31; d++) {
+          const opt = document.createElement("option");
+          opt.value = d; opt.textContent = d + "日"; daySelect.appendChild(opt);
+        }
+        return;
+      }
+      
+      // 選択された年月の日数を計算
+      const daysInMonth = new Date(year, month, 0).getDate();
+      
+      // 日の選択肢を再構築
+      daySelect.innerHTML = '<option value="">選択</option>';
+      for (let d = 1; d <= daysInMonth; d++) {
+        const opt = document.createElement("option");
+        opt.value = d; opt.textContent = d + "日"; daySelect.appendChild(opt);
+      }
+    }
+    
+    // 現在の入力値をリアルタイムでバリデーション
+    function validateCurrentInput() {
+      const yearSelect = document.getElementById("year");
+      const monthSelect = document.getElementById("month");
+      const daySelect = document.getElementById("day");
+      
+      const y = parseInt(yearSelect.value);
+      const m = parseInt(monthSelect.value);
+      const d = parseInt(daySelect.value);
+      
+      // すべての値が入力されている場合のみバリデーション
+      if (y && m && d) {
+        // 日付の妥当性チェック
+        const date = new Date(y, m - 1, d);
+        if (date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d) {
+          // 有効な日付の場合、エラー表示をクリア
+          clearErrorDisplay();
+        }
+      }
     }
     function goBack(){ window.location.href='index.html'; }
 
@@ -398,6 +495,124 @@
     const monthTraits = {1:"寒月に生まれし静謐の心を持ち",2:"雪解けを待つ忍耐の徳を授かり",3:"芽吹きの息吹を宿す魂を抱き",4:"萌ゆる命の躍動を胸に刻み",5:"薫風と共に歩む軽やかな心を携え",6:"豊穣の光を授かる運命に生まれ",7:"深き水面の如き洞察を得て",8:"烈日の炎に祝福されし者なり",9:"実りの秋に育まれし叡智を持ち",10:"黄昏に咲く決意の花を宿し",11:"夜霜をも溶かす感受性を抱き",12:"雪華の中に咲く慈愛の心を備える"};
     const dayTraits = {1:"新たなる道を拓く先駆者なり",2:"調和を重んじる清き心を持つ者",3:"喜びを分かち合う光の使い",4:"堅実に積み上げる力を授かりし者",5:"自由と変化を愛する風の魂",6:"慈しみ深き慈悲の持ち主",7:"深遠なる洞察を授かる者",8:"権威と達成の星を宿す者",9:"無私の奉仕を選びし者",11:"霊性に目覚めし導き手",22:"大いなる責務を担う魂"};
 
+    // エラーメッセージ表示関数
+    function showErrorMessage(message) {
+      // 既存のエラーメッセージを削除
+      const existingError = document.querySelector('.error-message');
+      if (existingError) {
+        existingError.remove();
+      }
+      
+      // 新しいエラーメッセージを作成
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'error-message';
+      errorDiv.textContent = message;
+      errorDiv.style.cssText = `
+        color: #ff6b6b;
+        background: rgba(255, 107, 107, 0.1);
+        border: 1px solid rgba(255, 107, 107, 0.3);
+        border-radius: 8px;
+        padding: 12px;
+        margin: 15px 0;
+        text-align: center;
+        font-weight: bold;
+        animation: errorShake 0.5s ease-in-out;
+      `;
+      
+      // フォームの前に挿入
+      const form = document.getElementById('birthForm');
+      form.parentNode.insertBefore(errorDiv, form);
+      
+      // エラーメッセージまでスクロール
+      setTimeout(() => {
+        errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    }
+    
+    // エラーフィールドのハイライト関数
+    function highlightErrorFields(yearSelect, monthSelect, daySelect, y, m, d) {
+      // すべてのエラーハイライトをクリア
+      clearErrorHighlights();
+      
+      // エラーのある項目をハイライト
+      if (!y) yearSelect.style.borderColor = '#ff6b6b';
+      if (!m) monthSelect.style.borderColor = '#ff6b6b';
+      if (!d) daySelect.style.borderColor = '#ff6b6b';
+      
+      // 値はあるが範囲外の場合
+      if (y && (y < 1900 || y > new Date().getFullYear())) yearSelect.style.borderColor = '#ff6b6b';
+      if (m && (m < 1 || m > 12)) monthSelect.style.borderColor = '#ff6b6b';
+      if (d && (d < 1 || d > 31)) daySelect.style.borderColor = '#ff6b6b';
+      
+      // 存在しない日付の場合
+      if (y && m && d) {
+        const date = new Date(y, m - 1, d);
+        if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) {
+          yearSelect.style.borderColor = '#ff6b6b';
+          monthSelect.style.borderColor = '#ff6b6b';
+          daySelect.style.borderColor = '#ff6b6b';
+        }
+      }
+    }
+    
+    // エラーハイライトをクリアする関数
+    function clearErrorHighlights() {
+      const selects = document.querySelectorAll('#year, #month, #day');
+      selects.forEach(select => {
+        select.style.borderColor = 'rgba(102,204,255,0.3)';
+      });
+    }
+    
+    // エラー表示をクリアする関数
+    function clearErrorDisplay() {
+      const existingError = document.querySelector('.error-message');
+      if (existingError) {
+        existingError.remove();
+      }
+      const existingSuccess = document.querySelector('.success-message');
+      if (existingSuccess) {
+        existingSuccess.remove();
+      }
+      clearErrorHighlights();
+    }
+    
+    // 成功メッセージ表示関数
+    function showSuccessMessage() {
+      // 既存の成功メッセージを削除
+      const existingSuccess = document.querySelector('.success-message');
+      if (existingSuccess) {
+        existingSuccess.remove();
+      }
+      
+      // 新しい成功メッセージを作成
+      const successDiv = document.createElement('div');
+      successDiv.className = 'success-message';
+      successDiv.textContent = '✓ 入力内容が確認されました';
+      successDiv.style.cssText = `
+        color: #51cf66;
+        background: rgba(81, 207, 102, 0.1);
+        border: 1px solid rgba(81, 207, 102, 0.3);
+        border-radius: 8px;
+        padding: 8px 12px;
+        margin: 10px 0;
+        text-align: center;
+        font-weight: bold;
+        font-size: 0.9em;
+        animation: successFade 0.5s ease-in-out;
+      `;
+      
+      // フォームの前に挿入
+      const form = document.getElementById('birthForm');
+      form.parentNode.insertBefore(successDiv, form);
+      
+      // 3秒後に自動で消す
+      setTimeout(() => {
+        if (successDiv.parentNode) {
+          successDiv.remove();
+        }
+      }, 3000);
+    }
+
          // タイプライター表示効果
      function typeWriter(el, text, speed=100) {
        el.innerHTML = '';
@@ -424,32 +639,94 @@
        setTimeout(type, 200);
      }
 
-    // フォーム送信処理
+    // フォーム送信時に入力チェック
     document.getElementById("birthForm").addEventListener("submit", function(e) {
       e.preventDefault();
-      const y = parseInt(document.getElementById("year").value);
-      const m = parseInt(document.getElementById("month").value);
-      const d = parseInt(document.getElementById("day").value);
       
-      // バリデーション
-      if (!y || !m || !d) { 
-        alert("すべての項目を選択してください。"); 
-        return; 
+      // フォーム要素の取得
+      const yearSelect = document.getElementById("year");
+      const monthSelect = document.getElementById("month");
+      const daySelect = document.getElementById("day");
+      
+      // 値の取得と変換
+      const y = parseInt(yearSelect.value);
+      const m = parseInt(monthSelect.value);
+      const d = parseInt(daySelect.value);
+      
+      // 入力値の検証
+      let isValid = true;
+      let errorMessage = "";
+      
+      // 1. 必須項目チェック
+      if (!y || !m || !d) {
+        isValid = false;
+        errorMessage = "すべての項目を選択してください。";
       }
       
-      // 日付の妥当性チェック
-      const date = new Date(y, m - 1, d);
-      if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) {
-        alert("正しい日付を選択してください。");
+      // 2. 年齢範囲チェック（1900年〜現在）
+      if (isValid && (y < 1900 || y > new Date().getFullYear())) {
+        isValid = false;
+        errorMessage = "生年は1900年から現在の年までで選択してください。";
+      }
+      
+      // 3. 月の範囲チェック
+      if (isValid && (m < 1 || m > 12)) {
+        isValid = false;
+        errorMessage = "月は1月から12月までで選択してください。";
+      }
+      
+      // 4. 日の範囲チェック（基本的な範囲）
+      if (isValid && (d < 1 || d > 31)) {
+        isValid = false;
+        errorMessage = "日は1日から31日までで選択してください。";
+      }
+      
+      // 5. 日付の妥当性チェック（存在する日付かどうか）
+      if (isValid) {
+        const date = new Date(y, m - 1, d);
+        if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) {
+          isValid = false;
+          errorMessage = "存在しない日付です。正しい日付を選択してください。";
+        }
+      }
+      
+      // 6. 未来の日付チェック
+      if (isValid) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // 時刻をリセットして日付のみで比較
+        const inputDate = new Date(y, m - 1, d);
+        if (inputDate > today) {
+          isValid = false;
+          errorMessage = "未来の日付は選択できません。";
+        }
+      }
+      
+      // 7. 極端に古い日付のチェック（120歳以上）
+      if (isValid) {
+        const today = new Date();
+        const age = today.getFullYear() - y;
+        if (age > 120) {
+          isValid = false;
+          errorMessage = "生年が古すぎます。正しい生年を入力してください。";
+        }
+      }
+      
+      // エラーがある場合は処理を停止
+      if (!isValid) {
+        // エラーメッセージを表示
+        showErrorMessage(errorMessage);
+        
+        // エラーのある項目をハイライト
+        highlightErrorFields(yearSelect, monthSelect, daySelect, y, m, d);
+        
         return;
       }
       
-      // 未来の日付チェック
-      const today = new Date();
-      if (date > today) {
-        alert("未来の日付は選択できません。");
-        return;
-      }
+      // バリデーション成功時の処理
+      clearErrorDisplay();
+      
+      // 成功メッセージを表示（オプション）
+      showSuccessMessage();
 
                     // 鑑定中アニメーション開始
        document.getElementById("birthForm").style.display="none";
