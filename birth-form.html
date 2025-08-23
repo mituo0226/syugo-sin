@@ -447,79 +447,81 @@
            
            // 画像の読み込みを確認
            const img = new Image();
-                                                                                                                                                                                               img.onload = function() {
+                                                                                                                                                                                                                                                                                                                                                                                               img.onload = function() {
                  document.getElementById("guardian").innerHTML =
                    `<img class="guardian" src="${guardian.image}" alt="${guardian.name}">
                     <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
                     <div>${guardian.desc}</div>`;
               
-              const oracleText = `「汝に告ぐ
-    ${guardian.name}は常にそなたを見守り
-    心弱き時には慈悲を注ぎ
-    道を誤る時には智慧の灯を掲げん
+               const oracleText = `「汝に告ぐ
 
-    ${m}月に生まれし汝
-    ${monthText}
+     ${guardian.name}は常にそなたを見守り
+     心弱き時には慈悲を注ぎ
+     道を誤る時には智慧の灯を掲げん
 
-    生まれしその日は「${d}」
-    ${dayText}
+     ${m}月に生まれし汝
+     ${monthText}
 
-    この運命を胸に刻み
-    恐れることなく進むがよい
-    汝の歩む道は
-    光と共に在る」`;
+     生まれしその日は「${d}」
+     ${dayText}
+
+     この運命を胸に刻み
+     恐れることなく進むがよい
+     汝の歩む道は
+     光と共に在る」`;
               
-              document.getElementById("resultBox").style.display="block";
-              typeWriter(document.getElementById("oracle"), oracleText, 70);
-              
-              // 神託の表示が完了した後に個人的メッセージを表示
-              setTimeout(() => {
-                const personalMessageDiv = document.createElement('p');
-                personalMessageDiv.id = 'personalMessage';
-                personalMessageDiv.style.cssText = 'margin-top:20px; line-height:2.2; font-size:1.05em; color:#eee; white-space:pre-line; text-align: left; padding: 15px; background: transparent; border-radius: 8px; border-left: 3px solid rgba(102,204,255,0.6);';
-                document.getElementById("guardian").appendChild(personalMessageDiv);
-                typeWriter(personalMessageDiv, guardian.personal, 60);
-              }, oracleText.length * 70 + 500);
-              
-              document.getElementById("detailLink").onclick=()=>{ window.location.href=`confirm.html?year=${y}&month=${m}&day=${d}`; }
-            };
+               document.getElementById("resultBox").style.display="block";
+               typeWriter(document.getElementById("oracle"), oracleText, 70);
+               
+               // 神託の表示が完了した後に個人的メッセージを表示
+               setTimeout(() => {
+                 const personalMessageDiv = document.createElement('p');
+                 personalMessageDiv.id = 'personalMessage';
+                 personalMessageDiv.style.cssText = 'margin-top:20px; line-height:2.2; font-size:1.05em; color:#eee; white-space:pre-line; text-align: left;';
+                 document.getElementById("oracle").appendChild(personalMessageDiv);
+                 typeWriter(personalMessageDiv, guardian.personal, 60);
+               }, oracleText.length * 70 + 500);
+               
+               document.getElementById("detailLink").onclick=()=>{ window.location.href=`confirm.html?year=${y}&month=${m}&day=${d}`; }
+             };
            
-                                                                                               img.onerror = function() {
+                                                                                                                                                                                               img.onerror = function() {
                 // 画像読み込みエラー時の処理
                 document.getElementById("guardian").innerHTML =
                   `<div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
                    <div>${guardian.desc}</div>`;
               
-              const oracleText = `「汝に告ぐ
-    ${guardian.name}は常にそなたを見守り
-    心弱き時には慈悲を注ぎ
-    道を誤る時には智慧の灯を掲げん
+               const oracleText = `「汝に告ぐ
 
-    ${m}月に生まれし汝
-    ${monthText}
+     ${guardian.name}は常にそなたを見守り
+     心弱き時には慈悲を注ぎ
+     道を誤る時には智慧の灯を掲げん
 
-    生まれしその日は「${d}」
-    ${dayText}
+     ${m}月に生まれし汝
+     ${monthText}
 
-    この運命を胸に刻み
-    恐れることなく進むがよい
-    汝の歩む道は
-    光と共に在る」`;
+     生まれしその日は「${d}」
+     ${dayText}
+
+     この運命を胸に刻み
+     恐れることなく進むがよい
+     汝の歩む道は
+     光と共に在る」`;
               
-              document.getElementById("resultBox").style.display="block";
-              typeWriter(document.getElementById("oracle"), oracleText, 70);
-              
-              // 神託の表示が完了した後に個人的メッセージを表示
-              setTimeout(() => {
-                const personalMessageDiv = document.createElement('p');
-                personalMessageDiv.id = 'personalMessage';
-                personalMessageDiv.style.cssText = 'margin-top:20px; line-height:2.2; font-size:1.05em; color:#eee; white-space:pre-line; text-align: left; padding: 15px; background: transparent; border-radius: 8px; border-left: 3px solid rgba(102,204,255,0.6);';
-                document.getElementById("guardian").appendChild(personalMessageDiv);
-                typeWriter(personalMessageDiv, guardian.personal, 60);
-              }, oracleText.length * 70 + 500);
-              
-              document.getElementById("detailLink").onclick=()=>{ window.location.href=`confirm.html?year=${y}&month=${m}&day=${d}`; }
-            };
+               document.getElementById("resultBox").style.display="block";
+               typeWriter(document.getElementById("oracle"), oracleText, 70);
+               
+               // 神託の表示が完了した後に個人的メッセージを表示
+               setTimeout(() => {
+                 const personalMessageDiv = document.createElement('p');
+                 personalMessageDiv.id = 'personalMessage';
+                 personalMessageDiv.style.cssText = 'margin-top:20px; line-height:2.2; font-size:1.05em; color:#eee; white-space:pre-line; text-align: left;';
+                 document.getElementById("oracle").appendChild(personalMessageDiv);
+                 typeWriter(personalMessageDiv, guardian.personal, 60);
+               }, oracleText.length * 70 + 500);
+               
+               document.getElementById("detailLink").onclick=()=>{ window.location.href=`confirm.html?year=${y}&month=${m}&day=${d}`; }
+             };
            
            img.src = guardian.image;
            
