@@ -13,7 +13,7 @@
       overflow-x: hidden;
     }
     .hero {
-      min-height: 100vh;
+      min-height: 100svh; /* スマホ対応 (vh→svh) */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -22,7 +22,8 @@
       padding: 40px 20px;
     }
     .hero img {
-      max-width: 360px;
+      max-width: 90%; /* スマホで自然に縮小 */
+      height: auto;
       opacity: 0;
       transform: scale(0.95);
       transition: all 2s ease;
@@ -79,6 +80,13 @@
       background: linear-gradient(90deg, #99e0ff, #66ccff);
       transform: scale(1.05);
     }
+
+    /* スマホ向け調整 */
+    @media (max-width: 600px) {
+      #storyText { font-size: 1.1em; text-align: center; }
+      .birth-form select { font-size: 1.1em; }
+      .birth-form button { font-size: 1.2em; padding: 16px 45px; }
+    }
   </style>
 </head>
 <body>
@@ -133,7 +141,6 @@
           }
         }, 50);
       } else {
-        // フォームをフェードイン
         document.querySelector(".birth-form").style.opacity = 1;
       }
     }
