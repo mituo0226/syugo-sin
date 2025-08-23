@@ -92,6 +92,11 @@
       opacity: 0;
       transition: opacity 1.5s ease;
       display: none; /* 初期状態では非表示 */
+      position: relative;
+      z-index: 100;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
     }
     .birth-form label {
       display: block;
@@ -168,12 +173,29 @@
         border-radius: 15px !important;
         font-weight: bold !important;
       }
-      .birth-form select { font-size: 1.1em; }
+      .birth-form {
+        margin-top: 20px !important;
+        padding: 20px !important;
+        background: rgba(13, 13, 26, 0.9) !important;
+        border-radius: 15px !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      }
+      .birth-form select { 
+        font-size: 1.1em; 
+        width: 100% !important;
+        max-width: 200px !important;
+        margin: 0 auto 15px !important;
+        display: block !important;
+      }
       .birth-form button { 
         font-size: 1.2em; 
         padding: 16px 45px;
         -webkit-appearance: none;
         border-radius: 8px;
+        width: 100% !important;
+        max-width: 300px !important;
       }
       .hero img {
         max-width: 80%; /* iPhoneでより小さく */
@@ -292,16 +314,33 @@
 
     // 生年月日入力ボタンのクリックイベント
     document.getElementById("birthInputButton").addEventListener("click", function() {
+      console.log("ボタンがクリックされました");
+      
       // 現在のコンテンツをフェードアウト
-      document.getElementById("ryuImage").style.opacity = 0;
-      document.getElementById("storyText").style.opacity = 0;
-      document.getElementById("birthInputButton").style.opacity = 0;
+      const ryuImage = document.getElementById("ryuImage");
+      const storyText = document.getElementById("storyText");
+      const birthInputButton = document.getElementById("birthInputButton");
+      const birthForm = document.getElementById("birthForm");
+      
+      ryuImage.style.opacity = 0;
+      storyText.style.opacity = 0;
+      birthInputButton.style.opacity = 0;
       
       setTimeout(() => {
         // 生年月日入力フォームを表示
-        document.getElementById("birthForm").style.display = "block";
+        console.log("フォームを表示します");
+        birthForm.style.display = "block";
+        birthForm.style.visibility = "visible";
+        birthForm.style.position = "relative";
+        birthForm.style.zIndex = "100";
+        
         setTimeout(() => {
-          document.getElementById("birthForm").style.opacity = 1;
+          birthForm.style.opacity = 1;
+          console.log("フォームの透明度を1に設定");
+          
+          // フォーム表示を確実にする
+          setTimeout(ensureFormVisibility, 100);
+          setTimeout(ensureFormVisibility, 500);
         }, 100);
       }, 500);
     });
@@ -348,6 +387,27 @@
         setTimeout(ensureButtonVisibility, 1000);
       }
     };
+
+    // フォーム表示を確実にするための追加処理
+    function ensureFormVisibility() {
+      const form = document.getElementById("birthForm");
+      if (form && form.style.display === "block") {
+        form.style.visibility = "visible";
+        form.style.position = "relative";
+        form.style.zIndex = "100";
+        form.style.opacity = "1";
+        console.log("フォームの表示を確実にしました");
+      }
+    }
+
+    // ページ読み込み完了後の初期化
+    window.addEventListener("load", () => {
+      // フォームの初期状態を設定
+      const birthForm = document.getElementById("birthForm");
+      birthForm.style.display = "none";
+      birthForm.style.opacity = "0";
+      birthForm.style.visibility = "hidden";
+    });
 
     // フォーム送信で result.html に遷移
     document.getElementById("birthForm").addEventListener("submit", function(e) {
