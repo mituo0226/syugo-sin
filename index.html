@@ -108,6 +108,7 @@
       border: 1px solid rgba(255, 255, 255, 0.2);
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
       pointer-events: auto;
+      touch-action: manipulation;
     }
     
     .birth-form.show {
@@ -148,6 +149,10 @@
       -moz-appearance: none;
       appearance: none;
       cursor: pointer;
+      touch-action: manipulation;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
     }
     
     .form-row {
@@ -201,6 +206,7 @@
       transition: opacity 0.5s ease;
       display: none;
       pointer-events: auto;
+      touch-action: none;
     }
     
     .form-overlay.show {
@@ -448,6 +454,7 @@
         // 背景オーバーレイを表示
         const formOverlay = document.getElementById("formOverlay");
         formOverlay.style.display = 'block';
+        formOverlay.style.pointerEvents = 'auto';
         requestAnimationFrame(() => {
           formOverlay.classList.add('show');
         });
@@ -460,6 +467,7 @@
         birthForm.style.zIndex = '2000';
         birthForm.style.display = 'block';
         birthForm.style.pointerEvents = 'auto';
+        birthForm.style.touchAction = 'manipulation';
         
         // 次のフレームでクラスを追加（CSS transitionが正しく動作するため）
         requestAnimationFrame(() => {
@@ -489,12 +497,14 @@
     // フォーム内のクリックイベントがバブリングしないようにする
     document.getElementById("birthForm").addEventListener("click", function(e) {
       e.stopPropagation();
+      e.preventDefault();
     });
     
     // セレクトボックスのクリックイベントも停止
     document.querySelectorAll('.birth-form select').forEach(select => {
       select.addEventListener("click", function(e) {
         e.stopPropagation();
+        e.preventDefault();
       });
     });
     
@@ -515,6 +525,34 @@
         birthForm.style.display = 'none';
         formOverlay.style.display = 'none';
       }, 500);
+    });
+    
+    // フォーム内のすべての要素でイベントバブリングを防止
+    document.getElementById("birthForm").addEventListener("mousedown", function(e) {
+      e.stopPropagation();
+    });
+    
+    document.getElementById("birthForm").addEventListener("touchstart", function(e) {
+      e.stopPropagation();
+    });
+    
+    document.getElementById("birthForm").addEventListener("click", function(e) {
+      e.stopPropagation();
+    });
+    
+    // セレクトボックスとボタンでも個別にイベントを停止
+    document.querySelectorAll('.birth-form select, .birth-form button, .birth-form label, .birth-form h3').forEach(element => {
+      element.addEventListener("mousedown", function(e) {
+        e.stopPropagation();
+      });
+      
+      element.addEventListener("touchstart", function(e) {
+        e.stopPropagation();
+      });
+      
+      element.addEventListener("click", function(e) {
+        e.stopPropagation();
+      });
     });
   </script>
 </body>
