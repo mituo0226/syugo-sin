@@ -12,36 +12,36 @@
       color: #fff;
       overflow-x: hidden;
       overflow-y: auto;
-      -webkit-overflow-scrolling: touch; /* iOS スムーズスクロール */
-      touch-action: manipulation; /* iPhone タッチ最適化 */
+      -webkit-overflow-scrolling: touch;
+      touch-action: manipulation;
       position: fixed;
       width: 100%;
       height: 100%;
     }
     .hero {
-      min-height: 100vh; /* iPhone対応 */
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center; /* 中央配置に変更 */
+      justify-content: center;
       text-align: center;
-      padding: 60px 20px 120px; /* 下部にボタン用の余白を増加 */
+      padding: 60px 20px 120px;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       position: relative;
       z-index: 1;
     }
     .hero img {
-      max-width: 90%; /* スマホで自然に縮小 */
+      max-width: 90%;
       height: auto;
       opacity: 0;
       transform: scale(0.95);
       transition: all 2s ease;
       border-radius: 12px;
       box-shadow: 0 0 40px rgba(100,150,255,0.5);
-      user-select: none; /* 画像選択を無効化 */
+      user-select: none;
       -webkit-user-select: none;
-      -webkit-touch-callout: none; /* iOS 長押しメニューを無効化 */
+      -webkit-touch-callout: none;
     }
     #storyText {
       font-size: 1.2em;
@@ -51,6 +51,7 @@
       white-space: pre-line;
       text-align: left;
       opacity: 0;
+      transition: opacity 1s ease;
     }
     #storyText p { margin: 15px 0; }
 
@@ -88,58 +89,93 @@
 
     /* 生年月日入力フォーム */
     .birth-form {
-      margin: 0 auto;
+      margin: 30px auto;
       opacity: 0;
       transition: opacity 1.5s ease;
-      display: none; /* 初期状態では非表示 */
+      display: none;
       position: relative;
       z-index: 100;
       width: 100%;
       max-width: 400px;
       text-align: center;
       padding: 30px;
-      background: rgba(13, 13, 26, 0.9);
+      background: rgba(13, 13, 26, 0.95);
       border-radius: 15px;
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     }
+    
+    .birth-form.show {
+      display: block !important;
+      opacity: 1 !important;
+    }
+    
+    .birth-form h3 {
+      color: #66ccff;
+      margin-bottom: 20px;
+      font-size: 1.3em;
+    }
+    
     .birth-form label {
       display: block;
       margin: 10px 0 5px;
       color: #99ccff;
       text-align: left;
+      font-weight: bold;
     }
     .birth-form select {
-      padding: 10px;
+      padding: 12px;
       margin-bottom: 15px;
       border-radius: 6px;
-      border: none;
+      border: 1px solid rgba(102,204,255,0.3);
       font-size: 1em;
       background: rgba(255,255,255,0.1);
       color: #fff;
       box-shadow: inset 0 0 5px rgba(102,204,255,0.4);
+      width: 100%;
+      max-width: 150px;
     }
-    #year { width: 10ch; }
-    #month, #day { width: 8ch; }
+    
+    .form-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .form-group {
+      flex: 1;
+      text-align: center;
+    }
 
     .birth-form button {
-      padding: 14px 40px;
-      font-size: 1.2em;
+      padding: 16px 40px;
+      font-size: 1.3em;
       background: linear-gradient(90deg, #66ccff, #3399ff);
       border: none;
       border-radius: 8px;
       font-weight: bold;
       cursor: pointer;
       color: #000;
+      width: 100%;
+      max-width: 300px;
+      margin-top: 10px;
+      transition: all 0.3s ease;
     }
     .birth-form button:hover {
       background: linear-gradient(90deg, #99e0ff, #66ccff);
       transform: scale(1.05);
     }
 
-            /* iPhone向け調整 */
+    /* 非表示クラス */
+    .hidden {
+      opacity: 0 !important;
+      pointer-events: none;
+    }
+
+    /* iPhone向け調整 */
     @media (max-width: 600px) {
       body {
         position: fixed;
@@ -149,7 +185,7 @@
         height: 100vh;
         overflow-y: scroll;
         -webkit-overflow-scrolling: touch;
-        padding: 80px 15px 140px; /* 下部にボタン用の余白を増加 */
+        padding: 80px 15px 140px;
       }
       #storyText { 
         font-size: 1.1em; 
@@ -181,32 +217,40 @@
         font-weight: bold !important;
       }
       .birth-form {
-        margin-top: 20px !important;
-        padding: 20px !important;
-        background: rgba(13, 13, 26, 0.9) !important;
+        margin: 20px auto !important;
+        padding: 25px !important;
+        background: rgba(13, 13, 26, 0.95) !important;
         border-radius: 15px !important;
-        backdrop-filter: blur(10px) !important;
-        -webkit-backdrop-filter: blur(10px) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        backdrop-filter: blur(15px) !important;
+        -webkit-backdrop-filter: blur(15px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        width: calc(100% - 40px) !important;
+        max-width: 380px !important;
       }
       .birth-form select { 
         font-size: 1.1em; 
+        padding: 12px;
         width: 100% !important;
-        max-width: 200px !important;
-        margin: 0 auto 15px !important;
-        display: block !important;
+        max-width: 100px !important;
       }
       .birth-form button { 
         font-size: 1.2em; 
-        padding: 16px 45px;
+        padding: 16px 20px;
         -webkit-appearance: none;
         border-radius: 8px;
         width: 100% !important;
         max-width: 300px !important;
       }
       .hero img {
-        max-width: 80%; /* iPhoneでより小さく */
+        max-width: 80%;
         margin: 15px 0;
+      }
+      .form-row {
+        flex-direction: column;
+        gap: 15px;
+      }
+      .form-group {
+        text-align: center;
       }
     }
     
@@ -237,14 +281,24 @@
 
     <!-- 生年月日入力フォーム -->
     <form class="birth-form" id="birthForm">
-      <label for="year">西暦</label>
-      <select id="year" required></select>
-
-      <label for="month">月</label>
-      <select id="month" required></select>
-
-      <label for="day">日</label>
-      <select id="day" required></select>
+      <h3>あなたの生年月日を教えてください</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="year">西暦</label>
+          <select id="year" required></select>
+        </div>
+        
+        <div class="form-group">
+          <label for="month">月</label>
+          <select id="month" required></select>
+        </div>
+        
+        <div class="form-group">
+          <label for="day">日</label>
+          <select id="day" required></select>
+        </div>
+      </div>
 
       <button type="submit">守護神を導き出す</button>
     </form>
@@ -280,13 +334,19 @@
         }, 50);
       } else {
         // メッセージ終了後、生年月日入力ボタンを表示
-        document.getElementById("birthInputButton").style.opacity = 1;
+        const button = document.getElementById("birthInputButton");
+        button.style.opacity = 1;
+        console.log("ボタンが表示されました");
       }
     }
 
     // ページロード後の演出
     window.addEventListener("load", () => {
       const img = document.getElementById("ryuImage");
+      
+      // プルダウンメニューの初期化
+      initializeSelects();
+      
       setTimeout(() => {
         img.style.opacity = 1;
         img.style.transform = "scale(1)";
@@ -294,164 +354,81 @@
       }, 800);
     });
 
-    // 西暦プルダウン（1900〜2025）
-    const yearSelect = document.getElementById("year");
-    for (let y = 2025; y >= 1900; y--) {
-      const opt = document.createElement("option");
-      opt.value = y;
-      opt.textContent = y;
-      yearSelect.appendChild(opt);
-    }
-    // 月プルダウン
-    const monthSelect = document.getElementById("month");
-    for (let m = 1; m <= 12; m++) {
-      const opt = document.createElement("option");
-      opt.value = m;
-      opt.textContent = m;
-      monthSelect.appendChild(opt);
-    }
-    // 日プルダウン
-    const daySelect = document.getElementById("day");
-    for (let d = 1; d <= 31; d++) {
-      const opt = document.createElement("option");
-      opt.value = d;
-      opt.textContent = d;
-      daySelect.appendChild(opt);
+    // プルダウンメニューの初期化
+    function initializeSelects() {
+      // 西暦プルダウン（1900〜2025）
+      const yearSelect = document.getElementById("year");
+      yearSelect.innerHTML = '<option value="">選択してください</option>';
+      for (let y = 2025; y >= 1900; y--) {
+        const opt = document.createElement("option");
+        opt.value = y;
+        opt.textContent = y + "年";
+        yearSelect.appendChild(opt);
+      }
+      
+      // 月プルダウン
+      const monthSelect = document.getElementById("month");
+      monthSelect.innerHTML = '<option value="">選択してください</option>';
+      for (let m = 1; m <= 12; m++) {
+        const opt = document.createElement("option");
+        opt.value = m;
+        opt.textContent = m + "月";
+        monthSelect.appendChild(opt);
+      }
+      
+      // 日プルダウン
+      const daySelect = document.getElementById("day");
+      daySelect.innerHTML = '<option value="">選択してください</option>';
+      for (let d = 1; d <= 31; d++) {
+        const opt = document.createElement("option");
+        opt.value = d;
+        opt.textContent = d + "日";
+        daySelect.appendChild(opt);
+      }
     }
 
     // 生年月日入力ボタンのクリックイベント
     document.getElementById("birthInputButton").addEventListener("click", function() {
       console.log("ボタンがクリックされました");
       
-      // 現在のコンテンツをフェードアウト
       const ryuImage = document.getElementById("ryuImage");
       const storyText = document.getElementById("storyText");
       const birthInputButton = document.getElementById("birthInputButton");
       const birthForm = document.getElementById("birthForm");
       
-      // フェードアウト
-      ryuImage.style.opacity = 0;
-      storyText.style.opacity = 0;
-      birthInputButton.style.opacity = 0;
+      // 現在のコンテンツをフェードアウト
+      ryuImage.classList.add('hidden');
+      storyText.classList.add('hidden');
+      birthInputButton.classList.add('hidden');
       
+      // 少し待ってからフォームを表示
       setTimeout(() => {
-        // 生年月日入力フォームを表示
-        console.log("フォームを表示します");
+        console.log("フォームを表示中...");
+        birthForm.style.display = 'block';
         
-        // フォームの表示設定
-        birthForm.style.display = "block";
-        birthForm.style.visibility = "visible";
-        birthForm.style.position = "relative";
-        birthForm.style.zIndex = "100";
-        birthForm.style.opacity = "0";
-        
-        // フォームを画面の中央に配置
-        birthForm.style.margin = "0 auto";
-        birthForm.style.padding = "30px";
-        birthForm.style.background = "rgba(13, 13, 26, 0.9)";
-        birthForm.style.borderRadius = "15px";
-        birthForm.style.backdropFilter = "blur(10px)";
-        birthForm.style.border = "1px solid rgba(255, 255, 255, 0.1)";
-        birthForm.style.boxShadow = "0 8px 32px rgba(0, 0, 0, 0.3)";
-        
-        setTimeout(() => {
-          birthForm.style.opacity = "1";
-          console.log("フォームの透明度を1に設定");
-          
-          // フォーム表示を確実にする
-          setTimeout(ensureFormVisibility, 100);
-          setTimeout(ensureFormVisibility, 500);
-        }, 100);
+        // 次のフレームでクラスを追加（CSS transitionが正しく動作するため）
+        requestAnimationFrame(() => {
+          birthForm.classList.add('show');
+          console.log("フォームが表示されました");
+        });
       }, 500);
-    });
-
-    // iPhoneでのボタン表示を確実にするための追加処理
-    function ensureButtonVisibility() {
-      const button = document.getElementById("birthInputButton");
-      if (button && button.style.opacity === "1") {
-        button.style.display = "block";
-        button.style.visibility = "visible";
-        button.style.position = "fixed";
-        button.style.zIndex = "1000";
-      }
-    }
-
-    // メッセージ終了後のボタン表示を確実にする
-    const originalShowNextLine = showNextLine;
-    showNextLine = function() {
-      if (i < lines.length) {
-        const p = document.createElement("p");
-        p.textContent = "";
-        storyText.appendChild(p);
-        storyText.style.opacity = 1;
-
-        let j = 0;
-        const interval = setInterval(() => {
-          p.textContent = lines[i].slice(0, j++);
-          if (j > lines[i].length) {
-            clearInterval(interval);
-            i++;
-            setTimeout(showNextLine, 1200);
-          }
-        }, 50);
-      } else {
-        // メッセージ終了後、生年月日入力ボタンを表示
-        const button = document.getElementById("birthInputButton");
-        button.style.opacity = 1;
-        button.style.display = "block";
-        button.style.visibility = "visible";
-        
-        // iPhoneでの表示を確実にする
-        setTimeout(ensureButtonVisibility, 100);
-        setTimeout(ensureButtonVisibility, 500);
-        setTimeout(ensureButtonVisibility, 1000);
-      }
-    };
-
-    // フォーム表示を確実にするための追加処理
-    function ensureFormVisibility() {
-      const form = document.getElementById("birthForm");
-      if (form && form.style.display === "block") {
-        form.style.visibility = "visible";
-        form.style.position = "relative";
-        form.style.zIndex = "100";
-        form.style.opacity = "1";
-        form.style.margin = "0 auto";
-        form.style.padding = "30px";
-        form.style.background = "rgba(13, 13, 26, 0.9)";
-        form.style.borderRadius = "15px";
-        form.style.backdropFilter = "blur(10px)";
-        form.style.border = "1px solid rgba(255, 255, 255, 0.1)";
-        form.style.boxShadow = "0 8px 32px rgba(0, 0, 0, 0.3)";
-        console.log("フォームの表示を確実にしました");
-      }
-    }
-
-    // ページ読み込み完了後の初期化
-    window.addEventListener("load", () => {
-      // フォームの初期状態を設定
-      const birthForm = document.getElementById("birthForm");
-      birthForm.style.display = "none";
-      birthForm.style.opacity = "0";
-      birthForm.style.visibility = "hidden";
-      
-      // フォームのスタイルを初期化
-      birthForm.style.margin = "0 auto";
-      birthForm.style.padding = "30px";
-      birthForm.style.background = "rgba(13, 13, 26, 0.9)";
-      birthForm.style.borderRadius = "15px";
-      birthForm.style.backdropFilter = "blur(10px)";
-      birthForm.style.border = "1px solid rgba(255, 255, 255, 0.1)";
-      birthForm.style.boxShadow = "0 8px 32px rgba(0, 0, 0, 0.3)";
     });
 
     // フォーム送信で result.html に遷移
     document.getElementById("birthForm").addEventListener("submit", function(e) {
       e.preventDefault();
-      const y = yearSelect.value;
-      const m = monthSelect.value;
-      const d = daySelect.value;
-      window.location.href = `result.html?year=${y}&month=${m}&day=${d}`;
+      const y = document.getElementById("year").value;
+      const m = document.getElementById("month").value;
+      const d = document.getElementById("day").value;
+      
+      if (!y || !m || !d) {
+        alert("すべての項目を選択してください。");
+        return;
+      }
+      
+      console.log(`選択された生年月日: ${y}年${m}月${d}日`);
+      // window.location.href = `result.html?year=${y}&month=${m}&day=${d}`;
+      alert(`生年月日が設定されました: ${y}年${m}月${d}日\n（実際のサイトではresult.htmlに遷移します）`);
     });
   </script>
 </body>
