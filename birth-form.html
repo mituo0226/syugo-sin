@@ -14,16 +14,16 @@
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       touch-action: manipulation;
-      position: fixed;
-      width: 100%;
-      height: 100%;
+      position: relative;
+      min-height: 100vh;
     }
     
-    /* PC向け基本スタイル */
-    @media (min-width: 768px) {
+    /* モバイル向け固定レイアウト */
+    @media (max-width: 600px) {
       body {
-        position: relative;
-        min-height: 100vh;
+        position: fixed;
+        width: 100%;
+        height: 100%;
       }
     }
     .container {
@@ -45,6 +45,8 @@
         padding: 40px 20px;
         justify-content: flex-start;
         padding-top: 80px;
+        min-height: auto;
+        height: auto;
       }
     }
     .birth-form {
@@ -169,14 +171,15 @@
         border:1px solid rgba(255,255,255,.2); border-radius:12px; padding:20px;
         box-shadow:0 0 20px rgba(147,51,234,.4); position:relative; }
       
-      /* PC向け結果表示調整 */
-      @media (min-width: 768px) {
-        .result {
-          max-width: 800px;
-          padding: 40px;
-          margin: 30px auto;
-        }
-      }
+             /* PC向け結果表示調整 */
+       @media (min-width: 768px) {
+         .result {
+           max-width: 800px;
+           padding: 40px;
+           margin: 30px auto;
+           scroll-margin-top: 20px;
+         }
+       }
                            #oracle {
          line-height: 1.8;
          font-size: 1.1em;
@@ -372,15 +375,17 @@
        }
     }
     
-         /* iPhone X以降のノッチ対応 */
-     @supports (padding: max(0px)) {
-       .container {
-         padding-top: max(40px, env(safe-area-inset-top));
-         padding-bottom: max(20px, env(safe-area-inset-bottom));
-       }
-       .back-button {
-         top: max(10px, env(safe-area-inset-top) + 5px);
-         left: max(15px, env(safe-area-inset-left) + 5px);
+         /* iPhone X以降のノッチ対応（モバイルのみ） */
+     @media (max-width: 600px) {
+       @supports (padding: max(0px)) {
+         .container {
+           padding-top: max(40px, env(safe-area-inset-top));
+           padding-bottom: max(20px, env(safe-area-inset-bottom));
+         }
+         .back-button {
+           top: max(10px, env(safe-area-inset-top) + 5px);
+           left: max(15px, env(safe-area-inset-left) + 5px);
+         }
        }
      }
   </style>
