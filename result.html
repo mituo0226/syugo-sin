@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>AI鑑定師 龍 | 守護神出現</title>
+  <title>AI鑑定師 龍 | 守護神の出現</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
@@ -35,17 +35,11 @@
       animation: blink 1.5s infinite;
       margin-top: 20px;
     }
+    @keyframes blink { 50% { opacity: 0.5; } }
 
-    @keyframes blink {
-      50% { opacity: 0.5; }
-    }
+    @keyframes fadeOut { to { opacity: 0; visibility:hidden; } }
 
-    /* フェードアウトアニメ */
-    @keyframes fadeOut {
-      to { opacity: 0; visibility:hidden; }
-    }
-
-    /* 結果画面 */
+    /* 守護神出現 */
     .result {
       opacity: 0;
       position: relative;
@@ -58,21 +52,16 @@
       animation: fadeIn 2s ease forwards;
       animation-delay: 3.2s;
     }
+    @keyframes fadeIn { to { opacity: 1; } }
 
-    @keyframes fadeIn {
-      to { opacity: 1; }
-    }
-
-    /* 守護神出現演出 */
     .guardian {
       opacity: 0;
       transform: scale(0.8);
       filter: blur(15px);
-      max-width: 300px;
+      max-width: 280px;
       animation: guardianAppear 2.5s ease forwards;
       animation-delay: 3.5s;
     }
-
     @keyframes guardianAppear {
       0% { opacity: 0; transform: scale(0.8); filter: blur(15px); }
       60% { opacity: 1; transform: scale(1.05); filter: blur(3px); }
@@ -80,13 +69,12 @@
     }
 
     .guardian-name {
-      font-size: 2em;
+      font-size: 1.8em;
       margin-top: 20px;
       opacity: 0;
       animation: nameGlow 3s ease forwards;
       animation-delay: 5s;
     }
-
     @keyframes nameGlow {
       0% { opacity: 0; text-shadow: none; }
       50% { opacity: 1; text-shadow: 0 0 15px #66ccff, 0 0 30px #3399ff; }
@@ -117,28 +105,64 @@
       0%,100% { opacity:0.4; }
       50% { opacity:1; }
     }
+
+    /* ボタン */
+    .next-button {
+      margin-top: 40px;
+      padding: 14px 40px;
+      font-size: 1.2em;
+      background: linear-gradient(90deg, #66ccff, #3399ff);
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #000;
+      text-decoration: none;
+      opacity: 0;
+      animation: fadeIn 2s ease forwards;
+      animation-delay: 9s; /* メッセージが出てから */
+    }
+    .next-button:hover {
+      background: linear-gradient(90deg, #99e0ff, #66ccff);
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body>
 
-  <!-- 鑑定中ロード演出 -->
+  <!-- 鑑定中ロード -->
   <div id="loadingScreen">
-    <div class="orb"></div>
     <div class="loading-text">神託を降ろしています…</div>
   </div>
 
   <!-- 守護神出現 -->
   <section class="result">
     <img src="https://syugo-sin.com/photo/guardian_sample.png" alt="守護神" class="guardian">
-    <h2 class="guardian-name">あなたの守護神</h2>
+    <h2 class="guardian-name" id="guardianName"></h2>
     <div class="guardian-message" id="guardianMessage"></div>
+    <a href="confirm.html" class="next-button">さらに鑑定を続ける</a>
   </section>
 
   <script>
-    // タイプライターで守護神メッセージを出す
-    const message = "──神秘の光の中から現れた守護神が、あなたに語りかけます──\n\nあなたの歩む道には試練が訪れるでしょう。しかし恐れることはありません。守護神はあなたと共にあり、その選択を導いていきます。";
-    const msgEl = document.getElementById("guardianMessage");
+    // URLから生年月日を取得
+    const params = new URLSearchParams(window.location.search);
+    const year = params.get("year");
+    const month = params.get("month");
+    const day = params.get("day");
 
+    // 仮：守護神判定（ここはAPI連携で差し替え可能）
+    function getGuardian(y, m, d) {
+      const num = (parseInt(y)+parseInt(m)+parseInt(d)) % 3;
+      if (num === 0) return {name:"蒼龍", message:"あなたの守護神は蒼き龍──困難を越える強靭な力を授ける存在です。"};
+      if (num === 1) return {name:"白虎", message:"あなたの守護神は白き虎──勇気と直感で未来を切り拓く存在です。"};
+      return {name:"朱雀", message:"あなたの守護神は朱き鳥──情熱と希望であなたを導く存在です。"};
+    }
+
+    const guardian = getGuardian(year, month, day);
+    document.getElementById("guardianName").textContent = guardian.name;
+
+    // タイプライター表示
     function typeWriter(text, el, i=0) {
       if (i < text.length) {
         el.textContent += text.charAt(i);
@@ -146,11 +170,10 @@
       }
     }
 
-    // ローディングが終わったらメッセージを表示開始
     window.addEventListener("load", () => {
       setTimeout(() => {
-        typeWriter(message, msgEl);
-      }, 5200); // 名前が光った後くらいから開始
+        typeWriter(guardian.message, document.getElementById("guardianMessage"));
+      }, 5500); // 守護神が出現してから開始
     });
   </script>
 </body>
