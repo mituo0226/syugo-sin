@@ -511,6 +511,7 @@ p {
       メールアドレスを登録
     </button>
     <p id="emailMessage" style="margin-top: 10px; color: #b9a9d9; font-size: 0.9em;"></p>
+    <p id="savedEmailInfo" style="margin-top: 8px; color: #b9a9d9; font-size: 0.8em;"></p>
   </div>
 
   <!-- h1の近くに（残り時間バッジ＆ボタンを出す置き場） -->
@@ -791,13 +792,19 @@ document.addEventListener('DOMContentLoaded', function() {
   const emailInput = document.getElementById('emailInput');
   const emailRegisterBtn = document.getElementById('emailRegisterBtn');
   const emailMessage = document.getElementById('emailMessage');
+  const savedEmailInfo = document.getElementById('savedEmailInfo');
 
-  // 既に保存されているメールアドレスがあれば表示
+  // 保存済みメールアドレスの表示
   const savedEmail = localStorage.getItem('userEmail');
   if (savedEmail) {
     emailInput.value = savedEmail;
     emailMessage.textContent = 'メールアドレスが登録済みです';
     emailMessage.style.color = '#4ade80';
+    savedEmailInfo.textContent = `登録済みメールアドレス: ${savedEmail}`;
+    savedEmailInfo.style.color = '#4ade80';
+  } else {
+    savedEmailInfo.textContent = 'まだメールアドレスは登録されていません';
+    savedEmailInfo.style.color = '#f87171';
   }
 
   emailRegisterBtn.addEventListener('click', function() {
@@ -821,6 +828,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // 成功メッセージを表示
     emailMessage.textContent = '登録が完了しました';
     emailMessage.style.color = '#4ade80';
+    
+    // 保存済みメールアドレス表示を更新
+    savedEmailInfo.textContent = `登録済みメールアドレス: ${email}`;
+    savedEmailInfo.style.color = '#4ade80';
     
     // 3秒後にメッセージを消す
     setTimeout(() => {
