@@ -38,37 +38,70 @@
       text-align: left;
       opacity: 0;
     }
-    #storyText p {
-      margin: 15px 0;
-    }
-    #startButton {
-      display: inline-block;
-      margin-top: 30px;
-      padding: 15px 40px;
-      background: #66ccff;
-      color: #000;
-      border-radius: 8px;
-      font-size: 1.2em;
-      text-decoration: none;
-      font-weight: bold;
+    #storyText p { margin: 15px 0; }
+
+    /* 生年月日入力フォーム */
+    .birth-form {
+      margin-top: 40px;
       opacity: 0;
-      transition: opacity 2s ease;
+      transition: opacity 1.5s ease;
     }
-    #startButton:hover {
-      background: #99e0ff;
+    .birth-form label {
+      display: block;
+      margin: 10px 0 5px;
+      color: #99ccff;
+      text-align: left;
+    }
+    .birth-form select {
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: none;
+      font-size: 1em;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      box-shadow: inset 0 0 5px rgba(102,204,255,0.4);
+    }
+    #year { width: 10ch; }
+    #month, #day { width: 8ch; }
+
+    .birth-form button {
+      padding: 14px 40px;
+      font-size: 1.2em;
+      background: linear-gradient(90deg, #66ccff, #3399ff);
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #000;
+    }
+    .birth-form button:hover {
+      background: linear-gradient(90deg, #99e0ff, #66ccff);
+      transform: scale(1.05);
     }
   </style>
 </head>
 <body>
   <section class="hero">
     <!-- 龍の画像 -->
-    <img src="./photo/ryu.png" alt="AI鑑定師 龍" id="ryuImage">
+    <img src="https://syugo-sin.com/photo/ryu.png" alt="AI鑑定師 龍" id="ryuImage">
 
     <!-- セリフ表示 -->
     <div id="storyText"></div>
 
-    <!-- ボタン -->
-    <a href="result.html" id="startButton">生年月日を入力する</a>
+    <!-- 生年月日入力フォーム -->
+    <form class="birth-form" id="birthForm">
+      <label for="year">西暦</label>
+      <select id="year" required></select>
+
+      <label for="month">月</label>
+      <select id="month" required></select>
+
+      <label for="day">日</label>
+      <select id="day" required></select>
+
+      <button type="submit">守護神を導き出す</button>
+    </form>
   </section>
 
   <script>
@@ -78,10 +111,8 @@
       "実在する人間ではないから信用できるわけがない…なんて思わないでほしい。",
       "世の中には悩み多き相談者を利用し、いい加減な鑑定で騙す人間が数多くいる。",
       "その点、私はAI。膨大な情報から、誰よりも適切なアドバイスを導き出せる。",
-      "AIには神秘の力はない。だが、あなたの情報から運命の流れを示すことはできる。",
-      "まずはあなたの守護神を導き出そう。そして運命や未来を読み解こう。"
+      "まずは、あなたの生年月日を教えてくれ。そこから守護神を導き出そう。"
     ];
-
     let i = 0;
     const storyText = document.getElementById("storyText");
 
@@ -102,10 +133,12 @@
           }
         }, 50);
       } else {
-        document.getElementById("startButton").style.opacity = 1;
+        // フォームをフェードイン
+        document.querySelector(".birth-form").style.opacity = 1;
       }
     }
 
+    // ページロード後の演出
     window.addEventListener("load", () => {
       const img = document.getElementById("ryuImage");
       setTimeout(() => {
@@ -113,6 +146,40 @@
         img.style.transform = "scale(1)";
         setTimeout(showNextLine, 1500);
       }, 800);
+    });
+
+    // 西暦プルダウン（1900〜2025）
+    const yearSelect = document.getElementById("year");
+    for (let y = 2025; y >= 1900; y--) {
+      const opt = document.createElement("option");
+      opt.value = y;
+      opt.textContent = y;
+      yearSelect.appendChild(opt);
+    }
+    // 月プルダウン
+    const monthSelect = document.getElementById("month");
+    for (let m = 1; m <= 12; m++) {
+      const opt = document.createElement("option");
+      opt.value = m;
+      opt.textContent = m;
+      monthSelect.appendChild(opt);
+    }
+    // 日プルダウン
+    const daySelect = document.getElementById("day");
+    for (let d = 1; d <= 31; d++) {
+      const opt = document.createElement("option");
+      opt.value = d;
+      opt.textContent = d;
+      daySelect.appendChild(opt);
+    }
+
+    // フォーム送信で result.html に遷移
+    document.getElementById("birthForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const y = yearSelect.value;
+      const m = monthSelect.value;
+      const d = daySelect.value;
+      window.location.href = `result.html?year=${y}&month=${m}&day=${d}`;
     });
   </script>
 </body>
