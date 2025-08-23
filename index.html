@@ -11,6 +11,8 @@
       font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
       color: #fff;
       overflow-x: hidden;
+      -webkit-overflow-scrolling: touch; /* iOS スムーズスクロール */
+      touch-action: pan-y; /* 縦スクロールを有効化 */
     }
     .hero {
       min-height: 100svh; /* スマホ対応 (vh→svh) */
@@ -20,6 +22,8 @@
       justify-content: center;
       text-align: center;
       padding: 40px 20px;
+      overflow-y: auto; /* 縦スクロールを有効化 */
+      -webkit-overflow-scrolling: touch; /* iOS スムーズスクロール */
     }
     .hero img {
       max-width: 90%; /* スマホで自然に縮小 */
@@ -29,6 +33,9 @@
       transition: all 2s ease;
       border-radius: 12px;
       box-shadow: 0 0 40px rgba(100,150,255,0.5);
+      user-select: none; /* 画像選択を無効化 */
+      -webkit-user-select: none;
+      -webkit-touch-callout: none; /* iOS 長押しメニューを無効化 */
     }
     #storyText {
       font-size: 1.2em;
@@ -86,6 +93,15 @@
       #storyText { font-size: 1.1em; text-align: center; }
       .birth-form select { font-size: 1.1em; }
       .birth-form button { font-size: 1.2em; padding: 16px 45px; }
+      .hero img {
+        max-width: 85%; /* スマホでより小さく */
+        margin: 10px 0;
+      }
+      .hero {
+        padding: 20px 15px; /* パディングを調整 */
+        justify-content: flex-start; /* 上から配置 */
+        padding-top: 60px; /* 上部に余白 */
+      }
     }
   </style>
 </head>
