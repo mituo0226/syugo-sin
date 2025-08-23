@@ -29,7 +29,7 @@
     }
 
     h1 {
-      font-size: 1.8em;
+      font-size: 2em;
       margin-bottom: 15px;
       color: #66ccff;
       text-shadow: 0 0 12px rgba(102,204,255,0.8);
@@ -37,12 +37,12 @@
 
     .intro {
       margin-bottom: 20px;
-      font-size: 1.1em;
+      font-size: 1.2em;
       line-height: 1.6;
       color: #ddd;
       text-shadow: 0 0 8px rgba(255,255,255,0.3);
       min-height: 3em;
-      text-align: left;
+      text-align: center;
     }
 
     form {
@@ -50,30 +50,33 @@
       flex-direction: column;
       gap: 15px;
       margin-top: 15px;
-      align-items: flex-start;
+      align-items: center; /* 中央揃えに変更 */
     }
 
     label {
-      font-size: 0.9em;
+      font-size: 1em;
       color: #99ccff;
+      display: block;
+      margin-bottom: 5px;
     }
 
     select {
-      padding: 10px;
-      font-size: 1em;
+      padding: 12px;
+      font-size: 1.1em;
       border-radius: 6px;
       border: none;
       background: rgba(255,255,255,0.1);
       color: #fff;
       box-shadow: inset 0 0 5px rgba(102,204,255,0.4);
+      text-align: center;
     }
 
-    #year { width: 10ch; }
-    #month, #day { width: 8ch; }
+    #year { width: 12ch; }
+    #month, #day { width: 10ch; }
 
     #startButton {
-      padding: 14px 35px;
-      font-size: 1.2em;
+      padding: 16px 40px;
+      font-size: 1.3em;
       background: linear-gradient(90deg, #66ccff, #3399ff);
       border: none;
       border-radius: 8px;
@@ -110,6 +113,14 @@
       0%,100% { opacity: 0.2; }
       50% { opacity: 1; }
     }
+
+    /* スマホ用調整 */
+    @media (max-width: 600px) {
+      h1 { font-size: 1.6em; }
+      .intro { font-size: 1.1em; }
+      select { font-size: 1.2em; padding: 14px; }
+      #startButton { font-size: 1.4em; padding: 18px 45px; }
+    }
   </style>
 </head>
 <body>
@@ -126,15 +137,15 @@
 
     <form id="birthForm" style="opacity:0;">
       <div>
-        <label for="year">西暦</label><br>
+        <label for="year">西暦</label>
         <select id="year" required></select>
       </div>
       <div>
-        <label for="month">月</label><br>
+        <label for="month">月</label>
         <select id="month" required></select>
       </div>
       <div>
-        <label for="day">日</label><br>
+        <label for="day">日</label>
         <select id="day" required></select>
       </div>
       <button type="submit" id="startButton">守護神を導き出す</button>
@@ -142,7 +153,7 @@
   </div>
 
   <script>
-    // セリフをタイプライター風に表示
+    // タイプライター風テキスト
     const introLines = [
       "まずは、あなたの生年月日を教えてくれ。",
       "そこから、あなたの守護神を導き出そう。"
