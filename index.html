@@ -108,7 +108,6 @@
       border: 1px solid rgba(255, 255, 255, 0.2);
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
       pointer-events: auto;
-      touch-action: manipulation;
     }
     
     .birth-form.show {
@@ -149,10 +148,6 @@
       -moz-appearance: none;
       appearance: none;
       cursor: pointer;
-      touch-action: manipulation;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      user-select: none;
     }
     
     .form-row {
@@ -186,6 +181,23 @@
       transform: scale(1.05);
     }
 
+    /* 閉じるボタン */
+    .close-button {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: #99ccff;
+      font-size: 1.5em;
+      cursor: pointer;
+      padding: 5px;
+      line-height: 1;
+    }
+    .close-button:hover {
+      color: #66ccff;
+    }
+
     /* 非表示クラス */
     .hidden {
       opacity: 0 !important;
@@ -205,13 +217,13 @@
       opacity: 0;
       transition: opacity 0.5s ease;
       display: none;
-      pointer-events: auto;
-      touch-action: none;
+      pointer-events: none;
     }
     
     .form-overlay.show {
       opacity: 1;
       display: block;
+      pointer-events: auto;
     }
 
     /* iPhone向け調整 */
@@ -255,21 +267,21 @@
         border-radius: 15px !important;
         font-weight: bold !important;
       }
-             .birth-form {
-         position: fixed !important;
-         top: 50% !important;
-         left: 50% !important;
-         transform: translate(-50%, -50%) !important;
-         padding: 25px !important;
-         background: rgba(13, 13, 26, 0.95) !important;
-         border-radius: 15px !important;
-         backdrop-filter: blur(15px) !important;
-         -webkit-backdrop-filter: blur(15px) !important;
-         border: 1px solid rgba(255, 255, 255, 0.2) !important;
-         width: calc(100% - 40px) !important;
-         max-width: 380px !important;
-         z-index: 2000 !important;
-       }
+      .birth-form {
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        padding: 25px !important;
+        background: rgba(13, 13, 26, 0.95) !important;
+        border-radius: 15px !important;
+        backdrop-filter: blur(15px) !important;
+        -webkit-backdrop-filter: blur(15px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        width: calc(100% - 40px) !important;
+        max-width: 380px !important;
+        z-index: 2000 !important;
+      }
       .birth-form select { 
         font-size: 1.1em; 
         padding: 12px;
@@ -327,6 +339,7 @@
 
     <!-- 生年月日入力フォーム -->
     <form class="birth-form" id="birthForm">
+      <button type="button" class="close-button" id="closeForm">×</button>
       <h3>あなたの生年月日を教えてください</h3>
       
       <div class="form-row">
@@ -433,8 +446,31 @@
       }
     }
 
+    // フォームを閉じる関数
+    function closeForm() {
+      const birthForm = document.getElementById("birthForm");
+      const formOverlay = document.getElementById("formOverlay");
+      const ryuImage = document.getElementById("ryuImage");
+      const storyText = document.getElementById("storyText");
+      const birthInputButton = document.getElementById("birthInputButton");
+      
+      birthForm.classList.remove('show');
+      formOverlay.classList.remove('show');
+      
+      setTimeout(() => {
+        birthForm.style.display = 'none';
+        formOverlay.style.display = 'none';
+        
+        // 元のコンテンツを再表示
+        ryuImage.classList.remove('hidden');
+        storyText.classList.remove('hidden');
+        birthInputButton.classList.remove('hidden');
+      }, 500);
+    }
+
     // 生年月日入力ボタンのクリックイベント
-    document.getElementById("birthInputButton").addEventListener("click", function() {
+    document.getElementById("birthInputButton").addEventListener("click", function(e) {
+      e.stopPropagation();
       console.log("ボタンがクリックされました");
       
       const ryuImage = document.getElementById("ryuImage");
@@ -454,7 +490,6 @@
         // 背景オーバーレイを表示
         const formOverlay = document.getElementById("formOverlay");
         formOverlay.style.display = 'block';
-        formOverlay.style.pointerEvents = 'auto';
         requestAnimationFrame(() => {
           formOverlay.classList.add('show');
         });
@@ -467,7 +502,6 @@
         birthForm.style.zIndex = '2000';
         birthForm.style.display = 'block';
         birthForm.style.pointerEvents = 'auto';
-        birthForm.style.touchAction = 'manipulation';
         
         // 次のフレームでクラスを追加（CSS transitionが正しく動作するため）
         requestAnimationFrame(() => {
@@ -480,6 +514,7 @@
     // フォーム送信で result.html に遷移
     document.getElementById("birthForm").addEventListener("submit", function(e) {
       e.preventDefault();
+      e.stopPropagation();
       const y = document.getElementById("year").value;
       const m = document.getElementById("month").value;
       const d = document.getElementById("day").value;
@@ -494,41 +529,8 @@
       alert(`生年月日が設定されました: ${y}年${m}月${d}日\n（実際のサイトではresult.htmlに遷移します）`);
     });
     
-    // フォーム内のクリックイベントがバブリングしないようにする
+    // フォーム内の全てのイベントがバブリングしないようにする
     document.getElementById("birthForm").addEventListener("click", function(e) {
-      e.stopPropagation();
-      e.preventDefault();
-    });
-    
-    // セレクトボックスのクリックイベントも停止
-    document.querySelectorAll('.birth-form select').forEach(select => {
-      select.addEventListener("click", function(e) {
-        e.stopPropagation();
-        e.preventDefault();
-      });
-    });
-    
-    // 背景オーバーレイをクリックした時の処理（フォームを閉じる）
-    document.getElementById("formOverlay").addEventListener("click", function(e) {
-      // フォーム内のクリックは無視する
-      if (e.target.closest('.birth-form')) {
-        return;
-      }
-      
-      const birthForm = document.getElementById("birthForm");
-      const formOverlay = document.getElementById("formOverlay");
-      
-      birthForm.classList.remove('show');
-      formOverlay.classList.remove('show');
-      
-      setTimeout(() => {
-        birthForm.style.display = 'none';
-        formOverlay.style.display = 'none';
-      }, 500);
-    });
-    
-    // フォーム内のすべての要素でイベントバブリングを防止
-    document.getElementById("birthForm").addEventListener("mousedown", function(e) {
       e.stopPropagation();
     });
     
@@ -536,23 +538,49 @@
       e.stopPropagation();
     });
     
-    document.getElementById("birthForm").addEventListener("click", function(e) {
-      e.stopPropagation();
+    // セレクトボックスのイベント停止
+    document.querySelectorAll('.birth-form select').forEach(select => {
+      select.addEventListener("click", function(e) {
+        e.stopPropagation();
+      });
+      select.addEventListener("touchstart", function(e) {
+        e.stopPropagation();
+      });
     });
     
-    // セレクトボックスとボタンでも個別にイベントを停止
-    document.querySelectorAll('.birth-form select, .birth-form button, .birth-form label, .birth-form h3').forEach(element => {
-      element.addEventListener("mousedown", function(e) {
-        e.stopPropagation();
-      });
-      
-      element.addEventListener("touchstart", function(e) {
-        e.stopPropagation();
-      });
-      
-      element.addEventListener("click", function(e) {
-        e.stopPropagation();
-      });
+    // 閉じるボタンのクリックイベント
+    document.getElementById("closeForm").addEventListener("click", function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      closeForm();
+    });
+    
+    // 背景オーバーレイをクリック/タッチした時の処理（フォームを閉じる）
+    document.getElementById("formOverlay").addEventListener("click", function(e) {
+      // イベントがフォーム内から発生した場合は無視
+      if (e.target.closest('.birth-form')) {
+        return;
+      }
+      closeForm();
+    });
+    
+    // タッチイベントも同様に処理
+    document.getElementById("formOverlay").addEventListener("touchstart", function(e) {
+      // イベントがフォーム内から発生した場合は無視
+      if (e.target.closest('.birth-form')) {
+        return;
+      }
+      closeForm();
+    });
+
+    // ESCキーでフォームを閉じる
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        const birthForm = document.getElementById("birthForm");
+        if (birthForm.classList.contains('show')) {
+          closeForm();
+        }
+      }
     });
   </script>
 </body>
