@@ -87,10 +87,20 @@
       100%{text-shadow:0 0 20px rgba(157,78,221,1),0 0 30px rgba(199,125,255,.6)}
     }
 
-    /* ローディング画面 */
-    #loadingScreen { display:none; position:fixed; top:0; left:0; right:0; bottom:0;
-      background:rgba(0,0,0,.8); display:flex; align-items:center; justify-content:center;
-      flex-direction:column; z-index:9999; }
+         /* ローディング画面 */
+     #loadingScreen { 
+       display:none; 
+       position:fixed; 
+       top:0; 
+       left:0; 
+       right:0; 
+       bottom:0;
+       background:rgba(0,0,0,.8); 
+       align-items:center; 
+       justify-content:center;
+       flex-direction:column; 
+       z-index:9999; 
+     }
     .loading-spinner{width:100px;height:100px;position:relative;margin:0 auto}
     .loading-spinner::before,.loading-spinner::after{
       content:'';position:absolute;width:100%;height:100%;border-radius:50%;
@@ -294,44 +304,97 @@
         return;
       }
 
-      // 鑑定中アニメーション開始
-      document.getElementById("birthForm").style.display="none";
-      const loading = document.getElementById("loadingScreen");
-      loading.style.display="flex";
+                    // 鑑定中アニメーション開始
+       document.getElementById("birthForm").style.display="none";
+       const loading = document.getElementById("loadingScreen");
+       loading.style.display="flex";
 
-      // 3秒後に結果表示
-      setTimeout(()=>{
-        loading.style.display="none";
-        const zodiac = zodiacs[(y - 4) % 12];
-        const guardian = guardians[zodiac];
-        const monthText = monthTraits[m] || "";
-        const dayText = dayTraits[d] || "独自の使命を携えし者";
-        document.getElementById("guardian").innerHTML =
-          `<img class="guardian" src="${guardian.image}" alt="${guardian.name}">
-           <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
-           <div>${guardian.desc}</div>`;
-        const oracleText = `「汝に告ぐ
-  ${guardian.name}は常にそなたを見守り
-  心弱き時には慈悲を注ぎ
-  道を誤る時には智慧の灯を掲げん
+       // 1.5秒後に結果表示（さらに時間を短縮）
+       setTimeout(()=>{
+         try {
+           loading.style.display="none";
+           const zodiac = zodiacs[(y - 4) % 12];
+           const guardian = guardians[zodiac];
+           const monthText = monthTraits[m] || "";
+           const dayText = dayTraits[d] || "独自の使命を携えし者";
+           
+           // 画像の読み込みを確認
+           const img = new Image();
+           img.onload = function() {
+             document.getElementById("guardian").innerHTML =
+               `<img class="guardian" src="${guardian.image}" alt="${guardian.name}">
+                <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
+                <div>${guardian.desc}</div>`;
+             
+             const oracleText = `「汝に告ぐ
+   ${guardian.name}は常にそなたを見守り
+   心弱き時には慈悲を注ぎ
+   道を誤る時には智慧の灯を掲げん
 
-  ${m}月に生まれし汝
-  ${monthText}
+   ${m}月に生まれし汝
+   ${monthText}
 
-  生まれしその日は「${d}」
-  ${dayText}
+   生まれしその日は「${d}」
+   ${dayText}
 
-  この運命を胸に刻み
-  恐れることなく進むがよい
-  汝の歩む道は
-  光と共に在る」`;
-        document.getElementById("resultBox").style.display="block";
-        typeWriter(document.getElementById("oracle"), oracleText, 70);
-        document.getElementById("detailLink").onclick=()=>{ window.location.href=`confirm.html?year=${y}&month=${m}&day=${d}`; }
-      },3000);
+   この運命を胸に刻み
+   恐れることなく進むがよい
+   汝の歩む道は
+   光と共に在る」`;
+             
+             document.getElementById("resultBox").style.display="block";
+             typeWriter(document.getElementById("oracle"), oracleText, 70);
+             document.getElementById("detailLink").onclick=()=>{ window.location.href=`confirm.html?year=${y}&month=${m}&day=${d}`; }
+           };
+           
+           img.onerror = function() {
+             // 画像読み込みエラー時の処理
+             document.getElementById("guardian").innerHTML =
+               `<div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
+                <div>${guardian.desc}</div>`;
+             
+             const oracleText = `「汝に告ぐ
+   ${guardian.name}は常にそなたを見守り
+   心弱き時には慈悲を注ぎ
+   道を誤る時には智慧の灯を掲げん
+
+   ${m}月に生まれし汝
+   ${monthText}
+
+   生まれしその日は「${d}」
+   ${dayText}
+
+   この運命を胸に刻み
+   恐れることなく進むがよい
+   汝の歩む道は
+   光と共に在る」`;
+             
+             document.getElementById("resultBox").style.display="block";
+             typeWriter(document.getElementById("oracle"), oracleText, 70);
+             document.getElementById("detailLink").onclick=()=>{ window.location.href=`confirm.html?year=${y}&month=${m}&day=${d}`; }
+           };
+           
+           img.src = guardian.image;
+           
+         } catch (error) {
+           console.error("エラーが発生しました:", error);
+           loading.style.display="none";
+           alert("鑑定中にエラーが発生しました。もう一度お試しください。");
+           document.getElementById("birthForm").style.display="block";
+         }
+       },1500);
     });
 
-    window.addEventListener("load", initializeSelects);
+         // ページ読み込み時の初期化
+     window.addEventListener("load", function() {
+       try {
+         initializeSelects();
+         console.log("生年月日入力フォームが正常に初期化されました");
+       } catch (error) {
+         console.error("初期化エラー:", error);
+         alert("ページの初期化に失敗しました。ページを再読み込みしてください。");
+       }
+     });
   </script>
 </body>
 </html>
