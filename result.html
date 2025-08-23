@@ -2,226 +2,155 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>AI鑑定師 龍 | 生年月日入力</title>
+  <title>AI鑑定師 龍 | 守護神出現</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       margin: 0;
       font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      background: #0d0d1a;
       color: #fff;
-      background: radial-gradient(circle at top, #1a1a2e, #0d0d1a 80%);
-      overflow-x: hidden;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       text-align: center;
+      overflow: hidden;
     }
 
-    .container {
-      width: 90%;
-      max-width: 520px;
-      background: rgba(255,255,255,0.05);
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 25px rgba(100,150,255,0.3);
-      backdrop-filter: blur(6px);
+    /* 鑑定中ロード画面 */
+    #loadingScreen {
+      position: fixed;
+      top:0; left:0; width:100%; height:100%;
+      background: radial-gradient(circle at center, #1a1a2e, #0d0d1a 80%);
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      z-index: 9999;
+      animation: fadeOut 1s ease forwards;
+      animation-delay: 3s;
     }
 
-    h1 {
-      font-size: 2em;
-      margin-bottom: 15px;
-      color: #66ccff;
-      text-shadow: 0 0 12px rgba(102,204,255,0.8);
-    }
-
-    .intro {
-      margin-bottom: 20px;
-      font-size: 1.2em;
-      line-height: 1.6;
-      color: #ddd;
-      text-shadow: 0 0 8px rgba(255,255,255,0.3);
-      min-height: 3em;
-      text-align: center;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      margin-top: 15px;
-      align-items: center; /* 中央揃えに変更 */
-    }
-
-    label {
-      font-size: 1em;
+    .loading-text {
+      font-size: 1.4em;
       color: #99ccff;
-      display: block;
-      margin-bottom: 5px;
+      text-shadow: 0 0 12px #66ccff;
+      animation: blink 1.5s infinite;
+      margin-top: 20px;
     }
 
-    select {
-      padding: 12px;
-      font-size: 1.1em;
-      border-radius: 6px;
-      border: none;
-      background: rgba(255,255,255,0.1);
-      color: #fff;
-      box-shadow: inset 0 0 5px rgba(102,204,255,0.4);
-      text-align: center;
+    @keyframes blink {
+      50% { opacity: 0.5; }
     }
 
-    #year { width: 12ch; }
-    #month, #day { width: 10ch; }
+    /* フェードアウトアニメ */
+    @keyframes fadeOut {
+      to { opacity: 0; visibility:hidden; }
+    }
 
-    #startButton {
-      padding: 16px 40px;
-      font-size: 1.3em;
-      background: linear-gradient(90deg, #66ccff, #3399ff);
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      color: #000;
+    /* 結果画面 */
+    .result {
+      opacity: 0;
+      position: relative;
+      min-height: 100vh;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      padding: 20px;
+      animation: fadeIn 2s ease forwards;
+      animation-delay: 3.2s;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    /* 守護神出現演出 */
+    .guardian {
+      opacity: 0;
+      transform: scale(0.8);
+      filter: blur(15px);
+      max-width: 300px;
+      animation: guardianAppear 2.5s ease forwards;
+      animation-delay: 3.5s;
+    }
+
+    @keyframes guardianAppear {
+      0% { opacity: 0; transform: scale(0.8); filter: blur(15px); }
+      60% { opacity: 1; transform: scale(1.05); filter: blur(3px); }
+      100% { opacity: 1; transform: scale(1); filter: blur(0); }
+    }
+
+    .guardian-name {
+      font-size: 2em;
       margin-top: 20px;
       opacity: 0;
-      align-self: center;
-    }
-    #startButton:hover {
-      background: linear-gradient(90deg, #99e0ff, #66ccff);
-      transform: scale(1.05);
+      animation: nameGlow 3s ease forwards;
+      animation-delay: 5s;
     }
 
-    .stars {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      top: 0; left: 0;
-      z-index: -1;
-    }
-    .stars span {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      background: #fff;
-      border-radius: 50%;
-      animation: twinkle 4s infinite;
-      opacity: 0.8;
-    }
-    @keyframes twinkle {
-      0%,100% { opacity: 0.2; }
-      50% { opacity: 1; }
+    @keyframes nameGlow {
+      0% { opacity: 0; text-shadow: none; }
+      50% { opacity: 1; text-shadow: 0 0 15px #66ccff, 0 0 30px #3399ff; }
+      100% { opacity: 1; text-shadow: 0 0 8px #66ccff; }
     }
 
-    /* スマホ用調整 */
-    @media (max-width: 600px) {
-      h1 { font-size: 1.6em; }
-      .intro { font-size: 1.1em; }
-      select { font-size: 1.2em; padding: 14px; }
-      #startButton { font-size: 1.4em; padding: 18px 45px; }
+    .guardian-message {
+      margin-top: 30px;
+      font-size: 1.2em;
+      line-height: 1.8;
+      max-width: 700px;
+      text-align: left;
+      white-space: pre-line;
+      margin-left:auto;
+      margin-right:auto;
+    }
+
+    /* 背景の光パルス */
+    .result::before {
+      content:"";
+      position:absolute;
+      top:0; left:0; width:100%; height:100%;
+      background: radial-gradient(circle, rgba(102,204,255,0.2) 0%, transparent 70%);
+      animation:pulse 6s infinite;
+      z-index:-1;
+    }
+    @keyframes pulse {
+      0%,100% { opacity:0.4; }
+      50% { opacity:1; }
     }
   </style>
 </head>
 <body>
-  <div class="stars">
-    <span style="top:20%; left:30%; animation-delay:0s;"></span>
-    <span style="top:50%; left:60%; animation-delay:1s;"></span>
-    <span style="top:70%; left:10%; animation-delay:2s;"></span>
-    <span style="top:40%; left:80%; animation-delay:3s;"></span>
+
+  <!-- 鑑定中ロード演出 -->
+  <div id="loadingScreen">
+    <div class="orb"></div>
+    <div class="loading-text">神託を降ろしています…</div>
   </div>
 
-  <div class="container">
-    <h1>AI鑑定師 龍</h1>
-    <div class="intro" id="introText"></div>
-
-    <form id="birthForm" style="opacity:0;">
-      <div>
-        <label for="year">西暦</label>
-        <select id="year" required></select>
-      </div>
-      <div>
-        <label for="month">月</label>
-        <select id="month" required></select>
-      </div>
-      <div>
-        <label for="day">日</label>
-        <select id="day" required></select>
-      </div>
-      <button type="submit" id="startButton">守護神を導き出す</button>
-    </form>
-  </div>
+  <!-- 守護神出現 -->
+  <section class="result">
+    <img src="https://syugo-sin.com/photo/guardian_sample.png" alt="守護神" class="guardian">
+    <h2 class="guardian-name">あなたの守護神</h2>
+    <div class="guardian-message" id="guardianMessage"></div>
+  </section>
 
   <script>
-    // タイプライター風テキスト
-    const introLines = [
-      "まずは、あなたの生年月日を教えてくれ。",
-      "そこから、あなたの守護神を導き出そう。"
-    ];
-    const introEl = document.getElementById("introText");
-    const formEl = document.getElementById("birthForm");
-    const startButton = document.getElementById("startButton");
+    // タイプライターで守護神メッセージを出す
+    const message = "──神秘の光の中から現れた守護神が、あなたに語りかけます──\n\nあなたの歩む道には試練が訪れるでしょう。しかし恐れることはありません。守護神はあなたと共にあり、その選択を導いていきます。";
+    const msgEl = document.getElementById("guardianMessage");
 
-    let lineIndex = 0;
-    function showLine() {
-      if (lineIndex < introLines.length) {
-        let text = introLines[lineIndex];
-        let i = 0;
-        const p = document.createElement("p");
-        introEl.appendChild(p);
-
-        const interval = setInterval(() => {
-          p.textContent = text.slice(0, i++);
-          if (i > text.length) {
-            clearInterval(interval);
-            lineIndex++;
-            setTimeout(showLine, 800);
-          }
-        }, 50);
-      } else {
-        formEl.style.opacity = 1;
-        setTimeout(() => startButton.style.opacity = 1, 500);
+    function typeWriter(text, el, i=0) {
+      if (i < text.length) {
+        el.textContent += text.charAt(i);
+        setTimeout(() => typeWriter(text, el, i+1), 40);
       }
     }
 
+    // ローディングが終わったらメッセージを表示開始
     window.addEventListener("load", () => {
-      setTimeout(showLine, 1000);
-    });
-
-    // 西暦プルダウン（1900〜2025）
-    const yearSelect = document.getElementById("year");
-    for (let y = 2025; y >= 1900; y--) {
-      const opt = document.createElement("option");
-      opt.value = y;
-      opt.textContent = y;
-      yearSelect.appendChild(opt);
-    }
-
-    // 月プルダウン
-    const monthSelect = document.getElementById("month");
-    for (let m = 1; m <= 12; m++) {
-      const opt = document.createElement("option");
-      opt.value = m;
-      opt.textContent = m;
-      monthSelect.appendChild(opt);
-    }
-
-    // 日プルダウン
-    const daySelect = document.getElementById("day");
-    for (let d = 1; d <= 31; d++) {
-      const opt = document.createElement("option");
-      opt.value = d;
-      opt.textContent = d;
-      daySelect.appendChild(opt);
-    }
-
-    // フォーム送信で confirm.html に遷移
-    document.getElementById("birthForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const y = yearSelect.value;
-      const m = monthSelect.value;
-      const d = daySelect.value;
-      window.location.href = `confirm.html?year=${y}&month=${m}&day=${d}`;
+      setTimeout(() => {
+        typeWriter(message, msgEl);
+      }, 5200); // 名前が光った後くらいから開始
     });
   </script>
 </body>
