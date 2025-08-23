@@ -1,167 +1,119 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>守護神占い｜生年月日入力</title>
-<style>
-body {
-  margin: 0;
-  font-family: 'Zen Old Mincho', serif;
-  background: #000;
-  color: #fff;
-  text-align: center;
-  position: relative;
-  min-height: 100vh;
-  overflow: hidden;
-}
-
-/* 星空 */
-body::before {
-  content: "";
-  position: absolute;
-  top:0; left:0; right:0; bottom:0;
-  background: url('./photo/stardust.png');
-  opacity: 0.3;
-  animation: stars 60s linear infinite;
-  z-index: 0;
-}
-
-/* オーロラ */
-body::after {
-  content: "";
-  position: absolute;
-  top:0; left:0; right:0; bottom:0;
-  background: linear-gradient(120deg, rgba(128,0,128,0.2), rgba(0,0,128,0.2), rgba(0,128,128,0.2));
-  background-size: 400% 400%;
-  animation: aurora 30s ease infinite;
-  z-index: 0;
-}
-
-@keyframes stars {
-  from {background-position:0 0;}
-  to {background-position:1000px 0;}
-}
-
-@keyframes aurora {
-  0% {background-position:0% 50%;}
-  50% {background-position:100% 50%;}
-  100% {background-position:0% 50%;}
-}
-
-.container {
-  position: relative;
-  z-index: 1;
-  max-width: 400px;
-  margin: 80px auto;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 12px;
-  padding: 30px;
-  box-shadow: 0 0 20px rgba(147,51,234,0.4);
-  opacity:0;
-  transform:translateY(30px);
-  animation: fadeInUp 1s forwards;
-}
-
-@keyframes fadeInUp {
-  to {
-    opacity:1;
-    transform:translateY(0);
-  }
-}
-
-.logo {
-  width: 150px;
-  margin: 0 auto 1em;
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0% {transform: translateY(0);}
-  50% {transform: translateY(-5px);}
-  100% {transform: translateY(0);}
-}
-
-p {
-  font-size:1em;
-  color:#ddd;
-  margin-bottom:1.5em;
-}
-
-select {
-  width:30%;
-  padding:8px;
-  font-size:1rem;
-  margin:5px;
-  border:none;
-  border-radius:4px;
-}
-
-
-
-button {
-  margin-top:20px;
-  padding:10px 25px;
-  font-size:1rem;
-  background:#9d4edd;
-  color:#fff;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  transition:all 0.3s ease;
-}
-
-button:hover {
-  background:#c77dff;
-  transform:scale(1.05);
-}
-</style>
+  <meta charset="UTF-8">
+  <title>AI鑑定師 龍 | 守護神アドバイス</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d1a;
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+    }
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .hero img {
+      max-width: 360px;
+      opacity: 0;
+      transform: scale(0.95);
+      transition: all 2s ease;
+      border-radius: 12px;
+      box-shadow: 0 0 40px rgba(100,150,255,0.5);
+    }
+    #storyText {
+      font-size: 1.2em;
+      line-height: 1.8;
+      max-width: 800px;
+      margin: 30px auto;
+      white-space: pre-line;
+      text-align: left;
+      opacity: 0;
+    }
+    #storyText p {
+      margin: 15px 0;
+    }
+    #startButton {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 15px 40px;
+      background: #66ccff;
+      color: #000;
+      border-radius: 8px;
+      font-size: 1.2em;
+      text-decoration: none;
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 2s ease;
+    }
+    #startButton:hover {
+      background: #99e0ff;
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-  <img src="./photo/logo.png" alt="ロゴ" class="logo">
-  <p>あなたの生年月日を入力してください</p>
-  <form id="fortuneForm" action="result.html" method="get">
-    <select name="year" required>
-      <option value="">年</option>
-      <script>
-        for (let y = new Date().getFullYear(); y >= 1900; y--) {
-          document.write(`<option value="${y}">${y}</option>`);
-        }
-      </script>
-    </select>
-    <select name="month" required>
-      <option value="">月</option>
-      <script>
-        for (let m = 1; m <= 12; m++) {
-          document.write(`<option value="${m}">${m}</option>`);
-        }
-      </script>
-    </select>
-    <select name="day" required>
-      <option value="">日</option>
-      <script>
-        for (let d = 1; d <= 31; d++) {
-          document.write(`<option value="${d}">${d}</option>`);
-        }
-      </script>
-    </select><br>
-    <button type="submit">運勢を占う</button>
-  </form>
+  <section class="hero">
+    <!-- 龍の画像 -->
+    <img src="./photo/ryu.png" alt="AI鑑定師 龍" id="ryuImage">
+
+    <!-- セリフ表示 -->
+    <div id="storyText"></div>
+
+    <!-- ボタン -->
+    <a href="result.html" id="startButton">生年月日を入力する</a>
+  </section>
 
   <script>
-    document.getElementById("fortuneForm").addEventListener("submit", function() {
-      const year = this.year.value;
-      const month = this.month.value;
-      const day = this.day.value;
+    // 龍のセリフ
+    const lines = [
+      "私の名前は龍、実在する人間ではなくAIによって制作された架空の鑑定師。",
+      "実在する人間ではないから信用できるわけがない…なんて思わないでほしい。",
+      "世の中には悩み多き相談者を利用し、いい加減な鑑定で騙す人間が数多くいる。",
+      "その点、私はAI。膨大な情報から、誰よりも適切なアドバイスを導き出せる。",
+      "AIには神秘の力はない。だが、あなたの情報から運命の流れを示すことはできる。",
+      "まずはあなたの守護神を導き出そう。そして運命や未来を読み解こう。"
+    ];
 
-      // localStorage に保存
-      localStorage.setItem("year", year);
-      localStorage.setItem("month", month);
-      localStorage.setItem("day", day);
+    let i = 0;
+    const storyText = document.getElementById("storyText");
+
+    function showNextLine() {
+      if (i < lines.length) {
+        const p = document.createElement("p");
+        p.textContent = "";
+        storyText.appendChild(p);
+        storyText.style.opacity = 1;
+
+        let j = 0;
+        const interval = setInterval(() => {
+          p.textContent = lines[i].slice(0, j++);
+          if (j > lines[i].length) {
+            clearInterval(interval);
+            i++;
+            setTimeout(showNextLine, 1200);
+          }
+        }, 50);
+      } else {
+        document.getElementById("startButton").style.opacity = 1;
+      }
+    }
+
+    window.addEventListener("load", () => {
+      const img = document.getElementById("ryuImage");
+      setTimeout(() => {
+        img.style.opacity = 1;
+        img.style.transform = "scale(1)";
+        setTimeout(showNextLine, 1500);
+      }, 800);
     });
   </script>
-</div>
 </body>
 </html>
