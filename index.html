@@ -107,6 +107,7 @@
       -webkit-backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.2);
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      pointer-events: auto;
     }
     
     .birth-form.show {
@@ -143,6 +144,10 @@
       box-shadow: inset 0 0 5px rgba(102,204,255,0.4);
       width: 100%;
       max-width: 150px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      cursor: pointer;
     }
     
     .form-row {
@@ -195,6 +200,7 @@
       opacity: 0;
       transition: opacity 0.5s ease;
       display: none;
+      pointer-events: auto;
     }
     
     .form-overlay.show {
@@ -453,6 +459,7 @@
         birthForm.style.transform = 'translate(-50%, -50%)';
         birthForm.style.zIndex = '2000';
         birthForm.style.display = 'block';
+        birthForm.style.pointerEvents = 'auto';
         
         // 次のフレームでクラスを追加（CSS transitionが正しく動作するため）
         requestAnimationFrame(() => {
@@ -479,8 +486,25 @@
       alert(`生年月日が設定されました: ${y}年${m}月${d}日\n（実際のサイトではresult.htmlに遷移します）`);
     });
     
+    // フォーム内のクリックイベントがバブリングしないようにする
+    document.getElementById("birthForm").addEventListener("click", function(e) {
+      e.stopPropagation();
+    });
+    
+    // セレクトボックスのクリックイベントも停止
+    document.querySelectorAll('.birth-form select').forEach(select => {
+      select.addEventListener("click", function(e) {
+        e.stopPropagation();
+      });
+    });
+    
     // 背景オーバーレイをクリックした時の処理（フォームを閉じる）
-    document.getElementById("formOverlay").addEventListener("click", function() {
+    document.getElementById("formOverlay").addEventListener("click", function(e) {
+      // フォーム内のクリックは無視する
+      if (e.target.closest('.birth-form')) {
+        return;
+      }
+      
       const birthForm = document.getElementById("birthForm");
       const formOverlay = document.getElementById("formOverlay");
       
