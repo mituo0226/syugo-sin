@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>AI鑑定師 龍 | 守護神アドバイス</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
   <style>
     body {
       margin: 0;
@@ -11,19 +11,25 @@
       font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
       color: #fff;
       overflow-x: hidden;
+      overflow-y: auto;
       -webkit-overflow-scrolling: touch; /* iOS スムーズスクロール */
-      touch-action: pan-y; /* 縦スクロールを有効化 */
+      touch-action: manipulation; /* iPhone タッチ最適化 */
+      position: fixed;
+      width: 100%;
+      height: 100%;
     }
     .hero {
-      min-height: 100svh; /* スマホ対応 (vh→svh) */
+      min-height: 100vh; /* iPhone対応 */
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start; /* 上から配置 */
       text-align: center;
-      padding: 40px 20px;
-      overflow-y: auto; /* 縦スクロールを有効化 */
-      -webkit-overflow-scrolling: touch; /* iOS スムーズスクロール */
+      padding: 60px 20px 40px; /* 上部に余白追加 */
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+      z-index: 1;
     }
     .hero img {
       max-width: 90%; /* スマホで自然に縮小 */
@@ -88,19 +94,41 @@
       transform: scale(1.05);
     }
 
-    /* スマホ向け調整 */
+    /* iPhone向け調整 */
     @media (max-width: 600px) {
-      #storyText { font-size: 1.1em; text-align: center; }
-      .birth-form select { font-size: 1.1em; }
-      .birth-form button { font-size: 1.2em; padding: 16px 45px; }
-      .hero img {
-        max-width: 85%; /* スマホでより小さく */
-        margin: 10px 0;
+      body {
+        position: fixed;
+        overflow: hidden;
       }
       .hero {
-        padding: 20px 15px; /* パディングを調整 */
-        justify-content: flex-start; /* 上から配置 */
-        padding-top: 60px; /* 上部に余白 */
+        height: 100vh;
+        overflow-y: scroll;
+        -webkit-overflow-scrolling: touch;
+        padding: 80px 15px 40px; /* ステータスバー対応 */
+      }
+      #storyText { 
+        font-size: 1.1em; 
+        text-align: center; 
+        margin: 20px auto;
+      }
+      .birth-form select { font-size: 1.1em; }
+      .birth-form button { 
+        font-size: 1.2em; 
+        padding: 16px 45px;
+        -webkit-appearance: none;
+        border-radius: 8px;
+      }
+      .hero img {
+        max-width: 80%; /* iPhoneでより小さく */
+        margin: 15px 0;
+      }
+    }
+    
+    /* iPhone X以降のノッチ対応 */
+    @supports (padding: max(0px)) {
+      .hero {
+        padding-top: max(60px, env(safe-area-inset-top));
+        padding-bottom: max(40px, env(safe-area-inset-bottom));
       }
     }
   </style>
