@@ -112,28 +112,31 @@
     #loadingScreen p{color:#fff;font-size:1.2em;margin-top:1em;animation:blink 1.5s infinite}
     @keyframes blink{0%{opacity:1}50%{opacity:.4}100%{opacity:1}}
     
-    /* iPhone向け調整 */
-    @media (max-width: 600px) {
-      body {
-        position: fixed;
-        overflow: hidden;
-      }
-      .container {
-        height: 100vh;
-        overflow-y: scroll;
-        -webkit-overflow-scrolling: touch;
-        padding: 60px 15px 20px;
-      }
-      .birth-form {
-        padding: 25px;
-        background: rgba(13, 13, 26, 0.95);
-        border-radius: 15px;
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        width: calc(100% - 40px);
-        max-width: 380px;
-      }
+         /* iPhone向け調整 */
+     @media (max-width: 600px) {
+       body {
+         position: fixed;
+         overflow: hidden;
+       }
+       .container {
+         height: 100vh;
+         overflow-y: scroll;
+         -webkit-overflow-scrolling: touch;
+         padding: 40px 15px 20px;
+         justify-content: flex-start;
+         padding-top: 40px;
+       }
+             .birth-form {
+         padding: 25px;
+         background: rgba(13, 13, 26, 0.95);
+         border-radius: 15px;
+         backdrop-filter: blur(15px);
+         -webkit-backdrop-filter: blur(15px);
+         border: 1px solid rgba(255, 255, 255, 0.2);
+         width: calc(100% - 40px);
+         max-width: 380px;
+         margin-top: 20px;
+       }
       .birth-form select { 
         font-size: 1.1em; 
         padding: 12px;
@@ -163,12 +166,12 @@
       .form-group {
         text-align: center;
       }
-      .back-button {
-        top: 15px;
-        left: 15px;
-        padding: 8px 12px;
-        font-size: 0.9em;
-      }
+             .back-button {
+         top: 10px;
+         left: 15px;
+         padding: 8px 12px;
+         font-size: 0.9em;
+       }
       .result {
         padding: 15px;
         margin: 10px;
@@ -178,17 +181,17 @@
       }
     }
     
-    /* iPhone X以降のノッチ対応 */
-    @supports (padding: max(0px)) {
-      .container {
-        padding-top: max(60px, env(safe-area-inset-top));
-        padding-bottom: max(20px, env(safe-area-inset-bottom));
-      }
-      .back-button {
-        top: max(15px, env(safe-area-inset-top) + 5px);
-        left: max(15px, env(safe-area-inset-left) + 5px);
-      }
-    }
+         /* iPhone X以降のノッチ対応 */
+     @supports (padding: max(0px)) {
+       .container {
+         padding-top: max(40px, env(safe-area-inset-top));
+         padding-bottom: max(20px, env(safe-area-inset-bottom));
+       }
+       .back-button {
+         top: max(10px, env(safe-area-inset-top) + 5px);
+         left: max(15px, env(safe-area-inset-left) + 5px);
+       }
+     }
   </style>
 </head>
 <body>
