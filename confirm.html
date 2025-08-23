@@ -501,6 +501,18 @@ p {
     <div class="mosaic__veil" id="veil">この先は有料区画です。<br/>お支払い完了後に全文が表示されます。</div>
   </div>
 
+  <!-- メールアドレス入力欄 -->
+  <div style="margin: 20px 0; text-align: center;">
+    <input type="email" id="emailInput" placeholder="メールアドレスを入力してください" 
+           style="width: 80%; max-width: 300px; padding: 10px; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; background: rgba(255,255,255,0.1); color: #fff; font-size: 1rem; margin-bottom: 10px;">
+    <br>
+    <button id="emailRegisterBtn" 
+            style="background: #9d4edd; color: #fff; border: none; border-radius: 8px; padding: 10px 20px; font-size: 1rem; cursor: pointer; transition: background 0.3s ease;">
+      メールアドレスを登録
+    </button>
+    <p id="emailMessage" style="margin-top: 10px; color: #b9a9d9; font-size: 0.9em;"></p>
+  </div>
+
   <!-- h1の近くに（残り時間バッジ＆ボタンを出す置き場） -->
   <p id="creditInfo" style="display:none;opacity:.9;margin:.5em 0"></p>
   <p id="toDeepWrap" style="display:none">
@@ -771,6 +783,51 @@ window.addEventListener('load', () => {
     });
   }
 })();
+</script>
+
+<script>
+// メールアドレス登録機能
+document.addEventListener('DOMContentLoaded', function() {
+  const emailInput = document.getElementById('emailInput');
+  const emailRegisterBtn = document.getElementById('emailRegisterBtn');
+  const emailMessage = document.getElementById('emailMessage');
+
+  // 既に保存されているメールアドレスがあれば表示
+  const savedEmail = localStorage.getItem('userEmail');
+  if (savedEmail) {
+    emailInput.value = savedEmail;
+    emailMessage.textContent = 'メールアドレスが登録済みです';
+    emailMessage.style.color = '#4ade80';
+  }
+
+  emailRegisterBtn.addEventListener('click', function() {
+    const email = emailInput.value.trim();
+    
+    if (!email) {
+      alert('メールアドレスを入力してください');
+      return;
+    }
+    
+    // 簡単なメールアドレス形式チェック
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert('正しいメールアドレス形式で入力してください');
+      return;
+    }
+    
+    // localStorageに保存
+    localStorage.setItem('userEmail', email);
+    
+    // 成功メッセージを表示
+    emailMessage.textContent = '登録が完了しました';
+    emailMessage.style.color = '#4ade80';
+    
+    // 3秒後にメッセージを消す
+    setTimeout(() => {
+      emailMessage.textContent = '';
+    }, 3000);
+  });
+});
 </script>
 </body>
 </html>
