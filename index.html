@@ -25,7 +25,7 @@
       align-items: center;
       justify-content: flex-start; /* 上から配置 */
       text-align: center;
-      padding: 60px 20px 80px; /* 下部にボタン用の余白を追加 */
+      padding: 60px 20px 120px; /* 下部にボタン用の余白を増加 */
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       position: relative;
@@ -59,10 +59,14 @@
       margin-top: 30px;
       opacity: 0;
       transition: opacity 1s ease;
-      position: sticky;
+      position: fixed;
       bottom: 20px;
-      z-index: 10;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
       text-align: center;
+      width: calc(100% - 40px);
+      max-width: 400px;
     }
     .birth-input-button button {
       padding: 18px 60px;
@@ -123,7 +127,7 @@
       transform: scale(1.05);
     }
 
-        /* iPhone向け調整 */
+            /* iPhone向け調整 */
     @media (max-width: 600px) {
       body {
         position: fixed;
@@ -133,7 +137,7 @@
         height: 100vh;
         overflow-y: scroll;
         -webkit-overflow-scrolling: touch;
-        padding: 80px 15px 100px; /* 下部にボタン用の余白を追加 */
+        padding: 80px 15px 140px; /* 下部にボタン用の余白を増加 */
       }
       #storyText { 
         font-size: 1.1em; 
@@ -141,24 +145,28 @@
         margin: 20px auto;
       }
       .birth-input-button {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: calc(100% - 30px);
-        max-width: 400px;
-        background: rgba(13, 13, 26, 0.9);
-        padding: 15px;
-        border-radius: 15px;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+        position: fixed !important;
+        bottom: 30px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: calc(100% - 40px) !important;
+        max-width: 400px !important;
+        background: rgba(13, 13, 26, 0.95) !important;
+        padding: 20px !important;
+        border-radius: 20px !important;
+        backdrop-filter: blur(15px) !important;
+        -webkit-backdrop-filter: blur(15px) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
       }
       .birth-input-button button {
-        font-size: 1.3em;
-        padding: 20px 50px;
-        -webkit-appearance: none;
-        width: 100%;
-        max-width: 350px;
+        font-size: 1.4em !important;
+        padding: 18px 40px !important;
+        -webkit-appearance: none !important;
+        width: 100% !important;
+        max-width: 350px !important;
+        border-radius: 15px !important;
+        font-weight: bold !important;
       }
       .birth-form select { font-size: 1.1em; }
       .birth-form button { 
@@ -177,10 +185,10 @@
     @supports (padding: max(0px)) {
       .hero {
         padding-top: max(60px, env(safe-area-inset-top));
-        padding-bottom: max(100px, env(safe-area-inset-bottom) + 60px);
+        padding-bottom: max(140px, env(safe-area-inset-bottom) + 80px);
       }
       .birth-input-button {
-        bottom: max(20px, env(safe-area-inset-bottom) + 10px);
+        bottom: max(30px, env(safe-area-inset-bottom) + 20px) !important;
       }
     }
   </style>
@@ -297,6 +305,49 @@
         }, 100);
       }, 500);
     });
+
+    // iPhoneでのボタン表示を確実にするための追加処理
+    function ensureButtonVisibility() {
+      const button = document.getElementById("birthInputButton");
+      if (button && button.style.opacity === "1") {
+        button.style.display = "block";
+        button.style.visibility = "visible";
+        button.style.position = "fixed";
+        button.style.zIndex = "1000";
+      }
+    }
+
+    // メッセージ終了後のボタン表示を確実にする
+    const originalShowNextLine = showNextLine;
+    showNextLine = function() {
+      if (i < lines.length) {
+        const p = document.createElement("p");
+        p.textContent = "";
+        storyText.appendChild(p);
+        storyText.style.opacity = 1;
+
+        let j = 0;
+        const interval = setInterval(() => {
+          p.textContent = lines[i].slice(0, j++);
+          if (j > lines[i].length) {
+            clearInterval(interval);
+            i++;
+            setTimeout(showNextLine, 1200);
+          }
+        }, 50);
+      } else {
+        // メッセージ終了後、生年月日入力ボタンを表示
+        const button = document.getElementById("birthInputButton");
+        button.style.opacity = 1;
+        button.style.display = "block";
+        button.style.visibility = "visible";
+        
+        // iPhoneでの表示を確実にする
+        setTimeout(ensureButtonVisibility, 100);
+        setTimeout(ensureButtonVisibility, 500);
+        setTimeout(ensureButtonVisibility, 1000);
+      }
+    };
 
     // フォーム送信で result.html に遷移
     document.getElementById("birthForm").addEventListener("submit", function(e) {
