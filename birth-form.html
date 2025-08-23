@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>生年月日入力 | AI鑑定師 龍</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d1a;
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      touch-action: manipulation;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .birth-form {
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      padding: 30px;
+      background: rgba(13, 13, 26, 0.95);
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    
+    .birth-form h3 {
+      color: #66ccff;
+      margin-bottom: 20px;
+      font-size: 1.3em;
+    }
+    
+    .birth-form label {
+      display: block;
+      margin: 10px 0 5px;
+      color: #99ccff;
+      text-align: left;
+      font-weight: bold;
+    }
+    
+    .birth-form select {
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid rgba(102,204,255,0.3);
+      font-size: 1em;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      box-shadow: inset 0 0 5px rgba(102,204,255,0.4);
+      width: 100%;
+      max-width: 150px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    
+    .form-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .form-group {
+      flex: 1;
+      text-align: center;
+    }
+    
+    .birth-form button {
+      padding: 16px 40px;
+      font-size: 1.3em;
+      background: linear-gradient(90deg, #66ccff, #3399ff);
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #000;
+      width: 100%;
+      max-width: 300px;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+      -webkit-appearance: none;
+    }
+    
+    .birth-form button:hover {
+      background: linear-gradient(90deg, #99e0ff, #66ccff);
+      transform: scale(1.05);
+    }
+    
+    .back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(13, 13, 26, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #99ccff;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+    
+    .back-button:hover {
+      background: rgba(13, 13, 26, 0.9);
+      color: #66ccff;
+      border-color: rgba(102, 204, 255, 0.5);
+    }
+    
+    /* iPhone向け調整 */
+    @media (max-width: 600px) {
+      body {
+        position: fixed;
+        overflow: hidden;
+      }
+      
+      .container {
+        height: 100vh;
+        overflow-y: scroll;
+        -webkit-overflow-scrolling: touch;
+        padding: 60px 15px 20px;
+      }
+      
+      .birth-form {
+        padding: 25px;
+        background: rgba(13, 13, 26, 0.95);
+        border-radius: 15px;
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        width: calc(100% - 40px);
+        max-width: 380px;
+      }
+      
+      .birth-form select { 
+        font-size: 1.1em; 
+        padding: 12px;
+        width: 100% !important;
+        max-width: 100px !important;
+      }
+      
+      .birth-form button { 
+        font-size: 1.2em; 
+        padding: 16px 20px;
+        -webkit-appearance: none;
+        border-radius: 8px;
+        width: 100% !important;
+        max-width: 300px !important;
+      }
+      
+      .form-row {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .form-group {
+        text-align: center;
+      }
+      
+      .back-button {
+        top: 15px;
+        left: 15px;
+        padding: 8px 12px;
+        font-size: 0.9em;
+      }
+    }
+    
+    /* iPhone X以降のノッチ対応 */
+    @supports (padding: max(0px)) {
+      .container {
+        padding-top: max(60px, env(safe-area-inset-top));
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
+      }
+      
+      .back-button {
+        top: max(15px, env(safe-area-inset-top) + 5px);
+        left: max(15px, env(safe-area-inset-left) + 5px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 戻るボタン -->
+    <button class="back-button" onclick="goBack()">← 戻る</button>
+    
+    <!-- 生年月日入力フォーム -->
+    <form class="birth-form" id="birthForm">
+      <h3>あなたの生年月日を教えてください</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="year">西暦</label>
+          <select id="year" required></select>
+        </div>
+        
+        <div class="form-group">
+          <label for="month">月</label>
+          <select id="month" required></select>
+        </div>
+        
+        <div class="form-group">
+          <label for="day">日</label>
+          <select id="day" required></select>
+        </div>
+      </div>
+      
+      <button type="submit">守護神を導き出す</button>
+    </form>
+  </div>
+  
+  <script>
+    // プルダウンメニューの初期化
+    function initializeSelects() {
+      // 西暦プルダウン（1900〜2025）
+      const yearSelect = document.getElementById("year");
+      yearSelect.innerHTML = '<option value="">選択してください</option>';
+      for (let y = 2025; y >= 1900; y--) {
+        const opt = document.createElement("option");
+        opt.value = y;
+        opt.textContent = y + "年";
+        yearSelect.appendChild(opt);
+      }
+      
+      // 月プルダウン
+      const monthSelect = document.getElementById("month");
+      monthSelect.innerHTML = '<option value="">選択してください</option>';
+      for (let m = 1; m <= 12; m++) {
+        const opt = document.createElement("option");
+        opt.value = m;
+        opt.textContent = m + "月";
+        monthSelect.appendChild(opt);
+      }
+      
+      // 日プルダウン
+      const daySelect = document.getElementById("day");
+      daySelect.innerHTML = '<option value="">選択してください</option>';
+      for (let d = 1; d <= 31; d++) {
+        const opt = document.createElement("option");
+        opt.value = d;
+        opt.textContent = d + "日";
+        daySelect.appendChild(opt);
+      }
+    }
+    
+    // 戻るボタンの処理
+    function goBack() {
+      window.location.href = 'index.html';
+    }
+    
+    // フォーム送信で result.html に遷移
+    document.getElementById("birthForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const y = document.getElementById("year").value;
+      const m = document.getElementById("month").value;
+      const d = document.getElementById("day").value;
+      
+      if (!y || !m || !d) {
+        alert("すべての項目を選択してください。");
+        return;
+      }
+      
+      console.log(`選択された生年月日: ${y}年${m}月${d}日`);
+      // window.location.href = `result.html?year=${y}&month=${m}&day=${d}`;
+      alert(`生年月日が設定されました: ${y}年${m}月${d}日\n（実際のサイトではresult.htmlに遷移します）`);
+    });
+    
+    // ページロード時の初期化
+    window.addEventListener("load", () => {
+      initializeSelects();
+    });
+    
+    // ブラウザの戻るボタンでも前のページに戻れるようにする
+    window.addEventListener("popstate", function() {
+      goBack();
+    });
+  </script>
+</body>
+</html>
