@@ -82,6 +82,10 @@
     .hero.show {
       opacity: 1;
     }
+    .hero {
+      position: relative;
+    }
+    
     .hero img {
       max-width: 90%;
       height: auto;
@@ -93,18 +97,44 @@
       user-select: none;
       -webkit-user-select: none;
       -webkit-touch-callout: none;
+      position: relative;
+      z-index: 1;
     }
     #storyText {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       font-size: 1.2em;
       line-height: 1.8;
-      max-width: 800px;
-      margin: 30px auto;
+      max-width: 80%;
       white-space: pre-line;
-      text-align: left;
+      text-align: center;
       opacity: 0;
       transition: opacity 1s ease;
+      z-index: 10;
+      background: rgba(13, 13, 26, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 20px;
+      border: 1px solid rgba(102, 204, 255, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
     }
-    #storyText p { margin: 15px 0; }
+    #storyText p { 
+      margin: 15px 0; 
+      animation: messageGlow 3s ease-in-out infinite alternate;
+    }
+    
+    @keyframes messageGlow {
+      0% {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(102, 204, 255, 0.3);
+      }
+      100% {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 20px rgba(102, 204, 255, 0.6);
+      }
+    }
 
     /* 生年月日入力ボタン */
     .birth-input-button {
@@ -155,7 +185,8 @@
       #storyText { 
         font-size: 1.1em; 
         text-align: center; 
-        margin: 20px auto;
+        max-width: 90%;
+        padding: 15px;
       }
       .birth-input-button {
         position: fixed !important;
@@ -238,6 +269,9 @@
       if (i < lines.length) {
         const p = document.createElement("p");
         p.textContent = "";
+        p.style.opacity = "0";
+        p.style.transform = "translateY(20px)";
+        p.style.transition = "all 0.5s ease";
         storyText.appendChild(p);
         storyText.style.opacity = 1;
 
@@ -246,6 +280,11 @@
           p.textContent = lines[i].slice(0, j++);
           if (j > lines[i].length) {
             clearInterval(interval);
+            // テキスト完了後にフェードイン効果
+            setTimeout(() => {
+              p.style.opacity = "1";
+              p.style.transform = "translateY(0)";
+            }, 100);
             i++;
             setTimeout(showNextLine, 1200);
           }
