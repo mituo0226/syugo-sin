@@ -76,10 +76,19 @@
       color: #99ccff; padding: 10px 15px; border-radius: 8px; cursor: pointer;
     }
 
-         /* 鑑定結果表示 */
-     .result { display:none; max-width:600px; margin:auto; background:rgba(255,255,255,.05);
-       border:1px solid rgba(255,255,255,.2); border-radius:12px; padding:20px;
-       box-shadow:0 0 20px rgba(147,51,234,.4); position:relative; }
+               /* 鑑定結果表示 */
+      .result { display:none; max-width:600px; margin:auto; background:rgba(255,255,255,.05);
+        border:1px solid rgba(255,255,255,.2); border-radius:12px; padding:20px;
+        box-shadow:0 0 20px rgba(147,51,234,.4); position:relative; }
+      #oracle {
+        line-height: 2.5;
+        font-size: 1.1em;
+        text-align: left;
+        white-space: pre-line;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+      }
      img.guardian { 
        width:120px; 
        border-radius:50%; 
@@ -392,8 +401,32 @@
     const monthTraits = {1:"寒月に生まれし静謐の心を持ち",2:"雪解けを待つ忍耐の徳を授かり",3:"芽吹きの息吹を宿す魂を抱き",4:"萌ゆる命の躍動を胸に刻み",5:"薫風と共に歩む軽やかな心を携え",6:"豊穣の光を授かる運命に生まれ",7:"深き水面の如き洞察を得て",8:"烈日の炎に祝福されし者なり",9:"実りの秋に育まれし叡智を持ち",10:"黄昏に咲く決意の花を宿し",11:"夜霜をも溶かす感受性を抱き",12:"雪華の中に咲く慈愛の心を備える"};
     const dayTraits = {1:"新たなる道を拓く先駆者なり",2:"調和を重んじる清き心を持つ者",3:"喜びを分かち合う光の使い",4:"堅実に積み上げる力を授かりし者",5:"自由と変化を愛する風の魂",6:"慈しみ深き慈悲の持ち主",7:"深遠なる洞察を授かる者",8:"権威と達成の星を宿す者",9:"無私の奉仕を選びし者",11:"霊性に目覚めし導き手",22:"大いなる責務を担う魂"};
 
-    // タイプライター効果
-    function typeWriter(el, text, speed=50){ let i=0; el.innerHTML=''; (function t(){ if(i<text.length){ el.innerHTML+=text.charAt(i++); setTimeout(t,speed);} })(); }
+         // 神秘的な表示効果
+     function mysticalReveal(el, text, speed=100) {
+       el.innerHTML = '';
+       el.style.opacity = '0';
+       el.style.transform = 'translateY(20px)';
+       el.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+       
+       const words = text.split('\n');
+       let currentIndex = 0;
+       
+       function revealNextWord() {
+         if (currentIndex < words.length) {
+           if (currentIndex > 0) {
+             el.innerHTML += '<br><br>';
+           }
+           el.innerHTML += words[currentIndex];
+           el.style.opacity = '1';
+           el.style.transform = 'translateY(0)';
+           
+           currentIndex++;
+           setTimeout(revealNextWord, speed * 3);
+         }
+       }
+       
+       setTimeout(revealNextWord, 200);
+     }
 
     // フォーム送信処理
     document.getElementById("birthForm").addEventListener("submit", function(e) {
@@ -447,38 +480,38 @@
            
            // 画像の読み込みを確認
            const img = new Image();
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               img.onload = function() {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               img.onload = function() {
                  document.getElementById("guardian").innerHTML =
                    `<img class="guardian" src="${guardian.image}" alt="${guardian.name}">
                     <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
                     <div>${guardian.desc}</div>`;
               
-                const oracleText = `「汝に告ぐ
+                 const oracleText = `「汝に告ぐ
 
-      ${guardian.name}は常にそなたを見守り
-      心弱き時には慈悲を注ぎ
-      道を誤る時には智慧の灯を掲げん
+       ${guardian.name}は常にそなたを見守り
+       心弱き時には慈悲を注ぎ
+       道を誤る時には智慧の灯を掲げん
 
-      ${m}月に生まれし汝
-      ${monthText}
+       ${m}月に生まれし汝
+       ${monthText}
 
-      生まれしその日は「${d}」
-      ${dayText}
+       生まれしその日は「${d}」
+       ${dayText}
 
-      この運命を胸に刻み
-      恐れることなく進むがよい
-      汝の歩む道は
-      光と共に在る
+       この運命を胸に刻み
+       恐れることなく進むがよい
+       汝の歩む道は
+       光と共に在る
 
-      ${guardian.personal}」`;
+       ${guardian.personal}」`;
               
-                document.getElementById("resultBox").style.display="block";
-                typeWriter(document.getElementById("oracle"), oracleText, 70);
-                
-                document.getElementById("detailLink").onclick=()=>{ window.location.href=`confirm.html?year=${y}&month=${m}&day=${d}`; }
-              };
+                 document.getElementById("resultBox").style.display="block";
+                 mysticalReveal(document.getElementById("oracle"), oracleText, 150);
+                 
+                 document.getElementById("detailLink").onclick=()=>{ window.location.href=`confirm.html?year=${y}&month=${m}&day=${d}`; }
+               };
            
-                                                                                                                                                                                                                                                                                                                                                                                               img.onerror = function() {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               img.onerror = function() {
                 // 画像読み込みエラー時の処理
                 document.getElementById("guardian").innerHTML =
                   `<div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
@@ -504,7 +537,7 @@
      ${guardian.personal}」`;
               
                document.getElementById("resultBox").style.display="block";
-               typeWriter(document.getElementById("oracle"), oracleText, 70);
+               mysticalReveal(document.getElementById("oracle"), oracleText, 150);
                
                document.getElementById("detailLink").onclick=()=>{ window.location.href=`confirm.html?year=${y}&month=${m}&day=${d}`; }
              };
