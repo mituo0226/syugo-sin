@@ -1,1466 +1,471 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <title>生年月日入力 | AI鑑定師 龍</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <style>
-    body {
-      margin: 0;
-      background: #0d0d1a;
-      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
-      color: #fff;
-      overflow-x: hidden;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      touch-action: manipulation;
-      position: relative;
-      min-height: 100vh;
-    }
-    
+// 初期化フラグ
+let isInitialized = false;
 
-    
-    /* 龍と守護神の表示スタイル */
-    .dragon-reveal {
-      text-align: center;
-      margin-bottom: 40px;
-      animation: dragonAppear 2s ease-in-out;
-    }
-    
-    .dragon-image {
-      max-width: 100px;
-      height: auto;
-      border-radius: 10px;
-      box-shadow: 0 0 30px rgba(102, 204, 255, 0.6);
-      animation: dragonGlow 3s ease-in-out infinite alternate;
-    }
-    
-    .dragon-placeholder {
-      font-size: 4em;
-      animation: dragonGlow 3s ease-in-out infinite alternate;
-    }
-    
-    @keyframes dragonAppear {
-      0% {
-        opacity: 0;
-        transform: scale(0.5) translateY(50px);
-      }
-      100% {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
-    }
-    
-    @keyframes dragonGlow {
-      0% {
-        filter: brightness(1) drop-shadow(0 0 10px rgba(102, 204, 255, 0.5));
-      }
-      100% {
-        filter: brightness(1.3) drop-shadow(0 0 20px rgba(102, 204, 255, 0.8));
-      }
-    }
-    
-    .guardian-reveal {
-      animation: guardianAppear 2s ease-in-out 0.5s both;
-    }
-    
-    @keyframes guardianAppear {
-      0% {
-        opacity: 0;
-        transform: scale(0.8) translateY(30px);
-      }
-      100% {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
-    }
-    
-    /* PC向け神秘的な演出調整 */
-    @media (min-width: 768px) {
-      .energy-field {
-        width: 400px;
-        height: 400px;
-      }
-      
-      .dragon-image {
-        max-width: 150px;
-      }
-      
-      .dragon-reveal {
-        margin-bottom: 50px;
-      }
-    }
-    
-    /* モバイル向け固定レイアウト */
-    @media (max-width: 600px) {
-      body {
-        position: fixed;
-        width: 100%;
-        height: 100%;
-      }
-    }
-    
-    .container {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 20px;
-      overflow-y: auto;
-      position: relative;
-      z-index: 1;
-    }
-    
-    /* PC向けコンテナ調整 */
-    @media (min-width: 768px) {
-      .container {
-        padding: 40px 20px;
-        justify-content: flex-start;
-        padding-top: 80px;
-        min-height: auto;
-        height: auto;
-      }
-    }
-    
-    .birth-form {
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-      padding: 30px;
-      background: rgba(13, 13, 26, 0.95);
-      border-radius: 15px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-      position: relative;
-    }
-    
-    /* PC向けフォーム調整 */
-    @media (min-width: 768px) {
-      .birth-form {
-        max-width: 500px;
-        padding: 40px;
-        margin: 20px auto;
-      }
-    }
-    
-    @media (min-width: 1024px) {
-      .birth-form {
-        max-width: 600px;
-        padding: 50px;
-      }
-    }
-    
-    .birth-form h3 { 
-      color: #66ccff; 
-      margin-bottom: 20px; 
-      font-size: 1.3em; 
-    }
-    
-    .birth-form label { 
-      display: block; 
-      margin: 10px 0 5px; 
-      color: #99ccff; 
-      text-align: left; 
-      font-weight: bold; 
-    }
-    
-    /* PC向けタイトルとラベル調整 */
-    @media (min-width: 768px) {
-      .birth-form h3 {
-        font-size: 1.5em;
-        margin-bottom: 30px;
-      }
-      .birth-form label {
-        font-size: 1.1em;
-        margin: 15px 0 8px;
-      }
-    }
-    
-    .birth-form select {
-      padding: 12px; 
-      margin-bottom: 15px; 
-      border-radius: 6px;
-      border: 1px solid rgba(102,204,255,0.3);
-      font-size: 1em; 
-      background: rgba(255,255,255,0.1); 
-      color: #fff;
-      width: 100%; 
-      max-width: 150px; 
-      cursor: pointer;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-      background-repeat: no-repeat;
-      background-position: right 8px center;
-      background-size: 16px;
-      padding-right: 30px;
-      box-shadow: inset 0 0 5px rgba(102,204,255,0.4);
-    }
-    
-    /* セレクトボックスのオプションスタイル */
-    .birth-form select option {
-      background: #0d0d1a !important;
-      color: #fff !important;
-      padding: 8px;
-      font-size: 1em;
-    }
-    
-    .birth-form select option:hover {
-      background: #1a1a2e !important;
-      color: #66ccff !important;
-    }
-    
-    .birth-form select option:checked {
-      background: #66ccff !important;
-      color: #000 !important;
-    }
-    
-    /* ブラウザ互換性のための追加スタイル */
-    .birth-form select:focus option:checked {
-      background: #66ccff !important;
-      color: #000 !important;
-    }
-    
-    .birth-form select:focus option:hover {
-      background: #1a1a2e !important;
-      color: #66ccff !important;
-    }
-    
-    /* PC向けセレクトボックス調整 */
-    @media (min-width: 768px) {
-      .birth-form select {
-        font-size: 1.1em;
-        padding: 15px;
-        max-width: 180px;
-        margin-bottom: 20px;
-      }
-    }
-    
-    .form-row { 
-      display: flex; 
-      justify-content: space-between; 
-      gap: 10px; 
-      margin-bottom: 20px; 
-    }
-    
-    .form-group { 
-      flex: 1; 
-      text-align: center; 
-    }
-    
-    /* PC向けフォームレイアウト調整 */
-    @media (min-width: 768px) {
-      .form-row {
-        gap: 20px;
-        margin-bottom: 30px;
-        justify-content: center;
-      }
-      .form-group {
-        flex: 0 1 auto;
-        min-width: 120px;
-      }
-    }
-    
-    .birth-form button {
-      padding: 16px 40px; 
-      font-size: 1.3em;
-      background: linear-gradient(90deg, #66ccff, #3399ff);
-      border: none; 
-      border-radius: 8px; 
-      font-weight: bold;
-      cursor: pointer; 
-      color: #000; 
-      width: 100%; 
-      max-width: 300px;
-      margin-top: 10px; 
-      transition: all 0.3s ease;
-    }
-    
-    /* PC向けボタン調整 */
-    @media (min-width: 768px) {
-      .birth-form button {
-        font-size: 1.4em;
-        padding: 18px 50px;
-        max-width: 350px;
-        margin-top: 20px;
-      }
-    }
-    
-    .birth-form button:hover { 
-      background: linear-gradient(90deg, #99e0ff, #66ccff); 
-      transform: scale(1.05); 
-    }
-    
+// 守護神の言葉ページに移動する関数
+function goToGuardianMessage(guardianName, zodiacSign) {
+  console.log('goToGuardianMessage called with:', guardianName, zodiacSign);
+  const params = new URLSearchParams({
+    name: guardianName,
+    zodiac: zodiacSign
+  });
+  const url = `syugo-sin.html?${params.toString()}`;
+  console.log('Redirecting to:', url);
+  window.location.href = url;
+}
 
-
-    /* 鑑定結果表示 */
-    .result { 
-      display:none; 
-      max-width:600px; 
-      margin:auto; 
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.2); 
-      border-radius:12px; 
-      padding:20px;
-      box-shadow:0 0 20px rgba(147,51,234,.4); 
-      position:relative; 
-    }
-    
-    /* PC向け結果表示調整 */
-    @media (min-width: 768px) {
-      .result {
-        max-width: 800px;
-        padding: 40px;
-        margin: 30px auto;
-        scroll-margin-top: 20px;
-      }
-    }
-    
-    #oracle {
-      line-height: 1.8;
-      font-size: 1.1em;
-      text-align: left;
-      white-space: pre-line;
-    }
-    
-    /* PC向け神託テキスト調整 */
-    @media (min-width: 768px) {
-      #oracle {
-        font-size: 1.2em;
-        line-height: 2.0;
-        max-width: 700px;
-        margin: 0 auto;
-      }
-    }
-    
-    img.guardian { 
-      width:180px; 
-      border-radius:50%; 
-      margin:15px auto; 
-      display:block; 
-      animation: guardianGlow 3s ease-in-out infinite alternate, guardianFloat 4s ease-in-out infinite;
-      box-shadow: 0 0 30px rgba(102, 204, 255, 0.6), 0 0 60px rgba(157, 78, 221, 0.4);
-    }
-    
-    /* PC向け守護神画像調整 */
-    @media (min-width: 768px) {
-      img.guardian {
-        width: 220px;
-        margin: 25px auto;
-      }
-    }
-    
-    @keyframes guardianGlow {
-      0% { 
-        box-shadow: 0 0 20px rgba(102, 204, 255, 0.4), 0 0 40px rgba(157, 78, 221, 0.3);
-        filter: brightness(1);
-      }
-      100% { 
-        box-shadow: 0 0 40px rgba(102, 204, 255, 0.8), 0 0 80px rgba(157, 78, 221, 0.6);
-        filter: brightness(1.2);
-      }
-    }
-    
-    @keyframes guardianFloat {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      25% { transform: translateY(-3px) rotate(0.5deg); }
-      50% { transform: translateY(-5px) rotate(0deg); }
-      75% { transform: translateY(-3px) rotate(-0.5deg); }
-    }
-    
-    /* フルスクリーン守護神表示 */
-    .guardian-fullscreen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 9998;
-      opacity: 0;
-      transition: opacity 1s ease-in-out;
-    }
-    
-    .guardian-fullscreen.show {
-      opacity: 1;
-    }
-    
-    .guardian-fullscreen img {
-      width: 80vw;
-      height: 80vw;
-      max-width: 400px;
-      max-height: 400px;
-      object-fit: contain;
-      border-radius: 50%;
-      animation: guardianGlow 3s ease-in-out infinite alternate, guardianFloat 4s ease-in-out infinite;
-      box-shadow: 0 0 50px rgba(102, 204, 255, 0.8), 0 0 100px rgba(157, 78, 221, 0.6);
-      margin-bottom: 30px;
-    }
-    
-    .guardian-fullscreen h2 {
-      color: #fff;
-      font-size: 2em;
-      text-align: center;
-      margin: 0;
-      animation: textGlow 2s ease-in-out infinite alternate;
-    }
-    
-    .guardian-fullscreen p {
-      color: #c77dff;
-      font-size: 1.2em;
-      text-align: center;
-      margin: 10px 0 0 0;
-      max-width: 80%;
-    }
-    
-    /* スマホ向けフルスクリーン調整 */
-    @media (max-width: 600px) {
-      .guardian-fullscreen img {
-        width: 70vw;
-        height: 70vw;
-        max-width: 300px;
-        max-height: 300px;
-      }
-      
-      .guardian-fullscreen h2 {
-        font-size: 1.5em;
-      }
-      
-      .guardian-fullscreen p {
-        font-size: 1em;
-      }
-    }
-    
-         .glow-text { 
-       animation:textGlow 2s ease-in-out infinite alternate; 
-     }
-     
-     /* 守護神の言葉ボタン */
-     .guardian-message-btn {
-       margin-top: 20px;
-       padding: 15px 30px;
-       font-size: 1.2em;
-       background: linear-gradient(90deg, #9d4edd, #c77dff);
-       border: none;
-       border-radius: 10px;
-       color: #fff;
-       cursor: pointer;
-       transition: all 1s ease;
-       box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
-       opacity: 0;
-       transform: translateY(50px);
-       position: relative;
-       z-index: 10;
-     }
-     
-     .guardian-message-btn:hover {
-       background: linear-gradient(90deg, #c77dff, #9d4edd);
-       transform: translateY(-2px);
-       box-shadow: 0 6px 20px rgba(157, 78, 221, 0.6);
-     }
-     
-     /* スマホ向けタッチ効果 */
-     @media (max-width: 600px) {
-       .guardian-message-btn:active {
-         transform: translateX(-50%) scale(0.95) !important;
-         box-shadow: 0 4px 15px rgba(157, 78, 221, 0.8) !important;
-       }
-     }
-     
-     .guardian-message-btn.show {
-       opacity: 1;
-       transform: translateY(0);
-     }
-     
-     /* PC向け守護神の言葉ボタン調整 */
-     @media (min-width: 768px) {
-       .guardian-message-btn {
-         font-size: 1.3em;
-         padding: 18px 40px;
-         margin-top: 30px;
-       }
-     }
-    
-    @keyframes textGlow {
-      0%{text-shadow:0 0 10px rgba(157,78,221,.8)}
-      100%{text-shadow:0 0 20px rgba(157,78,221,1),0 0 30px rgba(199,125,255,.6)}
-    }
-
-    /* ローディング画面 */
-    #loadingScreen { 
-      display:none; 
-      position:fixed; 
-      top:0; 
-      left:0; 
-      right:0; 
-      bottom:0;
-      background:rgba(0,0,0,.8); 
-      align-items:center; 
-      justify-content:center;
-      flex-direction:column; 
-      z-index:9999; 
-      opacity: 0;
-      transition: opacity 0.8s ease-in-out;
-    }
-    
-    /* PC向けローディング画面調整 */
-    @media (min-width: 768px) {
-      #loadingScreen p {
-        font-size: 1.4em;
-      }
-      .loading-spinner {
-        width: 120px;
-        height: 120px;
-      }
-    }
-    
-    #loadingScreen.show {
-      opacity: 1;
-    }
-    
-    .loading-spinner{
-      width:100px;
-      height:100px;
-      position:relative;
-      margin:0 auto
-    }
-    
-    .loading-spinner::before,.loading-spinner::after{
-      content:'';
-      position:absolute;
-      width:100%;
-      height:100%;
-      border-radius:50%;
-      background:conic-gradient(from 0deg,transparent,#9d4edd,#c77dff,#ff6b9d,transparent);
-      animation:spiral 3s linear infinite
-    }
-    
-    .loading-spinner::after{
-      animation:spiral 2s linear infinite reverse;
-      filter:blur(1px);
-      opacity:.9;
-      width:80%;
-      height:80%;
-      top:10%;
-      left:10%
-    }
-    
-    @keyframes spiral{
-      0%{transform:rotate(0)}
-      100%{transform:rotate(360deg)}
-    }
-    
-    #loadingScreen p{
-      color:#fff;
-      font-size:1.2em;
-      margin-top:1em;
-      animation:blink 1.5s infinite
-    }
-    
-    @keyframes blink{
-      0%{opacity:1}
-      50%{opacity:.4}
-      100%{opacity:1}
-    }
-    
-    /* エラー時のアニメーション */
-    @keyframes errorShake {
-      0%, 100% { transform: translateX(0); }
-      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-      20%, 40%, 60%, 80% { transform: translateX(5px); }
-    }
-    
-    /* 成功時のアニメーション */
-    @keyframes successFade {
-      0% { opacity: 0; transform: translateY(-10px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    
-    /* PC向けメッセージ調整 */
-    @media (min-width: 768px) {
-      .error-message, .success-message {
-        margin: 20px auto;
-        padding: 15px 20px;
-        font-size: 1.1em;
-        max-width: 500px;
-      }
-    }
-    
-    /* iPhone向け調整 */
-    @media (max-width: 600px) {
-      .error-message, .success-message {
-        margin: 10px 5px;
-        padding: 10px;
-        font-size: 0.9em;
-      }
-      
-      body {
-        position: fixed;
-        overflow: hidden;
-      }
-      .container {
-        height: 100vh;
-        overflow-y: scroll;
-        -webkit-overflow-scrolling: touch;
-        padding: 40px 15px 20px;
-        justify-content: flex-start;
-        padding-top: 40px;
-      }
-      
-      .birth-form {
-        padding: 25px;
-        background: rgba(13, 13, 26, 0.95);
-        border-radius: 15px;
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        width: calc(100% - 40px);
-        max-width: 380px;
-        margin-top: 20px;
-      }
-      
-
-      
-      .birth-form button { 
-        font-size: 1.2em; 
-        padding: 16px 20px;
-        -webkit-appearance: none;
-        border-radius: 8px;
-        width: 100% !important;
-        max-width: 300px !important;
-      }
-      
-      .form-row {
-        flex-direction: column;
-        gap: 15px;
-      }
-      
-      .form-group {
-        text-align: center;
-      }
-      
-
-      
-      .result {
-        padding: 15px;
-        margin: 10px;
-        padding-bottom: 200px;
-      }
-      
-      .guardian {
-        width: 150px !important;
-        animation: guardianGlow 3s ease-in-out infinite alternate, guardianFloat 4s ease-in-out infinite;
-        box-shadow: 0 0 20px rgba(102, 204, 255, 0.6), 0 0 40px rgba(157, 78, 221, 0.4) !important;
-        margin-bottom: 40px !important;
-      }
-      
-      .guardian-reveal {
-        margin-bottom: 60px !important;
-      }
-      
-      .guardian-message-btn {
-        position: fixed !important;
-        bottom: 80px !important;
-        left: 50% !important;
-        transform: translateX(-50%) translateY(50px) !important;
-        width: calc(100% - 40px) !important;
-        max-width: 350px !important;
-        margin: 0 !important;
-        z-index: 1000 !important;
-        padding: 20px 30px !important;
-        font-size: 1.3em !important;
-        font-weight: bold !important;
-        border-radius: 15px !important;
-        box-shadow: 0 8px 25px rgba(157, 78, 221, 0.6) !important;
-        transition: all 1s ease !important;
-        min-height: 70px !important;
-      }
-      
-      .guardian-message-btn.show {
-        transform: translateX(-50%) translateY(0) !important;
-        opacity: 1 !important;
-      }
-      
-
-    }
-    
-    /* iPhone X以降のノッチ対応（モバイルのみ） */
-    @media (max-width: 600px) {
-      @supports (padding: max(0px)) {
-        .container {
-          padding-top: max(40px, env(safe-area-inset-top));
-          padding-bottom: max(20px, env(safe-area-inset-bottom));
-        }
-        
-        .guardian-message-btn {
-          bottom: calc(80px + env(safe-area-inset-bottom)) !important;
-        }
-      }
-    }
-  </style>
-</head>
-<body>
-
+// セレクトボックスの初期化関数
+function initializeSelects() {
+  // 重複実行防止
+  if (isInitialized) {
+    console.log('Already initialized, skipping...');
+    return;
+  }
   
-  <div class="container">
-
-    
-    <!-- 生年月日入力フォーム -->
-    <form class="birth-form" id="birthForm">
-      <h3>あなたの生年月日を教えてください</h3>
-      <div class="form-row">
-        <div class="form-group">
-          <label for="year">西暦</label>
-          <select id="year" required></select>
-        </div>
-        <div class="form-group">
-          <label for="month">月</label>
-          <select id="month" required></select>
-        </div>
-        <div class="form-group">
-          <label for="day">日</label>
-          <select id="day" required></select>
-        </div>
-      </div>
-      <button type="submit">守護神を導き出す</button>
-    </form>
-
-    <!-- ローディング画面 -->
-    <div id="loadingScreen">
-      <div class="loading-spinner"></div>
-      <p>神託を降ろしています…</p>
-    </div>
-
-    <!-- 鑑定結果 -->
-    <div class="result" id="resultBox">
-      <h2 class="glow-text">あなたの守護神を伝えよう･･･</h2>
-      <div id="guardian"></div>
-      <p id="oracle"></p>
-    </div>
-    
-    <!-- フルスクリーン守護神表示 -->
-    <div class="guardian-fullscreen" id="guardianFullscreen">
-      <img id="fullscreenGuardianImg" src="" alt="守護神">
-      <h2 id="fullscreenGuardianName"></h2>
-      <p id="fullscreenGuardianDesc"></p>
-    </div>
-  </div>
+  console.log('Initializing select boxes...');
   
-  <script>
-
-     
-     // 守護神の言葉ページに移動する関数
-     function goToGuardianMessage(guardianName, zodiacSign) {
-       console.log('goToGuardianMessage called with:', guardianName, zodiacSign);
-       // URLパラメータとして守護神の情報を渡す
-       const params = new URLSearchParams({
-         name: guardianName,
-         zodiac: zodiacSign
-       });
-       const url = `syugo-sin.html?${params.toString()}`;
-       console.log('Redirecting to:', url);
-       window.location.href = url;
-     }
-
-    // セレクトボックスの初期化関数
-    function initializeSelects() {
-      console.log('Initializing select boxes...');
-      console.log('Document ready state:', document.readyState);
-      
-      // 要素の存在確認
-      const yearSelect = document.getElementById("year");
-      const monthSelect = document.getElementById("month");
-      const daySelect = document.getElementById("day");
-      
-      console.log('Year element exists:', !!yearSelect);
-      console.log('Month element exists:', !!monthSelect);
-      console.log('Day element exists:', !!daySelect);
-      
-      // 要素が見つからない場合は再試行（最大3回まで）
-      if (!yearSelect || !monthSelect || !daySelect) {
-        if (!initializeSelects.retryCount) {
-          initializeSelects.retryCount = 0;
-        }
-        if (initializeSelects.retryCount < 3) {
-          initializeSelects.retryCount++;
-          console.log(`Elements not found, retrying (${initializeSelects.retryCount}/3) in 100ms...`);
-          setTimeout(initializeSelects, 100);
-          return;
-        } else {
-          console.error('Failed to find elements after 3 retries');
-          return;
-        }
-      }
-      
-      try {
-        // 年の選択肢を追加
-        console.log('Year select found, clearing and populating...');
-        yearSelect.innerHTML = '<option value="">選択</option>';
-        for (let y = 2025; y >= 1900; y--) {
-          const opt = document.createElement("option");
-          opt.value = y;
-          opt.textContent = y + "年";
-          yearSelect.appendChild(opt);
-        }
-        console.log('Year select initialized with', yearSelect.children.length - 1, 'options');
-        
-        // 月の選択肢を追加
-        console.log('Month select found, clearing and populating...');
-        monthSelect.innerHTML = '<option value="">選択</option>';
-        for (let m = 1; m <= 12; m++) {
-          const opt = document.createElement("option");
-          opt.value = m;
-          opt.textContent = m + "月";
-          monthSelect.appendChild(opt);
-        }
-        console.log('Month select initialized with', monthSelect.children.length - 1, 'options');
-        
-        // 日の選択肢を追加
-        console.log('Day select found, clearing and populating...');
-        daySelect.innerHTML = '<option value="">選択</option>';
-        for (let d = 1; d <= 31; d++) {
-          const opt = document.createElement("option");
-          opt.value = d;
-          opt.textContent = d + "日";
-          daySelect.appendChild(opt);
-        }
-        console.log('Day select initialized with', daySelect.children.length - 1, 'options');
-        
-        // イベントリスナーの設定
-        console.log('Setting up event listeners...');
-        setupEventListeners();
-        console.log('Event listeners setup completed');
-        
-        // グローバル変数に要素を再設定（クローン後の新しい要素を参照）
-        window.yearSelect = document.getElementById("year");
-        window.monthSelect = document.getElementById("month");
-        window.daySelect = document.getElementById("day");
-        
-      } catch (error) {
-        console.error('Error in initializeSelects:', error);
-      }
-    }
-
-    // イベントリスナーの設定
-    function setupEventListeners() {
-      console.log('Setting up event listeners...');
-      const yearSelect = document.getElementById("year");
-      const monthSelect = document.getElementById("month");
-      const daySelect = document.getElementById("day");
-      
-      console.log('Year select for events:', !!yearSelect);
-      console.log('Month select for events:', !!monthSelect);
-      console.log('Day select for events:', !!daySelect);
-      
-      // 要素をクローンして古いイベントリスナーを確実に削除
-      if (monthSelect) {
-        const newMonthSelect = monthSelect.cloneNode(true);
-        monthSelect.parentNode.replaceChild(newMonthSelect, monthSelect);
-        newMonthSelect.addEventListener("change", monthChangeHandler);
-        console.log('Month change event listener added (cloned)');
-      }
-      
-      if (yearSelect) {
-        const newYearSelect = yearSelect.cloneNode(true);
-        yearSelect.parentNode.replaceChild(newYearSelect, yearSelect);
-        newYearSelect.addEventListener("change", yearChangeHandler);
-        console.log('Year change event listener added (cloned)');
-      }
-      
-      if (daySelect) {
-        const newDaySelect = daySelect.cloneNode(true);
-        daySelect.parentNode.replaceChild(newDaySelect, daySelect);
-        newDaySelect.addEventListener("change", dayChangeHandler);
-        console.log('Day change event listener added (cloned)');
-      }
-      
-      console.log('All event listeners setup completed');
-    }
+  // 要素の存在確認
+  const yearSelect = document.getElementById("year");
+  const monthSelect = document.getElementById("month");
+  const daySelect = document.getElementById("day");
+  
+  if (!yearSelect || !monthSelect || !daySelect) {
+    console.log('Elements not found, retrying in 100ms...');
+    setTimeout(initializeSelects, 100);
+    return;
+  }
+  
+  try {
+    // 初期化フラグを設定
+    isInitialized = true;
     
-    // イベントハンドラー関数（重複登録を防ぐため分離）
-    function monthChangeHandler() {
-      console.log('Month changed to:', this.value);
-      adjustDayOptions();
-      validateCurrentInput();
+    // 年の選択肢を追加
+    yearSelect.innerHTML = '<option value="">選択</option>';
+    for (let y = 2025; y >= 1900; y--) {
+      const opt = document.createElement("option");
+      opt.value = y;
+      opt.textContent = y + "年";
+      yearSelect.appendChild(opt);
     }
+    console.log('Year select initialized');
     
-    function yearChangeHandler() {
+    // 月の選択肢を追加
+    monthSelect.innerHTML = '<option value="">選択</option>';
+    for (let m = 1; m <= 12; m++) {
+      const opt = document.createElement("option");
+      opt.value = m;
+      opt.textContent = m + "月";
+      monthSelect.appendChild(opt);
+    }
+    console.log('Month select initialized');
+    
+    // 日の選択肢を追加
+    daySelect.innerHTML = '<option value="">選択</option>';
+    for (let d = 1; d <= 31; d++) {
+      const opt = document.createElement("option");
+      opt.value = d;
+      opt.textContent = d + "日";
+      daySelect.appendChild(opt);
+    }
+    console.log('Day select initialized');
+    
+    // イベントリスナーの設定（シンプルに直接設定）
+    setupEventListeners();
+    console.log('Initialization completed successfully');
+    
+  } catch (error) {
+    console.error('Error in initializeSelects:', error);
+    isInitialized = false; // エラー時はフラグをリセット
+  }
+}
+
+// イベントリスナーの設定（シンプル版）
+function setupEventListeners() {
+  const yearSelect = document.getElementById("year");
+  const monthSelect = document.getElementById("month");
+  const daySelect = document.getElementById("day");
+  
+  // 年の変更イベント
+  if (yearSelect) {
+    yearSelect.addEventListener("change", function() {
       console.log('Year changed to:', this.value);
       adjustDayOptions();
       validateCurrentInput();
-    }
-    
-    function dayChangeHandler() {
+    });
+    console.log('Year event listener added');
+  }
+  
+  // 月の変更イベント
+  if (monthSelect) {
+    monthSelect.addEventListener("change", function() {
+      console.log('Month changed to:', this.value);
+      adjustDayOptions();
+      validateCurrentInput();
+    });
+    console.log('Month event listener added');
+  }
+  
+  // 日の変更イベント
+  if (daySelect) {
+    daySelect.addEventListener("change", function() {
       console.log('Day changed to:', this.value);
       validateCurrentInput();
-    }
+    });
+    console.log('Day event listener added');
+  }
+}
 
-    // 日の選択肢を調整する関数
-    function adjustDayOptions() {
-      const yearSelect = window.yearSelect || document.getElementById("year");
-      const monthSelect = window.monthSelect || document.getElementById("month");
-      const daySelect = window.daySelect || document.getElementById("day");
-      
-      if (!yearSelect || !monthSelect || !daySelect) return;
-      
-      const year = parseInt(yearSelect.value);
-      const month = parseInt(monthSelect.value);
-      
-      if (!year || !month) return;
-      
-      const daysInMonth = new Date(year, month, 0).getDate();
-      
-      // 現在選択されている日を保存
-      const currentDay = daySelect.value;
-      
-      // 日の選択肢を再生成
-      daySelect.innerHTML = '<option value="">選択</option>';
-      for (let d = 1; d <= daysInMonth; d++) {
-        const opt = document.createElement("option");
-        opt.value = d;
-        opt.textContent = d + "日";
-        daySelect.appendChild(opt);
-      }
-      
-      // 以前選択されていた日が有効な範囲内であれば復元
-      if (currentDay && parseInt(currentDay) <= daysInMonth) {
-        daySelect.value = currentDay;
-      }
-    }
+// 日の選択肢を調整する関数
+function adjustDayOptions() {
+  const yearSelect = document.getElementById("year");
+  const monthSelect = document.getElementById("month");
+  const daySelect = document.getElementById("day");
+  
+  if (!yearSelect || !monthSelect || !daySelect) {
+    console.log('Elements not found in adjustDayOptions');
+    return;
+  }
+  
+  const year = parseInt(yearSelect.value);
+  const month = parseInt(monthSelect.value);
+  
+  console.log('Adjusting days for:', year, month);
+  
+  if (!year || !month) {
+    console.log('Year or month not selected');
+    return;
+  }
+  
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const currentDay = daySelect.value;
+  
+  console.log('Days in month:', daysInMonth, 'Current day:', currentDay);
+  
+  // 日の選択肢を再生成
+  daySelect.innerHTML = '<option value="">選択</option>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const opt = document.createElement("option");
+    opt.value = d;
+    opt.textContent = d + "日";
+    daySelect.appendChild(opt);
+  }
+  
+  // 以前選択されていた日が有効な範囲内であれば復元
+  if (currentDay && parseInt(currentDay) <= daysInMonth) {
+    daySelect.value = currentDay;
+    console.log('Day restored to:', currentDay);
+  }
+}
 
-    // 現在の入力を検証する関数
-    function validateCurrentInput() {
-      const yearSelect = window.yearSelect || document.getElementById("year");
-      const monthSelect = window.monthSelect || document.getElementById("month");
-      const daySelect = window.daySelect || document.getElementById("day");
-      
-      if (!yearSelect || !monthSelect || !daySelect) return;
-      
-      const year = parseInt(yearSelect.value);
-      const month = parseInt(monthSelect.value);
-      const day = parseInt(daySelect.value);
-      
-      // すべての値が選択されている場合のみ検証
-      if (year && month && day) {
-        const inputDate = new Date(year, month - 1, day);
-        const today = new Date();
-        
-        // 日付が有効かチェック
-        if (inputDate.getFullYear() !== year || 
-            inputDate.getMonth() !== month - 1 || 
-            inputDate.getDate() !== day) {
-          showErrorMessage("無効な日付です。");
-          return false;
-        }
-        
-        // 未来の日付かチェック
-        if (inputDate > today) {
-          showErrorMessage("未来の日付は選択できません。");
-          return false;
-        }
-        
-        // 年齢制限チェック（120歳以上）
-        const age = today.getFullYear() - year;
-        if (age > 120) {
-          showErrorMessage("120歳以上の方は選択できません。");
-          return false;
-        }
-        
-        clearErrorDisplay();
-        return true;
-      }
-      
+// 現在の入力を検証する関数
+function validateCurrentInput() {
+  const yearSelect = document.getElementById("year");
+  const monthSelect = document.getElementById("month");
+  const daySelect = document.getElementById("day");
+  
+  if (!yearSelect || !monthSelect || !daySelect) return false;
+  
+  const year = parseInt(yearSelect.value);
+  const month = parseInt(monthSelect.value);
+  const day = parseInt(daySelect.value);
+  
+  console.log('Validating:', year, month, day);
+  
+  // すべての値が選択されている場合のみ検証
+  if (year && month && day) {
+    const inputDate = new Date(year, month - 1, day);
+    const today = new Date();
+    
+    // 日付が有効かチェック
+    if (inputDate.getFullYear() !== year || 
+        inputDate.getMonth() !== month - 1 || 
+        inputDate.getDate() !== day) {
+      showErrorMessage("無効な日付です。");
       return false;
     }
-
-    // エラーメッセージを表示する関数
-    function showErrorMessage(message) {
-      clearErrorDisplay();
-      
-      const errorDiv = document.createElement("div");
-      errorDiv.className = "error-message";
-      errorDiv.style.cssText = `
-        color: #ff6b6b;
-        background: rgba(255, 107, 107, 0.1);
-        border: 1px solid #ff6b6b;
-        border-radius: 8px;
-        padding: 10px;
-        margin: 10px 0;
-        text-align: center;
-        animation: errorShake 0.5s ease-in-out;
-      `;
-      errorDiv.textContent = message;
-      
-      const form = document.getElementById("birthForm");
-      form.appendChild(errorDiv);
-      
-      // エラーフィールドをハイライト
-      highlightErrorFields();
+    
+    // 未来の日付かチェック
+    if (inputDate > today) {
+      showErrorMessage("未来の日付は選択できません。");
+      return false;
     }
-
-    // エラーフィールドをハイライトする関数
-    function highlightErrorFields() {
-      const yearSelect = document.getElementById("year");
-      const monthSelect = document.getElementById("month");
-      const daySelect = document.getElementById("day");
-      
-      [yearSelect, monthSelect, daySelect].forEach(select => {
-        if (select && !select.value) {
-          select.style.borderColor = "#ff6b6b";
-          select.style.boxShadow = "0 0 10px rgba(255, 107, 107, 0.5)";
-        }
-      });
+    
+    // 年齢制限チェック（120歳以上）
+    const age = today.getFullYear() - year;
+    if (age > 120) {
+      showErrorMessage("120歳以上の方は選択できません。");
+      return false;
     }
+    
+    clearErrorDisplay();
+    console.log('Validation passed');
+    return true;
+  }
+  
+  return false;
+}
 
-    // エラーハイライトをクリアする関数
-    function clearErrorHighlights() {
-      const yearSelect = document.getElementById("year");
-      const monthSelect = document.getElementById("month");
-      const daySelect = document.getElementById("day");
-      
-      [yearSelect, monthSelect, daySelect].forEach(select => {
-        if (select) {
-          select.style.borderColor = "rgba(102,204,255,0.3)";
-          select.style.boxShadow = "inset 0 0 5px rgba(102,204,255,0.4)";
-        }
-      });
+// エラーメッセージを表示する関数
+function showErrorMessage(message) {
+  clearErrorDisplay();
+  
+  const errorDiv = document.createElement("div");
+  errorDiv.className = "error-message";
+  errorDiv.style.cssText = `
+    color: #ff6b6b;
+    background: rgba(255, 107, 107, 0.1);
+    border: 1px solid #ff6b6b;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px 0;
+    text-align: center;
+    animation: errorShake 0.5s ease-in-out;
+  `;
+  errorDiv.textContent = message;
+  
+  const form = document.getElementById("birthForm");
+  if (form) {
+    form.appendChild(errorDiv);
+  }
+  
+  highlightErrorFields();
+}
+
+// エラーフィールドをハイライトする関数
+function highlightErrorFields() {
+  const yearSelect = document.getElementById("year");
+  const monthSelect = document.getElementById("month");
+  const daySelect = document.getElementById("day");
+  
+  [yearSelect, monthSelect, daySelect].forEach(select => {
+    if (select && !select.value) {
+      select.style.borderColor = "#ff6b6b";
+      select.style.boxShadow = "0 0 10px rgba(255, 107, 107, 0.5)";
     }
+  });
+}
 
-    // エラー表示をクリアする関数
-    function clearErrorDisplay() {
-      const errorMessages = document.querySelectorAll(".error-message");
-      errorMessages.forEach(msg => msg.remove());
-      clearErrorHighlights();
+// エラーハイライトをクリアする関数
+function clearErrorHighlights() {
+  const yearSelect = document.getElementById("year");
+  const monthSelect = document.getElementById("month");
+  const daySelect = document.getElementById("day");
+  
+  [yearSelect, monthSelect, daySelect].forEach(select => {
+    if (select) {
+      select.style.borderColor = "rgba(102,204,255,0.3)";
+      select.style.boxShadow = "inset 0 0 5px rgba(102,204,255,0.4)";
     }
+  });
+}
 
-    // 成功メッセージを表示する関数
-    function showSuccessMessage() {
-      clearErrorDisplay();
-      
-      const successDiv = document.createElement("div");
-      successDiv.className = "success-message";
-      successDiv.style.cssText = `
-        color: #51cf66;
-        background: rgba(81, 207, 102, 0.1);
-        border: 1px solid #51cf66;
-        border-radius: 8px;
-        padding: 10px;
-        margin: 10px 0;
-        text-align: center;
-        animation: successFade 0.5s ease-in-out;
-      `;
-      successDiv.textContent = "生年月日が正しく入力されました。";
-      
-      const form = document.getElementById("birthForm");
-      form.appendChild(successDiv);
+// エラー表示をクリアする関数
+function clearErrorDisplay() {
+  const errorMessages = document.querySelectorAll(".error-message");
+  errorMessages.forEach(msg => msg.remove());
+  clearErrorHighlights();
+}
+
+// 成功メッセージを表示する関数
+function showSuccessMessage() {
+  clearErrorDisplay();
+  
+  const successDiv = document.createElement("div");
+  successDiv.className = "success-message";
+  successDiv.style.cssText = `
+    color: #51cf66;
+    background: rgba(81, 207, 102, 0.1);
+    border: 1px solid #51cf66;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px 0;
+    text-align: center;
+    animation: successFade 0.5s ease-in-out;
+  `;
+  successDiv.textContent = "生年月日が正しく入力されました。";
+  
+  const form = document.getElementById("birthForm");
+  if (form) {
+    form.appendChild(successDiv);
+  }
+}
+
+// 守護神データ
+const guardians = {
+  '子': { name:'千手観音', desc:'無限の慈悲をもって汝を抱擁する者なり', image:'photo/senju.png' },
+  '丑': { name:'虚空蔵菩薩', desc:'無尽の智慧を授けし導き手なり', image:'photo/kokuzo.png' },
+  '寅': { name:'虚空蔵菩薩', desc:'無尽の智慧を授けし導き手なり', image:'photo/kokuzo.png' },
+  '卯': { name:'文殊菩薩', desc:'智慧の剣をもって迷いを断つ者なり', image:'photo/monju.png' },
+  '辰': { name:'普賢菩薩', desc:'実践の徳を授ける者なり', image:'photo/fugen.png' },
+  '巳': { name:'普賢菩薩', desc:'実践の徳を授ける者なり', image:'photo/fugen.png' },
+  '午': { name:'勢至菩薩', desc:'智慧の光を放ち衆生を救う者なり', image:'photo/seishi.png' },
+  '未': { name:'大日如来', desc:'宇宙の理をもって全てを照らす者なり', image:'photo/dainichi.png' },
+  '申': { name:'大日如来', desc:'宇宙の理をもって全てを照らす者なり', image:'photo/dainichi.png' },
+  '酉': { name:'不動明王', desc:'不動の意志にて悪を退ける者なり', image:'photo/fudo.png' },
+  '戌': { name:'阿弥陀如来', desc:'無限の慈悲をもって衆生を救う者なり', image:'photo/amida.png' },
+  '亥': { name:'薬師如来', desc:'病苦を除き健康を授ける者なり', image:'photo/yakushi.png' }
+};
+
+// 十二支を計算する関数
+function getZodiac(year, month, day) {
+  const zodiacSigns = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+  const baseYear = 1900;
+  const zodiacIndex = (year - baseYear) % 12;
+  return zodiacSigns[zodiacIndex];
+}
+
+// フォーム送信処理
+function setupFormSubmission() {
+  const form = document.getElementById("birthForm");
+  if (!form) {
+    console.log('Form not found, retrying...');
+    setTimeout(setupFormSubmission, 100);
+    return;
+  }
+  
+  form.addEventListener("submit", function(e) {
+    e.preventDefault();
+    console.log('Form submitted');
+    
+    const yearSelect = document.getElementById("year");
+    const monthSelect = document.getElementById("month");
+    const daySelect = document.getElementById("day");
+    
+    if (!yearSelect || !monthSelect || !daySelect) {
+      console.error('Select elements not found during submission');
+      return;
     }
-
-        // 守護神データ
-    const guardians = {
-      '子': {
-        name:'千手観音',
-        desc:'無限の慈悲をもって汝を抱擁する者なり',
-        image:'photo/senju.png'
-      },
-      '丑': {
-        name:'虚空蔵菩薩',
-        desc:'無尽の智慧を授けし導き手なり',
-        image:'photo/kokuzo.png'
-      },
-      '寅': {
-        name:'虚空蔵菩薩',
-        desc:'無尽の智慧を授けし導き手なり',
-        image:'photo/kokuzo.png'
-      },
-      '卯': {
-        name:'文殊菩薩',
-        desc:'智慧の剣をもって迷いを断つ者なり',
-        image:'photo/monju.png'
-      },
-      '辰': {
-        name:'普賢菩薩',
-        desc:'実践の徳を授ける者なり',
-        image:'photo/fugen.png'
-      },
-      '巳': {
-        name:'普賢菩薩',
-        desc:'実践の徳を授ける者なり',
-        image:'photo/fugen.png'
-      },
-      '午': {
-        name:'勢至菩薩',
-        desc:'智慧の光を放ち衆生を救う者なり',
-        image:'photo/seishi.png'
-      },
-      '未': {
-        name:'大日如来',
-        desc:'宇宙の理をもって全てを照らす者なり',
-        image:'photo/dainichi.png'
-      },
-      '申': {
-        name:'大日如来',
-        desc:'宇宙の理をもって全てを照らす者なり',
-        image:'photo/dainichi.png'
-      },
-      '酉': {
-        name:'不動明王',
-        desc:'不動の意志にて悪を退ける者なり',
-        image:'photo/fudo.png'
-      },
-      '戌': {
-        name:'阿弥陀如来',
-        desc:'無限の慈悲をもって衆生を救う者なり',
-        image:'photo/amida.png'
-      },
-      '亥': {
-        name:'薬師如来',
-        desc:'病苦を除き健康を授ける者なり',
-        image:'photo/yakushi.png'
-      }
-    };
-
-    // 十二支を計算する関数
-    function getZodiac(year, month, day) {
-      const zodiacSigns = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
-      const baseYear = 1900;
-      const zodiacIndex = (year - baseYear) % 12;
-      return zodiacSigns[zodiacIndex];
+    
+    const year = yearSelect.value;
+    const month = monthSelect.value;
+    const day = daySelect.value;
+    
+    console.log('Form values:', year, month, day);
+    
+    // 入力チェック
+    if (!year || !month || !day) {
+      showErrorMessage("生年月日をすべて選択してください。");
+      return;
     }
-
-    // フォーム送信時の処理
-    document.getElementById("birthForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      
-      const year = (window.yearSelect || document.getElementById("year")).value;
-      const month = (window.monthSelect || document.getElementById("month")).value;
-      const day = (window.daySelect || document.getElementById("day")).value;
-      
-      // 入力チェック
-      if (!year || !month || !day) {
-        showErrorMessage("生年月日をすべて選択してください。");
-        return;
-      }
-      
-      // 日付の妥当性チェック
-      if (!validateCurrentInput()) {
-        return;
-      }
-      
-      // 成功メッセージ表示
-      showSuccessMessage();
-      
-      // フォームを非表示
-      document.getElementById("birthForm").style.display="none";
-      
-      // ローディング画面表示
-      const loading = document.getElementById("loadingScreen");
-      loading.style.display="flex";
+    
+    // 日付の妥当性チェック
+    if (!validateCurrentInput()) {
+      return;
+    }
+    
+    // 成功メッセージ表示
+    showSuccessMessage();
+    
+    // フォームを非表示
+    form.style.display = "none";
+    
+    // ローディング画面表示
+    const loading = document.getElementById("loadingScreen");
+    if (loading) {
+      loading.style.display = "flex";
       setTimeout(() => { loading.classList.add('show'); }, 10);
-      
-      // 3秒後に結果表示
-      setTimeout(()=>{
-        try {
-          // ローディング画面をフェードアウト
-          const loading = document.getElementById("loadingScreen");
-          loading.classList.remove('show');
-          setTimeout(() => { loading.style.display="none"; }, 800);
-          
-          // 十二支を計算
-          const zodiac = getZodiac(parseInt(year), parseInt(month), parseInt(day));
-          const guardian = guardians[zodiac];
-          
-          if (!guardian) {
-            throw new Error("守護神データが見つかりません");
-          }
-          
-          // Dragon and Guardian image loading and display
-          const dragonImg = new Image();
-          const guardianImg = new Image();
-          
-                     dragonImg.onload = function() {
-             guardianImg.onload = function() {
-               // まず龍の画像のみを表示
-               document.getElementById("guardian").innerHTML =
-                 `<div class="dragon-reveal">
-                    <img class="dragon-image" src="photo/ryu.png" alt="AI鑑定師 龍">
-                  </div>
-                  <div class="guardian-reveal" style="opacity: 0;">
-                    <img class="guardian" src="${guardian.image}" alt="${guardian.name}">
-                    <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
-                    <div>${guardian.desc}</div>
-                  </div>`;
-               
-               // ボタンを独立した要素として追加
-               const buttonContainer = document.createElement('div');
-               buttonContainer.innerHTML = `<button class="guardian-message-btn" data-guardian-name="${guardian.name}" data-zodiac-sign="${zodiac}">守護神の言葉を聞く</button>`;
-               document.body.appendChild(buttonContainer.firstElementChild);
-               
-               // ボタンのイベントリスナーを設定
-               const guardianBtn = document.querySelector('.guardian-message-btn');
-               if (guardianBtn) {
-                 guardianBtn.addEventListener('click', function() {
-                   const name = this.getAttribute('data-guardian-name');
-                   const zodiac = this.getAttribute('data-zodiac-sign');
-                   goToGuardianMessage(name, zodiac);
-                 });
-               }
-               
-               // 結果を表示
-               const resultBox = document.getElementById("resultBox");
-               resultBox.style.display = "block";
-               resultBox.scrollIntoView({ behavior: 'smooth' });
-               
-               // 2秒後に守護神をフェードイン
-               setTimeout(() => {
-                 const guardianReveal = document.querySelector('.guardian-reveal');
-                 if (guardianReveal) {
-                   guardianReveal.style.transition = 'opacity 2s ease-in-out';
-                   guardianReveal.style.opacity = '1';
-                 }
-                 
-                 // 守護神表示後2秒後にフルスクリーン表示
-                 setTimeout(() => {
-                   // フルスクリーン表示の準備
-                   const fullscreenImg = document.getElementById('fullscreenGuardianImg');
-                   const fullscreenName = document.getElementById('fullscreenGuardianName');
-                   const fullscreenDesc = document.getElementById('fullscreenGuardianDesc');
-                   const fullscreenContainer = document.getElementById('guardianFullscreen');
-                   
-                   fullscreenImg.src = guardian.image;
-                   fullscreenName.textContent = `そなたを守護するは ${guardian.name}`;
-                   fullscreenDesc.textContent = guardian.desc;
-                   
-                   // フルスクリーン表示を開始
-                   fullscreenContainer.style.display = 'flex';
-                   setTimeout(() => {
-                     fullscreenContainer.classList.add('show');
-                   }, 10);
-                   
-                   // 3秒後にフルスクリーン表示を終了
-                   setTimeout(() => {
-                     fullscreenContainer.classList.remove('show');
-                     setTimeout(() => {
-                       fullscreenContainer.style.display = 'none';
-                       
-                       // フルスクリーン表示終了後1秒後にボタンを表示
-                       setTimeout(() => {
-                         const guardianBtn = document.querySelector('.guardian-message-btn');
-                         if (guardianBtn) {
-                           guardianBtn.classList.add('show');
-                         }
-                       }, 1000);
-                     }, 1000);
-                   }, 3000);
-                 }, 2000);
-               }, 2000);
-             };
-             guardianImg.onerror = function() {
-               console.error("Guardian image failed to load");
-               document.getElementById("guardian").innerHTML =
-                 `<div class="dragon-reveal">
-                    <img class="dragon-image" src="photo/ryu.png" alt="AI鑑定師 龍">
-                  </div>
-                  <div class="guardian-reveal" style="opacity: 0;">
-                    <div class="dragon-placeholder">🙏</div>
-                    <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
-                    <div>${guardian.desc}</div>
-                  </div>`;
-               
-               // ボタンを独立した要素として追加
-               const buttonContainer = document.createElement('div');
-               buttonContainer.innerHTML = `<button class="guardian-message-btn" data-guardian-name="${guardian.name}" data-zodiac-sign="${zodiac}">守護神の言葉を聞く</button>`;
-               document.body.appendChild(buttonContainer.firstElementChild);
-               
-               // ボタンのイベントリスナーを設定
-               const guardianBtn = document.querySelector('.guardian-message-btn');
-               if (guardianBtn) {
-                 guardianBtn.addEventListener('click', function() {
-                   const name = this.getAttribute('data-guardian-name');
-                   const zodiac = this.getAttribute('data-zodiac-sign');
-                   goToGuardianMessage(name, zodiac);
-                 });
-               }
-               
-               // 結果を表示
-               const resultBox = document.getElementById("resultBox");
-               resultBox.style.display = "block";
-               resultBox.scrollIntoView({ behavior: 'smooth' });
-               
-               // 2秒後に守護神をフェードイン
-               setTimeout(() => {
-                 const guardianReveal = document.querySelector('.guardian-reveal');
-                 if (guardianReveal) {
-                   guardianReveal.style.transition = 'opacity 2s ease-in-out';
-                   guardianReveal.style.opacity = '1';
-                 }
-                 
-                 // 守護神表示後2秒後にフルスクリーン表示
-                 setTimeout(() => {
-                   // フルスクリーン表示の準備
-                   const fullscreenImg = document.getElementById('fullscreenGuardianImg');
-                   const fullscreenName = document.getElementById('fullscreenGuardianName');
-                   const fullscreenDesc = document.getElementById('fullscreenGuardianDesc');
-                   const fullscreenContainer = document.getElementById('guardianFullscreen');
-                   
-                   fullscreenImg.src = guardian.image;
-                   fullscreenName.textContent = `そなたを守護するは ${guardian.name}`;
-                   fullscreenDesc.textContent = guardian.desc;
-                   
-                   // フルスクリーン表示を開始
-                   fullscreenContainer.style.display = 'flex';
-                   setTimeout(() => {
-                     fullscreenContainer.classList.add('show');
-                   }, 10);
-                   
-                   // 3秒後にフルスクリーン表示を終了
-                   setTimeout(() => {
-                     fullscreenContainer.classList.remove('show');
-                     setTimeout(() => {
-                       fullscreenContainer.style.display = 'none';
-                       
-                       // フルスクリーン表示終了後1秒後にボタンを表示
-                       setTimeout(() => {
-                         const guardianBtn = document.querySelector('.guardian-message-btn');
-                         if (guardianBtn) {
-                           guardianBtn.classList.add('show');
-                         }
-                       }, 1000);
-                     }, 1000);
-                   }, 3000);
-                 }, 2000);
-               }, 2000);
-             };
-             guardianImg.src = guardian.image;
-           };
-          dragonImg.onerror = function() {
-            console.error("Dragon image failed to load");
-            document.getElementById("guardian").innerHTML =
-              `<div class="dragon-reveal">
-                 <div class="dragon-placeholder">🐉</div>
-               </div>
-               <div class="guardian-reveal" style="opacity: 0;">
-                 <img class="guardian" src="${guardian.image}" alt="${guardian.name}">
-                 <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
-                 <div>${guardian.desc}</div>
-               </div>`;
-            
-            // ボタンを独立した要素として追加
-            const buttonContainer = document.createElement('div');
-            buttonContainer.innerHTML = `<button class="guardian-message-btn" data-guardian-name="${guardian.name}" data-zodiac-sign="${zodiac}">守護神の言葉を聞く</button>`;
-            document.body.appendChild(buttonContainer.firstElementChild);
-            
-            // ボタンのイベントリスナーを設定
-            const guardianBtn = document.querySelector('.guardian-message-btn');
-            if (guardianBtn) {
-              guardianBtn.addEventListener('click', function() {
-                const name = this.getAttribute('data-guardian-name');
-                const zodiac = this.getAttribute('data-zodiac-sign');
-                goToGuardianMessage(name, zodiac);
-              });
-            }
-            
-            // 結果を表示
-            const resultBox = document.getElementById("resultBox");
-            resultBox.style.display = "block";
-            resultBox.scrollIntoView({ behavior: 'smooth' });
-            
-            // 2秒後に守護神をフェードイン
-            setTimeout(() => {
-              const guardianReveal = document.querySelector('.guardian-reveal');
-              if (guardianReveal) {
-                guardianReveal.style.transition = 'opacity 2s ease-in-out';
-                guardianReveal.style.opacity = '1';
-              }
-              
-              // 守護神表示後2秒後にフルスクリーン表示
-              setTimeout(() => {
-                // フルスクリーン表示の準備
-                const fullscreenImg = document.getElementById('fullscreenGuardianImg');
-                const fullscreenName = document.getElementById('fullscreenGuardianName');
-                const fullscreenDesc = document.getElementById('fullscreenGuardianDesc');
-                const fullscreenContainer = document.getElementById('guardianFullscreen');
-                
-                fullscreenImg.src = guardian.image;
-                fullscreenName.textContent = `そなたを守護するは ${guardian.name}`;
-                fullscreenDesc.textContent = guardian.desc;
-                
-                // フルスクリーン表示を開始
-                fullscreenContainer.style.display = 'flex';
-                setTimeout(() => {
-                  fullscreenContainer.classList.add('show');
-                }, 10);
-                
-                // 3秒後にフルスクリーン表示を終了
-                setTimeout(() => {
-                  fullscreenContainer.classList.remove('show');
-                  setTimeout(() => {
-                    fullscreenContainer.style.display = 'none';
-                    
-                    // フルスクリーン表示終了後1秒後にボタンを表示
-                    setTimeout(() => {
-                      const guardianBtn = document.querySelector('.guardian-message-btn');
-                      if (guardianBtn) {
-                        guardianBtn.classList.add('show');
-                      }
-                    }, 1000);
-                  }, 1000);
-                }, 3000);
-              }, 2000);
-            }, 2000);
-          };
-          dragonImg.src = "photo/ryu.png"; // Start loading dragon image
-          
-        } catch (error) {
-          console.error("鑑定処理エラー:", error);
-          alert("鑑定処理中にエラーが発生しました。ページを再読み込みしてください。");
-        }
-      },3000); // Total delay for result display
-    });
-
-    // 初期化フラグ（重複実行を防ぐ）
-    let isInitialized = false;
+    }
     
-    // 統一された初期化関数
-    function initializeOnce() {
-      if (isInitialized) {
-        console.log("Already initialized, skipping...");
-        return;
-      }
-      
-      console.log("Initializing select boxes...");
+    // 3秒後に結果表示
+    setTimeout(() => {
       try {
-        initializeSelects();
-        isInitialized = true;
-        console.log("生年月日入力フォームが正常に初期化されました");
+        // ローディング画面をフェードアウト
+        if (loading) {
+          loading.classList.remove('show');
+          setTimeout(() => { loading.style.display = "none"; }, 800);
+        }
+        
+        // 十二支を計算
+        const zodiac = getZodiac(parseInt(year), parseInt(month), parseInt(day));
+        const guardian = guardians[zodiac];
+        
+        if (!guardian) {
+          throw new Error("守護神データが見つかりません");
+        }
+        
+        // 結果表示処理（簡略化）
+        displayResults(guardian, zodiac);
+        
       } catch (error) {
-        console.error("初期化エラー:", error);
-        // エラー時にフラグをリセットして再試行を可能にする
-        isInitialized = false;
-        console.log("Initialization failed, will retry on next attempt");
+        console.error("鑑定処理エラー:", error);
+        alert("鑑定処理中にエラーが発生しました。ページを再読み込みしてください。");
       }
+    }, 3000);
+  });
+  
+  console.log('Form submission handler added');
+}
+
+// 結果表示処理
+function displayResults(guardian, zodiac) {
+  const guardianElement = document.getElementById("guardian");
+  const resultBox = document.getElementById("resultBox");
+  
+  if (!guardianElement || !resultBox) {
+    console.error('Result elements not found');
+    return;
+  }
+  
+  // 龍と守護神を表示
+  guardianElement.innerHTML = `
+    <div class="dragon-reveal">
+      <img class="dragon-image" src="photo/ryu.png" alt="AI鑑定師 龍">
+    </div>
+    <div class="guardian-reveal" style="opacity: 0;">
+      <img class="guardian" src="${guardian.image}" alt="${guardian.name}">
+      <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
+      <div>${guardian.desc}</div>
+    </div>
+  `;
+  
+  // ボタンを独立した要素として追加
+  const guardianBtn = document.createElement('button');
+  guardianBtn.className = 'guardian-message-btn';
+  guardianBtn.textContent = '守護神の言葉を聞く';
+  guardianBtn.setAttribute('data-guardian-name', guardian.name);
+  guardianBtn.setAttribute('data-zodiac-sign', zodiac);
+  
+  guardianBtn.addEventListener('click', function() {
+    const name = this.getAttribute('data-guardian-name');
+    const zodiacSign = this.getAttribute('data-zodiac-sign');
+    goToGuardianMessage(name, zodiacSign);
+  });
+  
+  document.body.appendChild(guardianBtn);
+  
+  // 結果を表示
+  resultBox.style.display = "block";
+  resultBox.scrollIntoView({ behavior: 'smooth' });
+  
+  // 2秒後に守護神をフェードイン
+  setTimeout(() => {
+    const guardianReveal = document.querySelector('.guardian-reveal');
+    if (guardianReveal) {
+      guardianReveal.style.transition = 'opacity 2s ease-in-out';
+      guardianReveal.style.opacity = '1';
     }
     
-    // DOMContentLoadedで初期化（優先）
-    document.addEventListener("DOMContentLoaded", function() {
-      console.log("DOMContentLoaded event triggered");
-      initializeOnce();
-    });
-    
-    // DOMContentLoadedが既に発火済みの場合の即座初期化
-    if (document.readyState === 'loading') {
-      console.log("Document still loading, waiting for DOMContentLoaded");
-    } else {
-      console.log("Document already loaded, initializing immediately");
-      initializeOnce();
-    }
-  </script>
-</body>
-</html>
+    // 5秒後にボタンを表示
+    setTimeout(() => {
+      guardianBtn.classList.add('show');
+    }, 3000);
+  }, 2000);
+}
+
+// 初期化処理
+function initialize() {
+  console.log('Starting initialization...');
+  initializeSelects();
+  setupFormSubmission();
+}
+
+// DOMContentLoadedで初期化
+document.addEventListener("DOMContentLoaded", function() {
+  console.log("DOMContentLoaded event triggered");
+  initialize();
+});
+
+// 既にDOMが読み込まれている場合の対応
+if (document.readyState !== 'loading') {
+  console.log("Document already loaded, initializing immediately");
+  initialize();
+}
