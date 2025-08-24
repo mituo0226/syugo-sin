@@ -693,23 +693,10 @@
   </div>
   
   <script>
-    // 即座にセレクトボックスを初期化
-    (function() {
-      console.log('Immediate initialization...');
-      initializeSelects();
-    })();
-
-    // ページ読み込み完了時にも初期化
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('DOM loaded, initializing selects...');
-      initializeSelects();
-    });
-
-    // window.load時にも初期化
-    window.addEventListener('load', function() {
-      console.log('Window loaded, initializing selects...');
-      initializeSelects();
-    });
+    // 戻るボタンの機能
+    function goBack() {
+      window.history.back();
+    }
 
     // セレクトボックスの初期化関数
     function initializeSelects() {
@@ -796,6 +783,166 @@
       }
     }
 
+    // 日の選択肢を調整する関数
+    function adjustDayOptions() {
+      const yearSelect = document.getElementById("year");
+      const monthSelect = document.getElementById("month");
+      const daySelect = document.getElementById("day");
+      
+      if (!yearSelect || !monthSelect || !daySelect) return;
+      
+      const year = parseInt(yearSelect.value);
+      const month = parseInt(monthSelect.value);
+      
+      if (!year || !month) return;
+      
+      const daysInMonth = new Date(year, month, 0).getDate();
+      
+      // 現在選択されている日を保存
+      const currentDay = daySelect.value;
+      
+      // 日の選択肢を再生成
+      daySelect.innerHTML = '<option value="">選択</option>';
+      for (let d = 1; d <= daysInMonth; d++) {
+        const opt = document.createElement("option");
+        opt.value = d;
+        opt.textContent = d + "日";
+        daySelect.appendChild(opt);
+      }
+      
+      // 以前選択されていた日が有効な範囲内であれば復元
+      if (currentDay && parseInt(currentDay) <= daysInMonth) {
+        daySelect.value = currentDay;
+      }
+    }
+
+    // 現在の入力を検証する関数
+    function validateCurrentInput() {
+      const yearSelect = document.getElementById("year");
+      const monthSelect = document.getElementById("month");
+      const daySelect = document.getElementById("day");
+      
+      if (!yearSelect || !monthSelect || !daySelect) return;
+      
+      const year = parseInt(yearSelect.value);
+      const month = parseInt(monthSelect.value);
+      const day = parseInt(daySelect.value);
+      
+      // すべての値が選択されている場合のみ検証
+      if (year && month && day) {
+        const inputDate = new Date(year, month - 1, day);
+        const today = new Date();
+        
+        // 日付が有効かチェック
+        if (inputDate.getFullYear() !== year || 
+            inputDate.getMonth() !== month - 1 || 
+            inputDate.getDate() !== day) {
+          showErrorMessage("無効な日付です。");
+          return false;
+        }
+        
+        // 未来の日付かチェック
+        if (inputDate > today) {
+          showErrorMessage("未来の日付は選択できません。");
+          return false;
+        }
+        
+        // 年齢制限チェック（120歳以上）
+        const age = today.getFullYear() - year;
+        if (age > 120) {
+          showErrorMessage("120歳以上の方は選択できません。");
+          return false;
+        }
+        
+        clearErrorDisplay();
+        return true;
+      }
+      
+      return false;
+    }
+
+    // エラーメッセージを表示する関数
+    function showErrorMessage(message) {
+      clearErrorDisplay();
+      
+      const errorDiv = document.createElement("div");
+      errorDiv.className = "error-message";
+      errorDiv.style.cssText = `
+        color: #ff6b6b;
+        background: rgba(255, 107, 107, 0.1);
+        border: 1px solid #ff6b6b;
+        border-radius: 8px;
+        padding: 10px;
+        margin: 10px 0;
+        text-align: center;
+        animation: errorShake 0.5s ease-in-out;
+      `;
+      errorDiv.textContent = message;
+      
+      const form = document.getElementById("birthForm");
+      form.appendChild(errorDiv);
+      
+      // エラーフィールドをハイライト
+      highlightErrorFields();
+    }
+
+    // エラーフィールドをハイライトする関数
+    function highlightErrorFields() {
+      const yearSelect = document.getElementById("year");
+      const monthSelect = document.getElementById("month");
+      const daySelect = document.getElementById("day");
+      
+      [yearSelect, monthSelect, daySelect].forEach(select => {
+        if (select && !select.value) {
+          select.style.borderColor = "#ff6b6b";
+          select.style.boxShadow = "0 0 10px rgba(255, 107, 107, 0.5)";
+        }
+      });
+    }
+
+    // エラーハイライトをクリアする関数
+    function clearErrorHighlights() {
+      const yearSelect = document.getElementById("year");
+      const monthSelect = document.getElementById("month");
+      const daySelect = document.getElementById("day");
+      
+      [yearSelect, monthSelect, daySelect].forEach(select => {
+        if (select) {
+          select.style.borderColor = "rgba(102,204,255,0.3)";
+          select.style.boxShadow = "inset 0 0 5px rgba(102,204,255,0.4)";
+        }
+      });
+    }
+
+    // エラー表示をクリアする関数
+    function clearErrorDisplay() {
+      const errorMessages = document.querySelectorAll(".error-message");
+      errorMessages.forEach(msg => msg.remove());
+      clearErrorHighlights();
+    }
+
+    // 成功メッセージを表示する関数
+    function showSuccessMessage() {
+      clearErrorDisplay();
+      
+      const successDiv = document.createElement("div");
+      successDiv.className = "success-message";
+      successDiv.style.cssText = `
+        color: #51cf66;
+        background: rgba(81, 207, 102, 0.1);
+        border: 1px solid #51cf66;
+        border-radius: 8px;
+        padding: 10px;
+        margin: 10px 0;
+        text-align: center;
+        animation: successFade 0.5s ease-in-out;
+      `;
+      successDiv.textContent = "生年月日が正しく入力されました。";
+      
+      const form = document.getElementById("birthForm");
+      form.appendChild(successDiv);
+    }
+
     // 守護神データ
     const guardians = {
       '子': {
@@ -877,4 +1024,237 @@
         personal:`炎は我が衣、怒りの相は慈悲の姿。  
 汝が弱き心に飲まれるとき、悪しき影は近づかん。  
 我はその影を焼き払い、揺るがぬ意志を授けん。  
-心を決して揺るがすな、立ち上がるその刹那、汝は真の強
+心を決して揺るがすな、立ち上がるその刹那、汝は真の強者となる。`
+      },
+      '戌': {
+        name:'阿弥陀如来',
+        desc:'無限の慈悲をもって衆生を救う者なり',
+        image:'photo/amida.jpg',
+        personal:`慈悲の光は汝を包み、迷いの闇を照らす。  
+汝が道に迷うとき、我が手は必ず汝を導かん。  
+信じよ、慈悲の力は無限なり。我は汝の歩みを永遠に見守り続けん。`
+      },
+      '亥': {
+        name:'薬師如来',
+        desc:'病苦を除き健康を授ける者なり',
+        image:'photo/yakushi.jpg',
+        personal:`心身の苦しみを癒し、健康の光を授けん。  
+汝が弱きとき、我が薬は必ず効かん。  
+恐れるな、我は汝の健康を守り、強き心を授けん。`
+      }
+    };
+
+    // 十二支を計算する関数
+    function getZodiac(year, month, day) {
+      const zodiacSigns = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+      const baseYear = 1900;
+      const zodiacIndex = (year - baseYear) % 12;
+      return zodiacSigns[zodiacIndex];
+    }
+
+    // フォーム送信時の処理
+    document.getElementById("birthForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      
+      const year = document.getElementById("year").value;
+      const month = document.getElementById("month").value;
+      const day = document.getElementById("day").value;
+      
+      // 入力チェック
+      if (!year || !month || !day) {
+        showErrorMessage("生年月日をすべて選択してください。");
+        return;
+      }
+      
+      // 日付の妥当性チェック
+      if (!validateCurrentInput()) {
+        return;
+      }
+      
+      // 成功メッセージ表示
+      showSuccessMessage();
+      
+      // 神秘的な演出開始
+      const mysticalEffect = document.getElementById('mysticalEffect');
+      mysticalEffect.style.display = 'flex';
+      mysticalEffect.classList.add('show');
+      
+      // フォームを非表示
+      document.getElementById("birthForm").style.display="none";
+      
+      // 2秒後に神秘的な演出を終了し、ローディング開始
+      setTimeout(() => {
+        mysticalEffect.classList.remove('show');
+        setTimeout(() => {
+          mysticalEffect.style.display = 'none';
+          
+          // ローディング画面表示
+          const loading = document.getElementById("loadingScreen");
+          loading.style.display="flex";
+          setTimeout(() => { loading.classList.add('show'); }, 10);
+        }, 2000); // Wait for mystical effect fade-out
+      }, 2000); // Show mystical effect for 2 seconds
+      
+      // 5秒後に結果表示（神秘的な演出の時間を考慮）
+      setTimeout(()=>{
+        try {
+          // ローディング画面をフェードアウト
+          const loading = document.getElementById("loadingScreen");
+          loading.classList.remove('show');
+          setTimeout(() => { loading.style.display="none"; }, 800);
+          
+          // 十二支を計算
+          const zodiac = getZodiac(parseInt(year), parseInt(month), parseInt(day));
+          const guardian = guardians[zodiac];
+          
+          if (!guardian) {
+            throw new Error("守護神データが見つかりません");
+          }
+          
+          // Dragon and Guardian image loading and display
+          const dragonImg = new Image();
+          const guardianImg = new Image();
+          
+          dragonImg.onload = function() {
+            guardianImg.onload = function() {
+              document.getElementById("guardian").innerHTML =
+                `<div class="dragon-reveal">
+                   <img class="dragon-image" src="photo/ryu.png" alt="AI鑑定師 龍">
+                 </div>
+                 <div class="guardian-reveal">
+                   <img class="guardian" src="${guardian.image}" alt="${guardian.name}">
+                   <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
+                   <div>${guardian.desc}</div>
+                 </div>`;
+              
+              // 神託テキストを設定
+              const oracleText = guardian.personal;
+              document.getElementById("oracle").textContent = oracleText;
+              
+              // 結果を表示
+              const resultBox = document.getElementById("resultBox");
+              resultBox.style.display = "block";
+              resultBox.scrollIntoView({ behavior: 'smooth' });
+              
+              // 詳細リンクの設定
+              document.getElementById("detailLink").addEventListener("click", function() {
+                window.location.href = "result.html";
+              });
+            };
+            guardianImg.onerror = function() {
+              console.error("Guardian image failed to load");
+              document.getElementById("guardian").innerHTML =
+                `<div class="dragon-reveal">
+                   <img class="dragon-image" src="photo/ryu.png" alt="AI鑑定師 龍">
+                 </div>
+                 <div class="guardian-reveal">
+                   <div class="dragon-placeholder">🙏</div>
+                   <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
+                   <div>${guardian.desc}</div>
+                 </div>`;
+              
+              // 神託テキストを設定
+              const oracleText = guardian.personal;
+              document.getElementById("oracle").textContent = oracleText;
+              
+              // 結果を表示
+              const resultBox = document.getElementById("resultBox");
+              resultBox.style.display = "block";
+              resultBox.scrollIntoView({ behavior: 'smooth' });
+              
+              // 詳細リンクの設定
+              document.getElementById("detailLink").addEventListener("click", function() {
+                window.location.href = "result.html";
+              });
+            };
+            guardianImg.src = guardian.image;
+          };
+          dragonImg.onerror = function() {
+            console.error("Dragon image failed to load");
+            document.getElementById("guardian").innerHTML =
+              `<div class="dragon-reveal">
+                 <div class="dragon-placeholder">🐉</div>
+               </div>
+               <div class="guardian-reveal">
+                 <img class="guardian" src="${guardian.image}" alt="${guardian.name}">
+                 <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
+                 <div>${guardian.desc}</div>
+               </div>`;
+            
+            // 神託テキストを設定
+            const oracleText = guardian.personal;
+            document.getElementById("oracle").textContent = oracleText;
+            
+            // 結果を表示
+            const resultBox = document.getElementById("resultBox");
+            resultBox.style.display = "block";
+            resultBox.scrollIntoView({ behavior: 'smooth' });
+            
+            // 詳細リンクの設定
+            document.getElementById("detailLink").addEventListener("click", function() {
+              window.location.href = "result.html";
+            });
+          };
+          dragonImg.src = "photo/ryu.png"; // Start loading dragon image
+          
+        } catch (error) {
+          console.error("鑑定処理エラー:", error);
+          alert("鑑定処理中にエラーが発生しました。ページを再読み込みしてください。");
+        }
+      },5000); // Total delay for result display
+    });
+
+    // ページ読み込み時の初期化
+    window.addEventListener("load", function() {
+      try {
+        // 神秘的な演出を完全に無効化
+        const mysticalEffect = document.getElementById('mysticalEffect');
+        if (mysticalEffect) {
+          mysticalEffect.style.display = 'none';
+        }
+        
+        // メインコンテンツを即座に表示
+        const container = document.querySelector('.container');
+        if (container) {
+          container.style.opacity = '1';
+          container.classList.add('show');
+        }
+        
+        // フォームを確実に表示
+        const form = document.getElementById('birthForm');
+        if (form) {
+          form.style.display = 'block';
+        }
+        
+        // フォーム初期化
+        initializeSelects();
+        console.log("生年月日入力フォームが正常に初期化されました");
+      } catch (error) {
+        console.error("初期化エラー:", error);
+        // エラーが発生してもフォームを表示
+        const container = document.querySelector('.container');
+        if (container) {
+          container.style.opacity = '1';
+        }
+        const form = document.getElementById('birthForm');
+        if (form) {
+          form.style.display = 'block';
+        }
+        // 手動で初期化を試行
+        setTimeout(initializeSelects, 100);
+      }
+    });
+
+    // DOMContentLoadedでも初期化
+    document.addEventListener("DOMContentLoaded", function() {
+      try {
+        initializeSelects();
+        console.log("DOMContentLoaded: 生年月日入力フォームが正常に初期化されました");
+      } catch (error) {
+        console.error("DOMContentLoaded 初期化エラー:", error);
+        setTimeout(initializeSelects, 100);
+      }
+    });
+  </script>
+</body>
+</html>
