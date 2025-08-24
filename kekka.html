@@ -1,8 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>生年月日入力 | AI鑑定師 龍</title>
+  <title>鑑定結果 | AI鑑定師 龍</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
   <style>
     body {
@@ -17,9 +18,14 @@
       position: relative;
       min-height: 100vh;
     }
-    
 
-    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+
     /* 龍と守護神の表示スタイル */
     .dragon-reveal {
       text-align: center;
@@ -32,11 +38,6 @@
       height: auto;
       border-radius: 10px;
       box-shadow: 0 0 30px rgba(102, 204, 255, 0.6);
-      animation: dragonGlow 3s ease-in-out infinite alternate;
-    }
-    
-    .dragon-placeholder {
-      font-size: 4em;
       animation: dragonGlow 3s ease-in-out infinite alternate;
     }
     
@@ -74,304 +75,104 @@
         transform: scale(1) translateY(0);
       }
     }
-    
-    /* PC向け神秘的な演出調整 */
-    @media (min-width: 768px) {
-      .energy-field {
-        width: 400px;
-        height: 400px;
+
+    .guardian {
+      max-width: 180px;
+      height: auto;
+      border-radius: 15px;
+      box-shadow: 0 0 40px rgba(157, 78, 221, 0.6);
+      margin: 20px auto;
+      animation: guardianGlow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes guardianGlow {
+      0% {
+        filter: brightness(1) drop-shadow(0 0 15px rgba(157, 78, 221, 0.5));
       }
-      
-      .dragon-image {
-        max-width: 150px;
-      }
-      
-      .dragon-reveal {
-        margin-bottom: 50px;
+      100% {
+        filter: brightness(1.2) drop-shadow(0 0 25px rgba(157, 78, 221, 0.8));
       }
     }
-    
-    /* モバイル向け固定レイアウト */
-    @media (max-width: 600px) {
-      body {
-        position: fixed;
-        width: 100%;
-        height: 100%;
-      }
+
+    .glow-text {
+      background: linear-gradient(45deg, #c77dff, #9d4edd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 1.5em;
+      font-weight: bold;
+      margin: 20px 0;
     }
-    
-    .container {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+
+    .result {
+      display: none;
+      padding: 40px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      margin: 20px 0;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .loading-screen {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(13, 13, 26, 0.95);
+      z-index: 1000;
       align-items: center;
       justify-content: center;
-      text-align: center;
-      padding: 20px;
-      overflow-y: auto;
-      position: relative;
-      z-index: 1;
+      flex-direction: column;
     }
-    
-    /* PC向けコンテナ調整 */
-    @media (min-width: 768px) {
-      .container {
-        padding: 40px 20px;
-        justify-content: flex-start;
-        padding-top: 80px;
-        min-height: auto;
-        height: auto;
-      }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(157, 78, 221, 0.3);
+      border-top: 4px solid #c77dff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
     }
-    
-    .birth-form {
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-      padding: 30px;
-      background: rgba(13, 13, 26, 0.95);
-      border-radius: 15px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-      position: relative;
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
-    
-    /* PC向けフォーム調整 */
-    @media (min-width: 768px) {
-      .birth-form {
-        max-width: 500px;
-        padding: 40px;
-        margin: 20px auto;
-      }
-    }
-    
-    @media (min-width: 1024px) {
-      .birth-form {
-        max-width: 600px;
-        padding: 50px;
-      }
-    }
-    
-    .birth-form h3 { 
-      color: #66ccff; 
-      margin-bottom: 20px; 
-      font-size: 1.3em; 
-    }
-    
-    .birth-form label { 
-      display: block; 
-      margin: 10px 0 5px; 
-      color: #99ccff; 
-      text-align: left; 
-      font-weight: bold; 
-    }
-    
-    /* PC向けタイトルとラベル調整 */
-    @media (min-width: 768px) {
-      .birth-form h3 {
-        font-size: 1.5em;
-        margin-bottom: 30px;
-      }
-      .birth-form label {
-        font-size: 1.1em;
-        margin: 15px 0 8px;
-      }
-    }
-    
-    .birth-form select {
-      padding: 12px; 
-      margin-bottom: 15px; 
-      border-radius: 6px;
-      border: 1px solid rgba(102,204,255,0.3);
-      font-size: 1em; 
-      background: rgba(255,255,255,0.1); 
+
+    .guardian-message-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 15px 30px;
+      background: linear-gradient(45deg, #9d4edd, #c77dff);
+      border: none;
+      border-radius: 25px;
       color: #fff;
-      width: 100%; 
-      max-width: 150px; 
-      cursor: pointer;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-      background-repeat: no-repeat;
-      background-position: right 8px center;
-      background-size: 16px;
-      padding-right: 30px;
-      box-shadow: inset 0 0 5px rgba(102,204,255,0.4);
-    }
-    
-    /* セレクトボックスのオプションスタイル */
-    .birth-form select option {
-      background: #0d0d1a !important;
-      color: #fff !important;
-      padding: 8px;
-      font-size: 1em;
-    }
-    
-    .birth-form select option:hover {
-      background: #1a1a2e !important;
-      color: #66ccff !important;
-    }
-    
-    .birth-form select option:checked {
-      background: #66ccff !important;
-      color: #000 !important;
-    }
-    
-    /* ブラウザ互換性のための追加スタイル */
-    .birth-form select:focus option:checked {
-      background: #66ccff !important;
-      color: #000 !important;
-    }
-    
-    .birth-form select:focus option:hover {
-      background: #1a1a2e !important;
-      color: #66ccff !important;
-    }
-    
-    /* PC向けセレクトボックス調整 */
-    @media (min-width: 768px) {
-      .birth-form select {
-        font-size: 1.1em;
-        padding: 15px;
-        max-width: 180px;
-        margin-bottom: 20px;
-      }
-    }
-    
-    .form-row { 
-      display: flex; 
-      justify-content: space-between; 
-      gap: 10px; 
-      margin-bottom: 20px; 
-    }
-    
-    .form-group { 
-      flex: 1; 
-      text-align: center; 
-    }
-    
-    /* PC向けフォームレイアウト調整 */
-    @media (min-width: 768px) {
-      .form-row {
-        gap: 20px;
-        margin-bottom: 30px;
-        justify-content: center;
-      }
-      .form-group {
-        flex: 0 1 auto;
-        min-width: 120px;
-      }
-    }
-    
-    .birth-form button {
-      padding: 16px 40px; 
-      font-size: 1.3em;
-      background: linear-gradient(90deg, #66ccff, #3399ff);
-      border: none; 
-      border-radius: 8px; 
-      font-weight: bold;
-      cursor: pointer; 
-      color: #000; 
-      width: 100%; 
-      max-width: 300px;
-      margin-top: 10px; 
-      transition: all 0.3s ease;
-    }
-    
-    /* PC向けボタン調整 */
-    @media (min-width: 768px) {
-      .birth-form button {
-        font-size: 1.4em;
-        padding: 18px 50px;
-        max-width: 350px;
-        margin-top: 20px;
-      }
-    }
-    
-    .birth-form button:hover { 
-      background: linear-gradient(90deg, #99e0ff, #66ccff); 
-      transform: scale(1.05); 
-    }
-    
-
-
-    /* 鑑定結果表示 */
-    .result { 
-      display:none; 
-      max-width:600px; 
-      margin:auto; 
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.2); 
-      border-radius:12px; 
-      padding:20px;
-      box-shadow:0 0 20px rgba(147,51,234,.4); 
-      position:relative; 
-    }
-    
-    /* PC向け結果表示調整 */
-    @media (min-width: 768px) {
-      .result {
-        max-width: 800px;
-        padding: 40px;
-        margin: 30px auto;
-        scroll-margin-top: 20px;
-      }
-    }
-    
-    #oracle {
-      line-height: 1.8;
       font-size: 1.1em;
-      text-align: left;
-      white-space: pre-line;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      opacity: 0;
+      transform: translateX(-50%) translateY(50px);
+      z-index: 100;
     }
-    
-    /* PC向け神託テキスト調整 */
-    @media (min-width: 768px) {
-      #oracle {
-        font-size: 1.2em;
-        line-height: 2.0;
-        max-width: 700px;
-        margin: 0 auto;
-      }
+
+    .guardian-message-btn.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
-    
-    img.guardian { 
-      width:180px; 
-      border-radius:50%; 
-      margin:15px auto; 
-      display:block; 
-      animation: guardianGlow 3s ease-in-out infinite alternate, guardianFloat 4s ease-in-out infinite;
-      box-shadow: 0 0 30px rgba(102, 204, 255, 0.6), 0 0 60px rgba(157, 78, 221, 0.4);
+
+    .guardian-message-btn:hover {
+      background: linear-gradient(45deg, #c77dff, #9d4edd);
+      transform: translateX(-50%) translateY(-2px);
+      box-shadow: 0 10px 25px rgba(157, 78, 221, 0.4);
     }
-    
-    /* PC向け守護神画像調整 */
-    @media (min-width: 768px) {
-      img.guardian {
-        width: 220px;
-        margin: 25px auto;
-      }
-    }
-    
-    @keyframes guardianGlow {
-      0% { 
-        box-shadow: 0 0 20px rgba(102, 204, 255, 0.4), 0 0 40px rgba(157, 78, 221, 0.3);
-        filter: brightness(1);
-      }
-      100% { 
-        box-shadow: 0 0 40px rgba(102, 204, 255, 0.8), 0 0 80px rgba(157, 78, 221, 0.6);
-        filter: brightness(1.2);
-      }
-    }
-    
-    @keyframes guardianFloat {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      25% { transform: translateY(-3px) rotate(0.5deg); }
-      50% { transform: translateY(-5px) rotate(0deg); }
-      75% { transform: translateY(-3px) rotate(-0.5deg); }
-    }
-    
+
     /* フルスクリーン守護神表示 */
     .guardian-fullscreen {
       position: fixed;
@@ -380,54 +181,69 @@
       width: 100vw;
       height: 100vh;
       background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%);
-      display: flex;
-      flex-direction: column;
+      display: none;
       align-items: center;
       justify-content: center;
-      z-index: 9998;
+      flex-direction: column;
+      z-index: 2000;
       opacity: 0;
       transition: opacity 1s ease-in-out;
     }
-    
+
     .guardian-fullscreen.show {
       opacity: 1;
     }
-    
+
     .guardian-fullscreen img {
-      width: 80vw;
-      height: 80vw;
-      max-width: 400px;
-      max-height: 400px;
-      object-fit: contain;
-      border-radius: 50%;
-      animation: guardianGlow 3s ease-in-out infinite alternate, guardianFloat 4s ease-in-out infinite;
-      box-shadow: 0 0 50px rgba(102, 204, 255, 0.8), 0 0 100px rgba(157, 78, 221, 0.6);
+      max-width: 300px;
+      max-height: 300px;
+      border-radius: 20px;
+      box-shadow: 0 0 50px rgba(157, 78, 221, 0.8);
       margin-bottom: 30px;
+      animation: float 3s ease-in-out infinite;
     }
-    
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
     .guardian-fullscreen h2 {
-      color: #fff;
       font-size: 2em;
+      margin-bottom: 20px;
+      background: linear-gradient(45deg, #c77dff, #9d4edd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .guardian-fullscreen p {
+      font-size: 1.2em;
+      line-height: 1.6;
+      max-width: 600px;
       text-align: center;
       margin: 0;
-      animation: textGlow 2s ease-in-out infinite alternate;
     }
-    
-    .guardian-fullscreen p {
-      color: #c77dff;
-      font-size: 1.2em;
-      text-align: center;
-      margin: 10px 0 0 0;
-      max-width: 80%;
-    }
-    
-    /* スマホ向けフルスクリーン調整 */
+
+    /* レスポンシブ対応 */
     @media (max-width: 600px) {
+      .container {
+        padding: 10px;
+      }
+      
+      .guardian {
+        max-width: 150px;
+      }
+      
+      .guardian-message-btn {
+        bottom: 20px;
+        width: calc(100% - 40px);
+        max-width: 400px;
+      }
+      
       .guardian-fullscreen img {
-        width: 70vw;
-        height: 70vw;
-        max-width: 300px;
-        max-height: 300px;
+        max-width: 200px;
+        max-height: 200px;
       }
       
       .guardian-fullscreen h2 {
@@ -436,304 +252,38 @@
       
       .guardian-fullscreen p {
         font-size: 1em;
+        padding: 0 20px;
       }
-    }
-    
-         .glow-text { 
-       animation:textGlow 2s ease-in-out infinite alternate; 
-     }
-     
-     /* 守護神の言葉ボタン */
-     .guardian-message-btn {
-       margin-top: 20px;
-       padding: 15px 30px;
-       font-size: 1.2em;
-       background: linear-gradient(90deg, #9d4edd, #c77dff);
-       border: none;
-       border-radius: 10px;
-       color: #fff;
-       cursor: pointer;
-       transition: all 1s ease;
-       box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
-       opacity: 0;
-       transform: translateY(50px);
-       position: relative;
-       z-index: 10;
-     }
-     
-     .guardian-message-btn:hover {
-       background: linear-gradient(90deg, #c77dff, #9d4edd);
-       transform: translateY(-2px);
-       box-shadow: 0 6px 20px rgba(157, 78, 221, 0.6);
-     }
-     
-     /* スマホ向けタッチ効果 */
-     @media (max-width: 600px) {
-       .guardian-message-btn:active {
-         transform: translateX(-50%) scale(0.95) !important;
-         box-shadow: 0 4px 15px rgba(157, 78, 221, 0.8) !important;
-       }
-     }
-     
-     .guardian-message-btn.show {
-       opacity: 1;
-       transform: translateY(0);
-     }
-     
-     /* PC向け守護神の言葉ボタン調整 */
-     @media (min-width: 768px) {
-       .guardian-message-btn {
-         font-size: 1.3em;
-         padding: 18px 40px;
-         margin-top: 30px;
-       }
-     }
-    
-    @keyframes textGlow {
-      0%{text-shadow:0 0 10px rgba(157,78,221,.8)}
-      100%{text-shadow:0 0 20px rgba(157,78,221,1),0 0 30px rgba(199,125,255,.6)}
     }
 
-    /* ローディング画面 */
-    #loadingScreen { 
-      display:none; 
-      position:fixed; 
-      top:0; 
-      left:0; 
-      right:0; 
-      bottom:0;
-      background:rgba(0,0,0,.8); 
-      align-items:center; 
-      justify-content:center;
-      flex-direction:column; 
-      z-index:9999; 
-      opacity: 0;
-      transition: opacity 0.8s ease-in-out;
-    }
-    
-    /* PC向けローディング画面調整 */
-    @media (min-width: 768px) {
-      #loadingScreen p {
-        font-size: 1.4em;
-      }
-      .loading-spinner {
-        width: 120px;
-        height: 120px;
-      }
-    }
-    
-    #loadingScreen.show {
-      opacity: 1;
-    }
-    
-    .loading-spinner{
-      width:100px;
-      height:100px;
-      position:relative;
-      margin:0 auto
-    }
-    
-    .loading-spinner::before,.loading-spinner::after{
-      content:'';
-      position:absolute;
-      width:100%;
-      height:100%;
-      border-radius:50%;
-      background:conic-gradient(from 0deg,transparent,#9d4edd,#c77dff,#ff6b9d,transparent);
-      animation:spiral 3s linear infinite
-    }
-    
-    .loading-spinner::after{
-      animation:spiral 2s linear infinite reverse;
-      filter:blur(1px);
-      opacity:.9;
-      width:80%;
-      height:80%;
-      top:10%;
-      left:10%
-    }
-    
-    @keyframes spiral{
-      0%{transform:rotate(0)}
-      100%{transform:rotate(360deg)}
-    }
-    
-    #loadingScreen p{
-      color:#fff;
-      font-size:1.2em;
-      margin-top:1em;
-      animation:blink 1.5s infinite
-    }
-    
-    @keyframes blink{
-      0%{opacity:1}
-      50%{opacity:.4}
-      100%{opacity:1}
-    }
-    
-    /* エラー時のアニメーション */
-    @keyframes errorShake {
-      0%, 100% { transform: translateX(0); }
-      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-      20%, 40%, 60%, 80% { transform: translateX(5px); }
-    }
-    
-    /* 成功時のアニメーション */
-    @keyframes successFade {
-      0% { opacity: 0; transform: translateY(-10px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    
-    /* PC向けメッセージ調整 */
-    @media (min-width: 768px) {
-      .error-message, .success-message {
-        margin: 20px auto;
-        padding: 15px 20px;
-        font-size: 1.1em;
-        max-width: 500px;
-      }
-    }
-    
-    /* iPhone向け調整 */
-    @media (max-width: 600px) {
-      .error-message, .success-message {
-        margin: 10px 5px;
-        padding: 10px;
-        font-size: 0.9em;
-      }
-      
-      body {
-        position: fixed;
-        overflow: hidden;
-      }
-      .container {
-        height: 100vh;
-        overflow-y: scroll;
-        -webkit-overflow-scrolling: touch;
-        padding: 40px 15px 20px;
-        justify-content: flex-start;
-        padding-top: 40px;
-      }
-      
-      .birth-form {
-        padding: 25px;
-        background: rgba(13, 13, 26, 0.95);
-        border-radius: 15px;
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        width: calc(100% - 40px);
-        max-width: 380px;
-        margin-top: 20px;
-      }
-      
-
-      
-      .birth-form button { 
-        font-size: 1.2em; 
-        padding: 16px 20px;
-        -webkit-appearance: none;
-        border-radius: 8px;
-        width: 100% !important;
-        max-width: 300px !important;
-      }
-      
-      .form-row {
-        flex-direction: column;
-        gap: 15px;
-      }
-      
-      .form-group {
-        text-align: center;
-      }
-      
-
-      
-      .result {
-        padding: 15px;
-        margin: 10px;
-        padding-bottom: 200px;
-      }
-      
-      .guardian {
-        width: 150px !important;
-        animation: guardianGlow 3s ease-in-out infinite alternate, guardianFloat 4s ease-in-out infinite;
-        box-shadow: 0 0 20px rgba(102, 204, 255, 0.6), 0 0 40px rgba(157, 78, 221, 0.4) !important;
-        margin-bottom: 40px !important;
-      }
-      
-      .guardian-reveal {
-        margin-bottom: 60px !important;
-      }
-      
+    /* iPhone X以降のノッチ対応 */
+    @supports (padding: max(0px)) {
       .guardian-message-btn {
-        position: fixed !important;
-        bottom: 80px !important;
-        left: 50% !important;
-        transform: translateX(-50%) translateY(50px) !important;
-        width: calc(100% - 40px) !important;
-        max-width: 350px !important;
-        margin: 0 !important;
-        z-index: 1000 !important;
-        padding: 20px 30px !important;
-        font-size: 1.3em !important;
-        font-weight: bold !important;
-        border-radius: 15px !important;
-        box-shadow: 0 8px 25px rgba(157, 78, 221, 0.6) !important;
-        transition: all 1s ease !important;
-        min-height: 70px !important;
-      }
-      
-      .guardian-message-btn.show {
-        transform: translateX(-50%) translateY(0) !important;
-        opacity: 1 !important;
-      }
-      
-
-    }
-    
-    /* iPhone X以降のノッチ対応（モバイルのみ） */
-    @media (max-width: 600px) {
-      @supports (padding: max(0px)) {
-        .container {
-          padding-top: max(40px, env(safe-area-inset-top));
-          padding-bottom: max(20px, env(safe-area-inset-bottom));
-        }
-        
-        .guardian-message-btn {
-          bottom: calc(80px + env(safe-area-inset-bottom)) !important;
-        }
+        bottom: max(20px, env(safe-area-inset-bottom) + 10px);
       }
     }
   </style>
 </head>
 <body>
-
-  
   <div class="container">
-
-    
     <!-- 鑑定結果表示エリア -->
     <div class="result" id="resultBox">
       <h2 class="glow-text">あなたの守護神を伝えよう･･･</h2>
       <div id="guardian"></div>
-      <p id="oracle"></p>
     </div>
 
     <!-- ローディング画面 -->
-    <div id="loadingScreen">
+    <div class="loading-screen" id="loadingScreen">
       <div class="loading-spinner"></div>
       <p>神託を降ろしています…</p>
     </div>
+  </div>
 
-
-    
-    <!-- フルスクリーン守護神表示 -->
-    <div class="guardian-fullscreen" id="guardianFullscreen">
-      <img id="fullscreenGuardianImg" src="" alt="守護神">
-      <h2 id="fullscreenGuardianName"></h2>
-      <p id="fullscreenGuardianDesc"></p>
-    </div>
+  <!-- フルスクリーン守護神表示 -->
+  <div class="guardian-fullscreen" id="guardianFullscreen">
+    <img id="fullscreenGuardianImg" src="" alt="守護神">
+    <h2 id="fullscreenGuardianName"></h2>
+    <p id="fullscreenGuardianDesc"></p>
   </div>
   
   <script>
@@ -776,7 +326,7 @@
       const zodiacYear = year - 4;
       return zodiacSigns[zodiacYear % 12];
     }
-          const opt = document.createElement("option");
+
     // 守護神データ
     const guardians = {
       '子': { name:'千手観音', desc:'無限の慈悲をもって汝を抱擁する者なり', image:'photo/senju.png' },
@@ -944,329 +494,6 @@
       console.log("Document already loaded, starting process immediately");
       startProcess();
     }
-      
-      const year = parseInt(yearSelect.value);
-      const month = parseInt(monthSelect.value);
-      const day = parseInt(daySelect.value);
-      
-      console.log('Validating:', year, month, day);
-      
-      // すべての値が選択されている場合のみ検証
-      if (year && month && day) {
-        const inputDate = new Date(year, month - 1, day);
-        const today = new Date();
-        
-        // 日付が有効かチェック
-        if (inputDate.getFullYear() !== year || 
-            inputDate.getMonth() !== month - 1 || 
-            inputDate.getDate() !== day) {
-          showErrorMessage("無効な日付です。");
-          return false;
-        }
-        
-        // 未来の日付かチェック
-        if (inputDate > today) {
-          showErrorMessage("未来の日付は選択できません。");
-          return false;
-        }
-        
-        // 年齢制限チェック（120歳以上）
-        const age = today.getFullYear() - year;
-        if (age > 120) {
-          showErrorMessage("120歳以上の方は選択できません。");
-          return false;
-        }
-        
-        clearErrorDisplay();
-        console.log('Validation passed');
-        return true;
-      }
-      
-      return false;
-    }
-
-    // エラーメッセージを表示する関数
-    function showErrorMessage(message) {
-      clearErrorDisplay();
-      
-      const errorDiv = document.createElement("div");
-      errorDiv.className = "error-message";
-      errorDiv.style.cssText = `
-        color: #ff6b6b;
-        background: rgba(255, 107, 107, 0.1);
-        border: 1px solid #ff6b6b;
-        border-radius: 8px;
-        padding: 10px;
-        margin: 10px 0;
-        text-align: center;
-        animation: errorShake 0.5s ease-in-out;
-      `;
-      errorDiv.textContent = message;
-      
-      const form = document.getElementById("birthForm");
-      if (form) {
-        form.appendChild(errorDiv);
-      }
-      
-      highlightErrorFields();
-    }
-
-    // エラーフィールドをハイライトする関数
-    function highlightErrorFields() {
-      const yearSelect = document.getElementById("year");
-      const monthSelect = document.getElementById("month");
-      const daySelect = document.getElementById("day");
-      
-      [yearSelect, monthSelect, daySelect].forEach(select => {
-        if (select && !select.value) {
-          select.style.borderColor = "#ff6b6b";
-          select.style.boxShadow = "0 0 10px rgba(255, 107, 107, 0.5)";
-        }
-      });
-    }
-
-    // エラーハイライトをクリアする関数
-    function clearErrorHighlights() {
-      const yearSelect = document.getElementById("year");
-      const monthSelect = document.getElementById("month");
-      const daySelect = document.getElementById("day");
-      
-      [yearSelect, monthSelect, daySelect].forEach(select => {
-        if (select) {
-          select.style.borderColor = "rgba(102,204,255,0.3)";
-          select.style.boxShadow = "inset 0 0 5px rgba(102,204,255,0.4)";
-        }
-      });
-    }
-
-    // エラー表示をクリアする関数
-    function clearErrorDisplay() {
-      const errorMessages = document.querySelectorAll(".error-message");
-      errorMessages.forEach(msg => msg.remove());
-      clearErrorHighlights();
-    }
-
-    // 成功メッセージを表示する関数
-    function showSuccessMessage() {
-      clearErrorDisplay();
-      
-      const successDiv = document.createElement("div");
-      successDiv.className = "success-message";
-      successDiv.style.cssText = `
-        color: #51cf66;
-        background: rgba(81, 207, 102, 0.1);
-        border: 1px solid #51cf66;
-        border-radius: 8px;
-        padding: 10px;
-        margin: 10px 0;
-        text-align: center;
-        animation: successFade 0.5s ease-in-out;
-      `;
-      successDiv.textContent = "生年月日が正しく入力されました。";
-      
-      const form = document.getElementById("birthForm");
-      if (form) {
-        form.appendChild(successDiv);
-      }
-    }
-
-    // 守護神データ
-    const guardians = {
-      '子': { name:'千手観音', desc:'無限の慈悲をもって汝を抱擁する者なり', image:'photo/senju.png' },
-      '丑': { name:'虚空蔵菩薩', desc:'無尽の智慧を授けし導き手なり', image:'photo/kokuzo.png' },
-      '寅': { name:'虚空蔵菩薩', desc:'無尽の智慧を授けし導き手なり', image:'photo/kokuzo.png' },
-      '卯': { name:'文殊菩薩', desc:'智慧の剣をもって迷いを断つ者なり', image:'photo/monju.png' },
-      '辰': { name:'普賢菩薩', desc:'実践の徳を授ける者なり', image:'photo/fugen.png' },
-      '巳': { name:'普賢菩薩', desc:'実践の徳を授ける者なり', image:'photo/fugen.png' },
-      '午': { name:'勢至菩薩', desc:'智慧の光を放ち衆生を救う者なり', image:'photo/seishi.png' },
-      '未': { name:'大日如来', desc:'宇宙の理をもって全てを照らす者なり', image:'photo/dainichi.png' },
-      '申': { name:'大日如来', desc:'宇宙の理をもって全てを照らす者なり', image:'photo/dainichi.png' },
-      '酉': { name:'不動明王', desc:'不動の意志にて悪を退ける者なり', image:'photo/fudo.png' },
-      '戌': { name:'阿弥陀如来', desc:'無限の慈悲をもって衆生を救う者なり', image:'photo/amida.png' },
-      '亥': { name:'薬師如来', desc:'病苦を除き健康を授ける者なり', image:'photo/yakushi.png' }
-    };
-
-    // 十二支を計算する関数
-    function getZodiac(year, month, day) {
-      const zodiacSigns = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
-      const baseYear = 1900;
-      const zodiacIndex = (year - baseYear) % 12;
-      return zodiacSigns[zodiacIndex];
-    }
-
-    // フォーム送信処理
-    function setupFormSubmission() {
-      const form = document.getElementById("birthForm");
-      if (!form) {
-        console.log('Form not found, retrying...');
-        setTimeout(setupFormSubmission, 100);
-        return;
-      }
-      
-      form.addEventListener("submit", function(e) {
-        e.preventDefault();
-        console.log('Form submitted');
-        
-        const yearSelect = document.getElementById("year");
-        const monthSelect = document.getElementById("month");
-        const daySelect = document.getElementById("day");
-        
-        if (!yearSelect || !monthSelect || !daySelect) {
-          console.error('Select elements not found during submission');
-          return;
-        }
-        
-        const year = yearSelect.value;
-        const month = monthSelect.value;
-        const day = daySelect.value;
-        
-        console.log('Form values:', year, month, day);
-        
-        // 入力チェック
-        if (!year || !month || !day) {
-          showErrorMessage("生年月日をすべて選択してください。");
-          return;
-        }
-        
-        // 日付の妥当性チェック
-        if (!validateCurrentInput()) {
-          return;
-        }
-        
-        // 成功メッセージ表示
-        showSuccessMessage();
-        
-        // フォームを非表示
-        form.style.display = "none";
-        
-        // ローディング画面表示
-        const loading = document.getElementById("loadingScreen");
-        if (loading) {
-          loading.style.display = "flex";
-          setTimeout(() => { loading.classList.add('show'); }, 10);
-        }
-        
-        // 3秒後に結果表示
-        setTimeout(() => {
-          try {
-            // ローディング画面をフェードアウト
-            if (loading) {
-              loading.classList.remove('show');
-              setTimeout(() => { loading.style.display = "none"; }, 800);
-            }
-            
-            // 十二支を計算
-            const zodiac = getZodiac(parseInt(year), parseInt(month), parseInt(day));
-            const guardian = guardians[zodiac];
-            
-            if (!guardian) {
-              throw new Error("守護神データが見つかりません");
-            }
-            
-            // 結果表示処理
-            displayResults(guardian, zodiac);
-            
-          } catch (error) {
-            console.error("鑑定処理エラー:", error);
-            alert("鑑定処理中にエラーが発生しました。ページを再読み込みしてください。");
-          }
-        }, 3000);
-      });
-      
-      console.log('Form submission handler added');
-    }
-
-    // 結果表示処理
-    function displayResults(guardian, zodiac) {
-      const guardianElement = document.getElementById("guardian");
-      const resultBox = document.getElementById("resultBox");
-      
-      if (!guardianElement || !resultBox) {
-        console.error('Result elements not found');
-        return;
-      }
-      
-      // 龍と守護神を表示
-      guardianElement.innerHTML = `
-        <div class="dragon-reveal">
-          <img class="dragon-image" src="photo/ryu.png" alt="AI鑑定師 龍">
-        </div>
-        <div class="guardian-reveal" style="opacity: 0;">
-          <img class="guardian" src="${guardian.image}" alt="${guardian.name}">
-          <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
-          <div>${guardian.desc}</div>
-        </div>
-      `;
-      
-      // ボタンを独立した要素として追加
-      const guardianBtn = document.createElement('button');
-      guardianBtn.className = 'guardian-message-btn';
-      guardianBtn.textContent = '守護神の言葉を聞く';
-      guardianBtn.setAttribute('data-guardian-name', guardian.name);
-      guardianBtn.setAttribute('data-zodiac-sign', zodiac);
-      
-      guardianBtn.addEventListener('click', function() {
-        const name = this.getAttribute('data-guardian-name');
-        const zodiacSign = this.getAttribute('data-zodiac-sign');
-        goToGuardianMessage(name, zodiacSign);
-      });
-      
-      document.body.appendChild(guardianBtn);
-      
-      // 結果を表示
-      resultBox.style.display = "block";
-      resultBox.scrollIntoView({ behavior: 'smooth' });
-      
-      // 2秒後に守護神をフェードイン
-      setTimeout(() => {
-        const guardianReveal = document.querySelector('.guardian-reveal');
-        if (guardianReveal) {
-          guardianReveal.style.transition = 'opacity 2s ease-in-out';
-          guardianReveal.style.opacity = '1';
-        }
-        
-        // フルスクリーン表示の処理
-        setTimeout(() => {
-          // フルスクリーン表示の準備
-          const fullscreenImg = document.getElementById('fullscreenGuardianImg');
-          const fullscreenName = document.getElementById('fullscreenGuardianName');
-          const fullscreenDesc = document.getElementById('fullscreenGuardianDesc');
-          const fullscreenContainer = document.getElementById('guardianFullscreen');
-          
-          if (fullscreenImg && fullscreenName && fullscreenDesc && fullscreenContainer) {
-            fullscreenImg.src = guardian.image;
-            fullscreenName.textContent = `そなたを守護するは ${guardian.name}`;
-            fullscreenDesc.textContent = guardian.desc;
-            
-            // フルスクリーン表示を開始
-            fullscreenContainer.style.display = 'flex';
-            setTimeout(() => {
-              fullscreenContainer.classList.add('show');
-            }, 10);
-            
-            // 3秒後にフルスクリーン表示を終了
-            setTimeout(() => {
-              fullscreenContainer.classList.remove('show');
-              setTimeout(() => {
-                fullscreenContainer.style.display = 'none';
-                
-                // フルスクリーン表示終了後1秒後にボタンを表示
-                setTimeout(() => {
-                  guardianBtn.classList.add('show');
-                }, 1000);
-              }, 1000);
-            }, 3000);
-          } else {
-            // フルスクリーン要素が見つからない場合は直接ボタンを表示
-            setTimeout(() => {
-              guardianBtn.classList.add('show');
-            }, 1000);
-          }
-        }, 2000);
-      }, 2000);
-    }
-
-
   </script>
 </body>
 </html>
