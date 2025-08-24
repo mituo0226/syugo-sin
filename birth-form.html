@@ -1176,7 +1176,7 @@
        // 神秘的な演出を表示
        mysticalEffect.classList.add('show');
        
-       // 2秒後にフェードアウト開始
+       // 1秒後にフェードアウト開始
        setTimeout(() => {
          mysticalEffect.classList.remove('show');
          
@@ -1184,15 +1184,22 @@
          setTimeout(() => {
            mysticalEffect.style.display = 'none';
            container.classList.add('show');
-         }, 2000);
-       }, 2000);
+         }, 1000);
+       }, 1000);
      }
      
      // ページ読み込み時の初期化
      window.addEventListener("load", function() {
        try {
-         // 神秘的な演出開始
-         startMysticalEffect();
+         // 神秘的な演出をスキップしてメインコンテンツを直接表示
+         const mysticalEffect = document.getElementById('mysticalEffect');
+         const container = document.querySelector('.container');
+         
+         // 神秘的な演出を非表示
+         mysticalEffect.style.display = 'none';
+         
+         // メインコンテンツを表示
+         container.classList.add('show');
          
          // フォーム初期化
          initializeSelects();
