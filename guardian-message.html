@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>守護神の言葉 | AI鑑定師 龍</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d1a;
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      touch-action: manipulation;
+      position: relative;
+      min-height: 100vh;
+    }
+    
+    /* 神秘的な背景効果 */
+    .mystical-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(102, 204, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(199, 125, 255, 0.05) 0%, transparent 50%);
+      z-index: -1;
+      animation: bgPulse 8s ease-in-out infinite;
+    }
+    
+    @keyframes bgPulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.6; }
+    }
+    
+    /* 浮遊する粒子 */
+    .floating-particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: #66ccff;
+      border-radius: 50%;
+      animation: float 6s linear infinite;
+    }
+    
+    .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+    .particle:nth-child(2) { left: 20%; animation-delay: 1s; }
+    .particle:nth-child(3) { left: 30%; animation-delay: 2s; }
+    .particle:nth-child(4) { left: 40%; animation-delay: 3s; }
+    .particle:nth-child(5) { left: 50%; animation-delay: 4s; }
+    .particle:nth-child(6) { left: 60%; animation-delay: 5s; }
+    .particle:nth-child(7) { left: 70%; animation-delay: 0s; }
+    .particle:nth-child(8) { left: 80%; animation-delay: 1s; }
+    .particle:nth-child(9) { left: 90%; animation-delay: 2s; }
+    
+    @keyframes float {
+      0% {
+        top: 100%;
+        opacity: 0;
+        transform: translateY(0) scale(0);
+      }
+      10% {
+        opacity: 1;
+        transform: translateY(-10px) scale(1);
+      }
+      90% {
+        opacity: 1;
+        transform: translateY(-90vh) scale(1);
+      }
+      100% {
+        top: 0;
+        opacity: 0;
+        transform: translateY(-100vh) scale(0);
+      }
+    }
+    
+    .container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* PC向けコンテナ調整 */
+    @media (min-width: 768px) {
+      .container {
+        padding: 40px 20px;
+        justify-content: center;
+      }
+    }
+    
+    .guardian-message-container {
+      max-width: 800px;
+      background: rgba(13, 13, 26, 0.9);
+      border-radius: 20px;
+      padding: 40px;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 2px solid rgba(102, 204, 255, 0.3);
+      box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.5),
+        0 0 30px rgba(102, 204, 255, 0.2);
+      animation: messageAppear 2s ease-in-out;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    @keyframes messageAppear {
+      0% {
+        opacity: 0;
+        transform: translateY(50px) scale(0.9);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    
+    /* PC向けメッセージコンテナ調整 */
+    @media (min-width: 768px) {
+      .guardian-message-container {
+        padding: 60px;
+        margin: 20px auto;
+      }
+    }
+    
+    .guardian-title {
+      font-size: 2.5em;
+      color: #66ccff;
+      margin-bottom: 30px;
+      text-shadow: 0 0 20px rgba(102, 204, 255, 0.6);
+      animation: titleGlow 3s ease-in-out infinite alternate;
+    }
+    
+    @keyframes titleGlow {
+      0% { text-shadow: 0 0 20px rgba(102, 204, 255, 0.6); }
+      100% { text-shadow: 0 0 30px rgba(102, 204, 255, 0.9), 0 0 40px rgba(102, 204, 255, 0.4); }
+    }
+    
+    /* PC向けタイトル調整 */
+    @media (min-width: 768px) {
+      .guardian-title {
+        font-size: 3em;
+        margin-bottom: 40px;
+      }
+    }
+    
+    .guardian-name {
+      font-size: 1.8em;
+      color: #c77dff;
+      margin-bottom: 20px;
+      font-weight: bold;
+      text-shadow: 0 0 15px rgba(199, 125, 255, 0.6);
+    }
+    
+    /* PC向け守護神名調整 */
+    @media (min-width: 768px) {
+      .guardian-name {
+        font-size: 2.2em;
+        margin-bottom: 30px;
+      }
+    }
+    
+    .guardian-message {
+      font-size: 1.3em;
+      line-height: 2.2;
+      text-align: left;
+      white-space: pre-line;
+      margin: 30px 0;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      border-left: 4px solid #66ccff;
+      animation: messageReveal 3s ease-in-out;
+    }
+    
+    @keyframes messageReveal {
+      0% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    /* PC向けメッセージ調整 */
+    @media (min-width: 768px) {
+      .guardian-message {
+        font-size: 1.5em;
+        line-height: 2.5;
+        padding: 40px;
+        margin: 40px 0;
+      }
+    }
+    
+    .back-button {
+      margin-top: 30px;
+      padding: 15px 30px;
+      font-size: 1.2em;
+      background: linear-gradient(90deg, #66ccff, #3399ff);
+      border: none;
+      border-radius: 10px;
+      color: #000;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 204, 255, 0.4);
+      font-weight: bold;
+    }
+    
+    .back-button:hover {
+      background: linear-gradient(90deg, #99e0ff, #66ccff);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 204, 255, 0.6);
+    }
+    
+    /* PC向け戻るボタン調整 */
+    @media (min-width: 768px) {
+      .back-button {
+        font-size: 1.3em;
+        padding: 18px 40px;
+        margin-top: 40px;
+      }
+    }
+    
+    /* モバイル向け調整 */
+    @media (max-width: 600px) {
+      body {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+      }
+      
+      .container {
+        height: 100vh;
+        overflow-y: scroll;
+        -webkit-overflow-scrolling: touch;
+        padding: 20px 15px;
+        justify-content: flex-start;
+        padding-top: 40px;
+      }
+      
+      .guardian-message-container {
+        padding: 25px;
+        margin: 20px 0;
+        border-radius: 15px;
+      }
+      
+      .guardian-title {
+        font-size: 2em;
+        margin-bottom: 20px;
+      }
+      
+      .guardian-name {
+        font-size: 1.5em;
+        margin-bottom: 15px;
+      }
+      
+      .guardian-message {
+        font-size: 1.1em;
+        line-height: 2.0;
+        padding: 20px;
+        margin: 20px 0;
+      }
+      
+      .back-button {
+        font-size: 1.1em;
+        padding: 12px 25px;
+        margin-top: 20px;
+      }
+    }
+    
+    /* iPhone X以降のノッチ対応（モバイルのみ） */
+    @media (max-width: 600px) {
+      @supports (padding: max(0px)) {
+        .container {
+          padding-top: max(40px, env(safe-area-inset-top));
+          padding-bottom: max(20px, env(safe-area-inset-bottom));
+        }
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 神秘的な背景 -->
+  <div class="mystical-bg"></div>
+  
+  <!-- 浮遊する粒子 -->
+  <div class="floating-particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+  
+  <div class="container">
+    <div class="guardian-message-container">
+      <h1 class="guardian-title">守護神の言葉</h1>
+      <div class="guardian-name" id="guardianName"></div>
+      <div class="guardian-message" id="guardianMessage"></div>
+      <button class="back-button" onclick="goBack()">← 戻る</button>
+    </div>
+  </div>
+  
+  <script>
+    // 戻るボタンの機能
+    function goBack() {
+      window.history.back();
+    }
+    
+    // ページ読み込み時の処理
+    window.addEventListener("load", function() {
+      try {
+        // URLパラメータから守護神の情報を取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const guardianName = urlParams.get('name');
+        const guardianMessage = urlParams.get('message');
+        
+        if (guardianName && guardianMessage) {
+          // 守護神の名前とメッセージを表示
+          document.getElementById('guardianName').textContent = guardianName;
+          document.getElementById('guardianMessage').textContent = guardianMessage;
+        } else {
+          // パラメータがない場合はデフォルトメッセージを表示
+          document.getElementById('guardianName').textContent = '守護神';
+          document.getElementById('guardianMessage').textContent = '守護神からのメッセージが表示されます。';
+        }
+      } catch (error) {
+        console.error("ページ読み込みエラー:", error);
+        // エラーが発生した場合のデフォルト表示
+        document.getElementById('guardianName').textContent = '守護神';
+        document.getElementById('guardianMessage').textContent = '守護神からのメッセージが表示されます。';
+      }
+    });
+  </script>
+</body>
+</html>
+
