@@ -68,9 +68,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       text-align: center;
-      padding: 60px 20px 120px;
+      padding: 40px 20px 120px;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       position: relative;
@@ -102,7 +102,7 @@
     }
     #storyText {
       position: absolute;
-      bottom: 20%;
+      bottom: 25%;
       left: 50%;
       transform: translateX(-50%);
       font-size: 1.2em;
@@ -182,14 +182,14 @@
         height: 100vh;
         overflow-y: scroll;
         -webkit-overflow-scrolling: touch;
-        padding: 80px 15px 140px;
+        padding: 60px 15px 140px;
       }
       #storyText { 
         font-size: 1.1em; 
         text-align: center; 
         max-width: 95%;
         padding: 20px;
-        bottom: 15%;
+        bottom: 25%;
       }
       .birth-input-button {
         position: fixed !important;
@@ -226,7 +226,7 @@
     /* iPhone X以降のノッチ対応 */
     @supports (padding: max(0px)) {
       .hero {
-        padding-top: max(60px, env(safe-area-inset-top));
+        padding-top: max(40px, env(safe-area-inset-top));
         padding-bottom: max(140px, env(safe-area-inset-bottom) + 80px);
       }
       .birth-input-button {
