@@ -673,12 +673,15 @@
      
      // 守護神の言葉ページに移動する関数
      function goToGuardianMessage(guardianName, guardianMessage) {
+       console.log('goToGuardianMessage called with:', guardianName, guardianMessage);
        // URLパラメータとして守護神の情報を渡す
        const params = new URLSearchParams({
          name: guardianName,
          message: guardianMessage
        });
-       window.location.href = `syugo-sin.html?${params.toString()}`;
+       const url = `syugo-sin.html?${params.toString()}`;
+       console.log('Redirecting to:', url);
+       window.location.href = url;
      }
 
     // セレクトボックスの初期化関数
@@ -979,7 +982,7 @@
       '午': {
         name:'勢至菩薩',
         desc:'智慧の光を放ち衆生を救う者なり',
-        image:'photo/seishi.png',
+        image:'photo/seichi.png',
         personal:`光は常に汝の内に燃えておる。  
  汝が恐れを抱くとき、その光は弱まるが決して消えはせぬ。  
  信じよ、内なる炎を。我は智慧の灯を絶やさず、汝を照らし続けん。`
@@ -1096,8 +1099,18 @@
                     <img class="guardian" src="${guardian.image}" alt="${guardian.name}">
                     <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
                     <div>${guardian.desc}</div>
-                    <button class="guardian-message-btn" onclick="goToGuardianMessage('${guardian.name}', '${guardian.personal}')">守護神の言葉を聞く</button>
+                    <button class="guardian-message-btn" data-guardian-name="${guardian.name}" data-guardian-message="${guardian.personal.replace(/\n/g, '\\n')}">守護神の言葉を聞く</button>
                   </div>`;
+               
+               // ボタンのイベントリスナーを設定
+               const guardianBtn = document.querySelector('.guardian-message-btn');
+               if (guardianBtn) {
+                 guardianBtn.addEventListener('click', function() {
+                   const name = this.getAttribute('data-guardian-name');
+                   const message = this.getAttribute('data-guardian-message').replace(/\\n/g, '\n');
+                   goToGuardianMessage(name, message);
+                 });
+               }
                
                // 結果を表示
                const resultBox = document.getElementById("resultBox");
@@ -1128,8 +1141,18 @@
                     <div class="dragon-placeholder">🙏</div>
                     <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
                     <div>${guardian.desc}</div>
-                    <button class="guardian-message-btn" onclick="goToGuardianMessage('${guardian.name}', '${guardian.personal}')">守護神の言葉を聞く</button>
+                    <button class="guardian-message-btn" data-guardian-name="${guardian.name}" data-guardian-message="${guardian.personal.replace(/\n/g, '\\n')}">守護神の言葉を聞く</button>
                   </div>`;
+               
+               // ボタンのイベントリスナーを設定
+               const guardianBtn = document.querySelector('.guardian-message-btn');
+               if (guardianBtn) {
+                 guardianBtn.addEventListener('click', function() {
+                   const name = this.getAttribute('data-guardian-name');
+                   const message = this.getAttribute('data-guardian-message').replace(/\\n/g, '\n');
+                   goToGuardianMessage(name, message);
+                 });
+               }
                
                // 結果を表示
                const resultBox = document.getElementById("resultBox");
@@ -1162,8 +1185,18 @@
                  <img class="guardian" src="${guardian.image}" alt="${guardian.name}">
                  <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
                  <div>${guardian.desc}</div>
-                 <button class="guardian-message-btn" onclick="goToGuardianMessage('${guardian.name}', '${guardian.personal}')">守護神の言葉を聞く</button>
+                 <button class="guardian-message-btn" data-guardian-name="${guardian.name}" data-guardian-message="${guardian.personal.replace(/\n/g, '\\n')}">守護神の言葉を聞く</button>
                </div>`;
+            
+            // ボタンのイベントリスナーを設定
+            const guardianBtn = document.querySelector('.guardian-message-btn');
+            if (guardianBtn) {
+              guardianBtn.addEventListener('click', function() {
+                const name = this.getAttribute('data-guardian-name');
+                const message = this.getAttribute('data-guardian-message').replace(/\\n/g, '\n');
+                goToGuardianMessage(name, message);
+              });
+            }
             
             // 結果を表示
             const resultBox = document.getElementById("resultBox");
