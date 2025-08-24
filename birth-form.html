@@ -784,11 +784,20 @@
       console.log('Month element exists:', !!monthSelect);
       console.log('Day element exists:', !!daySelect);
       
-      // 要素が見つからない場合は再試行
+      // 要素が見つからない場合は再試行（最大3回まで）
       if (!yearSelect || !monthSelect || !daySelect) {
-        console.log('Some elements not found, retrying in 100ms...');
-        setTimeout(initializeSelects, 100);
-        return;
+        if (!initializeSelects.retryCount) {
+          initializeSelects.retryCount = 0;
+        }
+        if (initializeSelects.retryCount < 3) {
+          initializeSelects.retryCount++;
+          console.log(`Elements not found, retrying (${initializeSelects.retryCount}/3) in 100ms...`);
+          setTimeout(initializeSelects, 100);
+          return;
+        } else {
+          console.error('Failed to find elements after 3 retries');
+          return;
+        }
       }
       
       try {
@@ -846,33 +855,44 @@
       console.log('Month select for events:', !!monthSelect);
       console.log('Day select for events:', !!daySelect);
       
+      // 既存のイベントリスナーを削除（重複登録を防ぐ）
       if (monthSelect) {
-        monthSelect.addEventListener("change", function() {
-          console.log('Month changed to:', this.value);
-          adjustDayOptions();
-          validateCurrentInput();
-        });
+        monthSelect.removeEventListener("change", monthChangeHandler);
+        monthSelect.addEventListener("change", monthChangeHandler);
         console.log('Month change event listener added');
       }
       
       if (yearSelect) {
-        yearSelect.addEventListener("change", function() {
-          console.log('Year changed to:', this.value);
-          adjustDayOptions();
-          validateCurrentInput();
-        });
+        yearSelect.removeEventListener("change", yearChangeHandler);
+        yearSelect.addEventListener("change", yearChangeHandler);
         console.log('Year change event listener added');
       }
       
       if (daySelect) {
-        daySelect.addEventListener("change", function() {
-          console.log('Day changed to:', this.value);
-          validateCurrentInput();
-        });
+        daySelect.removeEventListener("change", dayChangeHandler);
+        daySelect.addEventListener("change", dayChangeHandler);
         console.log('Day change event listener added');
       }
       
       console.log('All event listeners setup completed');
+    }
+    
+    // イベントハンドラー関数（重複登録を防ぐため分離）
+    function monthChangeHandler() {
+      console.log('Month changed to:', this.value);
+      adjustDayOptions();
+      validateCurrentInput();
+    }
+    
+    function yearChangeHandler() {
+      console.log('Year changed to:', this.value);
+      adjustDayOptions();
+      validateCurrentInput();
+    }
+    
+    function dayChangeHandler() {
+      console.log('Day changed to:', this.value);
+      validateCurrentInput();
     }
 
     // 日の選択肢を調整する関数
@@ -1397,56 +1417,39 @@
       },3000); // Total delay for result display
     });
 
-    // ページ読み込み時の初期化
-    window.addEventListener("load", function() {
-      console.log("Window load event triggered");
+    // 初期化フラグ（重複実行を防ぐ）
+    let isInitialized = false;
+    
+    // 統一された初期化関数
+    function initializeOnce() {
+      if (isInitialized) {
+        console.log("Already initialized, skipping...");
+        return;
+      }
+      
+      console.log("Initializing select boxes...");
       try {
-        // フォーム初期化
         initializeSelects();
+        isInitialized = true;
         console.log("生年月日入力フォームが正常に初期化されました");
       } catch (error) {
         console.error("初期化エラー:", error);
-        // 手動で初期化を試行
-        setTimeout(initializeSelects, 100);
       }
-    });
-
-    // DOMContentLoadedでも初期化
+    }
+    
+    // DOMContentLoadedで初期化（優先）
     document.addEventListener("DOMContentLoaded", function() {
       console.log("DOMContentLoaded event triggered");
-      try {
-        initializeSelects();
-        console.log("DOMContentLoaded: 生年月日入力フォームが正常に初期化されました");
-      } catch (error) {
-        console.error("DOMContentLoaded 初期化エラー:", error);
-        setTimeout(initializeSelects, 100);
-      }
+      initializeOnce();
     });
     
-    // 即座に初期化を試行
-    console.log("Script loaded, attempting immediate initialization");
+    // DOMContentLoadedが既に発火済みの場合の即座初期化
     if (document.readyState === 'loading') {
       console.log("Document still loading, waiting for DOMContentLoaded");
     } else {
       console.log("Document already loaded, initializing immediately");
-      try {
-        initializeSelects();
-        console.log("Immediate initialization successful");
-      } catch (error) {
-        console.error("Immediate initialization error:", error);
-      }
+      initializeOnce();
     }
-    
-    // 追加の初期化試行（確実性のため）
-    setTimeout(() => {
-      console.log("Delayed initialization attempt");
-      try {
-        initializeSelects();
-        console.log("Delayed initialization successful");
-      } catch (error) {
-        console.error("Delayed initialization error:", error);
-      }
-    }, 500);
   </script>
 </body>
 </html>
