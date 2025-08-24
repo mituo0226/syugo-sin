@@ -18,22 +18,22 @@
       min-height: 100vh;
     }
     
-         /* 神秘的な光の演出 */
-     #mysticalEffect {
-       position: fixed;
-       top: 0;
-       left: 0;
-       width: 100%;
-       height: 100%;
-       background: #0d0d1a;
-       display: none;
-       align-items: center;
-       justify-content: center;
-       z-index: 10000;
-       opacity: 0;
-       transition: opacity 2s ease-in-out;
-       pointer-events: none;
-     }
+    /* 神秘的な光の演出 */
+    #mysticalEffect {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0d0d1a;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      transition: opacity 2s ease-in-out;
+      pointer-events: none;
+    }
     
     #mysticalEffect.show {
       opacity: 1;
@@ -161,20 +161,21 @@
         height: 100%;
       }
     }
-         .container {
-       min-height: 100vh;
-       display: flex;
-       flex-direction: column;
-       align-items: center;
-       justify-content: center;
-       text-align: center;
-       padding: 20px;
-       overflow-y: auto;
-       position: relative;
-       z-index: 1;
-       opacity: 1;
-       transition: opacity 1s ease-in-out;
-     }
+    
+    .container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      overflow-y: auto;
+      position: relative;
+      z-index: 1;
+      opacity: 1;
+      transition: opacity 1s ease-in-out;
+    }
     
     .container.show {
       opacity: 1;
@@ -190,6 +191,7 @@
         height: auto;
       }
     }
+    
     .birth-form {
       width: 90%;
       max-width: 400px;
@@ -218,8 +220,20 @@
         padding: 50px;
       }
     }
-    .birth-form h3 { color: #66ccff; margin-bottom: 20px; font-size: 1.3em; }
-    .birth-form label { display: block; margin: 10px 0 5px; color: #99ccff; text-align: left; font-weight: bold; }
+    
+    .birth-form h3 { 
+      color: #66ccff; 
+      margin-bottom: 20px; 
+      font-size: 1.3em; 
+    }
+    
+    .birth-form label { 
+      display: block; 
+      margin: 10px 0 5px; 
+      color: #99ccff; 
+      text-align: left; 
+      font-weight: bold; 
+    }
     
     /* PC向けタイトルとラベル調整 */
     @media (min-width: 768px) {
@@ -232,11 +246,18 @@
         margin: 15px 0 8px;
       }
     }
+    
     .birth-form select {
-      padding: 12px; margin-bottom: 15px; border-radius: 6px;
+      padding: 12px; 
+      margin-bottom: 15px; 
+      border-radius: 6px;
       border: 1px solid rgba(102,204,255,0.3);
-      font-size: 1em; background: rgba(255,255,255,0.1); color: #fff;
-      width: 100%; max-width: 150px; cursor: pointer;
+      font-size: 1em; 
+      background: rgba(255,255,255,0.1); 
+      color: #fff;
+      width: 100%; 
+      max-width: 150px; 
+      cursor: pointer;
       -webkit-appearance: none;
       -moz-appearance: none;
       appearance: none;
@@ -257,8 +278,18 @@
         margin-bottom: 20px;
       }
     }
-    .form-row { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
-    .form-group { flex: 1; text-align: center; }
+    
+    .form-row { 
+      display: flex; 
+      justify-content: space-between; 
+      gap: 10px; 
+      margin-bottom: 20px; 
+    }
+    
+    .form-group { 
+      flex: 1; 
+      text-align: center; 
+    }
     
     /* PC向けフォームレイアウト調整 */
     @media (min-width: 768px) {
@@ -272,12 +303,20 @@
         min-width: 120px;
       }
     }
+    
     .birth-form button {
-      padding: 16px 40px; font-size: 1.3em;
+      padding: 16px 40px; 
+      font-size: 1.3em;
       background: linear-gradient(90deg, #66ccff, #3399ff);
-      border: none; border-radius: 8px; font-weight: bold;
-      cursor: pointer; color: #000; width: 100%; max-width: 300px;
-      margin-top: 10px; transition: all 0.3s ease;
+      border: none; 
+      border-radius: 8px; 
+      font-weight: bold;
+      cursor: pointer; 
+      color: #000; 
+      width: 100%; 
+      max-width: 300px;
+      margin-top: 10px; 
+      transition: all 0.3s ease;
     }
     
     /* PC向けボタン調整 */
@@ -289,12 +328,22 @@
         margin-top: 20px;
       }
     }
-    .birth-form button:hover { background: linear-gradient(90deg, #99e0ff, #66ccff); transform: scale(1.05); }
+    
+    .birth-form button:hover { 
+      background: linear-gradient(90deg, #99e0ff, #66ccff); 
+      transform: scale(1.05); 
+    }
+    
     .back-button {
-      position: absolute; top: 20px; left: 20px;
+      position: absolute; 
+      top: 20px; 
+      left: 20px;
       background: rgba(13, 13, 26, 0.8);
       border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #99ccff; padding: 10px 15px; border-radius: 8px; cursor: pointer;
+      color: #99ccff; 
+      padding: 10px 15px; 
+      border-radius: 8px; 
+      cursor: pointer;
     }
     
     /* PC向け戻るボタン調整 */
@@ -307,114 +356,166 @@
       }
     }
 
-               /* 鑑定結果表示 */
-      .result { display:none; max-width:600px; margin:auto; background:rgba(255,255,255,.05);
-        border:1px solid rgba(255,255,255,.2); border-radius:12px; padding:20px;
-        box-shadow:0 0 20px rgba(147,51,234,.4); position:relative; }
-      
-             /* PC向け結果表示調整 */
-       @media (min-width: 768px) {
-         .result {
-           max-width: 800px;
-           padding: 40px;
-           margin: 30px auto;
-           scroll-margin-top: 20px;
-         }
-       }
-                           #oracle {
-         line-height: 1.8;
-         font-size: 1.1em;
-         text-align: left;
-         white-space: pre-line;
-       }
-       
-       /* PC向け神託テキスト調整 */
-       @media (min-width: 768px) {
-         #oracle {
-           font-size: 1.2em;
-           line-height: 2.0;
-           max-width: 700px;
-           margin: 0 auto;
-         }
-       }
-     img.guardian { 
-       width:120px; 
-       border-radius:50%; 
-       margin:10px auto; 
-       display:block; 
-       animation: guardianGlow 3s ease-in-out infinite alternate, guardianFloat 4s ease-in-out infinite;
-       box-shadow: 0 0 30px rgba(102, 204, 255, 0.6), 0 0 60px rgba(157, 78, 221, 0.4);
-     }
-     
-     /* PC向け守護神画像調整 */
-     @media (min-width: 768px) {
-       img.guardian {
-         width: 150px;
-         margin: 20px auto;
-       }
-     }
-     @keyframes guardianGlow {
-       0% { 
-         box-shadow: 0 0 20px rgba(102, 204, 255, 0.4), 0 0 40px rgba(157, 78, 221, 0.3);
-         filter: brightness(1);
-       }
-       100% { 
-         box-shadow: 0 0 40px rgba(102, 204, 255, 0.8), 0 0 80px rgba(157, 78, 221, 0.6);
-         filter: brightness(1.2);
-       }
-     }
-     @keyframes guardianFloat {
-       0%, 100% { transform: translateY(0px) rotate(0deg); }
-       25% { transform: translateY(-3px) rotate(0.5deg); }
-       50% { transform: translateY(-5px) rotate(0deg); }
-       75% { transform: translateY(-3px) rotate(-0.5deg); }
-     }
-    .glow-text { animation:textGlow 2s ease-in-out infinite alternate; }
+    /* 鑑定結果表示 */
+    .result { 
+      display:none; 
+      max-width:600px; 
+      margin:auto; 
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.2); 
+      border-radius:12px; 
+      padding:20px;
+      box-shadow:0 0 20px rgba(147,51,234,.4); 
+      position:relative; 
+    }
+    
+    /* PC向け結果表示調整 */
+    @media (min-width: 768px) {
+      .result {
+        max-width: 800px;
+        padding: 40px;
+        margin: 30px auto;
+        scroll-margin-top: 20px;
+      }
+    }
+    
+    #oracle {
+      line-height: 1.8;
+      font-size: 1.1em;
+      text-align: left;
+      white-space: pre-line;
+    }
+    
+    /* PC向け神託テキスト調整 */
+    @media (min-width: 768px) {
+      #oracle {
+        font-size: 1.2em;
+        line-height: 2.0;
+        max-width: 700px;
+        margin: 0 auto;
+      }
+    }
+    
+    img.guardian { 
+      width:120px; 
+      border-radius:50%; 
+      margin:10px auto; 
+      display:block; 
+      animation: guardianGlow 3s ease-in-out infinite alternate, guardianFloat 4s ease-in-out infinite;
+      box-shadow: 0 0 30px rgba(102, 204, 255, 0.6), 0 0 60px rgba(157, 78, 221, 0.4);
+    }
+    
+    /* PC向け守護神画像調整 */
+    @media (min-width: 768px) {
+      img.guardian {
+        width: 150px;
+        margin: 20px auto;
+      }
+    }
+    
+    @keyframes guardianGlow {
+      0% { 
+        box-shadow: 0 0 20px rgba(102, 204, 255, 0.4), 0 0 40px rgba(157, 78, 221, 0.3);
+        filter: brightness(1);
+      }
+      100% { 
+        box-shadow: 0 0 40px rgba(102, 204, 255, 0.8), 0 0 80px rgba(157, 78, 221, 0.6);
+        filter: brightness(1.2);
+      }
+    }
+    
+    @keyframes guardianFloat {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      25% { transform: translateY(-3px) rotate(0.5deg); }
+      50% { transform: translateY(-5px) rotate(0deg); }
+      75% { transform: translateY(-3px) rotate(-0.5deg); }
+    }
+    
+    .glow-text { 
+      animation:textGlow 2s ease-in-out infinite alternate; 
+    }
+    
     @keyframes textGlow {
       0%{text-shadow:0 0 10px rgba(157,78,221,.8)}
       100%{text-shadow:0 0 20px rgba(157,78,221,1),0 0 30px rgba(199,125,255,.6)}
     }
 
-                                       /* ローディング画面 */
-       #loadingScreen { 
-         display:none; 
-         position:fixed; 
-         top:0; 
-         left:0; 
-         right:0; 
-         bottom:0;
-         background:rgba(0,0,0,.8); 
-         align-items:center; 
-         justify-content:center;
-         flex-direction:column; 
-         z-index:9999; 
-         opacity: 0;
-         transition: opacity 0.8s ease-in-out;
-       }
-       
-       /* PC向けローディング画面調整 */
-       @media (min-width: 768px) {
-         #loadingScreen p {
-           font-size: 1.4em;
-         }
-         .loading-spinner {
-           width: 120px;
-           height: 120px;
-         }
-       }
-      #loadingScreen.show {
-        opacity: 1;
+    /* ローディング画面 */
+    #loadingScreen { 
+      display:none; 
+      position:fixed; 
+      top:0; 
+      left:0; 
+      right:0; 
+      bottom:0;
+      background:rgba(0,0,0,.8); 
+      align-items:center; 
+      justify-content:center;
+      flex-direction:column; 
+      z-index:9999; 
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out;
+    }
+    
+    /* PC向けローディング画面調整 */
+    @media (min-width: 768px) {
+      #loadingScreen p {
+        font-size: 1.4em;
       }
-    .loading-spinner{width:100px;height:100px;position:relative;margin:0 auto}
+      .loading-spinner {
+        width: 120px;
+        height: 120px;
+      }
+    }
+    
+    #loadingScreen.show {
+      opacity: 1;
+    }
+    
+    .loading-spinner{
+      width:100px;
+      height:100px;
+      position:relative;
+      margin:0 auto
+    }
+    
     .loading-spinner::before,.loading-spinner::after{
-      content:'';position:absolute;width:100%;height:100%;border-radius:50%;
+      content:'';
+      position:absolute;
+      width:100%;
+      height:100%;
+      border-radius:50%;
       background:conic-gradient(from 0deg,transparent,#9d4edd,#c77dff,#ff6b9d,transparent);
       animation:spiral 3s linear infinite
     }
-    .loading-spinner::after{animation:spiral 2s linear infinite reverse;filter:blur(1px);opacity:.9;width:80%;height:80%;top:10%;left:10%}
-    @keyframes spiral{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
-    #loadingScreen p{color:#fff;font-size:1.2em;margin-top:1em;animation:blink 1.5s infinite}
-    @keyframes blink{0%{opacity:1}50%{opacity:.4}100%{opacity:1}}
+    
+    .loading-spinner::after{
+      animation:spiral 2s linear infinite reverse;
+      filter:blur(1px);
+      opacity:.9;
+      width:80%;
+      height:80%;
+      top:10%;
+      left:10%
+    }
+    
+    @keyframes spiral{
+      0%{transform:rotate(0)}
+      100%{transform:rotate(360deg)}
+    }
+    
+    #loadingScreen p{
+      color:#fff;
+      font-size:1.2em;
+      margin-top:1em;
+      animation:blink 1.5s infinite
+    }
+    
+    @keyframes blink{
+      0%{opacity:1}
+      50%{opacity:.4}
+      100%{opacity:1}
+    }
     
     /* エラー時のアニメーション */
     @keyframes errorShake {
@@ -429,47 +530,49 @@
       100% { opacity: 1; transform: translateY(0); }
     }
     
-         /* PC向けメッセージ調整 */
-     @media (min-width: 768px) {
-       .error-message, .success-message {
-         margin: 20px auto;
-         padding: 15px 20px;
-         font-size: 1.1em;
-         max-width: 500px;
-       }
-     }
-     
-     /* iPhone向け調整 */
-     @media (max-width: 600px) {
-       .error-message, .success-message {
-         margin: 10px 5px;
-         padding: 10px;
-         font-size: 0.9em;
-       }
-       
-       body {
-         position: fixed;
-         overflow: hidden;
-       }
-       .container {
-         height: 100vh;
-         overflow-y: scroll;
-         -webkit-overflow-scrolling: touch;
-         padding: 40px 15px 20px;
-         justify-content: flex-start;
-         padding-top: 40px;
-       }
-             .birth-form {
-         padding: 25px;
-         background: rgba(13, 13, 26, 0.95);
-         border-radius: 15px;
-         backdrop-filter: blur(15px);
-         -webkit-backdrop-filter: blur(15px);
-         border: 1px solid rgba(255, 255, 255, 0.2);
-         width: calc(100% - 40px);
-         max-width: 380px;
-         margin-top: 20px;
-       }
+    /* PC向けメッセージ調整 */
+    @media (min-width: 768px) {
+      .error-message, .success-message {
+        margin: 20px auto;
+        padding: 15px 20px;
+        font-size: 1.1em;
+        max-width: 500px;
+      }
+    }
+    
+    /* iPhone向け調整 */
+    @media (max-width: 600px) {
+      .error-message, .success-message {
+        margin: 10px 5px;
+        padding: 10px;
+        font-size: 0.9em;
+      }
+      
+      body {
+        position: fixed;
+        overflow: hidden;
+      }
+      .container {
+        height: 100vh;
+        overflow-y: scroll;
+        -webkit-overflow-scrolling: touch;
+        padding: 40px 15px 20px;
+        justify-content: flex-start;
+        padding-top: 40px;
+      }
+      
+      .birth-form {
+        padding: 25px;
+        background: rgba(13, 13, 26, 0.95);
+        border-radius: 15px;
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        width: calc(100% - 40px);
+        max-width: 380px;
+        margin-top: 20px;
+      }
+      
       .birth-form select { 
         font-size: 1.1em; 
         padding: 12px;
@@ -484,6 +587,7 @@
         background-size: 16px;
         padding-right: 30px;
       }
+      
       .birth-form button { 
         font-size: 1.2em; 
         padding: 16px 20px;
@@ -492,43 +596,48 @@
         width: 100% !important;
         max-width: 300px !important;
       }
+      
       .form-row {
         flex-direction: column;
         gap: 15px;
       }
+      
       .form-group {
         text-align: center;
       }
-             .back-button {
-         top: 10px;
-         left: 15px;
-         padding: 8px 12px;
-         font-size: 0.9em;
-       }
+      
+      .back-button {
+        top: 10px;
+        left: 15px;
+        padding: 8px 12px;
+        font-size: 0.9em;
+      }
+      
       .result {
         padding: 15px;
         margin: 10px;
       }
-             .guardian {
-         width: 100px !important;
-         animation: guardianGlow 3s ease-in-out infinite alternate, guardianFloat 4s ease-in-out infinite;
-         box-shadow: 0 0 20px rgba(102, 204, 255, 0.6), 0 0 40px rgba(157, 78, 221, 0.4) !important;
-       }
+      
+      .guardian {
+        width: 100px !important;
+        animation: guardianGlow 3s ease-in-out infinite alternate, guardianFloat 4s ease-in-out infinite;
+        box-shadow: 0 0 20px rgba(102, 204, 255, 0.6), 0 0 40px rgba(157, 78, 221, 0.4) !important;
+      }
     }
     
-         /* iPhone X以降のノッチ対応（モバイルのみ） */
-     @media (max-width: 600px) {
-       @supports (padding: max(0px)) {
-         .container {
-           padding-top: max(40px, env(safe-area-inset-top));
-           padding-bottom: max(20px, env(safe-area-inset-bottom));
-         }
-         .back-button {
-           top: max(10px, env(safe-area-inset-top) + 5px);
-           left: max(15px, env(safe-area-inset-left) + 5px);
-         }
-       }
-     }
+    /* iPhone X以降のノッチ対応（モバイルのみ） */
+    @media (max-width: 600px) {
+      @supports (padding: max(0px)) {
+        .container {
+          padding-top: max(40px, env(safe-area-inset-top));
+          padding-bottom: max(20px, env(safe-area-inset-bottom));
+        }
+        .back-button {
+          top: max(10px, env(safe-area-inset-top) + 5px);
+          left: max(15px, env(safe-area-inset-left) + 5px);
+        }
+      }
+    }
   </style>
 </head>
 <body>
@@ -548,15 +657,21 @@
       <div class="form-row">
         <div class="form-group">
           <label for="year">西暦</label>
-          <select id="year" required></select>
+          <select id="year" required>
+            <option value="">選択</option>
+          </select>
         </div>
         <div class="form-group">
           <label for="month">月</label>
-          <select id="month" required></select>
+          <select id="month" required>
+            <option value="">選択</option>
+          </select>
         </div>
         <div class="form-group">
           <label for="day">日</label>
-          <select id="day" required></select>
+          <select id="day" required>
+            <option value="">選択</option>
+          </select>
         </div>
       </div>
       <button type="submit">守護神を導き出す</button>
@@ -578,722 +693,165 @@
   </div>
   
   <script>
-    // ボタンをクリックしたらアラートを出す処理
-        // フォーム送信時に入力が空ならエラーを表示 
-    // 初期化
+    // ページ読み込み完了時に即座にセレクトボックスを初期化
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM loaded, initializing selects...');
+      initializeSelects();
+    });
+
+    // セレクトボックスの初期化関数
     function initializeSelects() {
+      console.log('Initializing select boxes...');
+      
+      // 年の選択肢を追加
       const yearSelect = document.getElementById("year");
-      yearSelect.innerHTML = '<option value="">選択</option>';
-      for (let y = 2025; y >= 1900; y--) {
-        const opt = document.createElement("option");
-        opt.value = y; opt.textContent = y + "年"; yearSelect.appendChild(opt);
-      }
-      const monthSelect = document.getElementById("month");
-      monthSelect.innerHTML = '<option value="">選択</option>';
-      for (let m = 1; m <= 12; m++) {
-        const opt = document.createElement("option");
-        opt.value = m; opt.textContent = m + "月"; monthSelect.appendChild(opt);
-      }
-      const daySelect = document.getElementById("day");
-      daySelect.innerHTML = '<option value="">選択</option>';
-      for (let d = 1; d <= 31; d++) {
-        const opt = document.createElement("option");
-        opt.value = d; opt.textContent = d + "日"; daySelect.appendChild(opt);
+      if (yearSelect) {
+        yearSelect.innerHTML = '<option value="">選択</option>';
+        for (let y = 2025; y >= 1900; y--) {
+          const opt = document.createElement("option");
+          opt.value = y;
+          opt.textContent = y + "年";
+          yearSelect.appendChild(opt);
+        }
+        console.log('Year select initialized with', yearSelect.children.length - 1, 'options');
       }
       
-      // リアルタイムバリデーションの設定
-      setupRealTimeValidation();
-    }
-    
-    // リアルタイムバリデーション設定
-    function setupRealTimeValidation() {
-      const yearSelect = document.getElementById("year");
+      // 月の選択肢を追加
       const monthSelect = document.getElementById("month");
+      if (monthSelect) {
+        monthSelect.innerHTML = '<option value="">選択</option>';
+        for (let m = 1; m <= 12; m++) {
+          const opt = document.createElement("option");
+          opt.value = m;
+          opt.textContent = m + "月";
+          monthSelect.appendChild(opt);
+        }
+        console.log('Month select initialized with', monthSelect.children.length - 1, 'options');
+      }
+      
+      // 日の選択肢を追加
       const daySelect = document.getElementById("day");
-      
-      // 月が変更されたときに日の選択肢を調整
-      monthSelect.addEventListener("change", function() {
-        adjustDayOptions();
-        validateCurrentInput();
-      });
-      
-      // 年が変更されたときに日の選択肢を調整（うるう年のため）
-      yearSelect.addEventListener("change", function() {
-        adjustDayOptions();
-        validateCurrentInput();
-      });
-      
-      // 日が変更されたときにバリデーション
-      daySelect.addEventListener("change", function() {
-        validateCurrentInput();
-      });
-    }
-    
-    // 日の選択肢を調整（うるう年と月の日数に応じて）
-    function adjustDayOptions() {
-      const yearSelect = document.getElementById("year");
-      const monthSelect = document.getElementById("month");
-      const daySelect = document.getElementById("day");
-      
-      const year = parseInt(yearSelect.value);
-      const month = parseInt(monthSelect.value);
-      
-      if (!year || !month) {
-        // 年または月が選択されていない場合は31日まで表示
+      if (daySelect) {
         daySelect.innerHTML = '<option value="">選択</option>';
         for (let d = 1; d <= 31; d++) {
           const opt = document.createElement("option");
-          opt.value = d; opt.textContent = d + "日"; daySelect.appendChild(opt);
+          opt.value = d;
+          opt.textContent = d + "日";
+          daySelect.appendChild(opt);
         }
-        return;
+        console.log('Day select initialized with', daySelect.children.length - 1, 'options');
       }
       
-      // 選択された年月の日数を計算
-      const daysInMonth = new Date(year, month, 0).getDate();
-      
-      // 日の選択肢を再構築
-      daySelect.innerHTML = '<option value="">選択</option>';
-      for (let d = 1; d <= daysInMonth; d++) {
-        const opt = document.createElement("option");
-        opt.value = d; opt.textContent = d + "日"; daySelect.appendChild(opt);
-      }
+      // イベントリスナーの設定
+      setupEventListeners();
     }
-    
-    // 現在の入力値をリアルタイムでバリデーション
-    function validateCurrentInput() {
+
+    // イベントリスナーの設定
+    function setupEventListeners() {
       const yearSelect = document.getElementById("year");
       const monthSelect = document.getElementById("month");
       const daySelect = document.getElementById("day");
       
-      const y = parseInt(yearSelect.value);
-      const m = parseInt(monthSelect.value);
-      const d = parseInt(daySelect.value);
+      if (monthSelect) {
+        monthSelect.addEventListener("change", function() {
+          adjustDayOptions();
+          validateCurrentInput();
+        });
+      }
       
-      // すべての値が入力されている場合のみバリデーション
-      if (y && m && d) {
-        // 日付の妥当性チェック
-        const date = new Date(y, m - 1, d);
-        if (date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d) {
-          // 有効な日付の場合、エラー表示をクリア
-          clearErrorDisplay();
-        }
+      if (yearSelect) {
+        yearSelect.addEventListener("change", function() {
+          adjustDayOptions();
+          validateCurrentInput();
+        });
+      }
+      
+      if (daySelect) {
+        daySelect.addEventListener("change", function() {
+          validateCurrentInput();
+        });
       }
     }
-    function goBack(){ window.location.href='index.html'; }
 
-                   // 守護神データ
-             const guardians = {
-         '子': {
-           name:'千手観音',
-           desc:'無限の慈悲をもって汝を抱擁する者なり',
-           image:'photo/senju.jpg',
-           personal:`幾千の手は汝を包み、悲しみも迷いも静かに解き放つ。  
-     汝が孤独に沈むときも、我が光は影の背後にありて温もりを授けん。  
-     泣くな、恐れるな。慈悲の流れは絶えず汝の胸奥に息づいておるのだ。`
-         },
-         '丑': {
-           name:'虚空蔵菩薩',
-           desc:'無尽の智慧を授けし導き手なり',
-           image:'photo/kokuzo.jpg',
-           personal:`虚空は限りなき智慧の海なり。  
-     汝が迷い問いを発するとき、心を澄まし空を仰げ。  
-     思考の奥底に眠る答えを我が声が呼び覚まし、闇を裂いて道を示さん。`
-         },
-         '寅': {
-           name:'虚空蔵菩薩',
-           desc:'無尽の智慧を授けし導き手なり',
-           image:'photo/kokuzo.jpg',
-           personal:`心に燃ゆる力を持ちながら、時にその火は行く道を惑わす。  
-     焦るな、力を制すは智慧なり。  
-     我は汝に知恵の剣を授け、怒涛の流れを鎮め、進むべき大地を照らさん。`
-         },
-         '卯': {
-           name:'文殊菩薩',
-           desc:'智慧の剣をもって迷いを断つ者なり',
-           image:'photo/monju.jpg',
-           personal:`心は常に揺らぎ、迷いは幾千の影を生む。  
-     されど汝よ、その刃に恐れるな。  
-     我が智慧の剣は虚妄を断ち切り、汝に真理を映し出す光となろう。`
-         },
-         '辰': {
-           name:'普賢菩薩',
-           desc:'実践の徳を授ける者なり',
-           image:'photo/fugen.jpg',
-           personal:`ただ願うのみでは道は開けぬ。  
-     行動こそが真の力を呼び覚ます。  
-     我は汝の一歩を守り、その歩みを徳の花で満たし、未来を芳しく導かん。`
-         },
-         '巳': {
-           name:'普賢菩薩',
-           desc:'実践の徳を授ける者なり',
-           image:'photo/fugen.jpg',
-           personal:`思う心と成す行いがひとつとなるとき、道は確かなものとなる。  
-     汝の中に潜む決意を我は見抜き、迷わぬ実践を授けん。  
-     行け、行いこそが汝の祈りを現実に変える。`
-         },
-         '午': {
-           name:'勢至菩薩',
-           desc:'智慧の光を放ち衆生を救う者なり',
-           image:'photo/seishi.jpg',
-           personal:`光は常に汝の内に燃えておる。  
-     汝が恐れを抱くとき、その光は弱まるが決して消えはせぬ。  
-     信じよ、内なる炎を。我は智慧の灯を絶やさず、汝を照らし続けん。`
-         },
-         '未': {
-           name:'大日如来',
-           desc:'宇宙の理をもって全てを照らす者なり',
-           image:'photo/dainichi.jpg',
-           personal:`天も地も、森羅万象も、我が光に包まれておる。  
-     汝もまた、その宇宙の理の一部なり。  
-     恐れるな、すべては巡りの中にあり、汝の歩みは必然の流れに抱かれておるのだ。`
-         },
-         '申': {
-           name:'大日如来',
-           desc:'宇宙の理をもって全てを照らす者なり',
-           image:'photo/dainichi.jpg',
-           personal:`星々の瞬き、風の囁き、全ては理の調べなり。  
-     汝の心もまた、その旋律に響き合う一音に過ぎぬ。  
-     流れに抗うな、調和を知れ。理に従う者こそ、宇宙の光を得ん。`
-         },
-         '酉': {
-           name:'不動明王',
-           desc:'不動の意志にて悪を退ける者なり',
-           image:'photo/fudo.jpg',
-           personal:`炎は我が衣、怒りの相は慈悲の姿。  
-     汝が弱き心に飲まれるとき、悪しき影は近づかん。  
-     我はその影を焼き払い、揺るがぬ意志を授けん。  
-     心を決して揺るがすな、立ち上がるその刹那、汝は真の強さを知るであろう。`
-         },
-         '戌': {
-           name:'阿弥陀如来',
-           desc:'無量の慈悲をもって救済する者なり',
-           image:'photo/amida.jpg',
-           personal:`無量の光と無限の慈悲は、絶え間なく汝を包み込んでおる。  
-     罪も過ちも、嘆きも全てを受け入れ、赦しと救いを与えん。  
-     心を閉ざすな、祈りを忘れるな。汝が呼ぶ声に、我は必ず応えん。`
-         },
-         '亥': {
-           name:'阿弥陀如来',
-           desc:'無量の慈悲をもって救済する者なり',
-           image:'photo/amida.jpg',
-           personal:`暗闇に迷うときも、尽きぬ慈悲は汝を導く。  
-     嘆きも怒りも抱いたまま進むがよい、我はその全てを抱擁す。  
-     涙の雫はやがて光となり、汝を救済の道へと昇華せん。`
-         }
-       };
-    const zodiacs = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
-    const monthTraits = {1:"寒月に生まれし静謐の心を持ち",2:"雪解けを待つ忍耐の徳を授かり",3:"芽吹きの息吹を宿す魂を抱き",4:"萌ゆる命の躍動を胸に刻み",5:"薫風と共に歩む軽やかな心を携え",6:"豊穣の光を授かる運命に生まれ",7:"深き水面の如き洞察を得て",8:"烈日の炎に祝福されし者なり",9:"実りの秋に育まれし叡智を持ち",10:"黄昏に咲く決意の花を宿し",11:"夜霜をも溶かす感受性を抱き",12:"雪華の中に咲く慈愛の心を備える"};
-    const dayTraits = {1:"新たなる道を拓く先駆者なり",2:"調和を重んじる清き心を持つ者",3:"喜びを分かち合う光の使い",4:"堅実に積み上げる力を授かりし者",5:"自由と変化を愛する風の魂",6:"慈しみ深き慈悲の持ち主",7:"深遠なる洞察を授かる者",8:"権威と達成の星を宿す者",9:"無私の奉仕を選びし者",11:"霊性に目覚めし導き手",22:"大いなる責務を担う魂"};
-
-    // エラーメッセージ表示関数
-    function showErrorMessage(message) {
-      // 既存のエラーメッセージを削除
-      const existingError = document.querySelector('.error-message');
-      if (existingError) {
-        existingError.remove();
-      }
-      
-      // 新しいエラーメッセージを作成
-      const errorDiv = document.createElement('div');
-      errorDiv.className = 'error-message';
-      errorDiv.textContent = message;
-      errorDiv.style.cssText = `
-        color: #ff6b6b;
-        background: rgba(255, 107, 107, 0.1);
-        border: 1px solid rgba(255, 107, 107, 0.3);
-        border-radius: 8px;
-        padding: 12px;
-        margin: 15px 0;
-        text-align: center;
-        font-weight: bold;
-        animation: errorShake 0.5s ease-in-out;
-      `;
-      
-      // フォームの前に挿入
-      const form = document.getElementById('birthForm');
-      form.parentNode.insertBefore(errorDiv, form);
-      
-      // エラーメッセージまでスクロール
-      setTimeout(() => {
-        errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 100);
-    }
-    
-    // エラーフィールドのハイライト関数
-    function highlightErrorFields(yearSelect, monthSelect, daySelect, y, m, d) {
-      // すべてのエラーハイライトをクリア
-      clearErrorHighlights();
-      
-      // エラーのある項目をハイライト
-      if (!y) yearSelect.style.borderColor = '#ff6b6b';
-      if (!m) monthSelect.style.borderColor = '#ff6b6b';
-      if (!d) daySelect.style.borderColor = '#ff6b6b';
-      
-      // 値はあるが範囲外の場合
-      if (y && (y < 1900 || y > new Date().getFullYear())) yearSelect.style.borderColor = '#ff6b6b';
-      if (m && (m < 1 || m > 12)) monthSelect.style.borderColor = '#ff6b6b';
-      if (d && (d < 1 || d > 31)) daySelect.style.borderColor = '#ff6b6b';
-      
-      // 存在しない日付の場合
-      if (y && m && d) {
-        const date = new Date(y, m - 1, d);
-        if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) {
-          yearSelect.style.borderColor = '#ff6b6b';
-          monthSelect.style.borderColor = '#ff6b6b';
-          daySelect.style.borderColor = '#ff6b6b';
-        }
-      }
-    }
-    
-    // エラーハイライトをクリアする関数
-    function clearErrorHighlights() {
-      const selects = document.querySelectorAll('#year, #month, #day');
-      selects.forEach(select => {
-        select.style.borderColor = 'rgba(102,204,255,0.3)';
-      });
-    }
-    
-    // エラー表示をクリアする関数
-    function clearErrorDisplay() {
-      const existingError = document.querySelector('.error-message');
-      if (existingError) {
-        existingError.remove();
-      }
-      const existingSuccess = document.querySelector('.success-message');
-      if (existingSuccess) {
-        existingSuccess.remove();
-      }
-      clearErrorHighlights();
-    }
-    
-    // 成功メッセージ表示関数
-    function showSuccessMessage() {
-      // 既存の成功メッセージを削除
-      const existingSuccess = document.querySelector('.success-message');
-      if (existingSuccess) {
-        existingSuccess.remove();
-      }
-      
-      // 新しい成功メッセージを作成
-      const successDiv = document.createElement('div');
-      successDiv.className = 'success-message';
-      successDiv.textContent = '✓ 入力内容が確認されました';
-      successDiv.style.cssText = `
-        color: #51cf66;
-        background: rgba(81, 207, 102, 0.1);
-        border: 1px solid rgba(81, 207, 102, 0.3);
-        border-radius: 8px;
-        padding: 8px 12px;
-        margin: 10px 0;
-        text-align: center;
-        font-weight: bold;
-        font-size: 0.9em;
-        animation: successFade 0.5s ease-in-out;
-      `;
-      
-      // フォームの前に挿入
-      const form = document.getElementById('birthForm');
-      form.parentNode.insertBefore(successDiv, form);
-      
-      // 3秒後に自動で消す
-      setTimeout(() => {
-        if (successDiv.parentNode) {
-          successDiv.remove();
-        }
-      }, 3000);
-    }
-
-         // タイプライター表示効果
-     function typeWriter(el, text, speed=100) {
-       el.innerHTML = '';
-       el.style.opacity = '1';
-       el.style.transform = 'translateY(0)';
-       
-       let i = 0;
-       function type() {
-         if (i < text.length) {
-           el.innerHTML += text.charAt(i);
-           i++;
-           setTimeout(type, speed);
-         } else {
-           // タイプライター完了後に再度スクロールして文章全体を表示
-           setTimeout(() => {
-             el.scrollIntoView({ 
-               behavior: 'smooth', 
-               block: 'center' 
-             });
-           }, 500);
-         }
-       }
-       
-       setTimeout(type, 200);
-     }
-
-    // フォーム送信時に入力チェック
-    document.getElementById("birthForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      
-      // フォーム要素の取得
-      const yearSelect = document.getElementById("year");
-      const monthSelect = document.getElementById("month");
-      const daySelect = document.getElementById("day");
-      
-      // 値の取得と変換
-      const y = parseInt(yearSelect.value);
-      const m = parseInt(monthSelect.value);
-      const d = parseInt(daySelect.value);
-      
-      // 入力値の検証
-      let isValid = true;
-      let errorMessage = "";
-      
-      // 1. 必須項目チェック
-      if (!y || !m || !d) {
-        isValid = false;
-        errorMessage = "すべての項目を選択してください。";
-      }
-      
-      // 2. 年齢範囲チェック（1900年〜現在）
-      if (isValid && (y < 1900 || y > new Date().getFullYear())) {
-        isValid = false;
-        errorMessage = "生年は1900年から現在の年までで選択してください。";
-      }
-      
-      // 3. 月の範囲チェック
-      if (isValid && (m < 1 || m > 12)) {
-        isValid = false;
-        errorMessage = "月は1月から12月までで選択してください。";
-      }
-      
-      // 4. 日の範囲チェック（基本的な範囲）
-      if (isValid && (d < 1 || d > 31)) {
-        isValid = false;
-        errorMessage = "日は1日から31日までで選択してください。";
-      }
-      
-      // 5. 日付の妥当性チェック（存在する日付かどうか）
-      if (isValid) {
-        const date = new Date(y, m - 1, d);
-        if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) {
-          isValid = false;
-          errorMessage = "存在しない日付です。正しい日付を選択してください。";
-        }
-      }
-      
-      // 6. 未来の日付チェック
-      if (isValid) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // 時刻をリセットして日付のみで比較
-        const inputDate = new Date(y, m - 1, d);
-        if (inputDate > today) {
-          isValid = false;
-          errorMessage = "未来の日付は選択できません。";
-        }
-      }
-      
-      // 7. 極端に古い日付のチェック（120歳以上）
-      if (isValid) {
-        const today = new Date();
-        const age = today.getFullYear() - y;
-        if (age > 120) {
-          isValid = false;
-          errorMessage = "生年が古すぎます。正しい生年を入力してください。";
-        }
-      }
-      
-      // エラーがある場合は処理を停止
-      if (!isValid) {
-        // エラーメッセージを表示
-        showErrorMessage(errorMessage);
-        
-        // エラーのある項目をハイライト
-        highlightErrorFields(yearSelect, monthSelect, daySelect, y, m, d);
-        
-        return;
-      }
-      
-      // バリデーション成功時の処理
-      clearErrorDisplay();
-      
-      // 成功メッセージを表示（オプション）
-      showSuccessMessage();
-
-                    // 神秘的な演出開始
-       const mysticalEffect = document.getElementById('mysticalEffect');
-       mysticalEffect.style.display = 'flex';
-       mysticalEffect.classList.add('show');
-       
-       // フォームを非表示
-       document.getElementById("birthForm").style.display="none";
-       
-       // 2秒後に神秘的な演出を終了し、ローディング開始
-       setTimeout(() => {
-         mysticalEffect.classList.remove('show');
-         setTimeout(() => {
-           mysticalEffect.style.display = 'none';
-           
-           // ローディング画面表示
-           const loading = document.getElementById("loadingScreen");
-           loading.style.display="flex";
-           
-           // フェードイン効果
-           setTimeout(() => {
-             loading.classList.add('show');
-           }, 10);
-         }, 2000);
-       }, 2000);
-
-       // 5秒後に結果表示（神秘的な演出の時間を考慮）
-       setTimeout(()=>{
-         try {
-           // フェードアウト効果
-           loading.classList.remove('show');
-           setTimeout(() => {
-             loading.style.display="none";
-           }, 800);
-           const zodiac = zodiacs[(y - 4) % 12];
-           const guardian = guardians[zodiac];
-           const monthText = monthTraits[m] || "";
-           const dayText = dayTraits[d] || "独自の使命を携えし者";
-           
-           // 龍の画像と守護神画像の読み込みを確認
-           const dragonImg = new Image();
-           const guardianImg = new Image();
-           
-           dragonImg.onload = function() {
-             guardianImg.onload = function() {
-               document.getElementById("guardian").innerHTML =
-                 `<div class="dragon-reveal">
-                    <img class="dragon-image" src="photo/ryu.png" alt="AI鑑定師 龍">
-                  </div>
-                  <div class="guardian-reveal">
-                    <img class="guardian" src="${guardian.image}" alt="${guardian.name}">
-                    <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
-                    <div>${guardian.desc}</div>
-                  </div>`;
-              
-                   const oracleText = `汝に告ぐ
-
-         ${guardian.name}は常にそなたを見守り
-         心弱き時には慈悲を注ぎ
-         道を誤る時には智慧の灯を掲げん
-
-         ${m}月に生まれし汝
-         ${monthText}
-
-         生まれしその日は「${d}」
-         ${dayText}
-
-         この運命を胸に刻み
-         恐れることなく進むがよい
-         汝の歩む道は
-         光と共に在る
-
-         ${guardian.personal}`;
-              
-                   document.getElementById("resultBox").style.display="block";
-                   
-                   // 結果表示エリアにスクロール
-                   setTimeout(() => {
-                     document.getElementById("resultBox").scrollIntoView({ 
-                       behavior: 'smooth', 
-                       block: 'center' 
-                     });
-                   }, 100);
-                   
-                   typeWriter(document.getElementById("oracle"), oracleText, 80);
-                   
-                   document.getElementById("detailLink").onclick=()=>{ window.location.href=`confirm.html?year=${y}&month=${m}&day=${d}`; }
-                 };
-           
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               dragonImg.onerror = function() {
-             guardianImg.onerror = function() {
-               // 画像読み込みエラー時の処理
-               document.getElementById("guardian").innerHTML =
-                 `<div class="dragon-reveal">
-                    <div class="dragon-placeholder">🐉</div>
-                  </div>
-                  <div class="guardian-reveal">
-                    <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
-                    <div>${guardian.desc}</div>
-                  </div>`;
-               
-               const oracleText = `汝に告ぐ
-
-      ${guardian.name}は常にそなたを見守り
-      心弱き時には慈悲を注ぎ
-      道を誤る時には智慧の灯を掲げん
-
-      ${m}月に生まれし汝
-      ${monthText}
-
-      生まれしその日は「${d}」
-      ${dayText}
-
-      この運命を胸に刻み
-      恐れることなく進むがよい
-      汝の歩む道は
-      光と共に在る
-
-      ${guardian.personal}`;
-               
-               document.getElementById("resultBox").style.display="block";
-                
-               // 結果表示エリアにスクロール
-               setTimeout(() => {
-                 document.getElementById("resultBox").scrollIntoView({ 
-                   behavior: 'smooth', 
-                   block: 'center' 
-                 });
-               }, 100);
-               
-               typeWriter(document.getElementById("oracle"), oracleText, 80);
-               
-               document.getElementById("detailLink").onclick=()=>{ window.location.href=`confirm.html?year=${y}&month=${m}&day=${d}`; }
-             };
-           };
-           
-           dragonImg.src = "photo/ryu.png";
-           guardianImg.src = guardian.image;
-           
-                    } catch (error) {
-             console.error("エラーが発生しました:", error);
-             loading.classList.remove('show');
-             setTimeout(() => {
-               loading.style.display="none";
-             }, 800);
-             alert("鑑定中にエラーが発生しました。もう一度お試しください。");
-             document.getElementById("birthForm").style.display="block";
-           }
-         },3000);
-    });
-
-         // 神秘的な演出制御
-     function startMysticalEffect() {
-       const mysticalEffect = document.getElementById('mysticalEffect');
-       const container = document.querySelector('.container');
-       
-       // 神秘的な演出を表示
-       mysticalEffect.classList.add('show');
-       
-       // 1秒後にフェードアウト開始
-       setTimeout(() => {
-         mysticalEffect.classList.remove('show');
-         
-         // フェードアウト完了後に神秘的な演出を削除し、メインコンテンツを表示
-         setTimeout(() => {
-           mysticalEffect.style.display = 'none';
-           container.classList.add('show');
-         }, 1000);
-       }, 1000);
-     }
-     
-     // DOM読み込み完了時の初期化
-     document.addEventListener("DOMContentLoaded", function() {
-       try {
-         // フォーム初期化を確実に実行
-         initializeSelects();
-         console.log("DOMContentLoaded: 生年月日入力フォームが正常に初期化されました");
-       } catch (error) {
-         console.error("DOMContentLoaded 初期化エラー:", error);
-         manualInitializeSelects();
-       }
-     });
-     
-     // ページ読み込み時の初期化
-     window.addEventListener("load", function() {
-       try {
-         // 神秘的な演出を完全に無効化
-         const mysticalEffect = document.getElementById('mysticalEffect');
-         if (mysticalEffect) {
-           mysticalEffect.style.display = 'none';
-         }
-         
-         // メインコンテンツを即座に表示
-         const container = document.querySelector('.container');
-         if (container) {
-           container.style.opacity = '1';
-           container.classList.add('show');
-         }
-         
-         // フォームを確実に表示
-         const form = document.getElementById('birthForm');
-         if (form) {
-           form.style.display = 'block';
-         }
-         
-         // フォーム初期化を確実に実行
-         setTimeout(() => {
-           try {
-             initializeSelects();
-             console.log("生年月日入力フォームが正常に初期化されました");
-           } catch (initError) {
-             console.error("セレクトボックス初期化エラー:", initError);
-             // 手動でセレクトボックスを初期化
-             manualInitializeSelects();
-           }
-         }, 100);
-         
-       } catch (error) {
-         console.error("初期化エラー:", error);
-         // エラーが発生してもフォームを表示
-         const container = document.querySelector('.container');
-         if (container) {
-           container.style.opacity = '1';
-         }
-         const form = document.getElementById('birthForm');
-         if (form) {
-           form.style.display = 'block';
-         }
-         // 手動でセレクトボックスを初期化
-         manualInitializeSelects();
-       }
-     });
-     
-     // 手動初期化関数（フォールバック用）
-     function manualInitializeSelects() {
-       try {
-         // 年セレクトボックス
-         const yearSelect = document.getElementById("year");
-         if (yearSelect) {
-           yearSelect.innerHTML = '<option value="">選択</option>';
-           for (let y = 2025; y >= 1900; y--) {
-             const opt = document.createElement("option");
-             opt.value = y;
-             opt.textContent = y + "年";
-             yearSelect.appendChild(opt);
-           }
-         }
-         
-         // 月セレクトボックス
-         const monthSelect = document.getElementById("month");
-         if (monthSelect) {
-           monthSelect.innerHTML = '<option value="">選択</option>';
-           for (let m = 1; m <= 12; m++) {
-             const opt = document.createElement("option");
-             opt.value = m;
-             opt.textContent = m + "月";
-             monthSelect.appendChild(opt);
-           }
-         }
-         
-         // 日セレクトボックス
-         const daySelect = document.getElementById("day");
-         if (daySelect) {
-           daySelect.innerHTML = '<option value="">選択</option>';
-           for (let d = 1; d <= 31; d++) {
-             const opt = document.createElement("option");
-             opt.value = d;
-             opt.textContent = d + "日";
-             daySelect.appendChild(opt);
-           }
-         }
-         
-         console.log("手動初期化が完了しました");
-       } catch (error) {
-         console.error("手動初期化エラー:", error);
-       }
-     }
-  </script>
-</body>
-</html>
+    // 守護神データ
+    const guardians = {
+      '子': {
+        name:'千手観音',
+        desc:'無限の慈悲をもって汝を抱擁する者なり',
+        image:'photo/senju.jpg',
+        personal:`幾千の手は汝を包み、悲しみも迷いも静かに解き放つ。  
+汝が孤独に沈むときも、我が光は影の背後にありて温もりを授けん。  
+泣くな、恐れるな。慈悲の流れは絶えず汝の胸奥に息づいておるのだ。`
+      },
+      '丑': {
+        name:'虚空蔵菩薩',
+        desc:'無尽の智慧を授けし導き手なり',
+        image:'photo/kokuzo.jpg',
+        personal:`虚空は限りなき智慧の海なり。  
+汝が迷い問いを発するとき、心を澄まし空を仰げ。  
+思考の奥底に眠る答えを我が声が呼び覚まし、闇を裂いて道を示さん。`
+      },
+      '寅': {
+        name:'虚空蔵菩薩',
+        desc:'無尽の智慧を授けし導き手なり',
+        image:'photo/kokuzo.jpg',
+        personal:`心に燃ゆる力を持ちながら、時にその火は行く道を惑わす。  
+焦るな、力を制すは智慧なり。  
+我は汝に知恵の剣を授け、怒涛の流れを鎮め、進むべき大地を照らさん。`
+      },
+      '卯': {
+        name:'文殊菩薩',
+        desc:'智慧の剣をもって迷いを断つ者なり',
+        image:'photo/monju.jpg',
+        personal:`心は常に揺らぎ、迷いは幾千の影を生む。  
+されど汝よ、その刃に恐れるな。  
+我が智慧の剣は虚妄を断ち切り、汝に真理を映し出す光となろう。`
+      },
+      '辰': {
+        name:'普賢菩薩',
+        desc:'実践の徳を授ける者なり',
+        image:'photo/fugen.jpg',
+        personal:`ただ願うのみでは道は開けぬ。  
+行動こそが真の力を呼び覚ます。  
+我は汝の一歩を守り、その歩みを徳の花で満たし、未来を芳しく導かん。`
+      },
+      '巳': {
+        name:'普賢菩薩',
+        desc:'実践の徳を授ける者なり',
+        image:'photo/fugen.jpg',
+        personal:`思う心と成す行いがひとつとなるとき、道は確かなものとなる。  
+汝の中に潜む決意を我は見抜き、迷わぬ実践を授けん。  
+行け、行いこそが汝の祈りを現実に変える。`
+      },
+      '午': {
+        name:'勢至菩薩',
+        desc:'智慧の光を放ち衆生を救う者なり',
+        image:'photo/seishi.jpg',
+        personal:`光は常に汝の内に燃えておる。  
+汝が恐れを抱くとき、その光は弱まるが決して消えはせぬ。  
+信じよ、内なる炎を。我は智慧の灯を絶やさず、汝を照らし続けん。`
+      },
+      '未': {
+        name:'大日如来',
+        desc:'宇宙の理をもって全てを照らす者なり',
+        image:'photo/dainichi.jpg',
+        personal:`天も地も、森羅万象も、我が光に包まれておる。  
+汝もまた、その宇宙の理の一部なり。  
+恐れるな、すべては巡りの中にあり、汝の歩みは必然の流れに抱かれておるのだ。`
+      },
+      '申': {
+        name:'大日如来',
+        desc:'宇宙の理をもって全てを照らす者なり',
+        image:'photo/dainichi.jpg',
+        personal:`星々の瞬き、風の囁き、全ては理の調べなり。  
+汝の心もまた、その旋律に響き合う一音に過ぎぬ。  
+流れに抗うな、調和を知れ。理に従う者こそ、宇宙の光を得ん。`
+      },
+      '酉': {
+        name:'不動明王',
+        desc:'不動の意志にて悪を退ける者なり',
+        image:'photo/fudo.jpg',
+        personal:`炎は我が衣、怒りの相は慈悲の姿。  
+汝が弱き心に飲まれるとき、悪しき影は近づかん。  
+我はその影を焼き払い、揺るがぬ意志を授けん。  
+心を決して揺るがすな、立ち上がるその刹那、汝は真の強
