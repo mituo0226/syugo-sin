@@ -102,12 +102,12 @@
     }
     #storyText {
       position: absolute;
-      bottom: 25%;
+      bottom: 30%;
       left: 50%;
       transform: translateX(-50%);
       font-size: 1.2em;
       line-height: 1.8;
-      max-width: 85%;
+      max-width: 95%;
       white-space: pre-line;
       text-align: center;
       opacity: 0;
@@ -142,15 +142,20 @@
     .birth-input-button {
       margin-top: 30px;
       opacity: 0;
-      transition: opacity 1s ease;
-      position: fixed;
-      bottom: 20px;
+      transition: all 1s ease;
+      position: absolute;
+      bottom: 15%;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translateX(-50%) translateY(50px);
       z-index: 1000;
       text-align: center;
       width: calc(100% - 40px);
       max-width: 400px;
+    }
+    
+    .birth-input-button.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
     .birth-input-button button {
       padding: 18px 60px;
@@ -187,25 +192,29 @@
       #storyText { 
         font-size: 1.1em; 
         text-align: center; 
-        max-width: 95%;
+        max-width: 98%;
         padding: 20px;
-        bottom: 25%;
+        bottom: 30%;
       }
-      .birth-input-button {
-        position: fixed !important;
-        bottom: 30px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        width: calc(100% - 40px) !important;
-        max-width: 400px !important;
-        background: rgba(13, 13, 26, 0.95) !important;
-        padding: 20px !important;
-        border-radius: 20px !important;
-        backdrop-filter: blur(15px) !important;
-        -webkit-backdrop-filter: blur(15px) !important;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-      }
+             .birth-input-button {
+         position: absolute !important;
+         bottom: 15% !important;
+         left: 50% !important;
+         transform: translateX(-50%) translateY(50px) !important;
+         width: calc(100% - 40px) !important;
+         max-width: 400px !important;
+         background: rgba(13, 13, 26, 0.95) !important;
+         padding: 20px !important;
+         border-radius: 20px !important;
+         backdrop-filter: blur(15px) !important;
+         -webkit-backdrop-filter: blur(15px) !important;
+         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+         border: 1px solid rgba(255, 255, 255, 0.1) !important;
+       }
+       
+       .birth-input-button.show {
+         transform: translateX(-50%) translateY(0) !important;
+       }
       .birth-input-button button {
         font-size: 1.4em !important;
         padding: 18px 40px !important;
@@ -229,9 +238,9 @@
         padding-top: max(40px, env(safe-area-inset-top));
         padding-bottom: max(140px, env(safe-area-inset-bottom) + 80px);
       }
-      .birth-input-button {
-        bottom: max(30px, env(safe-area-inset-bottom) + 20px) !important;
-      }
+             .birth-input-button {
+         bottom: max(15%, env(safe-area-inset-bottom) + 20px) !important;
+       }
     }
   </style>
 </head>
@@ -292,12 +301,14 @@
             setTimeout(showNextLine, 1500);
           }
         }, 50);
-      } else {
-        // メッセージ終了後、生年月日入力ボタンを表示
-        const button = document.getElementById("birthInputButton");
-        button.style.opacity = 1;
-        console.log("ボタンが表示されました");
-      }
+             } else {
+         // メッセージ終了後、生年月日入力ボタンを表示
+         const button = document.getElementById("birthInputButton");
+         setTimeout(() => {
+           button.classList.add('show');
+           console.log("ボタンが表示されました");
+         }, 1000);
+       }
     }
 
     // スプラッシュスクリーン制御
