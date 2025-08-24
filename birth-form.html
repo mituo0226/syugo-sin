@@ -269,6 +269,35 @@
       box-shadow: inset 0 0 5px rgba(102,204,255,0.4);
     }
     
+    /* セレクトボックスのオプションスタイル */
+    .birth-form select option {
+      background: #0d0d1a !important;
+      color: #fff !important;
+      padding: 8px;
+      font-size: 1em;
+    }
+    
+    .birth-form select option:hover {
+      background: #1a1a2e !important;
+      color: #66ccff !important;
+    }
+    
+    .birth-form select option:checked {
+      background: #66ccff !important;
+      color: #000 !important;
+    }
+    
+    /* ブラウザ互換性のための追加スタイル */
+    .birth-form select:focus option:checked {
+      background: #66ccff !important;
+      color: #000 !important;
+    }
+    
+    .birth-form select:focus option:hover {
+      background: #1a1a2e !important;
+      color: #66ccff !important;
+    }
+    
     /* PC向けセレクトボックス調整 */
     @media (min-width: 768px) {
       .birth-form select {
@@ -586,6 +615,33 @@
         background-position: right 8px center;
         background-size: 16px;
         padding-right: 30px;
+      }
+      
+      .birth-form select option {
+        background: #0d0d1a !important;
+        color: #fff !important;
+        padding: 8px;
+        font-size: 1em;
+      }
+      
+      .birth-form select option:hover {
+        background: #1a1a2e !important;
+        color: #66ccff !important;
+      }
+      
+      .birth-form select option:checked {
+        background: #66ccff !important;
+        color: #000 !important;
+      }
+      
+      .birth-form select:focus option:checked {
+        background: #66ccff !important;
+        color: #000 !important;
+      }
+      
+      .birth-form select:focus option:hover {
+        background: #1a1a2e !important;
+        color: #66ccff !important;
       }
       
       .birth-form button { 
