@@ -779,11 +779,16 @@
     // セレクトボックスの初期化関数
     function initializeSelects() {
       console.log('Initializing select boxes...');
+      console.log('Document ready state:', document.readyState);
+      console.log('Year element exists:', !!document.getElementById("year"));
+      console.log('Month element exists:', !!document.getElementById("month"));
+      console.log('Day element exists:', !!document.getElementById("day"));
       
       try {
         // 年の選択肢を追加
         const yearSelect = document.getElementById("year");
         if (yearSelect) {
+          console.log('Year select found, clearing and populating...');
           yearSelect.innerHTML = '<option value="">選択</option>';
           for (let y = 2025; y >= 1900; y--) {
             const opt = document.createElement("option");
@@ -799,6 +804,7 @@
         // 月の選択肢を追加
         const monthSelect = document.getElementById("month");
         if (monthSelect) {
+          console.log('Month select found, clearing and populating...');
           monthSelect.innerHTML = '<option value="">選択</option>';
           for (let m = 1; m <= 12; m++) {
             const opt = document.createElement("option");
@@ -814,6 +820,7 @@
         // 日の選択肢を追加
         const daySelect = document.getElementById("day");
         if (daySelect) {
+          console.log('Day select found, clearing and populating...');
           daySelect.innerHTML = '<option value="">選択</option>';
           for (let d = 1; d <= 31; d++) {
             const opt = document.createElement("option");
@@ -827,7 +834,9 @@
         }
         
         // イベントリスナーの設定
+        console.log('Setting up event listeners...');
         setupEventListeners();
+        console.log('Event listeners setup completed');
         
       } catch (error) {
         console.error('Error in initializeSelects:', error);
@@ -836,29 +845,42 @@
 
     // イベントリスナーの設定
     function setupEventListeners() {
+      console.log('Setting up event listeners...');
       const yearSelect = document.getElementById("year");
       const monthSelect = document.getElementById("month");
       const daySelect = document.getElementById("day");
       
+      console.log('Year select for events:', !!yearSelect);
+      console.log('Month select for events:', !!monthSelect);
+      console.log('Day select for events:', !!daySelect);
+      
       if (monthSelect) {
         monthSelect.addEventListener("change", function() {
+          console.log('Month changed to:', this.value);
           adjustDayOptions();
           validateCurrentInput();
         });
+        console.log('Month change event listener added');
       }
       
       if (yearSelect) {
         yearSelect.addEventListener("change", function() {
+          console.log('Year changed to:', this.value);
           adjustDayOptions();
           validateCurrentInput();
         });
+        console.log('Year change event listener added');
       }
       
       if (daySelect) {
         daySelect.addEventListener("change", function() {
+          console.log('Day changed to:', this.value);
           validateCurrentInput();
         });
+        console.log('Day change event listener added');
       }
+      
+      console.log('All event listeners setup completed');
     }
 
     // 日の選択肢を調整する関数
@@ -1385,6 +1407,7 @@
 
     // ページ読み込み時の初期化
     window.addEventListener("load", function() {
+      console.log("Window load event triggered");
       try {
         // フォーム初期化
         initializeSelects();
@@ -1398,6 +1421,7 @@
 
     // DOMContentLoadedでも初期化
     document.addEventListener("DOMContentLoaded", function() {
+      console.log("DOMContentLoaded event triggered");
       try {
         initializeSelects();
         console.log("DOMContentLoaded: 生年月日入力フォームが正常に初期化されました");
@@ -1406,6 +1430,20 @@
         setTimeout(initializeSelects, 100);
       }
     });
+    
+    // 即座に初期化を試行
+    console.log("Script loaded, attempting immediate initialization");
+    if (document.readyState === 'loading') {
+      console.log("Document still loading, waiting for DOMContentLoaded");
+    } else {
+      console.log("Document already loaded, initializing immediately");
+      try {
+        initializeSelects();
+        console.log("Immediate initialization successful");
+      } catch (error) {
+        console.error("Immediate initialization error:", error);
+      }
+    }
   </script>
 </body>
 </html>
