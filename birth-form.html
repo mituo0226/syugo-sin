@@ -402,6 +402,14 @@
        box-shadow: 0 6px 20px rgba(157, 78, 221, 0.6);
      }
      
+     /* スマホ向けタッチ効果 */
+     @media (max-width: 600px) {
+       .guardian-message-btn:active {
+         transform: translateX(-50%) scale(0.95) !important;
+         box-shadow: 0 4px 15px rgba(157, 78, 221, 0.8) !important;
+       }
+     }
+     
      @keyframes buttonSlideIn {
        0% {
          opacity: 0;
@@ -589,7 +597,7 @@
       .result {
         padding: 15px;
         margin: 10px;
-        padding-bottom: 120px;
+        padding-bottom: 150px;
       }
       
       .guardian {
@@ -600,7 +608,7 @@
       
       .guardian-message-btn {
         position: fixed !important;
-        bottom: 30px !important;
+        bottom: 20px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
         width: calc(100% - 40px) !important;
@@ -609,6 +617,11 @@
         z-index: 1000 !important;
         animation: buttonSlideInMobile 1.5s ease-out forwards !important;
         animation-delay: 4s !important;
+        padding: 18px 30px !important;
+        font-size: 1.3em !important;
+        font-weight: bold !important;
+        border-radius: 15px !important;
+        box-shadow: 0 8px 25px rgba(157, 78, 221, 0.6) !important;
       }
       
       @keyframes buttonSlideInMobile {
@@ -634,7 +647,10 @@
           padding-top: max(40px, env(safe-area-inset-top));
           padding-bottom: max(20px, env(safe-area-inset-bottom));
         }
-
+        
+        .guardian-message-btn {
+          bottom: max(20px, env(safe-area-inset-bottom) + 10px) !important;
+        }
       }
     }
   </style>
