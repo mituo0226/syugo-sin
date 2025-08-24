@@ -28,7 +28,7 @@
     }
     
     .dragon-image {
-      max-width: 150px;
+      max-width: 100px;
       height: auto;
       border-radius: 10px;
       box-shadow: 0 0 30px rgba(102, 204, 255, 0.6);
@@ -83,7 +83,7 @@
       }
       
       .dragon-image {
-        max-width: 200px;
+        max-width: 150px;
       }
       
       .dragon-reveal {
@@ -389,9 +389,11 @@
        transition: all 0.3s ease;
        box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
        opacity: 0;
-       transform: translateY(20px);
-       animation: buttonSlideIn 0.8s ease-out forwards;
-       animation-delay: 3s;
+       transform: translateY(50px);
+       animation: buttonSlideIn 1.2s ease-out forwards;
+       animation-delay: 4s;
+       position: relative;
+       z-index: 10;
      }
      
      .guardian-message-btn:hover {
@@ -403,7 +405,11 @@
      @keyframes buttonSlideIn {
        0% {
          opacity: 0;
-         transform: translateY(20px);
+         transform: translateY(50px);
+       }
+       50% {
+         opacity: 0.5;
+         transform: translateY(25px);
        }
        100% {
          opacity: 1;
@@ -583,12 +589,41 @@
       .result {
         padding: 15px;
         margin: 10px;
+        padding-bottom: 120px;
       }
       
       .guardian {
         width: 150px !important;
         animation: guardianGlow 3s ease-in-out infinite alternate, guardianFloat 4s ease-in-out infinite;
         box-shadow: 0 0 20px rgba(102, 204, 255, 0.6), 0 0 40px rgba(157, 78, 221, 0.4) !important;
+      }
+      
+      .guardian-message-btn {
+        position: fixed !important;
+        bottom: 30px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: calc(100% - 40px) !important;
+        max-width: 350px !important;
+        margin: 0 !important;
+        z-index: 1000 !important;
+        animation: buttonSlideInMobile 1.5s ease-out forwards !important;
+        animation-delay: 4s !important;
+      }
+      
+      @keyframes buttonSlideInMobile {
+        0% {
+          opacity: 0;
+          transform: translateX(-50%) translateY(100px);
+        }
+        50% {
+          opacity: 0.7;
+          transform: translateX(-50%) translateY(50px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0);
+        }
       }
     }
     
@@ -647,7 +682,7 @@
       <h2 class="glow-text">あなたの守護神を伝えよう･･･</h2>
       <div id="guardian"></div>
       <p id="oracle"></p>
-      <p><a id="detailLink" class="glow-text" style="color:#9d4edd;cursor:pointer;">さらに詳しく運命を占う</a></p>
+
     </div>
   </div>
   
@@ -1071,11 +1106,6 @@
                    guardianReveal.style.opacity = '1';
                  }
                }, 2000);
-               
-               // 詳細リンクの設定
-               document.getElementById("detailLink").addEventListener("click", function() {
-                 window.location.href = "result.html";
-               });
              };
              guardianImg.onerror = function() {
                console.error("Guardian image failed to load");
@@ -1113,11 +1143,6 @@
                    guardianReveal.style.opacity = '1';
                  }
                }, 2000);
-               
-               // 詳細リンクの設定
-               document.getElementById("detailLink").addEventListener("click", function() {
-                 window.location.href = "result.html";
-               });
              };
              guardianImg.src = guardian.image;
            };
@@ -1157,11 +1182,6 @@
                 guardianReveal.style.opacity = '1';
               }
             }, 2000);
-            
-            // 詳細リンクの設定
-            document.getElementById("detailLink").addEventListener("click", function() {
-              window.location.href = "result.html";
-            });
           };
           dragonImg.src = "photo/ryu.png"; // Start loading dragon image
           
