@@ -295,27 +295,7 @@
       transform: scale(1.05); 
     }
     
-    .back-button {
-      position: absolute; 
-      top: 20px; 
-      left: 20px;
-      background: rgba(13, 13, 26, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #99ccff; 
-      padding: 10px 15px; 
-      border-radius: 8px; 
-      cursor: pointer;
-    }
-    
-    /* PC向け戻るボタン調整 */
-    @media (min-width: 768px) {
-      .back-button {
-        top: 30px;
-        left: 30px;
-        padding: 12px 20px;
-        font-size: 1.1em;
-      }
-    }
+
 
     /* 鑑定結果表示 */
     .result { 
@@ -358,9 +338,9 @@
     }
     
     img.guardian { 
-      width:120px; 
+      width:180px; 
       border-radius:50%; 
-      margin:10px auto; 
+      margin:15px auto; 
       display:block; 
       animation: guardianGlow 3s ease-in-out infinite alternate, guardianFloat 4s ease-in-out infinite;
       box-shadow: 0 0 30px rgba(102, 204, 255, 0.6), 0 0 60px rgba(157, 78, 221, 0.4);
@@ -369,8 +349,8 @@
     /* PC向け守護神画像調整 */
     @media (min-width: 768px) {
       img.guardian {
-        width: 150px;
-        margin: 20px auto;
+        width: 220px;
+        margin: 25px auto;
       }
     }
     
@@ -408,12 +388,27 @@
        cursor: pointer;
        transition: all 0.3s ease;
        box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
+       opacity: 0;
+       transform: translateY(20px);
+       animation: buttonSlideIn 0.8s ease-out forwards;
+       animation-delay: 3s;
      }
      
      .guardian-message-btn:hover {
        background: linear-gradient(90deg, #c77dff, #9d4edd);
        transform: translateY(-2px);
        box-shadow: 0 6px 20px rgba(157, 78, 221, 0.6);
+     }
+     
+     @keyframes buttonSlideIn {
+       0% {
+         opacity: 0;
+         transform: translateY(20px);
+       }
+       100% {
+         opacity: 1;
+         transform: translateY(0);
+       }
      }
      
      /* PC向け守護神の言葉ボタン調整 */
@@ -583,12 +578,7 @@
         text-align: center;
       }
       
-      .back-button {
-        top: 10px;
-        left: 15px;
-        padding: 8px 12px;
-        font-size: 0.9em;
-      }
+
       
       .result {
         padding: 15px;
@@ -596,7 +586,7 @@
       }
       
       .guardian {
-        width: 100px !important;
+        width: 150px !important;
         animation: guardianGlow 3s ease-in-out infinite alternate, guardianFloat 4s ease-in-out infinite;
         box-shadow: 0 0 20px rgba(102, 204, 255, 0.6), 0 0 40px rgba(157, 78, 221, 0.4) !important;
       }
@@ -609,10 +599,7 @@
           padding-top: max(40px, env(safe-area-inset-top));
           padding-bottom: max(20px, env(safe-area-inset-bottom));
         }
-        .back-button {
-          top: max(10px, env(safe-area-inset-top) + 5px);
-          left: max(15px, env(safe-area-inset-left) + 5px);
-        }
+
       }
     }
   </style>
@@ -621,8 +608,7 @@
 
   
   <div class="container">
-    <!-- 戻るボタン -->
-    <button class="back-button" onclick="goBack()">← 戻る</button>
+
     
     <!-- 生年月日入力フォーム -->
     <form class="birth-form" id="birthForm">
@@ -658,7 +644,7 @@
 
     <!-- 鑑定結果 -->
     <div class="result" id="resultBox">
-      <h1 class="glow-text">あなたの守護神を伝えよう･･･</h1>
+      <h2 class="glow-text">あなたの守護神を伝えよう･･･</h2>
       <div id="guardian"></div>
       <p id="oracle"></p>
       <p><a id="detailLink" class="glow-text" style="color:#9d4edd;cursor:pointer;">さらに詳しく運命を占う</a></p>
@@ -666,10 +652,7 @@
   </div>
   
   <script>
-         // 戻るボタンの機能
-     function goBack() {
-       window.history.back();
-     }
+
      
      // 守護神の言葉ページに移動する関数
      function goToGuardianMessage(guardianName, guardianMessage) {
