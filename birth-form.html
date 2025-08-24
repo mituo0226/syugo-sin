@@ -386,12 +386,10 @@
        border-radius: 10px;
        color: #fff;
        cursor: pointer;
-       transition: all 0.3s ease;
+       transition: all 1s ease;
        box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
        opacity: 0;
        transform: translateY(50px);
-       animation: buttonSlideIn 1.2s ease-out forwards;
-       animation-delay: 4s;
        position: relative;
        z-index: 10;
      }
@@ -410,19 +408,9 @@
        }
      }
      
-     @keyframes buttonSlideIn {
-       0% {
-         opacity: 0;
-         transform: translateY(50px);
-       }
-       50% {
-         opacity: 0.5;
-         transform: translateY(25px);
-       }
-       100% {
-         opacity: 1;
-         transform: translateY(0);
-       }
+     .guardian-message-btn.show {
+       opacity: 1;
+       transform: translateY(0);
      }
      
      /* PC向け守護神の言葉ボタン調整 */
@@ -610,34 +598,25 @@
         position: fixed !important;
         bottom: 20px !important;
         left: 50% !important;
-        transform: translateX(-50%) !important;
+        transform: translateX(-50%) translateY(50px) !important;
         width: calc(100% - 40px) !important;
         max-width: 350px !important;
         margin: 0 !important;
         z-index: 1000 !important;
-        animation: buttonSlideInMobile 1.5s ease-out forwards !important;
-        animation-delay: 4s !important;
         padding: 18px 30px !important;
         font-size: 1.3em !important;
         font-weight: bold !important;
         border-radius: 15px !important;
         box-shadow: 0 8px 25px rgba(157, 78, 221, 0.6) !important;
+        transition: all 1s ease !important;
       }
       
-      @keyframes buttonSlideInMobile {
-        0% {
-          opacity: 0;
-          transform: translateX(-50%) translateY(100px);
-        }
-        50% {
-          opacity: 0.7;
-          transform: translateX(-50%) translateY(50px);
-        }
-        100% {
-          opacity: 1;
-          transform: translateX(-50%) translateY(0);
-        }
+      .guardian-message-btn.show {
+        transform: translateX(-50%) translateY(0) !important;
+        opacity: 1 !important;
       }
+      
+
     }
     
     /* iPhone X以降のノッチ対応（モバイルのみ） */
@@ -1121,6 +1100,14 @@
                    guardianReveal.style.transition = 'opacity 2s ease-in-out';
                    guardianReveal.style.opacity = '1';
                  }
+                 
+                 // 守護神表示後1秒後にボタンを表示
+                 setTimeout(() => {
+                   const guardianBtn = document.querySelector('.guardian-message-btn');
+                   if (guardianBtn) {
+                     guardianBtn.classList.add('show');
+                   }
+                 }, 1000);
                }, 2000);
              };
              guardianImg.onerror = function() {
@@ -1158,6 +1145,14 @@
                    guardianReveal.style.transition = 'opacity 2s ease-in-out';
                    guardianReveal.style.opacity = '1';
                  }
+                 
+                 // 守護神表示後1秒後にボタンを表示
+                 setTimeout(() => {
+                   const guardianBtn = document.querySelector('.guardian-message-btn');
+                   if (guardianBtn) {
+                     guardianBtn.classList.add('show');
+                   }
+                 }, 1000);
                }, 2000);
              };
              guardianImg.src = guardian.image;
@@ -1197,6 +1192,14 @@
                 guardianReveal.style.transition = 'opacity 2s ease-in-out';
                 guardianReveal.style.opacity = '1';
               }
+              
+              // 守護神表示後1秒後にボタンを表示
+              setTimeout(() => {
+                const guardianBtn = document.querySelector('.guardian-message-btn');
+                if (guardianBtn) {
+                  guardianBtn.classList.add('show');
+                }
+              }, 1000);
             }, 2000);
           };
           dragonImg.src = "photo/ryu.png"; // Start loading dragon image
