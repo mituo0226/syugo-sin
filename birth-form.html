@@ -839,6 +839,11 @@
         setupEventListeners();
         console.log('Event listeners setup completed');
         
+        // グローバル変数に要素を再設定（クローン後の新しい要素を参照）
+        window.yearSelect = document.getElementById("year");
+        window.monthSelect = document.getElementById("month");
+        window.daySelect = document.getElementById("day");
+        
       } catch (error) {
         console.error('Error in initializeSelects:', error);
       }
@@ -855,23 +860,26 @@
       console.log('Month select for events:', !!monthSelect);
       console.log('Day select for events:', !!daySelect);
       
-      // 既存のイベントリスナーを削除（重複登録を防ぐ）
+      // 要素をクローンして古いイベントリスナーを確実に削除
       if (monthSelect) {
-        monthSelect.removeEventListener("change", monthChangeHandler);
-        monthSelect.addEventListener("change", monthChangeHandler);
-        console.log('Month change event listener added');
+        const newMonthSelect = monthSelect.cloneNode(true);
+        monthSelect.parentNode.replaceChild(newMonthSelect, monthSelect);
+        newMonthSelect.addEventListener("change", monthChangeHandler);
+        console.log('Month change event listener added (cloned)');
       }
       
       if (yearSelect) {
-        yearSelect.removeEventListener("change", yearChangeHandler);
-        yearSelect.addEventListener("change", yearChangeHandler);
-        console.log('Year change event listener added');
+        const newYearSelect = yearSelect.cloneNode(true);
+        yearSelect.parentNode.replaceChild(newYearSelect, yearSelect);
+        newYearSelect.addEventListener("change", yearChangeHandler);
+        console.log('Year change event listener added (cloned)');
       }
       
       if (daySelect) {
-        daySelect.removeEventListener("change", dayChangeHandler);
-        daySelect.addEventListener("change", dayChangeHandler);
-        console.log('Day change event listener added');
+        const newDaySelect = daySelect.cloneNode(true);
+        daySelect.parentNode.replaceChild(newDaySelect, daySelect);
+        newDaySelect.addEventListener("change", dayChangeHandler);
+        console.log('Day change event listener added (cloned)');
       }
       
       console.log('All event listeners setup completed');
@@ -897,9 +905,9 @@
 
     // 日の選択肢を調整する関数
     function adjustDayOptions() {
-      const yearSelect = document.getElementById("year");
-      const monthSelect = document.getElementById("month");
-      const daySelect = document.getElementById("day");
+      const yearSelect = window.yearSelect || document.getElementById("year");
+      const monthSelect = window.monthSelect || document.getElementById("month");
+      const daySelect = window.daySelect || document.getElementById("day");
       
       if (!yearSelect || !monthSelect || !daySelect) return;
       
@@ -930,9 +938,9 @@
 
     // 現在の入力を検証する関数
     function validateCurrentInput() {
-      const yearSelect = document.getElementById("year");
-      const monthSelect = document.getElementById("month");
-      const daySelect = document.getElementById("day");
+      const yearSelect = window.yearSelect || document.getElementById("year");
+      const monthSelect = window.monthSelect || document.getElementById("month");
+      const daySelect = window.daySelect || document.getElementById("day");
       
       if (!yearSelect || !monthSelect || !daySelect) return;
       
@@ -1131,9 +1139,9 @@
     document.getElementById("birthForm").addEventListener("submit", function(e) {
       e.preventDefault();
       
-      const year = document.getElementById("year").value;
-      const month = document.getElementById("month").value;
-      const day = document.getElementById("day").value;
+      const year = (window.yearSelect || document.getElementById("year")).value;
+      const month = (window.monthSelect || document.getElementById("month")).value;
+      const day = (window.daySelect || document.getElementById("day")).value;
       
       // 入力チェック
       if (!year || !month || !day) {
@@ -1434,6 +1442,9 @@
         console.log("生年月日入力フォームが正常に初期化されました");
       } catch (error) {
         console.error("初期化エラー:", error);
+        // エラー時にフラグをリセットして再試行を可能にする
+        isInitialized = false;
+        console.log("Initialization failed, will retry on next attempt");
       }
     }
     
