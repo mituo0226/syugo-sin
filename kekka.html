@@ -1,4 +1,8 @@
 
+
+
+
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -38,7 +42,6 @@
       height: auto;
       border-radius: 10px;
       box-shadow: 0 0 30px rgba(102, 204, 255, 0.6);
-      animation: dragonGlow 3s ease-in-out infinite alternate;
     }
     
     @keyframes dragonAppear {
@@ -49,15 +52,6 @@
       100% {
         opacity: 1;
         transform: scale(1) translateY(0);
-      }
-    }
-    
-    @keyframes dragonGlow {
-      0% {
-        filter: brightness(1) drop-shadow(0 0 10px rgba(102, 204, 255, 0.5));
-      }
-      100% {
-        filter: brightness(1.3) drop-shadow(0 0 20px rgba(102, 204, 255, 0.8));
       }
     }
     
@@ -82,16 +76,6 @@
       border-radius: 15px;
       box-shadow: 0 0 40px rgba(157, 78, 221, 0.6);
       margin: 20px auto;
-      animation: guardianGlow 3s ease-in-out infinite alternate;
-    }
-
-    @keyframes guardianGlow {
-      0% {
-        filter: brightness(1) drop-shadow(0 0 15px rgba(157, 78, 221, 0.5));
-      }
-      100% {
-        filter: brightness(1.2) drop-shadow(0 0 25px rgba(157, 78, 221, 0.8));
-      }
     }
 
     .glow-text {
@@ -289,14 +273,11 @@
   <script>
     // 守護神の言葉ページに移動する関数
     function goToGuardianMessage(guardianName, zodiacSign) {
-      console.log('goToGuardianMessage called with:', guardianName, zodiacSign);
       const params = new URLSearchParams({
         name: guardianName,
         zodiac: zodiacSign
       });
-      const url = `syugo-sin.html?${params.toString()}`;
-      console.log('Redirecting to:', url);
-      window.location.href = url;
+      window.location.href = `syugo-sin.html?${params.toString()}`;
     }
 
     // URLパラメータから生年月日を取得する関数
@@ -306,10 +287,7 @@
       const month = urlParams.get('month');
       const day = urlParams.get('day');
       
-      console.log('URL parameters:', { year, month, day });
-      
       if (!year || !month || !day) {
-        console.error('Birth date parameters not found in URL');
         return null;
       }
       
@@ -343,13 +321,42 @@
       '亥': { name:'薬師如来', desc:'病苦を除き健康を授ける者なり', image:'photo/yakushi.png' }
     };
 
+    // フルスクリーン表示の処理を簡素化
+    function showFullscreenGuardian(guardian) {
+      const fullscreenImg = document.getElementById('fullscreenGuardianImg');
+      const fullscreenName = document.getElementById('fullscreenGuardianName');
+      const fullscreenDesc = document.getElementById('fullscreenGuardianDesc');
+      const fullscreenContainer = document.getElementById('guardianFullscreen');
+      
+      if (!fullscreenImg || !fullscreenName || !fullscreenDesc || !fullscreenContainer) {
+        return false;
+      }
+      
+      fullscreenImg.src = guardian.image;
+      fullscreenName.textContent = `そなたを守護するは ${guardian.name}`;
+      fullscreenDesc.textContent = guardian.desc;
+      
+      fullscreenContainer.style.display = 'flex';
+      setTimeout(() => fullscreenContainer.classList.add('show'), 10);
+      
+      return true;
+    }
+
+    // フルスクリーン表示を終了
+    function hideFullscreenGuardian() {
+      const fullscreenContainer = document.getElementById('guardianFullscreen');
+      if (fullscreenContainer) {
+        fullscreenContainer.classList.remove('show');
+        setTimeout(() => fullscreenContainer.style.display = 'none', 1000);
+      }
+    }
+
     // 結果表示処理
     function displayResults(guardian, zodiac) {
       const guardianElement = document.getElementById("guardian");
       const resultBox = document.getElementById("resultBox");
       
       if (!guardianElement || !resultBox) {
-        console.error('Result elements not found');
         return;
       }
       
@@ -365,7 +372,7 @@
         </div>
       `;
       
-      // ボタンを独立した要素として追加
+      // ボタンを作成
       const guardianBtn = document.createElement('button');
       guardianBtn.className = 'guardian-message-btn';
       guardianBtn.textContent = '守護神の言葉を聞く';
@@ -384,7 +391,7 @@
       resultBox.style.display = "block";
       resultBox.scrollIntoView({ behavior: 'smooth' });
       
-      // 2秒後に守護神をフェードイン
+      // アニメーションシーケンス
       setTimeout(() => {
         const guardianReveal = document.querySelector('.guardian-reveal');
         if (guardianReveal) {
@@ -392,42 +399,15 @@
           guardianReveal.style.opacity = '1';
         }
         
-        // フルスクリーン表示の処理
+        // フルスクリーン表示
         setTimeout(() => {
-          // フルスクリーン表示の準備
-          const fullscreenImg = document.getElementById('fullscreenGuardianImg');
-          const fullscreenName = document.getElementById('fullscreenGuardianName');
-          const fullscreenDesc = document.getElementById('fullscreenGuardianDesc');
-          const fullscreenContainer = document.getElementById('guardianFullscreen');
-          
-          if (fullscreenImg && fullscreenName && fullscreenDesc && fullscreenContainer) {
-            fullscreenImg.src = guardian.image;
-            fullscreenName.textContent = `そなたを守護するは ${guardian.name}`;
-            fullscreenDesc.textContent = guardian.desc;
-            
-            // フルスクリーン表示を開始
-            fullscreenContainer.style.display = 'flex';
+          if (showFullscreenGuardian(guardian)) {
             setTimeout(() => {
-              fullscreenContainer.classList.add('show');
-            }, 10);
-            
-            // 3秒後にフルスクリーン表示を終了
-            setTimeout(() => {
-              fullscreenContainer.classList.remove('show');
-              setTimeout(() => {
-                fullscreenContainer.style.display = 'none';
-                
-                // フルスクリーン表示終了後1秒後にボタンを表示
-                setTimeout(() => {
-                  guardianBtn.classList.add('show');
-                }, 1000);
-              }, 1000);
+              hideFullscreenGuardian();
+              setTimeout(() => guardianBtn.classList.add('show'), 1000);
             }, 3000);
           } else {
-            // フルスクリーン要素が見つからない場合は直接ボタンを表示
-            setTimeout(() => {
-              guardianBtn.classList.add('show');
-            }, 1000);
+            setTimeout(() => guardianBtn.classList.add('show'), 1000);
           }
         }, 2000);
       }, 2000);
@@ -435,32 +415,24 @@
 
     // メイン処理
     function startProcess() {
-      console.log('Starting process...');
-      
-      // URLパラメータから生年月日を取得
       const birthDate = getBirthDateFromURL();
       if (!birthDate) {
-        console.error('Invalid birth date parameters');
         alert('生年月日のパラメータが無効です。');
         return;
       }
-      
-      console.log('Birth date:', birthDate);
       
       // ローディング画面表示
       const loading = document.getElementById("loadingScreen");
       if (loading) {
         loading.style.display = "flex";
-        setTimeout(() => { loading.classList.add('show'); }, 10);
       }
       
       // 3秒後に結果表示
       setTimeout(() => {
         try {
-          // ローディング画面をフェードアウト
+          // ローディング画面を非表示
           if (loading) {
-            loading.classList.remove('show');
-            setTimeout(() => { loading.style.display = "none"; }, 800);
+            loading.style.display = "none";
           }
           
           // 十二支を計算
@@ -470,8 +442,6 @@
           if (!guardian) {
             throw new Error("守護神データが見つかりません");
           }
-          
-          console.log('Zodiac:', zodiac, 'Guardian:', guardian);
           
           // 結果表示
           displayResults(guardian, zodiac);
@@ -484,14 +454,10 @@
     }
 
     // ページ読み込み時に処理開始
-    document.addEventListener("DOMContentLoaded", function() {
-      console.log("DOMContentLoaded event triggered");
-      startProcess();
-    });
+    document.addEventListener("DOMContentLoaded", startProcess);
 
     // 既にDOMが読み込まれている場合の対応
     if (document.readyState !== 'loading') {
-      console.log("Document already loaded, starting process immediately");
       startProcess();
     }
   </script>
