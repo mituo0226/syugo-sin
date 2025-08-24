@@ -693,9 +693,21 @@
   </div>
   
   <script>
-    // ページ読み込み完了時に即座にセレクトボックスを初期化
+    // 即座にセレクトボックスを初期化
+    (function() {
+      console.log('Immediate initialization...');
+      initializeSelects();
+    })();
+
+    // ページ読み込み完了時にも初期化
     document.addEventListener('DOMContentLoaded', function() {
       console.log('DOM loaded, initializing selects...');
+      initializeSelects();
+    });
+
+    // window.load時にも初期化
+    window.addEventListener('load', function() {
+      console.log('Window loaded, initializing selects...');
       initializeSelects();
     });
 
@@ -703,47 +715,58 @@
     function initializeSelects() {
       console.log('Initializing select boxes...');
       
-      // 年の選択肢を追加
-      const yearSelect = document.getElementById("year");
-      if (yearSelect) {
-        yearSelect.innerHTML = '<option value="">選択</option>';
-        for (let y = 2025; y >= 1900; y--) {
-          const opt = document.createElement("option");
-          opt.value = y;
-          opt.textContent = y + "年";
-          yearSelect.appendChild(opt);
+      try {
+        // 年の選択肢を追加
+        const yearSelect = document.getElementById("year");
+        if (yearSelect) {
+          yearSelect.innerHTML = '<option value="">選択</option>';
+          for (let y = 2025; y >= 1900; y--) {
+            const opt = document.createElement("option");
+            opt.value = y;
+            opt.textContent = y + "年";
+            yearSelect.appendChild(opt);
+          }
+          console.log('Year select initialized with', yearSelect.children.length - 1, 'options');
+        } else {
+          console.error('Year select element not found');
         }
-        console.log('Year select initialized with', yearSelect.children.length - 1, 'options');
-      }
-      
-      // 月の選択肢を追加
-      const monthSelect = document.getElementById("month");
-      if (monthSelect) {
-        monthSelect.innerHTML = '<option value="">選択</option>';
-        for (let m = 1; m <= 12; m++) {
-          const opt = document.createElement("option");
-          opt.value = m;
-          opt.textContent = m + "月";
-          monthSelect.appendChild(opt);
+        
+        // 月の選択肢を追加
+        const monthSelect = document.getElementById("month");
+        if (monthSelect) {
+          monthSelect.innerHTML = '<option value="">選択</option>';
+          for (let m = 1; m <= 12; m++) {
+            const opt = document.createElement("option");
+            opt.value = m;
+            opt.textContent = m + "月";
+            monthSelect.appendChild(opt);
+          }
+          console.log('Month select initialized with', monthSelect.children.length - 1, 'options');
+        } else {
+          console.error('Month select element not found');
         }
-        console.log('Month select initialized with', monthSelect.children.length - 1, 'options');
-      }
-      
-      // 日の選択肢を追加
-      const daySelect = document.getElementById("day");
-      if (daySelect) {
-        daySelect.innerHTML = '<option value="">選択</option>';
-        for (let d = 1; d <= 31; d++) {
-          const opt = document.createElement("option");
-          opt.value = d;
-          opt.textContent = d + "日";
-          daySelect.appendChild(opt);
+        
+        // 日の選択肢を追加
+        const daySelect = document.getElementById("day");
+        if (daySelect) {
+          daySelect.innerHTML = '<option value="">選択</option>';
+          for (let d = 1; d <= 31; d++) {
+            const opt = document.createElement("option");
+            opt.value = d;
+            opt.textContent = d + "日";
+            daySelect.appendChild(opt);
+          }
+          console.log('Day select initialized with', daySelect.children.length - 1, 'options');
+        } else {
+          console.error('Day select element not found');
         }
-        console.log('Day select initialized with', daySelect.children.length - 1, 'options');
+        
+        // イベントリスナーの設定
+        setupEventListeners();
+        
+      } catch (error) {
+        console.error('Error in initializeSelects:', error);
       }
-      
-      // イベントリスナーの設定
-      setupEventListeners();
     }
 
     // イベントリスナーの設定
