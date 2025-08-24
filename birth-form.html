@@ -18,73 +18,7 @@
       min-height: 100vh;
     }
     
-    /* 神秘的な光の演出 */
-    #mysticalEffect {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #0d0d1a;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 10000;
-      opacity: 0;
-      transition: opacity 2s ease-in-out;
-      pointer-events: none;
-    }
-    
-    #mysticalEffect.show {
-      opacity: 1;
-    }
-    
-    .light-particles {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background-image: 
-        radial-gradient(2px 2px at 20px 30px, #66ccff, transparent),
-        radial-gradient(2px 2px at 40px 70px, #3399ff, transparent),
-        radial-gradient(1px 1px at 90px 40px, #99e0ff, transparent),
-        radial-gradient(1px 1px at 130px 80px, #66ccff, transparent),
-        radial-gradient(2px 2px at 160px 30px, #3399ff, transparent);
-      background-repeat: repeat;
-      background-size: 200px 100px;
-      animation: particleFloat 8s linear infinite;
-    }
-    
-    @keyframes particleFloat {
-      0% {
-        transform: translateY(0px);
-      }
-      100% {
-        transform: translateY(-100px);
-      }
-    }
-    
-    .energy-field {
-      position: absolute;
-      width: 300px;
-      height: 300px;
-      border: 2px solid rgba(102, 204, 255, 0.6);
-      border-radius: 50%;
-      animation: energyPulse 3s ease-in-out infinite;
-      box-shadow: 
-        0 0 20px rgba(102, 204, 255, 0.4),
-        inset 0 0 20px rgba(102, 204, 255, 0.2);
-    }
-    
-    @keyframes energyPulse {
-      0%, 100% {
-        transform: scale(1);
-        opacity: 0.6;
-      }
-      50% {
-        transform: scale(1.2);
-        opacity: 1;
-      }
-    }
+
     
     /* 龍と守護神の表示スタイル */
     .dragon-reveal {
@@ -177,12 +111,6 @@
       overflow-y: auto;
       position: relative;
       z-index: 1;
-      opacity: 1;
-      transition: opacity 1s ease-in-out;
-    }
-    
-    .container.show {
-      opacity: 1;
     }
     
     /* PC向けコンテナ調整 */
@@ -635,47 +563,7 @@
         margin-top: 20px;
       }
       
-      .birth-form select { 
-        font-size: 1.1em; 
-        padding: 12px;
-        width: 100% !important;
-        max-width: 100px !important;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-        background-repeat: no-repeat;
-        background-position: right 8px center;
-        background-size: 16px;
-        padding-right: 30px;
-      }
-      
-      .birth-form select option {
-        background: #0d0d1a !important;
-        color: #fff !important;
-        padding: 8px;
-        font-size: 1em;
-      }
-      
-      .birth-form select option:hover {
-        background: #1a1a2e !important;
-        color: #66ccff !important;
-      }
-      
-      .birth-form select option:checked {
-        background: #66ccff !important;
-        color: #000 !important;
-      }
-      
-      .birth-form select:focus option:checked {
-        background: #66ccff !important;
-        color: #000 !important;
-      }
-      
-      .birth-form select:focus option:hover {
-        background: #1a1a2e !important;
-        color: #66ccff !important;
-      }
+
       
       .birth-form button { 
         font-size: 1.2em; 
@@ -730,11 +618,7 @@
   </style>
 </head>
 <body>
-  <!-- 神秘的な光の演出 -->
-  <div id="mysticalEffect">
-    <div class="light-particles"></div>
-    <div class="energy-field"></div>
-  </div>
+
   
   <div class="container">
     <!-- 戻るボタン -->
@@ -1173,28 +1057,15 @@
       // 成功メッセージ表示
       showSuccessMessage();
       
-      // 神秘的な演出開始
-      const mysticalEffect = document.getElementById('mysticalEffect');
-      mysticalEffect.style.display = 'flex';
-      mysticalEffect.classList.add('show');
-      
       // フォームを非表示
       document.getElementById("birthForm").style.display="none";
       
-      // 2秒後に神秘的な演出を終了し、ローディング開始
-      setTimeout(() => {
-        mysticalEffect.classList.remove('show');
-        setTimeout(() => {
-          mysticalEffect.style.display = 'none';
-          
-          // ローディング画面表示
-          const loading = document.getElementById("loadingScreen");
-          loading.style.display="flex";
-          setTimeout(() => { loading.classList.add('show'); }, 10);
-        }, 2000); // Wait for mystical effect fade-out
-      }, 2000); // Show mystical effect for 2 seconds
+      // ローディング画面表示
+      const loading = document.getElementById("loadingScreen");
+      loading.style.display="flex";
+      setTimeout(() => { loading.classList.add('show'); }, 10);
       
-      // 5秒後に結果表示（神秘的な演出の時間を考慮）
+      // 3秒後に結果表示
       setTimeout(()=>{
         try {
           // ローディング画面をフェードアウト
@@ -1319,45 +1190,17 @@
           console.error("鑑定処理エラー:", error);
           alert("鑑定処理中にエラーが発生しました。ページを再読み込みしてください。");
         }
-      },5000); // Total delay for result display
+      },3000); // Total delay for result display
     });
 
     // ページ読み込み時の初期化
     window.addEventListener("load", function() {
       try {
-        // 神秘的な演出を完全に無効化
-        const mysticalEffect = document.getElementById('mysticalEffect');
-        if (mysticalEffect) {
-          mysticalEffect.style.display = 'none';
-        }
-        
-        // メインコンテンツを即座に表示
-        const container = document.querySelector('.container');
-        if (container) {
-          container.style.opacity = '1';
-          container.classList.add('show');
-        }
-        
-        // フォームを確実に表示
-        const form = document.getElementById('birthForm');
-        if (form) {
-          form.style.display = 'block';
-        }
-        
         // フォーム初期化
         initializeSelects();
         console.log("生年月日入力フォームが正常に初期化されました");
       } catch (error) {
         console.error("初期化エラー:", error);
-        // エラーが発生してもフォームを表示
-        const container = document.querySelector('.container');
-        if (container) {
-          container.style.opacity = '1';
-        }
-        const form = document.getElementById('birthForm');
-        if (form) {
-          form.style.display = 'block';
-        }
         // 手動で初期化を試行
         setTimeout(initializeSelects, 100);
       }
