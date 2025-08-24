@@ -372,6 +372,73 @@
       75% { transform: translateY(-3px) rotate(-0.5deg); }
     }
     
+    /* フルスクリーン守護神表示 */
+    .guardian-fullscreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9998;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+    
+    .guardian-fullscreen.show {
+      opacity: 1;
+    }
+    
+    .guardian-fullscreen img {
+      width: 80vw;
+      height: 80vw;
+      max-width: 400px;
+      max-height: 400px;
+      object-fit: contain;
+      border-radius: 50%;
+      animation: guardianGlow 3s ease-in-out infinite alternate, guardianFloat 4s ease-in-out infinite;
+      box-shadow: 0 0 50px rgba(102, 204, 255, 0.8), 0 0 100px rgba(157, 78, 221, 0.6);
+      margin-bottom: 30px;
+    }
+    
+    .guardian-fullscreen h2 {
+      color: #fff;
+      font-size: 2em;
+      text-align: center;
+      margin: 0;
+      animation: textGlow 2s ease-in-out infinite alternate;
+    }
+    
+    .guardian-fullscreen p {
+      color: #c77dff;
+      font-size: 1.2em;
+      text-align: center;
+      margin: 10px 0 0 0;
+      max-width: 80%;
+    }
+    
+    /* スマホ向けフルスクリーン調整 */
+    @media (max-width: 600px) {
+      .guardian-fullscreen img {
+        width: 70vw;
+        height: 70vw;
+        max-width: 300px;
+        max-height: 300px;
+      }
+      
+      .guardian-fullscreen h2 {
+        font-size: 1.5em;
+      }
+      
+      .guardian-fullscreen p {
+        font-size: 1em;
+      }
+    }
+    
          .glow-text { 
        animation:textGlow 2s ease-in-out infinite alternate; 
      }
@@ -585,7 +652,7 @@
       .result {
         padding: 15px;
         margin: 10px;
-        padding-bottom: 250px;
+        padding-bottom: 200px;
       }
       
       .guardian {
@@ -601,7 +668,7 @@
       
       .guardian-message-btn {
         position: fixed !important;
-        bottom: 0 !important;
+        bottom: 80px !important;
         left: 50% !important;
         transform: translateX(-50%) translateY(50px) !important;
         width: calc(100% - 40px) !important;
@@ -611,7 +678,7 @@
         padding: 20px 30px !important;
         font-size: 1.3em !important;
         font-weight: bold !important;
-        border-radius: 15px 15px 0 0 !important;
+        border-radius: 15px !important;
         box-shadow: 0 8px 25px rgba(157, 78, 221, 0.6) !important;
         transition: all 1s ease !important;
         min-height: 70px !important;
@@ -634,7 +701,7 @@
         }
         
         .guardian-message-btn {
-          bottom: env(safe-area-inset-bottom) !important;
+          bottom: calc(80px + env(safe-area-inset-bottom)) !important;
         }
       }
     }
@@ -683,7 +750,13 @@
       <h2 class="glow-text">あなたの守護神を伝えよう･･･</h2>
       <div id="guardian"></div>
       <p id="oracle"></p>
-
+    </div>
+    
+    <!-- フルスクリーン守護神表示 -->
+    <div class="guardian-fullscreen" id="guardianFullscreen">
+      <img id="fullscreenGuardianImg" src="" alt="守護神">
+      <h2 id="fullscreenGuardianName"></h2>
+      <p id="fullscreenGuardianDesc"></p>
     </div>
   </div>
   
@@ -1081,8 +1154,12 @@
                     <img class="guardian" src="${guardian.image}" alt="${guardian.name}">
                     <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
                     <div>${guardian.desc}</div>
-                    <button class="guardian-message-btn" data-guardian-name="${guardian.name}" data-zodiac-sign="${zodiac}">守護神の言葉を聞く</button>
                   </div>`;
+               
+               // ボタンを独立した要素として追加
+               const buttonContainer = document.createElement('div');
+               buttonContainer.innerHTML = `<button class="guardian-message-btn" data-guardian-name="${guardian.name}" data-zodiac-sign="${zodiac}">守護神の言葉を聞く</button>`;
+               document.body.appendChild(buttonContainer.firstElementChild);
                
                // ボタンのイベントリスナーを設定
                const guardianBtn = document.querySelector('.guardian-message-btn');
@@ -1107,13 +1184,40 @@
                    guardianReveal.style.opacity = '1';
                  }
                  
-                 // 守護神表示後1秒後にボタンを表示
+                 // 守護神表示後2秒後にフルスクリーン表示
                  setTimeout(() => {
-                   const guardianBtn = document.querySelector('.guardian-message-btn');
-                   if (guardianBtn) {
-                     guardianBtn.classList.add('show');
-                   }
-                 }, 1000);
+                   // フルスクリーン表示の準備
+                   const fullscreenImg = document.getElementById('fullscreenGuardianImg');
+                   const fullscreenName = document.getElementById('fullscreenGuardianName');
+                   const fullscreenDesc = document.getElementById('fullscreenGuardianDesc');
+                   const fullscreenContainer = document.getElementById('guardianFullscreen');
+                   
+                   fullscreenImg.src = guardian.image;
+                   fullscreenName.textContent = `そなたを守護するは ${guardian.name}`;
+                   fullscreenDesc.textContent = guardian.desc;
+                   
+                   // フルスクリーン表示を開始
+                   fullscreenContainer.style.display = 'flex';
+                   setTimeout(() => {
+                     fullscreenContainer.classList.add('show');
+                   }, 10);
+                   
+                   // 3秒後にフルスクリーン表示を終了
+                   setTimeout(() => {
+                     fullscreenContainer.classList.remove('show');
+                     setTimeout(() => {
+                       fullscreenContainer.style.display = 'none';
+                       
+                       // フルスクリーン表示終了後1秒後にボタンを表示
+                       setTimeout(() => {
+                         const guardianBtn = document.querySelector('.guardian-message-btn');
+                         if (guardianBtn) {
+                           guardianBtn.classList.add('show');
+                         }
+                       }, 1000);
+                     }, 1000);
+                   }, 3000);
+                 }, 2000);
                }, 2000);
              };
              guardianImg.onerror = function() {
@@ -1126,8 +1230,12 @@
                     <div class="dragon-placeholder">🙏</div>
                     <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
                     <div>${guardian.desc}</div>
-                    <button class="guardian-message-btn" data-guardian-name="${guardian.name}" data-zodiac-sign="${zodiac}">守護神の言葉を聞く</button>
                   </div>`;
+               
+               // ボタンを独立した要素として追加
+               const buttonContainer = document.createElement('div');
+               buttonContainer.innerHTML = `<button class="guardian-message-btn" data-guardian-name="${guardian.name}" data-zodiac-sign="${zodiac}">守護神の言葉を聞く</button>`;
+               document.body.appendChild(buttonContainer.firstElementChild);
                
                // ボタンのイベントリスナーを設定
                const guardianBtn = document.querySelector('.guardian-message-btn');
@@ -1152,13 +1260,40 @@
                    guardianReveal.style.opacity = '1';
                  }
                  
-                 // 守護神表示後1秒後にボタンを表示
+                 // 守護神表示後2秒後にフルスクリーン表示
                  setTimeout(() => {
-                   const guardianBtn = document.querySelector('.guardian-message-btn');
-                   if (guardianBtn) {
-                     guardianBtn.classList.add('show');
-                   }
-                 }, 1000);
+                   // フルスクリーン表示の準備
+                   const fullscreenImg = document.getElementById('fullscreenGuardianImg');
+                   const fullscreenName = document.getElementById('fullscreenGuardianName');
+                   const fullscreenDesc = document.getElementById('fullscreenGuardianDesc');
+                   const fullscreenContainer = document.getElementById('guardianFullscreen');
+                   
+                   fullscreenImg.src = guardian.image;
+                   fullscreenName.textContent = `そなたを守護するは ${guardian.name}`;
+                   fullscreenDesc.textContent = guardian.desc;
+                   
+                   // フルスクリーン表示を開始
+                   fullscreenContainer.style.display = 'flex';
+                   setTimeout(() => {
+                     fullscreenContainer.classList.add('show');
+                   }, 10);
+                   
+                   // 3秒後にフルスクリーン表示を終了
+                   setTimeout(() => {
+                     fullscreenContainer.classList.remove('show');
+                     setTimeout(() => {
+                       fullscreenContainer.style.display = 'none';
+                       
+                       // フルスクリーン表示終了後1秒後にボタンを表示
+                       setTimeout(() => {
+                         const guardianBtn = document.querySelector('.guardian-message-btn');
+                         if (guardianBtn) {
+                           guardianBtn.classList.add('show');
+                         }
+                       }, 1000);
+                     }, 1000);
+                   }, 3000);
+                 }, 2000);
                }, 2000);
              };
              guardianImg.src = guardian.image;
@@ -1173,8 +1308,12 @@
                  <img class="guardian" src="${guardian.image}" alt="${guardian.name}">
                  <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
                  <div>${guardian.desc}</div>
-                 <button class="guardian-message-btn" data-guardian-name="${guardian.name}" data-zodiac-sign="${zodiac}">守護神の言葉を聞く</button>
                </div>`;
+            
+            // ボタンを独立した要素として追加
+            const buttonContainer = document.createElement('div');
+            buttonContainer.innerHTML = `<button class="guardian-message-btn" data-guardian-name="${guardian.name}" data-zodiac-sign="${zodiac}">守護神の言葉を聞く</button>`;
+            document.body.appendChild(buttonContainer.firstElementChild);
             
             // ボタンのイベントリスナーを設定
             const guardianBtn = document.querySelector('.guardian-message-btn');
@@ -1199,13 +1338,40 @@
                 guardianReveal.style.opacity = '1';
               }
               
-              // 守護神表示後1秒後にボタンを表示
+              // 守護神表示後2秒後にフルスクリーン表示
               setTimeout(() => {
-                const guardianBtn = document.querySelector('.guardian-message-btn');
-                if (guardianBtn) {
-                  guardianBtn.classList.add('show');
-                }
-              }, 1000);
+                // フルスクリーン表示の準備
+                const fullscreenImg = document.getElementById('fullscreenGuardianImg');
+                const fullscreenName = document.getElementById('fullscreenGuardianName');
+                const fullscreenDesc = document.getElementById('fullscreenGuardianDesc');
+                const fullscreenContainer = document.getElementById('guardianFullscreen');
+                
+                fullscreenImg.src = guardian.image;
+                fullscreenName.textContent = `そなたを守護するは ${guardian.name}`;
+                fullscreenDesc.textContent = guardian.desc;
+                
+                // フルスクリーン表示を開始
+                fullscreenContainer.style.display = 'flex';
+                setTimeout(() => {
+                  fullscreenContainer.classList.add('show');
+                }, 10);
+                
+                // 3秒後にフルスクリーン表示を終了
+                setTimeout(() => {
+                  fullscreenContainer.classList.remove('show');
+                  setTimeout(() => {
+                    fullscreenContainer.style.display = 'none';
+                    
+                    // フルスクリーン表示終了後1秒後にボタンを表示
+                    setTimeout(() => {
+                      const guardianBtn = document.querySelector('.guardian-message-btn');
+                      if (guardianBtn) {
+                        guardianBtn.classList.add('show');
+                      }
+                    }, 1000);
+                  }, 1000);
+                }, 3000);
+              }, 2000);
             }, 2000);
           };
           dragonImg.src = "photo/ryu.png"; // Start loading dragon image
