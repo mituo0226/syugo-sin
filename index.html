@@ -249,28 +249,28 @@
 
 
 
-    /* iPhone向け調整 */
-    @media (max-width: 600px) {
-      body {
-        position: fixed;
-        overflow: hidden;
-      }
-      .hero {
-        height: 100vh;
-        overflow-y: scroll;
-        -webkit-overflow-scrolling: touch;
-        padding: 60px 15px 100px;
-      }
-      #storyText { 
-        font-size: 1.1em; 
-        text-align: center; 
-        max-width: 98%;
-        padding: 20px;
-        bottom: 40%;
-      }
-                           .birth-input-button {
+         /* iPhone向け調整 */
+     @media (max-width: 600px) {
+       body {
+         position: fixed;
+         overflow: hidden;
+       }
+       .hero {
+         height: 100vh;
+         overflow-y: scroll;
+         -webkit-overflow-scrolling: touch;
+         padding: 60px 15px 100px;
+       }
+              #storyText { 
+         font-size: 1.1em; 
+         text-align: center; 
+         max-width: 98%;
+         padding: 20px;
+         bottom: 45%;
+       }
+        .birth-input-button {
           position: fixed !important;
-          bottom: 20px !important;
+          bottom: 30px !important;
           left: 50% !important;
           transform: translateX(-50%) translateY(50px) !important;
           width: calc(100% - 40px) !important;
@@ -283,6 +283,7 @@
           box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
           border: 1px solid rgba(255, 255, 255, 0.1) !important;
         }
+     }
        
        .birth-input-button.show {
          transform: translateX(-50%) translateY(0) !important;
