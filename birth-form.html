@@ -585,7 +585,7 @@
       .result {
         padding: 15px;
         margin: 10px;
-        padding-bottom: 150px;
+        padding-bottom: 180px;
       }
       
       .guardian {
@@ -596,7 +596,7 @@
       
       .guardian-message-btn {
         position: fixed !important;
-        bottom: 20px !important;
+        bottom: 0 !important;
         left: 50% !important;
         transform: translateX(-50%) translateY(50px) !important;
         width: calc(100% - 40px) !important;
@@ -606,7 +606,7 @@
         padding: 18px 30px !important;
         font-size: 1.3em !important;
         font-weight: bold !important;
-        border-radius: 15px !important;
+        border-radius: 15px 15px 0 0 !important;
         box-shadow: 0 8px 25px rgba(157, 78, 221, 0.6) !important;
         transition: all 1s ease !important;
       }
@@ -628,7 +628,7 @@
         }
         
         .guardian-message-btn {
-          bottom: max(20px, env(safe-area-inset-bottom) + 10px) !important;
+          bottom: env(safe-area-inset-bottom) !important;
         }
       }
     }
