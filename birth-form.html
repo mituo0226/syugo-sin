@@ -18,22 +18,22 @@
       min-height: 100vh;
     }
     
-    /* 神秘的な光の演出 */
-    #mysticalEffect {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #0d0d1a;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10000;
-      opacity: 0;
-      transition: opacity 2s ease-in-out;
-      pointer-events: none;
-    }
+         /* 神秘的な光の演出 */
+     #mysticalEffect {
+       position: fixed;
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 100%;
+       background: #0d0d1a;
+       display: none;
+       align-items: center;
+       justify-content: center;
+       z-index: 10000;
+       opacity: 0;
+       transition: opacity 2s ease-in-out;
+       pointer-events: none;
+     }
     
     #mysticalEffect.show {
       opacity: 1;
@@ -161,20 +161,20 @@
         height: 100%;
       }
     }
-    .container {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 20px;
-      overflow-y: auto;
-      position: relative;
-      z-index: 1;
-      opacity: 0;
-      transition: opacity 1s ease-in-out;
-    }
+         .container {
+       min-height: 100vh;
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       justify-content: center;
+       text-align: center;
+       padding: 20px;
+       overflow-y: auto;
+       position: relative;
+       z-index: 1;
+       opacity: 1;
+       transition: opacity 1s ease-in-out;
+     }
     
     .container.show {
       opacity: 1;
@@ -1191,22 +1191,39 @@
      // ページ読み込み時の初期化
      window.addEventListener("load", function() {
        try {
-         // 神秘的な演出をスキップしてメインコンテンツを直接表示
+         // 神秘的な演出を完全に無効化
          const mysticalEffect = document.getElementById('mysticalEffect');
+         if (mysticalEffect) {
+           mysticalEffect.style.display = 'none';
+         }
+         
+         // メインコンテンツを即座に表示
          const container = document.querySelector('.container');
+         if (container) {
+           container.style.opacity = '1';
+           container.classList.add('show');
+         }
          
-         // 神秘的な演出を非表示
-         mysticalEffect.style.display = 'none';
-         
-         // メインコンテンツを表示
-         container.classList.add('show');
+         // フォームを確実に表示
+         const form = document.getElementById('birthForm');
+         if (form) {
+           form.style.display = 'block';
+         }
          
          // フォーム初期化
          initializeSelects();
          console.log("生年月日入力フォームが正常に初期化されました");
        } catch (error) {
          console.error("初期化エラー:", error);
-         alert("ページの初期化に失敗しました。ページを再読み込みしてください。");
+         // エラーが発生してもフォームを表示
+         const container = document.querySelector('.container');
+         if (container) {
+           container.style.opacity = '1';
+         }
+         const form = document.getElementById('birthForm');
+         if (form) {
+           form.style.display = 'block';
+         }
        }
      });
   </script>
