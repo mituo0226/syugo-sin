@@ -63,6 +63,15 @@
       width: 100%;
       height: 100%;
     }
+    
+    /* PC向け調整 */
+    @media (min-width: 768px) {
+      body {
+        position: relative;
+        min-height: 100vh;
+        overflow-y: auto;
+      }
+    }
     .hero {
       min-height: 100vh;
       display: flex;
@@ -77,6 +86,16 @@
       z-index: 1;
       opacity: 0;
       transition: opacity 1s ease-in-out;
+    }
+    
+    /* PC向けヒーロー調整 */
+    @media (min-width: 768px) {
+      .hero {
+        min-height: 100vh;
+        padding: 60px 40px 160px;
+        justify-content: flex-start;
+        overflow-y: visible;
+      }
     }
     
     .hero.show {
@@ -100,6 +119,14 @@
       position: relative;
       z-index: 1;
     }
+    
+    /* PC向け画像調整 */
+    @media (min-width: 768px) {
+      .hero img {
+        max-width: 600px;
+        margin: 20px auto;
+      }
+    }
     #storyText {
       position: absolute;
       bottom: 30%;
@@ -121,6 +148,21 @@
       border: 2px solid rgba(102, 204, 255, 0.4);
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(102, 204, 255, 0.2);
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    }
+    
+    /* PC向けストーリーテキスト調整 */
+    @media (min-width: 768px) {
+      #storyText {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        transform: none;
+        margin: 30px auto;
+        max-width: 800px;
+        font-size: 1.3em;
+        line-height: 2.0;
+        padding: 30px;
+      }
     }
     #storyText p { 
       margin: 15px 0; 
@@ -151,6 +193,23 @@
       text-align: center;
       width: calc(100% - 40px);
       max-width: 400px;
+    }
+    
+    /* PC向けボタン調整 */
+    @media (min-width: 768px) {
+      .birth-input-button {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        transform: translateY(50px);
+        margin: 40px auto;
+        width: auto;
+        max-width: 500px;
+      }
+      
+      .birth-input-button.show {
+        transform: translateY(0);
+      }
     }
     
     .birth-input-button.show {
