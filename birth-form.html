@@ -18,8 +18,8 @@
       min-height: 100vh;
     }
     
-    /* スプラッシュスクリーン */
-    #splashScreen {
+    /* 神秘的な光の演出 */
+    #mysticalEffect {
       position: fixed;
       top: 0;
       left: 0;
@@ -30,36 +30,126 @@
       align-items: center;
       justify-content: center;
       z-index: 10000;
-      opacity: 1;
-      transition: opacity 1.5s ease-in-out;
-    }
-    
-    #splashScreen.fade-out {
       opacity: 0;
+      transition: opacity 2s ease-in-out;
+      pointer-events: none;
     }
     
-    #splashScreen img {
-      max-width: 200px;
-      max-height: 200px;
-      animation: splashGlow 2s ease-in-out infinite alternate;
+    #mysticalEffect.show {
+      opacity: 1;
     }
     
-    @keyframes splashGlow {
+    .light-particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(2px 2px at 20px 30px, #66ccff, transparent),
+        radial-gradient(2px 2px at 40px 70px, #3399ff, transparent),
+        radial-gradient(1px 1px at 90px 40px, #99e0ff, transparent),
+        radial-gradient(1px 1px at 130px 80px, #66ccff, transparent),
+        radial-gradient(2px 2px at 160px 30px, #3399ff, transparent);
+      background-repeat: repeat;
+      background-size: 200px 100px;
+      animation: particleFloat 8s linear infinite;
+    }
+    
+    @keyframes particleFloat {
       0% {
-        filter: brightness(1) drop-shadow(0 0 10px rgba(102, 204, 255, 0.5));
-        transform: scale(1);
+        transform: translateY(0px);
       }
       100% {
-        filter: brightness(1.2) drop-shadow(0 0 20px rgba(102, 204, 255, 0.8));
-        transform: scale(1.05);
+        transform: translateY(-100px);
       }
     }
     
-    /* PC向けスプラッシュスクリーン調整 */
+    .energy-field {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border: 2px solid rgba(102, 204, 255, 0.6);
+      border-radius: 50%;
+      animation: energyPulse 3s ease-in-out infinite;
+      box-shadow: 
+        0 0 20px rgba(102, 204, 255, 0.4),
+        inset 0 0 20px rgba(102, 204, 255, 0.2);
+    }
+    
+    @keyframes energyPulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.6;
+      }
+      50% {
+        transform: scale(1.2);
+        opacity: 1;
+      }
+    }
+    
+    /* 龍と守護神の表示スタイル */
+    .dragon-reveal {
+      text-align: center;
+      margin-bottom: 20px;
+      animation: dragonAppear 2s ease-in-out;
+    }
+    
+    .dragon-image {
+      max-width: 150px;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 0 30px rgba(102, 204, 255, 0.6);
+      animation: dragonGlow 3s ease-in-out infinite alternate;
+    }
+    
+    .dragon-placeholder {
+      font-size: 4em;
+      animation: dragonGlow 3s ease-in-out infinite alternate;
+    }
+    
+    @keyframes dragonAppear {
+      0% {
+        opacity: 0;
+        transform: scale(0.5) translateY(50px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+    
+    @keyframes dragonGlow {
+      0% {
+        filter: brightness(1) drop-shadow(0 0 10px rgba(102, 204, 255, 0.5));
+      }
+      100% {
+        filter: brightness(1.3) drop-shadow(0 0 20px rgba(102, 204, 255, 0.8));
+      }
+    }
+    
+    .guardian-reveal {
+      animation: guardianAppear 2s ease-in-out 0.5s both;
+    }
+    
+    @keyframes guardianAppear {
+      0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+    
+    /* PC向け神秘的な演出調整 */
     @media (min-width: 768px) {
-      #splashScreen img {
-        max-width: 300px;
-        max-height: 300px;
+      .energy-field {
+        width: 400px;
+        height: 400px;
+      }
+      
+      .dragon-image {
+        max-width: 200px;
       }
     }
     
@@ -442,9 +532,10 @@
   </style>
 </head>
 <body>
-  <!-- スプラッシュスクリーン -->
-  <div id="splashScreen">
-    <img src="photo/rogo2.png" alt="AI鑑定師 龍">
+  <!-- 神秘的な光の演出 -->
+  <div id="mysticalEffect">
+    <div class="light-particles"></div>
+    <div class="energy-field"></div>
   </div>
   
   <div class="container">
@@ -927,17 +1018,32 @@
       // 成功メッセージを表示（オプション）
       showSuccessMessage();
 
-                    // 鑑定中アニメーション開始
-       document.getElementById("birthForm").style.display="none";
-       const loading = document.getElementById("loadingScreen");
-       loading.style.display="flex";
+                    // 神秘的な演出開始
+       const mysticalEffect = document.getElementById('mysticalEffect');
+       mysticalEffect.style.display = 'flex';
+       mysticalEffect.classList.add('show');
        
-       // フェードイン効果
+       // フォームを非表示
+       document.getElementById("birthForm").style.display="none";
+       
+       // 2秒後に神秘的な演出を終了し、ローディング開始
        setTimeout(() => {
-         loading.classList.add('show');
-       }, 10);
+         mysticalEffect.classList.remove('show');
+         setTimeout(() => {
+           mysticalEffect.style.display = 'none';
+           
+           // ローディング画面表示
+           const loading = document.getElementById("loadingScreen");
+           loading.style.display="flex";
+           
+           // フェードイン効果
+           setTimeout(() => {
+             loading.classList.add('show');
+           }, 10);
+         }, 2000);
+       }, 2000);
 
-       // 3秒後に結果表示（時間を長く）
+       // 5秒後に結果表示（神秘的な演出の時間を考慮）
        setTimeout(()=>{
          try {
            // フェードアウト効果
@@ -950,13 +1056,21 @@
            const monthText = monthTraits[m] || "";
            const dayText = dayTraits[d] || "独自の使命を携えし者";
            
-           // 画像の読み込みを確認
-           const img = new Image();
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               img.onload = function() {
-                 document.getElementById("guardian").innerHTML =
-                   `<img class="guardian" src="${guardian.image}" alt="${guardian.name}">
+           // 龍の画像と守護神画像の読み込みを確認
+           const dragonImg = new Image();
+           const guardianImg = new Image();
+           
+           dragonImg.onload = function() {
+             guardianImg.onload = function() {
+               document.getElementById("guardian").innerHTML =
+                 `<div class="dragon-reveal">
+                    <img class="dragon-image" src="photo/ryu.png" alt="AI鑑定師 龍">
+                  </div>
+                  <div class="guardian-reveal">
+                    <img class="guardian" src="${guardian.image}" alt="${guardian.name}">
                     <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
-                    <div>${guardian.desc}</div>`;
+                    <div>${guardian.desc}</div>
+                  </div>`;
               
                    const oracleText = `汝に告ぐ
 
@@ -992,13 +1106,19 @@
                    document.getElementById("detailLink").onclick=()=>{ window.location.href=`confirm.html?year=${y}&month=${m}&day=${d}`; }
                  };
            
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               img.onerror = function() {
-                // 画像読み込みエラー時の処理
-                document.getElementById("guardian").innerHTML =
-                  `<div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
-                   <div>${guardian.desc}</div>`;
-              
-                               const oracleText = `汝に告ぐ
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               dragonImg.onerror = function() {
+             guardianImg.onerror = function() {
+               // 画像読み込みエラー時の処理
+               document.getElementById("guardian").innerHTML =
+                 `<div class="dragon-reveal">
+                    <div class="dragon-placeholder">🐉</div>
+                  </div>
+                  <div class="guardian-reveal">
+                    <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
+                    <div>${guardian.desc}</div>
+                  </div>`;
+               
+               const oracleText = `汝に告ぐ
 
       ${guardian.name}は常にそなたを見守り
       心弱き時には慈悲を注ぎ
@@ -1016,23 +1136,25 @@
       光と共に在る
 
       ${guardian.personal}`;
-              
-                               document.getElementById("resultBox").style.display="block";
+               
+               document.getElementById("resultBox").style.display="block";
                 
-                // 結果表示エリアにスクロール
-                setTimeout(() => {
-                  document.getElementById("resultBox").scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'center' 
-                  });
-                }, 100);
-                
-                typeWriter(document.getElementById("oracle"), oracleText, 80);
-                
-                document.getElementById("detailLink").onclick=()=>{ window.location.href=`confirm.html?year=${y}&month=${m}&day=${d}`; }
+               // 結果表示エリアにスクロール
+               setTimeout(() => {
+                 document.getElementById("resultBox").scrollIntoView({ 
+                   behavior: 'smooth', 
+                   block: 'center' 
+                 });
+               }, 100);
+               
+               typeWriter(document.getElementById("oracle"), oracleText, 80);
+               
+               document.getElementById("detailLink").onclick=()=>{ window.location.href=`confirm.html?year=${y}&month=${m}&day=${d}`; }
              };
+           };
            
-           img.src = guardian.image;
+           dragonImg.src = "photo/ryu.png";
+           guardianImg.src = guardian.image;
            
                     } catch (error) {
              console.error("エラーが発生しました:", error);
@@ -1046,28 +1168,31 @@
          },3000);
     });
 
-         // スプラッシュスクリーン制御
-     function startSplashScreen() {
-       const splashScreen = document.getElementById('splashScreen');
+         // 神秘的な演出制御
+     function startMysticalEffect() {
+       const mysticalEffect = document.getElementById('mysticalEffect');
        const container = document.querySelector('.container');
        
-       // 3秒後にフェードアウト開始
+       // 神秘的な演出を表示
+       mysticalEffect.classList.add('show');
+       
+       // 2秒後にフェードアウト開始
        setTimeout(() => {
-         splashScreen.classList.add('fade-out');
+         mysticalEffect.classList.remove('show');
          
-         // フェードアウト完了後にスプラッシュスクリーンを削除し、メインコンテンツを表示
+         // フェードアウト完了後に神秘的な演出を削除し、メインコンテンツを表示
          setTimeout(() => {
-           splashScreen.style.display = 'none';
+           mysticalEffect.style.display = 'none';
            container.classList.add('show');
-         }, 1500);
-       }, 3000);
+         }, 2000);
+       }, 2000);
      }
      
      // ページ読み込み時の初期化
      window.addEventListener("load", function() {
        try {
-         // スプラッシュスクリーン開始
-         startSplashScreen();
+         // 神秘的な演出開始
+         startMysticalEffect();
          
          // フォーム初期化
          initializeSelects();
