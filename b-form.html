@@ -152,7 +152,18 @@
 
       .form-group {
         flex: none;
-        width: 100%;
+      }
+
+      .form-group:nth-child(1) {
+        width: 80%; /* 西暦: 4桁+年 = 5文字程度 */
+      }
+
+      .form-group:nth-child(2) {
+        width: 50%; /* 月: 1-2桁+月 = 2-3文字程度 */
+      }
+
+      .form-group:nth-child(3) {
+        width: 50%; /* 日: 1-2桁+日 = 2-3文字程度 */
       }
     }
   </style>
