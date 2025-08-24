@@ -77,9 +77,25 @@
     }
 
     .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      display: flex;
+      justify-content: space-between;
       gap: 15px;
+    }
+
+    .form-group {
+      flex: 1;
+    }
+
+    .form-group:nth-child(1) {
+      flex: 2; /* 年の選択肢が多いので幅を広く */
+    }
+
+    .form-group:nth-child(2) {
+      flex: 1; /* 月は12個なので標準幅 */
+    }
+
+    .form-group:nth-child(3) {
+      flex: 1; /* 日は31個なので標準幅 */
     }
 
     button {
@@ -118,15 +134,7 @@
       text-align: center;
     }
 
-    .success-message {
-      color: #51cf66;
-      background: rgba(81, 207, 102, 0.1);
-      border: 1px solid rgba(81, 207, 102, 0.3);
-      border-radius: 8px;
-      padding: 15px;
-      margin-top: 20px;
-      text-align: center;
-    }
+
 
     @media (max-width: 600px) {
       .container {
@@ -138,8 +146,12 @@
       }
       
       .form-row {
-        grid-template-columns: 1fr;
+        flex-direction: column;
         gap: 10px;
+      }
+
+      .form-group {
+        flex: none;
       }
     }
   </style>
@@ -382,30 +394,14 @@
       }
     }
 
-    // 成功メッセージを表示する関数
-    function showSuccessMessage() {
-      clearErrorDisplay();
-      
-      const successDiv = document.createElement("div");
-      successDiv.className = "success-message";
-      successDiv.textContent = "入力が完了しました。";
-      
-      const form = document.getElementById("birthForm");
-      if (form) {
-        form.appendChild(successDiv);
-      }
-    }
+
 
     // エラー表示をクリアする関数
     function clearErrorDisplay() {
       const existingError = document.querySelector(".error-message");
-      const existingSuccess = document.querySelector(".success-message");
       
       if (existingError) {
         existingError.remove();
-      }
-      if (existingSuccess) {
-        existingSuccess.remove();
       }
     }
 
@@ -448,8 +444,7 @@
           return;
         }
         
-        // 成功メッセージ表示
-        showSuccessMessage();
+
         
         // ボタンを無効化
         const submitBtn = document.getElementById("submitBtn");
