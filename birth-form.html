@@ -464,9 +464,38 @@
       75% { transform: translateY(-3px) rotate(-0.5deg); }
     }
     
-    .glow-text { 
-      animation:textGlow 2s ease-in-out infinite alternate; 
-    }
+         .glow-text { 
+       animation:textGlow 2s ease-in-out infinite alternate; 
+     }
+     
+     /* 守護神の言葉ボタン */
+     .guardian-message-btn {
+       margin-top: 20px;
+       padding: 15px 30px;
+       font-size: 1.2em;
+       background: linear-gradient(90deg, #9d4edd, #c77dff);
+       border: none;
+       border-radius: 10px;
+       color: #fff;
+       cursor: pointer;
+       transition: all 0.3s ease;
+       box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
+     }
+     
+     .guardian-message-btn:hover {
+       background: linear-gradient(90deg, #c77dff, #9d4edd);
+       transform: translateY(-2px);
+       box-shadow: 0 6px 20px rgba(157, 78, 221, 0.6);
+     }
+     
+     /* PC向け守護神の言葉ボタン調整 */
+     @media (min-width: 768px) {
+       .guardian-message-btn {
+         font-size: 1.3em;
+         padding: 18px 40px;
+         margin-top: 30px;
+       }
+     }
     
     @keyframes textGlow {
       0%{text-shadow:0 0 10px rgba(157,78,221,.8)}
@@ -753,10 +782,20 @@
   </div>
   
   <script>
-    // 戻るボタンの機能
-    function goBack() {
-      window.history.back();
-    }
+         // 戻るボタンの機能
+     function goBack() {
+       window.history.back();
+     }
+     
+     // 守護神の言葉ページに移動する関数
+     function goToGuardianMessage(guardianName, guardianMessage) {
+       // URLパラメータとして守護神の情報を渡す
+       const params = new URLSearchParams({
+         name: guardianName,
+         message: guardianMessage
+       });
+       window.location.href = `guardian-message.html?${params.toString()}`;
+     }
 
     // セレクトボックスの初期化関数
     function initializeSelects() {
@@ -1003,104 +1042,104 @@
       form.appendChild(successDiv);
     }
 
-    // 守護神データ
+        // 守護神データ
     const guardians = {
       '子': {
         name:'千手観音',
         desc:'無限の慈悲をもって汝を抱擁する者なり',
-        image:'photo/senju.jpg',
+        image:'photo/senju.png',
         personal:`幾千の手は汝を包み、悲しみも迷いも静かに解き放つ。  
-汝が孤独に沈むときも、我が光は影の背後にありて温もりを授けん。  
-泣くな、恐れるな。慈悲の流れは絶えず汝の胸奥に息づいておるのだ。`
+ 汝が孤独に沈むときも、我が光は影の背後にありて温もりを授けん。  
+ 泣くな、恐れるな。慈悲の流れは絶えず汝の胸奥に息づいておるのだ。`
       },
       '丑': {
         name:'虚空蔵菩薩',
         desc:'無尽の智慧を授けし導き手なり',
-        image:'photo/kokuzo.jpg',
+        image:'photo/kokuzo.png',
         personal:`虚空は限りなき智慧の海なり。  
-汝が迷い問いを発するとき、心を澄まし空を仰げ。  
-思考の奥底に眠る答えを我が声が呼び覚まし、闇を裂いて道を示さん。`
+ 汝が迷い問いを発するとき、心を澄まし空を仰げ。  
+ 思考の奥底に眠る答えを我が声が呼び覚まし、闇を裂いて道を示さん。`
       },
       '寅': {
         name:'虚空蔵菩薩',
         desc:'無尽の智慧を授けし導き手なり',
-        image:'photo/kokuzo.jpg',
+        image:'photo/kokuzo.png',
         personal:`心に燃ゆる力を持ちながら、時にその火は行く道を惑わす。  
-焦るな、力を制すは智慧なり。  
-我は汝に知恵の剣を授け、怒涛の流れを鎮め、進むべき大地を照らさん。`
+ 焦るな、力を制すは智慧なり。  
+ 我は汝に知恵の剣を授け、怒涛の流れを鎮め、進むべき大地を照らさん。`
       },
       '卯': {
         name:'文殊菩薩',
         desc:'智慧の剣をもって迷いを断つ者なり',
-        image:'photo/monju.jpg',
+        image:'photo/monju.png',
         personal:`心は常に揺らぎ、迷いは幾千の影を生む。  
-されど汝よ、その刃に恐れるな。  
-我が智慧の剣は虚妄を断ち切り、汝に真理を映し出す光となろう。`
+ されど汝よ、その刃に恐れるな。  
+ 我が智慧の剣は虚妄を断ち切り、汝に真理を映し出す光となろう。`
       },
       '辰': {
         name:'普賢菩薩',
         desc:'実践の徳を授ける者なり',
-        image:'photo/fugen.jpg',
+        image:'photo/fugen.png',
         personal:`ただ願うのみでは道は開けぬ。  
-行動こそが真の力を呼び覚ます。  
-我は汝の一歩を守り、その歩みを徳の花で満たし、未来を芳しく導かん。`
+ 行動こそが真の力を呼び覚ます。  
+ 我は汝の一歩を守り、その歩みを徳の花で満たし、未来を芳しく導かん。`
       },
       '巳': {
         name:'普賢菩薩',
         desc:'実践の徳を授ける者なり',
-        image:'photo/fugen.jpg',
+        image:'photo/fugen.png',
         personal:`思う心と成す行いがひとつとなるとき、道は確かなものとなる。  
-汝の中に潜む決意を我は見抜き、迷わぬ実践を授けん。  
-行け、行いこそが汝の祈りを現実に変える。`
+ 汝の中に潜む決意を我は見抜き、迷わぬ実践を授けん。  
+ 行け、行いこそが汝の祈りを現実に変える。`
       },
       '午': {
         name:'勢至菩薩',
         desc:'智慧の光を放ち衆生を救う者なり',
-        image:'photo/seishi.jpg',
+        image:'photo/seishi.png',
         personal:`光は常に汝の内に燃えておる。  
-汝が恐れを抱くとき、その光は弱まるが決して消えはせぬ。  
-信じよ、内なる炎を。我は智慧の灯を絶やさず、汝を照らし続けん。`
+ 汝が恐れを抱くとき、その光は弱まるが決して消えはせぬ。  
+ 信じよ、内なる炎を。我は智慧の灯を絶やさず、汝を照らし続けん。`
       },
       '未': {
         name:'大日如来',
         desc:'宇宙の理をもって全てを照らす者なり',
-        image:'photo/dainichi.jpg',
+        image:'photo/dainichi.png',
         personal:`天も地も、森羅万象も、我が光に包まれておる。  
-汝もまた、その宇宙の理の一部なり。  
-恐れるな、すべては巡りの中にあり、汝の歩みは必然の流れに抱かれておるのだ。`
+ 汝もまた、その宇宙の理の一部なり。  
+ 恐れるな、すべては巡りの中にあり、汝の歩みは必然の流れに抱かれておるのだ。`
       },
       '申': {
         name:'大日如来',
         desc:'宇宙の理をもって全てを照らす者なり',
-        image:'photo/dainichi.jpg',
+        image:'photo/dainichi.png',
         personal:`星々の瞬き、風の囁き、全ては理の調べなり。  
-汝の心もまた、その旋律に響き合う一音に過ぎぬ。  
-流れに抗うな、調和を知れ。理に従う者こそ、宇宙の光を得ん。`
+ 汝の心もまた、その旋律に響き合う一音に過ぎぬ。  
+ 流れに抗うな、調和を知れ。理に従う者こそ、宇宙の光を得ん。`
       },
       '酉': {
         name:'不動明王',
         desc:'不動の意志にて悪を退ける者なり',
-        image:'photo/fudo.jpg',
+        image:'photo/fudo.png',
         personal:`炎は我が衣、怒りの相は慈悲の姿。  
-汝が弱き心に飲まれるとき、悪しき影は近づかん。  
-我はその影を焼き払い、揺るがぬ意志を授けん。  
-心を決して揺るがすな、立ち上がるその刹那、汝は真の強者となる。`
+ 汝が弱き心に飲まれるとき、悪しき影は近づかん。  
+ 我はその影を焼き払い、揺るがぬ意志を授けん。  
+ 心を決して揺るがすな、立ち上がるその刹那、汝は真の強者となる。`
       },
       '戌': {
         name:'阿弥陀如来',
         desc:'無限の慈悲をもって衆生を救う者なり',
-        image:'photo/amida.jpg',
+        image:'photo/amida.png',
         personal:`慈悲の光は汝を包み、迷いの闇を照らす。  
-汝が道に迷うとき、我が手は必ず汝を導かん。  
-信じよ、慈悲の力は無限なり。我は汝の歩みを永遠に見守り続けん。`
+ 汝が道に迷うとき、我が手は必ず汝を導かん。  
+ 信じよ、慈悲の力は無限なり。我は汝の歩みを永遠に見守り続けん。`
       },
       '亥': {
         name:'薬師如来',
         desc:'病苦を除き健康を授ける者なり',
-        image:'photo/yakushi.jpg',
+        image:'photo/yakushi.png',
         personal:`心身の苦しみを癒し、健康の光を授けん。  
-汝が弱きとき、我が薬は必ず効かん。  
-恐れるな、我は汝の健康を守り、強き心を授けん。`
+ 汝が弱きとき、我が薬は必ず効かん。  
+ 恐れるな、我は汝の健康を守り、強き心を授けん。`
       }
     };
 
@@ -1175,80 +1214,99 @@
           const dragonImg = new Image();
           const guardianImg = new Image();
           
-          dragonImg.onload = function() {
-            guardianImg.onload = function() {
-              document.getElementById("guardian").innerHTML =
-                `<div class="dragon-reveal">
-                   <img class="dragon-image" src="photo/ryu.png" alt="AI鑑定師 龍">
-                 </div>
-                 <div class="guardian-reveal">
-                   <img class="guardian" src="${guardian.image}" alt="${guardian.name}">
-                   <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
-                   <div>${guardian.desc}</div>
-                 </div>`;
-              
-              // 神託テキストを設定
-              const oracleText = guardian.personal;
-              document.getElementById("oracle").textContent = oracleText;
-              
-              // 結果を表示
-              const resultBox = document.getElementById("resultBox");
-              resultBox.style.display = "block";
-              resultBox.scrollIntoView({ behavior: 'smooth' });
-              
-              // 詳細リンクの設定
-              document.getElementById("detailLink").addEventListener("click", function() {
-                window.location.href = "result.html";
-              });
-            };
-            guardianImg.onerror = function() {
-              console.error("Guardian image failed to load");
-              document.getElementById("guardian").innerHTML =
-                `<div class="dragon-reveal">
-                   <img class="dragon-image" src="photo/ryu.png" alt="AI鑑定師 龍">
-                 </div>
-                 <div class="guardian-reveal">
-                   <div class="dragon-placeholder">🙏</div>
-                   <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
-                   <div>${guardian.desc}</div>
-                 </div>`;
-              
-              // 神託テキストを設定
-              const oracleText = guardian.personal;
-              document.getElementById("oracle").textContent = oracleText;
-              
-              // 結果を表示
-              const resultBox = document.getElementById("resultBox");
-              resultBox.style.display = "block";
-              resultBox.scrollIntoView({ behavior: 'smooth' });
-              
-              // 詳細リンクの設定
-              document.getElementById("detailLink").addEventListener("click", function() {
-                window.location.href = "result.html";
-              });
-            };
-            guardianImg.src = guardian.image;
-          };
+                     dragonImg.onload = function() {
+             guardianImg.onload = function() {
+               // まず龍の画像のみを表示
+               document.getElementById("guardian").innerHTML =
+                 `<div class="dragon-reveal">
+                    <img class="dragon-image" src="photo/ryu.png" alt="AI鑑定師 龍">
+                  </div>
+                  <div class="guardian-reveal" style="opacity: 0;">
+                    <img class="guardian" src="${guardian.image}" alt="${guardian.name}">
+                    <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
+                    <div>${guardian.desc}</div>
+                    <button class="guardian-message-btn" onclick="goToGuardianMessage('${guardian.name}', '${guardian.personal}')">守護神の言葉を聞く</button>
+                  </div>`;
+               
+               // 結果を表示
+               const resultBox = document.getElementById("resultBox");
+               resultBox.style.display = "block";
+               resultBox.scrollIntoView({ behavior: 'smooth' });
+               
+               // 2秒後に守護神をフェードイン
+               setTimeout(() => {
+                 const guardianReveal = document.querySelector('.guardian-reveal');
+                 if (guardianReveal) {
+                   guardianReveal.style.transition = 'opacity 2s ease-in-out';
+                   guardianReveal.style.opacity = '1';
+                 }
+               }, 2000);
+               
+               // 詳細リンクの設定
+               document.getElementById("detailLink").addEventListener("click", function() {
+                 window.location.href = "result.html";
+               });
+             };
+             guardianImg.onerror = function() {
+               console.error("Guardian image failed to load");
+               document.getElementById("guardian").innerHTML =
+                 `<div class="dragon-reveal">
+                    <img class="dragon-image" src="photo/ryu.png" alt="AI鑑定師 龍">
+                  </div>
+                  <div class="guardian-reveal" style="opacity: 0;">
+                    <div class="dragon-placeholder">🙏</div>
+                    <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
+                    <div>${guardian.desc}</div>
+                    <button class="guardian-message-btn" onclick="goToGuardianMessage('${guardian.name}', '${guardian.personal}')">守護神の言葉を聞く</button>
+                  </div>`;
+               
+               // 結果を表示
+               const resultBox = document.getElementById("resultBox");
+               resultBox.style.display = "block";
+               resultBox.scrollIntoView({ behavior: 'smooth' });
+               
+               // 2秒後に守護神をフェードイン
+               setTimeout(() => {
+                 const guardianReveal = document.querySelector('.guardian-reveal');
+                 if (guardianReveal) {
+                   guardianReveal.style.transition = 'opacity 2s ease-in-out';
+                   guardianReveal.style.opacity = '1';
+                 }
+               }, 2000);
+               
+               // 詳細リンクの設定
+               document.getElementById("detailLink").addEventListener("click", function() {
+                 window.location.href = "result.html";
+               });
+             };
+             guardianImg.src = guardian.image;
+           };
           dragonImg.onerror = function() {
             console.error("Dragon image failed to load");
             document.getElementById("guardian").innerHTML =
               `<div class="dragon-reveal">
                  <div class="dragon-placeholder">🐉</div>
                </div>
-               <div class="guardian-reveal">
+               <div class="guardian-reveal" style="opacity: 0;">
                  <img class="guardian" src="${guardian.image}" alt="${guardian.name}">
                  <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
                  <div>${guardian.desc}</div>
+                 <button class="guardian-message-btn" onclick="goToGuardianMessage('${guardian.name}', '${guardian.personal}')">守護神の言葉を聞く</button>
                </div>`;
-            
-            // 神託テキストを設定
-            const oracleText = guardian.personal;
-            document.getElementById("oracle").textContent = oracleText;
             
             // 結果を表示
             const resultBox = document.getElementById("resultBox");
             resultBox.style.display = "block";
             resultBox.scrollIntoView({ behavior: 'smooth' });
+            
+            // 2秒後に守護神をフェードイン
+            setTimeout(() => {
+              const guardianReveal = document.querySelector('.guardian-reveal');
+              if (guardianReveal) {
+                guardianReveal.style.transition = 'opacity 2s ease-in-out';
+                guardianReveal.style.opacity = '1';
+              }
+            }, 2000);
             
             // 詳細リンクの設定
             document.getElementById("detailLink").addEventListener("click", function() {
