@@ -271,6 +271,9 @@
     <img id="fullscreenGuardianImg" src="" alt="守護神">
     <h2 id="fullscreenGuardianName"></h2>
     <p id="fullscreenGuardianDesc"></p>
+    <button id="fullscreenGuardianBtn" class="guardian-message-btn" style="display: none;">
+      守護神の言葉を聞く
+    </button>
   </div>
   
   <script>
@@ -325,19 +328,29 @@
     };
 
     // フルスクリーン表示の処理を簡素化
-    function showFullscreenGuardian(guardian) {
+    function showFullscreenGuardian(guardian, zodiac) {
       const fullscreenImg = document.getElementById('fullscreenGuardianImg');
       const fullscreenName = document.getElementById('fullscreenGuardianName');
       const fullscreenDesc = document.getElementById('fullscreenGuardianDesc');
       const fullscreenContainer = document.getElementById('guardianFullscreen');
+      const fullscreenBtn = document.getElementById('fullscreenGuardianBtn');
       
-      if (!fullscreenImg || !fullscreenName || !fullscreenDesc || !fullscreenContainer) {
+      if (!fullscreenImg || !fullscreenName || !fullscreenDesc || !fullscreenContainer || !fullscreenBtn) {
         return false;
       }
       
       fullscreenImg.src = guardian.image;
       fullscreenName.textContent = `そなたを守護するは ${guardian.name}`;
       fullscreenDesc.textContent = guardian.desc;
+      
+      // ボタンのイベントリスナーを設定
+      fullscreenBtn.setAttribute('data-guardian-name', guardian.name);
+      fullscreenBtn.setAttribute('data-zodiac-sign', zodiac);
+      fullscreenBtn.addEventListener('click', function() {
+        const name = this.getAttribute('data-guardian-name');
+        const zodiacSign = this.getAttribute('data-zodiac-sign');
+        goToGuardianMessage(name, zodiacSign);
+      });
       
       fullscreenContainer.style.display = 'flex';
       setTimeout(() => fullscreenContainer.classList.add('show'), 10);
@@ -375,20 +388,7 @@
         </div>
       `;
       
-      // ボタンを作成
-      const guardianBtn = document.createElement('button');
-      guardianBtn.className = 'guardian-message-btn';
-      guardianBtn.textContent = '守護神の言葉を聞く';
-      guardianBtn.setAttribute('data-guardian-name', guardian.name);
-      guardianBtn.setAttribute('data-zodiac-sign', zodiac);
-      
-      guardianBtn.addEventListener('click', function() {
-        const name = this.getAttribute('data-guardian-name');
-        const zodiacSign = this.getAttribute('data-zodiac-sign');
-        goToGuardianMessage(name, zodiacSign);
-      });
-      
-      document.body.appendChild(guardianBtn);
+      // ボタンはフルスクリーン表示内に移動済み
       
       // 結果を表示
       resultBox.style.display = "block";
@@ -404,13 +404,14 @@
         
         // フルスクリーン表示
         setTimeout(() => {
-          if (showFullscreenGuardian(guardian)) {
+          if (showFullscreenGuardian(guardian, zodiac)) {
             setTimeout(() => {
-              hideFullscreenGuardian();
-              setTimeout(() => guardianBtn.classList.add('show'), 1000);
-            }, 3000);
-          } else {
-            setTimeout(() => guardianBtn.classList.add('show'), 1000);
+              const fullscreenBtn = document.getElementById('fullscreenGuardianBtn');
+              if (fullscreenBtn) {
+                fullscreenBtn.style.display = 'block';
+                setTimeout(() => fullscreenBtn.classList.add('show'), 100);
+              }
+            }, 2000);
           }
         }, 2000);
       }, 2000);
