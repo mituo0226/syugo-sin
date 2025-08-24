@@ -95,6 +95,7 @@
         padding: 60px 40px 160px;
         justify-content: flex-start;
         overflow-y: visible;
+        position: relative;
       }
     }
     
@@ -153,15 +154,21 @@
     /* PC向けストーリーテキスト調整 */
     @media (min-width: 768px) {
       #storyText {
-        position: relative;
-        bottom: auto;
-        left: auto;
-        transform: none;
-        margin: 30px auto;
-        max-width: 800px;
+        position: absolute;
+        bottom: 25%;
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: 90%;
         font-size: 1.3em;
         line-height: 2.0;
         padding: 30px;
+        background: rgba(13, 13, 26, 0.9);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-radius: 20px;
+        border: 2px solid rgba(102, 204, 255, 0.4);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(102, 204, 255, 0.2);
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
       }
     }
     #storyText p { 
@@ -198,17 +205,23 @@
     /* PC向けボタン調整 */
     @media (min-width: 768px) {
       .birth-input-button {
-        position: relative;
-        bottom: auto;
-        left: auto;
-        transform: translateY(50px);
-        margin: 40px auto;
+        position: absolute;
+        bottom: 10%;
+        left: 50%;
+        transform: translateX(-50%) translateY(50px);
         width: auto;
         max-width: 500px;
+        background: rgba(13, 13, 26, 0.95);
+        padding: 20px;
+        border-radius: 20px;
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
       }
       
       .birth-input-button.show {
-        transform: translateY(0);
+        transform: translateX(-50%) translateY(0);
       }
     }
     
