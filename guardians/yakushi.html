@@ -245,7 +245,7 @@
   </style>
 </head>
 <body>
-  <a href="#" class="back-button" id="backButton">← 鑑定結果に戻る</a>
+  <a href="../guardians-list.html" class="back-button">← 一覧に戻る</a>
 
   <div class="container">
     <div class="guardian-header">
@@ -315,26 +315,6 @@
     </div>
   </div>
 
-  <script>
-    // 戻るボタンの処理
-    document.getElementById('backButton').addEventListener('click', function(e) {
-      e.preventDefault();
-      
-      // URLパラメータから元のページの情報を取得
-      const urlParams = new URLSearchParams(window.location.search);
-      const returnTo = urlParams.get('returnTo');
-      const birthYear = urlParams.get('birthYear');
-      const birthMonth = urlParams.get('birthMonth');
-      const birthDay = urlParams.get('birthDay');
-      
-      if (returnTo === 'kekka' && birthYear && birthMonth && birthDay) {
-        // kekka.htmlに戻る場合
-        window.location.href = `../kekka.html?year=${birthYear}&month=${birthMonth}&day=${birthDay}`;
-      } else {
-        // デフォルトでguardians-list.htmlに戻る
-        window.location.href = '../guardians-list.html';
-      }
-    });
-  </script>
+
 </body>
 </html>
