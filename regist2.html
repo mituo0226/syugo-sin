@@ -484,8 +484,16 @@
     // 次に進むボタンのクリックイベント
     document.getElementById("nextButton").addEventListener("click", function() {
       console.log("次に進むボタンがクリックされました");
-      // 次のページに遷移（ここに遷移先を設定）
-      // window.location.href = 'next-page.html';
+      
+      // worry.htmlに遷移（全データを渡す）
+      const params = new URLSearchParams();
+      params.set('nickname', window.userData.nickname);
+      params.set('birthYear', window.userData.birthYear);
+      params.set('birthMonth', window.userData.birthMonth);
+      params.set('birthDay', window.userData.birthDay);
+      params.set('guardianKey', window.userData.guardianKey);
+      
+      window.location.href = `worry.html?${params.toString()}`;
     });
 
     // 再度やり直すボタンのクリックイベント
