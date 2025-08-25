@@ -291,24 +291,38 @@
     /* モバイル向け調整 */
     @media (max-width: 600px) {
       body {
-        position: fixed;
-        width: 100%;
-        height: 100%;
+        position: relative;
+        min-height: 100vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
+        -webkit-text-size-adjust: 100%;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
       
       .container {
-        height: 100vh;
-        overflow-y: scroll;
+        min-height: 100vh;
+        overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         padding: 20px 15px;
         justify-content: flex-start;
         padding-top: 40px;
+        padding-bottom: 40px;
+        position: relative;
+        z-index: 1;
       }
       
       .dragon-image {
         max-width: 150px;
         max-height: 150px;
         margin-bottom: 20px;
+        -webkit-user-drag: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
       }
       
       #dragonMessage { 
@@ -321,12 +335,17 @@
       .info-display {
         max-width: 100%;
         padding: 20px;
+        margin-bottom: 20px;
       }
       
       .action-button {
         font-size: 1.1em;
         padding: 12px 30px;
         width: 100%;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
       }
     }
     
@@ -340,8 +359,19 @@
     
     /* iPhone向けボタン位置調整 */
     @supports (-webkit-touch-callout: none) {
+      body {
+        -webkit-overflow-scrolling: touch;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+      }
+      
       .container {
         padding-bottom: max(80px, env(safe-area-inset-bottom) + 40px);
+        -webkit-overflow-scrolling: touch;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
       }
       
       .button-container {
@@ -350,6 +380,23 @@
       
       .info-display {
         margin-bottom: 40px;
+      }
+      
+      .dragon-image {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        -webkit-perspective: 1000;
+        perspective: 1000;
+        will-change: transform;
+      }
+      
+      .action-button {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
       }
     }
   </style>
