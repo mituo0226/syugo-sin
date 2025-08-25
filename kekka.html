@@ -348,13 +348,12 @@
       height: 100vh;
       background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%);
       display: none;
-      align-items: flex-start;
+      align-items: center;
       justify-content: center;
       flex-direction: column;
       z-index: 2000;
       opacity: 0;
       transition: opacity 1s ease-in-out;
-      padding-top: 10vh;
       box-sizing: border-box;
     }
 
@@ -363,8 +362,8 @@
     }
 
     .guardian-fullscreen img {
-      max-width: 75vw;
-      max-height: 55vh;
+      max-width: 85vw;
+      max-height: 65vh;
       width: auto;
       height: auto;
       border-radius: 20px;
@@ -415,13 +414,9 @@
         max-width: 400px;
       }
       
-      .guardian-fullscreen {
-        padding-top: 8vh;
-      }
-      
       .guardian-fullscreen img {
-        max-width: 85vw;
-        max-height: 50vh;
+        max-width: 90vw;
+        max-height: 60vh;
         margin-bottom: 20px;
       }
       
@@ -444,10 +439,6 @@
     @supports (padding: max(0px)) {
       .guardian-message-btn {
         bottom: max(20px, env(safe-area-inset-bottom) + 10px);
-      }
-      
-      .guardian-fullscreen {
-        padding-top: max(10vh, env(safe-area-inset-top) + 5vh);
       }
     }
   </style>
