@@ -11,7 +11,7 @@
       font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
       color: #fff;
       overflow-x: hidden;
-      overflow-y: hidden;
+      overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       touch-action: manipulation;
       position: relative;
@@ -94,12 +94,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       text-align: center;
       padding: 20px;
       position: relative;
       z-index: 1;
-      overflow-y: auto;
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
     }
@@ -389,8 +388,6 @@
     @media (max-width: 600px) {
       .container {
         min-height: 100vh;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
         padding: 20px 15px;
         justify-content: flex-start;
         padding-top: 40px;
