@@ -337,6 +337,21 @@
         padding-bottom: max(40px, env(safe-area-inset-bottom));
       }
     }
+    
+    /* iPhone向けボタン位置調整 */
+    @supports (-webkit-touch-callout: none) {
+      .container {
+        padding-bottom: max(80px, env(safe-area-inset-bottom) + 40px);
+      }
+      
+      .button-container {
+        margin-bottom: 20px;
+      }
+      
+      .info-display {
+        margin-bottom: 40px;
+      }
+    }
   </style>
 </head>
 <body>
