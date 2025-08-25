@@ -411,9 +411,8 @@
       
       const p = document.createElement("p");
       p.textContent = "";
-      p.style.opacity = "0";
-      p.style.transform = "translateY(30px) scale(0.95)";
-      p.style.transition = "all 0.8s ease";
+      p.style.opacity = "1";
+      p.style.transform = "translateY(0) scale(1)";
       messageText.appendChild(p);
 
       let j = 0;
@@ -421,17 +420,12 @@
         p.textContent = message.slice(0, j++);
         if (j > message.length) {
           clearInterval(interval);
-          // テキスト完了後にフェードイン効果
+          
+          // メッセージ完了後、個別相談ボタンを表示
           setTimeout(() => {
-            p.style.opacity = "1";
-            p.style.transform = "translateY(0) scale(1)";
-            
-            // メッセージ完了後、個別相談ボタンを表示
-            setTimeout(() => {
-              const button = document.getElementById("consultButton");
-              button.classList.add('show');
-            }, 1000);
-          }, 200);
+            const button = document.getElementById("consultButton");
+            button.classList.add('show');
+          }, 1000);
         }
       }, 50);
     }
