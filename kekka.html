@@ -492,11 +492,32 @@
   <script>
     // 守護神の言葉ページに移動する関数
     function goToGuardianMessage(guardianName, zodiacSign) {
-      const params = new URLSearchParams({
-        name: guardianName,
-        zodiac: zodiacSign
-      });
-      window.location.href = `syugo-sin.html?${params.toString()}`;
+      // 十二支から守護神のキーを取得
+      const guardianKeyMap = {
+        '子': 'senju',
+        '丑': 'kokuzo',
+        '寅': 'kokuzo',
+        '卯': 'monju',
+        '辰': 'fugen',
+        '巳': 'fugen',
+        '午': 'seishi',
+        '未': 'dainichi',
+        '申': 'dainichi',
+        '酉': 'fudo',
+        '戌': 'amida',
+        '亥': 'yakushi'
+      };
+      
+      const guardianKey = guardianKeyMap[zodiacSign];
+      if (guardianKey) {
+        const params = new URLSearchParams({
+          guardian: guardianKey
+        });
+        window.location.href = `guardians.html?${params.toString()}`;
+      } else {
+        // フォールバック
+        window.location.href = 'guardians.html';
+      }
     }
 
     // URLパラメータから生年月日を取得する関数
