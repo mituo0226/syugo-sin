@@ -252,7 +252,7 @@
       width: 100%;
       max-width: 200px;
       height: 200px;
-      object-fit: cover;
+      object-fit: contain;
       border-radius: 12px;
       margin-bottom: 20px;
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
@@ -294,8 +294,9 @@
     .button-container {
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 10px;
       margin-top: 30px;
+      margin-bottom: 20px;
     }
     
     .action-button {
@@ -333,6 +334,46 @@
     
     .action-button.tertiary:hover {
       background: linear-gradient(90deg, #ff8e8e, #ff6b6b);
+    }
+    
+    /* 小さなリンクボタン */
+    .small-link {
+      font-size: 0.9em;
+      color: #66ccff;
+      text-decoration: none;
+      padding: 8px 15px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      background: rgba(102, 204, 255, 0.1);
+      border: 1px solid rgba(102, 204, 255, 0.3);
+    }
+    
+    .small-link:hover {
+      background: rgba(102, 204, 255, 0.2);
+      color: #99e0ff;
+      transform: translateY(-1px);
+    }
+    
+    .small-link.secondary {
+      color: #9d4edd;
+      background: rgba(157, 78, 221, 0.1);
+      border: 1px solid rgba(157, 78, 221, 0.3);
+    }
+    
+    .small-link.secondary:hover {
+      background: rgba(157, 78, 221, 0.2);
+      color: #b565f0;
+    }
+    
+    .small-link.tertiary {
+      color: #ff6b6b;
+      background: rgba(255, 107, 107, 0.1);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+    }
+    
+    .small-link.tertiary:hover {
+      background: rgba(255, 107, 107, 0.2);
+      color: #ff8e8e;
     }
     
     /* モバイル向け調整 */
@@ -379,6 +420,13 @@
         font-size: 1.1em;
         padding: 12px 30px;
         width: 100%;
+      }
+      
+      .small-link {
+        font-size: 0.8em;
+        padding: 6px 12px;
+        width: 100%;
+        text-align: center;
       }
     }
     
@@ -485,8 +533,8 @@
       <!-- ボタン -->
       <div class="button-container">
         <button class="action-button" id="purchaseButton">購入ページ</button>
-        <a href="guardians-list.html" class="action-button secondary">全守護神</a>
-        <a href="b-form.html" class="action-button tertiary">もう一度鑑定する</a>
+        <a href="guardians-list.html" class="small-link secondary">全守護神</a>
+        <a href="b-form.html" class="small-link tertiary">もう一度鑑定する</a>
       </div>
     </div>
   </div>
