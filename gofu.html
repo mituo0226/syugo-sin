@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>護符商品案内 | AI鑑定師 龍</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
   <style>
     body {
       margin: 0;
@@ -16,6 +16,9 @@
       touch-action: pan-y;
       position: relative;
       min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
     
     /* 神秘的な背景効果 */
@@ -23,14 +26,16 @@
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       background: 
         radial-gradient(circle at 20% 80%, rgba(102, 204, 255, 0.1) 0%, transparent 50%),
         radial-gradient(circle at 80% 20%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
         radial-gradient(circle at 40% 40%, rgba(199, 125, 255, 0.05) 0%, transparent 50%);
       z-index: -1;
       animation: bgPulse 8s ease-in-out infinite;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
     }
     
     @keyframes bgPulse {
@@ -43,10 +48,12 @@
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       pointer-events: none;
       z-index: -1;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
     }
     
     .particle {
@@ -117,8 +124,8 @@
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       background: #0d0d1a;
       display: flex;
       flex-direction: column;
@@ -126,6 +133,8 @@
       justify-content: center;
       z-index: 1000;
       transition: opacity 2s ease;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
     }
     
     .loading-screen.fade-out {
@@ -166,12 +175,14 @@
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       background: linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.1) 100%);
       z-index: 999;
       opacity: 0;
       transition: opacity 3s ease;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
     }
     
     .cloud-animation.show {
@@ -245,6 +256,8 @@
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(102, 204, 255, 0.2);
       transition: all 0.3s ease;
       overflow: hidden;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
     }
     
     .product-item:hover {
@@ -260,6 +273,11 @@
       border-radius: 12px;
       margin-bottom: 20px;
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+      -webkit-user-drag: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
     }
     
     .product-name {
@@ -417,8 +435,13 @@
       .product-image {
         max-width: 150px;
         height: 150px;
-        width: 150px;
+        width: 100%;
         object-fit: cover;
+        -webkit-user-drag: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
       }
       
       .action-button {
@@ -494,18 +517,43 @@
          }
        }
        
-       /* iPhone向けスクロール調整 */
-       @supports (-webkit-touch-callout: none) {
-         body {
-           -webkit-overflow-scrolling: touch;
-           -webkit-user-select: none;
-           -webkit-touch-callout: none;
-         }
-         
-         .container {
-           -webkit-overflow-scrolling: touch;
-         }
-       }
+               /* iPhone向けスクロール調整 */
+        @supports (-webkit-touch-callout: none) {
+          body {
+            -webkit-overflow-scrolling: touch;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+          }
+          
+          .container {
+            -webkit-overflow-scrolling: touch;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+          }
+          
+          .product-image {
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-perspective: 1000;
+            perspective: 1000;
+            will-change: transform;
+          }
+          
+          .mystical-bg,
+          .floating-particles,
+          .loading-screen,
+          .cloud-animation {
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-perspective: 1000;
+            perspective: 1000;
+            will-change: transform;
+          }
+        }
   </style>
 </head>
 <body>
