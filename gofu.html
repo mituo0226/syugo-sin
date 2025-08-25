@@ -291,6 +291,7 @@
       padding: 15px;
       border-radius: 10px;
       border-left: 3px solid #66ccff;
+      margin-bottom: 20px;
     }
     
     /* ボタン */
@@ -315,6 +316,8 @@
       transition: all 0.3s ease;
       text-decoration: none;
       display: inline-block;
+      width: 100%;
+      margin-top: 10px;
     }
     
     .action-button:hover {
@@ -498,6 +501,7 @@
           <div class="product-service">
             この護符をご購入いただくと、龍による 鑑定3分 をお受けいただけます。短い時間ですが、今のあなたに必要なメッセージを的確に授けます。
           </div>
+          <button class="action-button" data-product="gofu500" data-price="500">購入する</button>
         </div>
         
         <!-- 商品2 -->
@@ -511,6 +515,7 @@
           <div class="product-service">
             この護符をご購入いただくと、龍による 鑑定10分 をお受けいただけます。お悩みのテーマを絞り、明確な方向性を見つけたい方に最適です。
           </div>
+          <button class="action-button" data-product="gofu1000" data-price="1000">購入する</button>
         </div>
         
         <!-- 商品3 -->
@@ -524,6 +529,7 @@
           <div class="product-service">
             この護符をご購入いただくと、龍による 鑑定45分 をお受けいただけます。じっくり時間をかけ、複数の悩みを整理し、深い洞察と解決への道筋を得ることができます。
           </div>
+          <button class="action-button" data-product="gofu3000" data-price="3000">購入する</button>
         </div>
         
         <!-- 商品4 -->
@@ -537,14 +543,8 @@
           <div class="product-service">
             この護符をご購入いただくと、龍による 鑑定240分（60分×4回利用可能） をお受けいただけます。事業や人生の転機、大きな願いを叶えるために、時間をかけて深く導きを得たい方に。
           </div>
+          <button class="action-button" data-product="gofu10000" data-price="10000">購入する</button>
         </div>
-      </div>
-      
-      <!-- ボタン -->
-      <div class="button-container">
-        <button class="action-button" id="purchaseButton">購入ページ</button>
-        <a href="guardians-list.html" class="small-link secondary">全守護神</a>
-        <a href="b-form.html" class="small-link tertiary">もう一度鑑定する</a>
       </div>
     </div>
   </div>
@@ -617,11 +617,15 @@
       }, 500);
     }
 
-    // 購入ボタンのクリックイベント
-    document.getElementById("purchaseButton").addEventListener("click", function() {
-      console.log("購入ボタンがクリックされました");
-      // 購入ページに遷移（ここに遷移先を設定）
-      // window.location.href = 'purchase.html';
+    // 各商品の購入ボタンのクリックイベント
+    document.addEventListener("click", function(e) {
+      if (e.target.classList.contains("action-button") && e.target.dataset.product) {
+        const product = e.target.dataset.product;
+        const price = e.target.dataset.price;
+        console.log(`商品 ${product} (${price}円) の購入ボタンがクリックされました`);
+        // 購入ページに遷移（ここに遷移先を設定）
+        // window.location.href = `purchase.html?product=${product}&price=${price}`;
+      }
     });
   </script>
 </body>
