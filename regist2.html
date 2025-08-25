@@ -97,7 +97,7 @@
       justify-content: flex-start;
       text-align: center;
       padding: 20px;
-      padding-top: 60px;
+      padding-top: 65px;
       position: relative;
       z-index: 1;
     }
@@ -106,7 +106,7 @@
     @media (min-width: 768px) {
       .container {
         padding: 40px 20px;
-        padding-top: 80px;
+        padding-top: 85px;
         justify-content: flex-start;
       }
     }
@@ -162,7 +162,7 @@
       border: 2px solid rgba(102, 204, 255, 0.4);
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(102, 204, 255, 0.2);
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-      margin-bottom: 30px;
+      margin-bottom: 25px;
     }
     
     /* PC向けメッセージ調整 */
@@ -320,7 +320,7 @@
          -webkit-overflow-scrolling: touch;
          padding: 20px 15px;
          justify-content: flex-start;
-         padding-top: 45px;
+         padding-top: 50px;
          padding-bottom: 40px;
          position: relative;
          z-index: 1;
@@ -380,13 +380,13 @@
         transform: translateZ(0);
       }
       
-      .container {
-        padding-top: max(45px, env(safe-area-inset-top) + 5px);
-        padding-bottom: max(80px, env(safe-area-inset-bottom) + 40px);
-        -webkit-overflow-scrolling: touch;
-        -webkit-transform: translateZ(0);
-        transform: translateZ(0);
-      }
+             .container {
+         padding-top: max(50px, env(safe-area-inset-top) + 10px);
+         padding-bottom: max(80px, env(safe-area-inset-bottom) + 40px);
+         -webkit-overflow-scrolling: touch;
+         -webkit-transform: translateZ(0);
+         transform: translateZ(0);
+       }
       
       .button-container {
         margin-bottom: 20px;
@@ -460,8 +460,8 @@
       </div>
       
       <div class="button-container">
-        <button class="action-button" id="nextButton">次に進む</button>
         <button class="action-button secondary" id="retryButton">再度やり直す</button>
+        <button class="action-button" id="nextButton">次に進む</button>
       </div>
     </div>
   </div>
