@@ -94,9 +94,10 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       text-align: center;
       padding: 20px;
+      padding-top: 60px;
       position: relative;
       z-index: 1;
     }
@@ -105,14 +106,15 @@
     @media (min-width: 768px) {
       .container {
         padding: 40px 20px;
-        justify-content: center;
+        padding-top: 80px;
+        justify-content: flex-start;
       }
     }
     
     /* 龍の画像 */
     .dragon-image {
-      max-width: 200px;
-      max-height: 200px;
+      max-width: 180px;
+      max-height: 180px;
       opacity: 0;
       transform: scale(0.8);
       transition: all 2s ease;
@@ -123,7 +125,8 @@
       -webkit-touch-callout: none;
       position: relative;
       z-index: 1;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
+      object-fit: contain;
     }
     
     .dragon-image.show {
@@ -134,9 +137,9 @@
     /* PC向け画像調整 */
     @media (min-width: 768px) {
       .dragon-image {
-        max-width: 250px;
-        max-height: 250px;
-        margin-bottom: 40px;
+        max-width: 220px;
+        max-height: 220px;
+        margin-bottom: 35px;
       }
     }
     
