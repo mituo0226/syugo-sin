@@ -292,9 +292,8 @@
 
       // カードクリック時の処理
       card.addEventListener('click', () => {
-        // 守護神の詳細ページに遷移（必要に応じて実装）
-        console.log(`${guardian.name}が選択されました`);
-        // window.location.href = `guardian-detail.html?guardian=${key}`;
+        // 守護神の詳細ページに遷移
+        window.location.href = `guardians/${key}.html`;
       });
 
       return card;
