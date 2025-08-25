@@ -325,7 +325,7 @@
       transition: all 0.3s ease;
       opacity: 0;
       transform: translateX(-50%) translateY(50px);
-      z-index: 100;
+      z-index: 2500;
     }
 
     .guardian-message-btn.show {
@@ -440,7 +440,7 @@
       position: fixed;
       top: 20px;
       left: 20px;
-      z-index: 1000;
+      z-index: 3000;
       background: rgba(13, 13, 26, 0.8);
       border: 1px solid rgba(102, 204, 255, 0.4);
       border-radius: 8px;
@@ -538,7 +538,7 @@
     <img id="fullscreenGuardianImg" src="" alt="守護神">
     <h2 id="fullscreenGuardianName"></h2>
     <p id="fullscreenGuardianDesc"></p>
-    <button id="fullscreenGuardianBtn" class="guardian-message-btn" style="display: none;">
+    <button id="fullscreenGuardianBtn" class="guardian-message-btn">
       守護神の言葉を聞く
     </button>
   </div>
@@ -744,7 +744,6 @@
             setTimeout(() => {
               const fullscreenBtn = document.getElementById('fullscreenGuardianBtn');
               if (fullscreenBtn) {
-                fullscreenBtn.style.display = 'block';
                 setTimeout(() => fullscreenBtn.classList.add('show'), 100);
               }
             }, 2000);
