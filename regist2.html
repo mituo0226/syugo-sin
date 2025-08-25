@@ -190,7 +190,7 @@
     
     /* ボタン */
     .action-button {
-      padding: 15px 40px;
+      padding: 15px 30px;
       font-size: 1.2em;
       background: linear-gradient(90deg, #66ccff, #3399ff);
       border: none;
@@ -200,7 +200,8 @@
       color: #000;
       box-shadow: 0 4px 15px rgba(102,204,255,0.3);
       transition: all 0.3s ease;
-      margin: 10px;
+      margin: 0;
+      min-width: 140px;
     }
     
     .action-button:hover {
@@ -276,15 +277,23 @@
     /* ボタンコンテナ */
     .button-container {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       gap: 15px;
       margin-top: 30px;
+      justify-content: center;
+      align-items: center;
     }
     
-    @media (min-width: 768px) {
+    @media (max-width: 600px) {
       .button-container {
         flex-direction: row;
-        justify-content: center;
+        gap: 10px;
+        width: 100%;
+      }
+      
+      .action-button {
+        flex: 1;
+        min-width: 0;
       }
     }
     
