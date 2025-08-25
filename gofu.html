@@ -11,7 +11,7 @@
       font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
       color: #fff;
       overflow-x: hidden;
-      overflow-y: auto;
+      overflow-y: hidden;
       -webkit-overflow-scrolling: touch;
       touch-action: manipulation;
       position: relative;
@@ -99,6 +99,8 @@
       padding: 20px;
       position: relative;
       z-index: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
     
     /* PC向けコンテナ調整 */
@@ -173,6 +175,11 @@
     
     .cloud-animation.show {
       opacity: 1;
+    }
+    
+    .cloud-animation.fade-out {
+      opacity: 0;
+      pointer-events: none;
     }
     
     /* メインコンテンツ */
@@ -338,7 +345,7 @@
       
       .container {
         height: 100vh;
-        overflow-y: scroll;
+        overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         padding: 20px 15px;
         justify-content: flex-start;
@@ -535,10 +542,12 @@
           const cloudAnimation = document.getElementById('cloudAnimation');
           cloudAnimation.classList.add('show');
           
-          // 雲のアニメーション2秒後にローディング画面をフェードアウト
+          // 雲のアニメーション2秒後にローディング画面と雲をフェードアウト
           setTimeout(() => {
             const loadingScreen = document.getElementById('loadingScreen');
+            const cloudAnimation = document.getElementById('cloudAnimation');
             loadingScreen.classList.add('fade-out');
+            cloudAnimation.classList.add('fade-out');
             
             // ローディング画面が消えた後にメインコンテンツを表示
             setTimeout(() => {
