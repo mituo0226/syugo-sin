@@ -631,6 +631,30 @@
       fullscreenName.textContent = `そなたを守護するは ${guardian.name}`;
       fullscreenDesc.textContent = guardian.desc;
       
+      // 守護神プロフィールリンクを設定（フルスクリーン表示時にも表示）
+      const guardianKeyMap = {
+        '子': 'senju',
+        '丑': 'kokuzo',
+        '寅': 'kokuzo',
+        '卯': 'monju',
+        '辰': 'fugen',
+        '巳': 'fugen',
+        '午': 'seishi',
+        '未': 'dainichi',
+        '申': 'dainichi',
+        '酉': 'fudo',
+        '戌': 'amida',
+        '亥': 'yakushi'
+      };
+      
+      const guardianKey = guardianKeyMap[zodiac];
+      const profileLink = document.getElementById('guardianProfileLink');
+      if (profileLink && guardianKey) {
+        profileLink.textContent = `${guardian.name}とは`;
+        profileLink.href = `guardians/${guardianKey}.html`;
+        profileLink.style.display = 'inline-block';
+      }
+      
       // ボタンのイベントリスナーを設定
       fullscreenBtn.setAttribute('data-guardian-name', guardian.name);
       fullscreenBtn.setAttribute('data-zodiac-sign', zodiac);
