@@ -309,69 +309,16 @@
       }
     }
     
-    /* 全守護神リンク */
-    .all-guardians-link {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      z-index: 1000;
-      background: rgba(13, 13, 26, 0.8);
-      border: 1px solid rgba(102, 204, 255, 0.4);
-      border-radius: 8px;
-      padding: 8px 16px;
-      color: #66ccff;
-      font-size: 0.9em;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      text-decoration: none;
-      display: inline-block;
-    }
-
-    .all-guardians-link:hover {
-      background: rgba(102, 204, 255, 0.2);
-      border-color: rgba(102, 204, 255, 0.8);
-      transform: scale(1.05);
-    }
-
-    /* PC向け全守護神リンク調整 */
-    @media (min-width: 768px) {
-      .all-guardians-link {
-        top: 30px;
-        left: 30px;
-        font-size: 1em;
-        padding: 10px 20px;
-      }
-    }
-
-    /* スマートフォン向け全守護神リンク調整 */
-    @media (max-width: 600px) {
-      .all-guardians-link {
-        top: 15px;
-        left: 15px;
-        font-size: 0.8em;
-        padding: 6px 12px;
-      }
-    }
-
     /* iPhone X以降のノッチ対応 */
     @supports (padding: max(0px)) {
       .container {
         padding-top: max(40px, env(safe-area-inset-top));
         padding-bottom: max(40px, env(safe-area-inset-bottom));
       }
-      
-      .all-guardians-link {
-        top: max(15px, env(safe-area-inset-top) + 5px);
-        left: max(15px, env(safe-area-inset-left) + 5px);
-      }
     }
   </style>
 </head>
   <body>
-    <!-- 全守護神リンク -->
-    <a href="guardians-list.html" class="all-guardians-link">全守護神</a>
     
     <!-- 神秘的な背景 -->
     <div class="mystical-bg"></div>
