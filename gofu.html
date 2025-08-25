@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>護符商品案内 | AI鑑定師 龍</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0">
   <style>
     body {
       margin: 0;
@@ -13,7 +13,7 @@
       overflow-x: hidden;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-      touch-action: manipulation;
+      touch-action: pan-y;
       position: relative;
       min-height: 100vh;
     }
@@ -100,7 +100,6 @@
       position: relative;
       z-index: 1;
       overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
     }
     
     /* PC向けコンテナ調整 */
@@ -487,13 +486,26 @@
        transform: translateY(-1px);
      }
      
-           /* iPhone X以降のノッチ対応 */
-      @supports (padding: max(0px)) {
-        .container {
-          padding-top: max(40px, env(safe-area-inset-top));
-          padding-bottom: max(40px, env(safe-area-inset-bottom));
-        }
-      }
+                       /* iPhone X以降のノッチ対応 */
+       @supports (padding: max(0px)) {
+         .container {
+           padding-top: max(40px, env(safe-area-inset-top));
+           padding-bottom: max(40px, env(safe-area-inset-bottom));
+         }
+       }
+       
+       /* iPhone向けスクロール調整 */
+       @supports (-webkit-touch-callout: none) {
+         body {
+           -webkit-overflow-scrolling: touch;
+           -webkit-user-select: none;
+           -webkit-touch-callout: none;
+         }
+         
+         .container {
+           -webkit-overflow-scrolling: touch;
+         }
+       }
   </style>
 </head>
 <body>
