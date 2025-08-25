@@ -433,9 +433,30 @@
 
     // 個別相談ボタンのクリックイベント
     document.getElementById("consultButton").addEventListener("click", function() {
-      console.log("個別相談ボタンがクリックされました");
-      // 個別相談ページに遷移（consult.jsなど）
-      window.location.href = 'consult.js';
+      console.log("鑑定を続けるボタンがクリックされました");
+      
+      // URLパラメータから守護神の情報を取得
+      const urlParams = new URLSearchParams(window.location.search);
+      const guardianKey = urlParams.get('guardian');
+      
+      // regist.htmlに遷移（生年月日と守護神情報を渡す）
+      const params = new URLSearchParams();
+      if (guardianKey) {
+        params.set('guardianKey', guardianKey);
+      }
+      
+      // 生年月日パラメータがあれば追加
+      const birthYear = urlParams.get('birthYear');
+      const birthMonth = urlParams.get('birthMonth');
+      const birthDay = urlParams.get('birthDay');
+      
+      if (birthYear && birthMonth && birthDay) {
+        params.set('birthYear', birthYear);
+        params.set('birthMonth', birthMonth);
+        params.set('birthDay', birthDay);
+      }
+      
+      window.location.href = `regist.html?${params.toString()}`;
     });
   </script>
 </body>
