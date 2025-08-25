@@ -512,9 +512,23 @@
       
       const guardianKey = guardianKeyMap[zodiacSign];
       if (guardianKey) {
+        // URLパラメータから生年月日を取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const year = urlParams.get('year');
+        const month = urlParams.get('month');
+        const day = urlParams.get('day');
+        
         const params = new URLSearchParams({
           guardian: guardianKey
         });
+        
+        // 生年月日パラメータがあれば追加
+        if (year && month && day) {
+          params.set('birthYear', year);
+          params.set('birthMonth', month);
+          params.set('birthDay', day);
+        }
+        
         window.location.href = `guardians.html?${params.toString()}`;
       } else {
         // フォールバック
