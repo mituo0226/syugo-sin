@@ -434,22 +434,72 @@
         width: 100%;
       }
       
-      .small-link {
-        font-size: 0.8em;
-        padding: 6px 12px;
-        width: 100%;
-        text-align: center;
-        margin-bottom: 5px;
-      }
+             .small-link {
+         font-size: 0.8em;
+         padding: 6px 12px;
+         width: 100%;
+         text-align: center;
+         margin-bottom: 5px;
+       }
+       
+       .disclaimer {
+         margin-top: 30px;
+         padding: 15px;
+       }
+       
+       .disclaimer-text {
+         font-size: 0.65em;
+       }
+       
+       .back-to-top {
+         font-size: 0.8em;
+         padding: 8px 16px;
+       }
     }
     
-    /* iPhone X以降のノッチ対応 */
-    @supports (padding: max(0px)) {
-      .container {
-        padding-top: max(40px, env(safe-area-inset-top));
-        padding-bottom: max(100px, env(safe-area-inset-bottom));
-      }
-    }
+         /* 免責事項 */
+     .disclaimer {
+       margin-top: 50px;
+       padding: 20px;
+       background: rgba(13, 13, 26, 0.8);
+       border-radius: 15px;
+       border: 1px solid rgba(255, 255, 255, 0.1);
+       text-align: center;
+     }
+     
+     .disclaimer-text {
+       font-size: 0.7em;
+       line-height: 1.4;
+       color: #999;
+       margin-bottom: 20px;
+       text-align: left;
+     }
+     
+     .back-to-top {
+       display: inline-block;
+       padding: 10px 20px;
+       background: rgba(102, 204, 255, 0.1);
+       border: 1px solid rgba(102, 204, 255, 0.3);
+       border-radius: 8px;
+       color: #66ccff;
+       text-decoration: none;
+       font-size: 0.9em;
+       transition: all 0.3s ease;
+     }
+     
+     .back-to-top:hover {
+       background: rgba(102, 204, 255, 0.2);
+       color: #99e0ff;
+       transform: translateY(-1px);
+     }
+     
+     /* iPhone X以降のノッチ対応 */
+     @supports (padding: max(0px)) {
+       .container {
+         padding-top: max(40px, env(safe-area-inset-top));
+         padding-bottom: max(100px, env(safe-area-inset-bottom));
+       }
+     }
   </style>
 </head>
 <body>
@@ -544,10 +594,21 @@
             この護符をご購入いただくと、龍による 鑑定240分（60分×4回利用可能） をお受けいただけます。事業や人生の転機、大きな願いを叶えるために、時間をかけて深く導きを得たい方に。
           </div>
           <button class="action-button" data-product="gofu10000" data-price="10000">購入する</button>
-        </div>
-      </div>
-    </div>
-  </div>
+                 </div>
+       </div>
+       
+       <!-- 免責事項 -->
+       <div class="disclaimer">
+         <p class="disclaimer-text">
+           この番組はAIによる会話、相談を提供するもので、占いではありません。<br>
+           また実在する鑑定師は存在せず、全てAIによる自動会話です<br>
+           会話内容に満足いただけない場合があっても、有料サービスに対する返金等のクレームは受け付けません<br>
+           実在する人間の鑑定師は存在しない事を、くれぐれも事前に理解してご利用ください
+         </p>
+         <a href="index.html" class="back-to-top">初めに戻る</a>
+       </div>
+     </div>
+   </div>
   
   <script type="module">
     import { guardians } from './guardians.js';
