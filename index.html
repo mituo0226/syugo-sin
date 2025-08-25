@@ -315,6 +315,58 @@
          bottom: max(20%, env(safe-area-inset-bottom) + 20px) !important;
        }
     }
+
+    /* スキップボタン */
+    .skip-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 10001;
+      background: rgba(13, 13, 26, 0.8);
+      border: 1px solid rgba(102, 204, 255, 0.4);
+      border-radius: 8px;
+      padding: 8px 16px;
+      color: #66ccff;
+      font-size: 0.9em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      opacity: 0;
+      animation: fadeInSkip 2s ease-in-out 1s forwards;
+    }
+
+    .skip-button:hover {
+      background: rgba(102, 204, 255, 0.2);
+      border-color: rgba(102, 204, 255, 0.8);
+      transform: scale(1.05);
+    }
+
+    @keyframes fadeInSkip {
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* PC向けスキップボタン調整 */
+    @media (min-width: 768px) {
+      .skip-button {
+        top: 30px;
+        right: 30px;
+        font-size: 1em;
+        padding: 10px 20px;
+      }
+    }
+
+    /* スマートフォン向けスキップボタン調整 */
+    @media (max-width: 600px) {
+      .skip-button {
+        top: 15px;
+        right: 15px;
+        font-size: 0.8em;
+        padding: 6px 12px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -322,6 +374,9 @@
   <div id="splashScreen">
     <img src="photo/rogo2.png" alt="AI鑑定師 龍">
   </div>
+
+  <!-- スキップボタン -->
+  <button class="skip-button" id="skipButton">skip</button>
   
   <section class="hero">
     <!-- 龍の画像 -->
@@ -424,6 +479,13 @@
       console.log("ボタンがクリックされました");
       // 生年月日入力フォームページに遷移
               window.location.href = 'b-form.html';
+    });
+
+    // スキップボタンのクリックイベント
+    document.getElementById("skipButton").addEventListener("click", function() {
+      console.log("スキップボタンがクリックされました");
+      // 生年月日入力フォームページに直接遷移
+      window.location.href = 'b-form.html';
     });
 
 
