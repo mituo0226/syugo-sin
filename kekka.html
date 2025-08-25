@@ -650,8 +650,18 @@
       const guardianKey = guardianKeyMap[zodiac];
       const profileLink = document.getElementById('guardianProfileLink');
       if (profileLink && guardianKey) {
+        // URLパラメータから生年月日を取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const year = urlParams.get('year');
+        const month = urlParams.get('month');
+        const day = urlParams.get('day');
+        
         profileLink.textContent = `${guardian.name}とは`;
-        profileLink.href = `guardians/${guardianKey}.html`;
+        if (year && month && day) {
+          profileLink.href = `guardians/${guardianKey}.html?returnTo=kekka&birthYear=${year}&birthMonth=${month}&birthDay=${day}`;
+        } else {
+          profileLink.href = `guardians/${guardianKey}.html`;
+        }
         profileLink.style.display = 'inline-block';
       }
       
@@ -707,8 +717,18 @@
       const guardianKey = guardianKeyMap[zodiac];
       const profileLink = document.getElementById('guardianProfileLink');
       if (profileLink && guardianKey) {
+        // URLパラメータから生年月日を取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const year = urlParams.get('year');
+        const month = urlParams.get('month');
+        const day = urlParams.get('day');
+        
         profileLink.textContent = `${guardian.name}とは`;
-        profileLink.href = `guardians/${guardianKey}.html`;
+        if (year && month && day) {
+          profileLink.href = `guardians/${guardianKey}.html?returnTo=kekka&birthYear=${year}&birthMonth=${month}&birthDay=${day}`;
+        } else {
+          profileLink.href = `guardians/${guardianKey}.html`;
+        }
         profileLink.style.display = 'inline-block';
       }
       
