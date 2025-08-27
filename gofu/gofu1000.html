@@ -113,14 +113,14 @@
     }
     
     .title-main {
-      font-size: 2.0em;
+      font-size: 1.6em;
       color: #66ccff;
       text-shadow: 0 0 20px rgba(102, 204, 255, 0.5);
       margin-bottom: 5px;
     }
     
     .title-ruby {
-      font-size: 1.0em;
+      font-size: 0.8em;
       color: #99e0ff;
       text-shadow: 0 0 10px rgba(153, 224, 255, 0.5);
       opacity: 0.9;
@@ -204,13 +204,21 @@
       }
       
       .title {
-        font-size: 1.5em;
+        font-size: 1.2em;
         margin-bottom: 20px;
+      }
+      
+      .title-main {
+        font-size: 1.3em;
+      }
+      
+      .title-ruby {
+        font-size: 0.7em;
       }
       
       .gofu-image {
         max-width: 95vw;
-        max-height: 50vh;
+        max-height: 70vh;
       }
       
       .description {
@@ -295,7 +303,12 @@
   <script>
     // 戻るボタンの処理
     function goBack() {
-      window.history.back();
+      // 履歴がある場合は戻る、ない場合は直接gofu.htmlに移動
+      if (document.referrer && document.referrer.includes('gofu.html')) {
+        window.history.back();
+      } else {
+        window.location.href = '../gofu.html';
+      }
     }
     
     // 右クリックメニュー無効化
