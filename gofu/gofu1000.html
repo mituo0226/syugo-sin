@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>光明観音護符 | AI鑑定師 龍</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
   <style>
     body {
       margin: 0;
@@ -251,6 +251,13 @@
         -webkit-transform: translateZ(0);
         transform: translateZ(0);
         touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
       }
       
       .gofu-image {
@@ -262,6 +269,37 @@
         perspective: 1000;
         will-change: transform;
         touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        pointer-events: none;
+      }
+      
+      /* iPhone専用の拡大無効化 */
+      * {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        touch-action: manipulation;
+      }
+      
+      img {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        touch-action: manipulation;
+        pointer-events: none;
+        -webkit-tap-highlight-color: transparent;
       }
     }
   </style>
