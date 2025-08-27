@@ -280,6 +280,16 @@
       user-select: none;
     }
     
+    .product-image.clickable {
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .product-image.clickable:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 35px rgba(102, 204, 255, 0.4);
+    }
+    
     .product-name {
       font-size: 1.4em;
       font-weight: bold;
@@ -444,6 +454,11 @@
         user-select: none;
       }
       
+      .product-image.clickable:hover {
+        transform: scale(1.03);
+        box-shadow: 0 8px 25px rgba(102, 204, 255, 0.4);
+      }
+      
       .action-button {
         font-size: 1.1em;
         padding: 12px 30px;
@@ -596,7 +611,7 @@
       <div class="product-list">
         <!-- 商品1 -->
         <div class="product-item">
-          <img class="product-image" src="photo/gofu/gofu500.png" alt="蓮華宝輪護符">
+          <img class="product-image clickable" src="photo/gofu/gofu500.png" alt="蓮華宝輪護符" onclick="openGofuDetail('gofu/gofu500.html')">
           <div class="product-name">蓮華宝輪護符（れんげほうりんごふ）</div>
           <div class="product-price">🪙 500円</div>
           <div class="product-description">
@@ -610,7 +625,7 @@
         
         <!-- 商品2 -->
         <div class="product-item">
-          <img class="product-image" src="photo/gofu/gofu1000.png" alt="光明観音護符">
+          <img class="product-image clickable" src="photo/gofu/gofu1000.png" alt="光明観音護符" onclick="openGofuDetail('gofu/gofu1000.html')">
           <div class="product-name">光明観音護符（こうみょうかんのんごふ）</div>
           <div class="product-price">🪙 1,000円</div>
           <div class="product-description">
@@ -624,7 +639,7 @@
         
         <!-- 商品3 -->
         <div class="product-item">
-          <img class="product-image" src="photo/gofu/gofu3000.png" alt="金剛輪経護符">
+          <img class="product-image clickable" src="photo/gofu/gofu3000.png" alt="金剛輪経護符" onclick="openGofuDetail('gofu/gofu3000.html')">
           <div class="product-name">金剛輪経護符（こんごうりんきょうごふ）</div>
           <div class="product-price">🪙 3,000円</div>
           <div class="product-description">
@@ -638,7 +653,7 @@
         
         <!-- 商品4 -->
         <div class="product-item">
-          <img class="product-image" src="photo/gofu/gofu10000.png" alt="昇天青龍護符">
+          <img class="product-image clickable" src="photo/gofu/gofu10000.png" alt="昇天青龍護符" onclick="openGofuDetail('gofu/gofu10000.html')">
           <div class="product-name">昇天青龍護符（しょうてんせいりゅうごふ）</div>
           <div class="product-price">🪙 10,000円</div>
           <div class="product-description">
@@ -732,6 +747,11 @@
       }, 500);
     }
 
+    // 護符詳細ページを開く関数
+    function openGofuDetail(url) {
+      window.open(url, '_blank');
+    }
+    
     // 各商品の購入ボタンのクリックイベント
     document.addEventListener("click", function(e) {
       if (e.target.classList.contains("action-button") && e.target.dataset.product) {
