@@ -250,6 +250,7 @@
         -webkit-touch-callout: none;
         -webkit-transform: translateZ(0);
         transform: translateZ(0);
+        touch-action: manipulation;
       }
       
       .gofu-image {
@@ -260,6 +261,7 @@
         -webkit-perspective: 1000;
         perspective: 1000;
         will-change: transform;
+        touch-action: manipulation;
       }
     }
   </style>
@@ -303,12 +305,8 @@
   <script>
     // 戻るボタンの処理
     function goBack() {
-      // 履歴がある場合は戻る、ない場合は直接gofu.htmlに移動
-      if (document.referrer && document.referrer.includes('gofu.html')) {
-        window.history.back();
-      } else {
-        window.location.href = '../gofu.html';
-      }
+      // 直接gofu.htmlの一覧ページに移動（ローディングを飛ばす）
+      window.location.href = '../gofu.html#products';
     }
     
     // 右クリックメニュー無効化
