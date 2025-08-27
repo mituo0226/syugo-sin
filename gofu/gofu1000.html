@@ -10,12 +10,14 @@
       background: #0d0d1a;
       font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
       color: #fff;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
       position: relative;
       min-height: 100vh;
       -webkit-text-size-adjust: 100%;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      -webkit-overflow-scrolling: touch;
     }
     
     /* 神秘的な背景効果 */
@@ -90,25 +92,21 @@
     }
     
     .container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
       z-index: 1;
     }
     
     /* タイトル */
     .title {
-      position: absolute;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      margin: 0;
+      position: relative;
+      margin: 0 0 30px 0;
       z-index: 10;
       text-align: center;
       animation: titleGlow 3s ease-in-out infinite alternate;
@@ -136,7 +134,7 @@
     /* 護符画像 */
     .gofu-image {
       max-width: 90vw;
-      max-height: 80vh;
+      max-height: 60vh;
       width: auto;
       height: auto;
       object-fit: contain;
@@ -149,6 +147,7 @@
       user-select: none;
       pointer-events: none;
       animation: imageGlow 4s ease-in-out infinite alternate;
+      margin: 20px 0;
     }
     
     @keyframes imageGlow {
@@ -158,10 +157,7 @@
     
     /* 戻るボタン */
     .back-button {
-      position: absolute;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
+      position: relative;
       padding: 15px 40px;
       font-size: 1.2em;
       background: linear-gradient(90deg, #66ccff, #3399ff);
@@ -175,20 +171,18 @@
       text-decoration: none;
       display: inline-block;
       z-index: 10;
+      margin: 20px 0 40px 0;
     }
     
     .back-button:hover {
       background: linear-gradient(90deg, #99e0ff, #66ccff);
-      transform: translateX(-50%) translateY(-2px);
+      transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(102,204,255,0.4);
     }
     
     /* 説明文 */
     .description {
-      position: absolute;
-      bottom: 100px;
-      left: 50%;
-      transform: translateX(-50%);
+      position: relative;
       font-size: 1.1em;
       line-height: 1.6;
       text-align: center;
@@ -200,30 +194,35 @@
       padding: 20px;
       border: 2px solid rgba(102, 204, 255, 0.3);
       z-index: 10;
+      margin: 20px 0 40px 0;
     }
     
     /* モバイル向け調整 */
     @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+      
       .title {
         font-size: 1.5em;
-        top: 15px;
+        margin-bottom: 20px;
       }
       
       .gofu-image {
         max-width: 95vw;
-        max-height: 70vh;
+        max-height: 50vh;
       }
       
       .description {
         font-size: 1.0em;
         padding: 15px;
-        bottom: 80px;
+        margin: 15px 0 30px 0;
       }
       
       .back-button {
         font-size: 1.1em;
         padding: 12px 30px;
-        bottom: 20px;
+        margin: 15px 0 30px 0;
       }
     }
     
