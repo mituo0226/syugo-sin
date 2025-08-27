@@ -157,10 +157,7 @@
     
     /* 戻るボタン */
     .back-button {
-      position: absolute;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
+      position: relative;
       padding: 15px 40px;
       font-size: 1.2em;
       background: linear-gradient(90deg, #66ccff, #3399ff);
@@ -174,11 +171,12 @@
       text-decoration: none;
       display: inline-block;
       z-index: 10;
+      margin: 20px 0 40px 0;
     }
     
     .back-button:hover {
       background: linear-gradient(90deg, #99e0ff, #66ccff);
-      transform: translateX(-50%) translateY(-2px);
+      transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(102,204,255,0.4);
     }
     
@@ -201,26 +199,30 @@
     
     /* モバイル向け調整 */
     @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+      
       .title {
         font-size: 1.5em;
-        top: 15px;
+        margin-bottom: 20px;
       }
       
       .gofu-image {
         max-width: 95vw;
-        max-height: 70vh;
+        max-height: 50vh;
       }
       
       .description {
         font-size: 1.0em;
         padding: 15px;
-        bottom: 80px;
+        margin: 15px 0 30px 0;
       }
       
       .back-button {
         font-size: 1.1em;
         padding: 12px 30px;
-        bottom: 20px;
+        margin: 15px 0 30px 0;
       }
     }
     
