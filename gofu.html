@@ -747,10 +747,11 @@
       }, 500);
     }
 
-    // 護符詳細ページを開く関数
-    function openGofuDetail(url) {
+    // 護符詳細ページを開く関数（グローバルスコープに配置）
+    window.openGofuDetail = function(url) {
+      console.log('openGofuDetail called with URL:', url);
       window.open(url, '_blank');
-    }
+    };
     
     // 各商品の購入ボタンのクリックイベント
     document.addEventListener("click", function(e) {
@@ -760,6 +761,30 @@
         console.log(`商品 ${product} (${price}円) の購入ボタンがクリックされました`);
         // 購入ページに遷移（ここに遷移先を設定）
         // window.location.href = `purchase.html?product=${product}&price=${price}`;
+      }
+    });
+    
+    // 護符画像のクリックイベント（バックアップ用）
+    document.addEventListener("click", function(e) {
+      if (e.target.classList.contains("product-image") && e.target.classList.contains("clickable")) {
+        console.log('護符画像がクリックされました:', e.target.src);
+        const src = e.target.src;
+        let url = '';
+        
+        if (src.includes('gofu500.png')) {
+          url = 'gofu/gofu500.html';
+        } else if (src.includes('gofu1000.png')) {
+          url = 'gofu/gofu1000.html';
+        } else if (src.includes('gofu3000.png')) {
+          url = 'gofu/gofu3000.html';
+        } else if (src.includes('gofu10000.png')) {
+          url = 'gofu/gofu10000.html';
+        }
+        
+        if (url) {
+          console.log('開くURL:', url);
+          window.open(url, '_blank');
+        }
       }
     });
   </script>
