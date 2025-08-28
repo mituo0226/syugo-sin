@@ -556,43 +556,49 @@
          }
        }
        
-               /* iPhone向けスクロール調整 */
-        @supports (-webkit-touch-callout: none) {
-          body {
-            -webkit-overflow-scrolling: touch;
-            -webkit-user-select: none;
-            -webkit-touch-callout: none;
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
-          }
-          
-          .container {
-            -webkit-overflow-scrolling: touch;
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
-          }
-          
-          .product-image {
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            -webkit-perspective: 1000;
-            perspective: 1000;
-            will-change: transform;
-          }
-          
-          .mystical-bg,
-          .floating-particles,
-          .loading-screen,
-          .cloud-animation {
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            -webkit-perspective: 1000;
-            perspective: 1000;
-            will-change: transform;
-          }
-        }
+                        /* iPhone向けスクロール調整 */
+         @supports (-webkit-touch-callout: none) {
+           body {
+             -webkit-overflow-scrolling: touch;
+             -webkit-user-select: none;
+             -webkit-touch-callout: none;
+             -webkit-transform: translateZ(0);
+             transform: translateZ(0);
+           }
+           
+           .container {
+             -webkit-overflow-scrolling: touch;
+             -webkit-transform: translateZ(0);
+             transform: translateZ(0);
+           }
+           
+           .product-image {
+             -webkit-transform: translateZ(0);
+             transform: translateZ(0);
+             -webkit-backface-visibility: hidden;
+             backface-visibility: hidden;
+             -webkit-perspective: 1000;
+             perspective: 1000;
+             will-change: transform;
+           }
+           
+           .mystical-bg,
+           .floating-particles,
+           .loading-screen,
+           .cloud-animation {
+             -webkit-backface-visibility: hidden;
+             backface-visibility: hidden;
+             -webkit-perspective: 1000;
+             perspective: 1000;
+             will-change: transform;
+           }
+           
+           /* iPhone向けフッター調整 */
+           footer {
+             padding-bottom: max(20px, env(safe-area-inset-bottom)) !important;
+             margin-bottom: env(safe-area-inset-bottom);
+           }
+         }
   </style>
 </head>
 <body>
@@ -875,7 +881,7 @@
          });
    </script>
    
-   <footer style="margin-top:40px; text-align:center; font-size:0.9em; color:#ccc;">
+   <footer style="margin-top:40px; text-align:center; font-size:0.9em; color:#ccc; padding-bottom:20px;">
      <a href="rule/disclaimer.html" style="color:#66ccff; margin:0 8px;">免責事項</a> |
      <a href="rule/terms.html" style="color:#66ccff; margin:0 8px;">利用規約</a> |
      <a href="rule/privacy.html" style="color:#66ccff; margin:0 8px;">プライバシーポリシー</a> |
