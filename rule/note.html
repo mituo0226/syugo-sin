@@ -292,15 +292,10 @@
     </div>
     
     <!-- 戻るボタン -->
-    <button class="back-button" onclick="goBack()">商品一覧に戻る</button>
+    <a href="../gofu.html" class="back-button">商品ページに戻る</a>
   </div>
   
   <script>
-    // 戻るボタンの処理
-    function goBack() {
-      window.history.back();
-    }
-    
     // 右クリックメニュー無効化
     document.addEventListener('contextmenu', function(e) {
       e.preventDefault();
