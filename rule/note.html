@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>サービス紹介 | AI鑑定師 龍</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
   <style>
     body {
       margin: 0;
@@ -12,12 +12,13 @@
       color: #fff;
       overflow-x: hidden;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
       position: relative;
       min-height: 100vh;
       -webkit-text-size-adjust: 100%;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      -webkit-overflow-scrolling: touch;
     }
     
     /* 神秘的な背景効果 */
@@ -33,6 +34,8 @@
         radial-gradient(circle at 40% 40%, rgba(199, 125, 255, 0.05) 0%, transparent 50%);
       z-index: -1;
       animation: bgPulse 8s ease-in-out infinite;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
     }
     
     @keyframes bgPulse {
@@ -49,6 +52,8 @@
       height: 100vh;
       pointer-events: none;
       z-index: -1;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
     }
     
     .particle {
@@ -101,6 +106,7 @@
       padding: 20px;
       box-sizing: border-box;
       z-index: 1;
+      overflow-x: hidden;
     }
     
     /* タイトル */
@@ -244,6 +250,25 @@
     @supports (-webkit-touch-callout: none) {
       body {
         -webkit-overflow-scrolling: touch;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+      }
+      
+      .container {
+        -webkit-overflow-scrolling: touch;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+      }
+      
+      .mystical-bg,
+      .floating-particles {
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        -webkit-perspective: 1000;
+        perspective: 1000;
+        will-change: transform;
       }
     }
   </style>
