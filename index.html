@@ -48,6 +48,11 @@
     @media (min-width: 768px) {
       .container {
         padding: 60px 40px 160px;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 60px;
+        text-align: left;
       }
     }
 
@@ -83,9 +88,9 @@
     /* PC向けロゴ調整 */
     @media (min-width: 768px) {
       .logo {
-        max-width: 300px;
-        max-height: 300px;
-        margin-bottom: 60px;
+        max-width: 400px;
+        max-height: 400px;
+        margin-bottom: 0;
       }
     }
 
@@ -149,6 +154,18 @@
     .start-button.show {
       opacity: 1;
       transform: translateY(0);
+      animation: mysticalGlow 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes mysticalGlow {
+      0% {
+        box-shadow: 0 8px 25px rgba(102,204,255,0.4), 0 0 20px rgba(102, 204, 255, 0.3);
+        filter: brightness(1);
+      }
+      100% {
+        box-shadow: 0 8px 25px rgba(102,204,255,0.6), 0 0 30px rgba(102, 204, 255, 0.6);
+        filter: brightness(1.1);
+      }
     }
     
     .start-button:hover {
@@ -163,10 +180,25 @@
 
     /* PC向けボタン調整 */
     @media (min-width: 768px) {
+      .content-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        max-width: 500px;
+      }
+      
       .start-button {
         padding: 25px 80px;
         font-size: 1.6em;
         border-radius: 20px;
+        margin: 40px 0 0 0;
+      }
+      
+      .intro-text {
+        max-width: 500px;
+        margin-bottom: 0;
+        text-align: left;
       }
     }
 
@@ -314,6 +346,15 @@
     }
       .container {
         padding: 30px 15px 100px;
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .content-right {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
       }
       
       .logo {
@@ -355,19 +396,22 @@
     <!-- ロゴマーク -->
     <img src="photo/rogo2.png" alt="AI鑑定師 龍" class="logo" id="logo">
 
-    <!-- 番組説明 -->
-    <div class="intro-text" id="introText">
-      <h2>AI Judgment とは</h2>
-      <p>
-        本サービスは<strong>AIによる会話・カウンセリング体験</strong>を提供する番組です。<br>
-        架空のキャラクターを通じてAIがあなたの気持ちを受け止め、<br>
-        日常の不安や悩みに寄り添います。<br>
-        占いや未来予知ではなく、<strong>エンターテインメントとセルフケア</strong>を目的としています。
-      </p>
-    </div>
+    <!-- 右側コンテンツ -->
+    <div class="content-right">
+      <!-- 番組説明 -->
+      <div class="intro-text" id="introText">
+        <h2>AI Judgment とは</h2>
+        <p>
+          本サービスは<strong>AIによる会話・カウンセリング体験</strong>を提供する番組です。<br>
+          架空のキャラクターを通じてAIがあなたの気持ちを受け止め、<br>
+          日常の不安や悩みに寄り添います。<br>
+          占いや未来予知ではなく、<strong>エンターテインメントとセルフケア</strong>を目的としています。
+        </p>
+      </div>
 
-    <!-- 鑑定開始ボタン -->
-    <a href="dragon-intro.html" class="start-button" id="startButton">鑑定を開始する</a>
+      <!-- 鑑定開始ボタン -->
+      <a href="dragon-intro.html" class="start-button" id="startButton">鑑定を開始する</a>
+    </div>
 
     <!-- フッター -->
     <footer class="footer">
