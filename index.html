@@ -228,6 +228,57 @@
 
     /* スマートフォン向け調整 */
     @media (max-width: 600px) {
+      .footer {
+        padding: 20px 10px;
+      }
+      
+      .footer-links {
+        flex-direction: column;
+        gap: 15px;
+        padding: 0 10px;
+      }
+      
+      .footer-left,
+      .footer-right {
+        gap: 10px;
+        margin: 0;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .footer-links::before {
+        display: none;
+      }
+      
+      .footer-links a {
+        font-size: 0.7em;
+        padding: 5px 8px;
+        text-align: center;
+        min-width: auto;
+      }
+    }
+    
+    /* より小さなスマートフォン向け調整 */
+    @media (max-width: 400px) {
+      .footer {
+        padding: 15px 5px;
+      }
+      
+      .footer-links {
+        gap: 10px;
+        padding: 0 5px;
+      }
+      
+      .footer-left,
+      .footer-right {
+        gap: 8px;
+      }
+      
+      .footer-links a {
+        font-size: 0.65em;
+        padding: 4px 6px;
+      }
+    }
       .container {
         padding: 30px 15px 100px;
       }
@@ -254,29 +305,7 @@
         margin: 30px 0;
       }
       
-      .footer {
-        padding: 30px 15px;
-      }
-      
-      .footer-links {
-        flex-direction: column;
-        gap: 20px;
-      }
-      
-      .footer-left,
-      .footer-right {
-        gap: 15px;
-        margin: 0;
-      }
-      
-      .footer-links::before {
-        display: none;
-      }
-      
-      .footer-links a {
-        font-size: 0.8em;
-        padding: 6px 12px;
-      }
+
     }
 
     /* iPhone X以降のノッチ対応 */
