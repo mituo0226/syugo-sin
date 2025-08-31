@@ -197,14 +197,6 @@
       transform: translateX(-50%) translateY(0);
     }
     
-    /* スマートフォン向けボタン表示調整 */
-    @media (max-width: 600px) {
-      .birth-input-button.show {
-        opacity: 1 !important;
-        transform: none !important;
-      }
-    }
-    
     .birth-input-button button {
       padding: 18px 60px;
       font-size: 1.4em;
@@ -245,36 +237,35 @@
         padding: 20px;
         bottom: 45%;
       }
-             .birth-input-button {
-         position: relative !important;
-         bottom: auto !important;
-         left: auto !important;
-         transform: none !important;
-         width: 100% !important;
-         max-width: 400px !important;
-         background: rgba(13, 13, 26, 0.95) !important;
-         padding: 20px !important;
-         border-radius: 20px !important;
-         backdrop-filter: blur(15px) !important;
-         -webkit-backdrop-filter: blur(15px) !important;
-         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
-         border: 1px solid rgba(255, 255, 255, 0.1) !important;
-         margin: 40px auto 0 !important;
-       }
-    }
-      
-    .birth-input-button.show {
-      transform: translateX(-50%) translateY(0) !important;
-    }
-    
-    .birth-input-button button {
-      font-size: 1.4em !important;
-      padding: 18px 40px !important;
-      -webkit-appearance: none !important;
-      width: 100% !important;
-      max-width: 350px !important;
-      border-radius: 15px !important;
-      font-weight: bold !important;
+      .birth-input-button {
+        position: relative !important;
+        bottom: auto !important;
+        left: auto !important;
+        transform: none !important;
+        width: 100% !important;
+        max-width: 400px !important;
+        background: rgba(13, 13, 26, 0.95) !important;
+        padding: 20px !important;
+        border-radius: 20px !important;
+        backdrop-filter: blur(15px) !important;
+        -webkit-backdrop-filter: blur(15px) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        margin: 40px auto 0 !important;
+      }
+      .birth-input-button.show {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+      .birth-input-button button {
+        font-size: 1.4em !important;
+        padding: 18px 40px !important;
+        -webkit-appearance: none !important;
+        width: 100% !important;
+        max-width: 350px !important;
+        border-radius: 15px !important;
+        font-weight: bold !important;
+      }
     }
       
     .hero img {
