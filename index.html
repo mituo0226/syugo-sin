@@ -56,6 +56,16 @@
       max-width: 200px;
       max-height: 200px;
       margin-bottom: 40px;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 2s ease;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .logo.show {
+      opacity: 1;
+      transform: scale(1);
       animation: logoGlow 2s ease-in-out infinite alternate;
     }
     
@@ -93,6 +103,16 @@
       border: 2px solid rgba(102, 204, 255, 0.4);
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(102, 204, 255, 0.2);
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 1.5s ease;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .intro-text.show {
+      opacity: 1;
+      transform: translateY(0);
     }
     
     .intro-text h2 { 
@@ -121,6 +141,14 @@
       transition: all 0.3s ease;
       text-decoration: none;
       display: inline-block;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 1s ease;
+    }
+    
+    .start-button.show {
+      opacity: 1;
+      transform: translateY(0);
     }
     
     .start-button:hover {
@@ -319,11 +347,11 @@
 </head>
 <body>
   <div class="container">
-    <!-- ロゴマーク（固定表示） -->
-    <img src="photo/rogo2.png" alt="AI鑑定師 龍" class="logo">
+    <!-- ロゴマーク -->
+    <img src="photo/rogo2.png" alt="AI鑑定師 龍" class="logo" id="logo">
 
-    <!-- 番組説明（常時表示） -->
-    <div class="intro-text">
+    <!-- 番組説明 -->
+    <div class="intro-text" id="introText">
       <h2>AI Judgment とは</h2>
       <p>
         本サービスは<strong>AIによる会話・カウンセリング体験</strong>を提供する番組です。<br>
@@ -334,7 +362,7 @@
     </div>
 
     <!-- 鑑定開始ボタン -->
-    <a href="dragon-intro.html" class="start-button">鑑定を開始する</a>
+    <a href="dragon-intro.html" class="start-button" id="startButton">鑑定を開始する</a>
 
     <!-- フッター -->
     <footer class="footer">
@@ -351,5 +379,29 @@
       </div>
     </footer>
   </div>
+
+  <script>
+    // ページロード後のアニメーション
+    window.addEventListener("load", () => {
+      const logo = document.getElementById("logo");
+      const introText = document.getElementById("introText");
+      const startButton = document.getElementById("startButton");
+      
+      // 1. ロゴが大きく浮かび上がる
+      setTimeout(() => {
+        logo.classList.add('show');
+      }, 500);
+      
+      // 2. ロゴに被さるように文字が浮かび上がる
+      setTimeout(() => {
+        introText.classList.add('show');
+      }, 2500);
+      
+      // 3. 文字が全て表示されたら鑑定開始ボタンがフェードイン
+      setTimeout(() => {
+        startButton.classList.add('show');
+      }, 4000);
+    });
+  </script>
 </body>
 </html>
