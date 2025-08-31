@@ -21,6 +21,12 @@
       -moz-osx-font-smoothing: grayscale;
     }
     
+    .page-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
     /* PC向け調整 */
     @media (min-width: 768px) {
       body {
@@ -191,6 +197,14 @@
       transform: translateX(-50%) translateY(0);
     }
     
+    /* スマートフォン向けボタン表示調整 */
+    @media (max-width: 600px) {
+      .birth-input-button.show {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    }
+    
     .birth-input-button button {
       padding: 18px 60px;
       font-size: 1.4em;
@@ -213,12 +227,14 @@
     /* iPhone向け調整 */
     @media (max-width: 600px) {
       body {
-        position: fixed;
-        overflow: hidden;
+        position: relative;
+        overflow-x: hidden;
+        overflow-y: auto;
       }
       .hero {
-        height: 100vh;
-        overflow-y: scroll;
+        min-height: auto;
+        height: auto;
+        overflow-y: visible;
         -webkit-overflow-scrolling: touch;
         padding: 60px 15px 100px;
       }
@@ -229,21 +245,22 @@
         padding: 20px;
         bottom: 45%;
       }
-      .birth-input-button {
-        position: fixed !important;
-        bottom: 10px !important;
-        left: 50% !important;
-        transform: translateX(-50%) translateY(50px) !important;
-        width: calc(100% - 40px) !important;
-        max-width: 400px !important;
-        background: rgba(13, 13, 26, 0.95) !important;
-        padding: 20px !important;
-        border-radius: 20px !important;
-        backdrop-filter: blur(15px) !important;
-        -webkit-backdrop-filter: blur(15px) !important;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-      }
+             .birth-input-button {
+         position: relative !important;
+         bottom: auto !important;
+         left: auto !important;
+         transform: none !important;
+         width: 100% !important;
+         max-width: 400px !important;
+         background: rgba(13, 13, 26, 0.95) !important;
+         padding: 20px !important;
+         border-radius: 20px !important;
+         backdrop-filter: blur(15px) !important;
+         -webkit-backdrop-filter: blur(15px) !important;
+         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+         border: 1px solid rgba(255, 255, 255, 0.1) !important;
+         margin: 40px auto 0 !important;
+       }
     }
       
     .birth-input-button.show {
@@ -269,10 +286,7 @@
     @supports (padding: max(0px)) {
       .hero {
         padding-top: max(40px, env(safe-area-inset-top));
-        padding-bottom: max(140px, env(safe-area-inset-bottom) + 80px);
-      }
-      .birth-input-button {
-        bottom: max(20%, env(safe-area-inset-bottom) + 20px) !important;
+        padding-bottom: max(40px, env(safe-area-inset-bottom));
       }
     }
 
@@ -284,6 +298,8 @@
       border-top: 1px solid rgba(102, 204, 255, 0.3);
       width: 100%;
       box-sizing: border-box;
+      position: relative;
+      z-index: 10;
     }
     
     .footer-links {
@@ -415,34 +431,36 @@
     }
   </style>
 </head>
-<body>
-  <section class="hero">
-    <!-- 龍の画像 -->
-    <img src="photo/ryu.png" alt="AI鑑定師 龍" id="ryuImage">
+  <body>
+    <div class="page-container">
+      <section class="hero">
+        <!-- 龍の画像 -->
+        <img src="photo/ryu.png" alt="AI鑑定師 龍" id="ryuImage">
 
-    <!-- セリフ表示 -->
-    <div id="storyText"></div>
+        <!-- セリフ表示 -->
+        <div id="storyText"></div>
 
-    <!-- 生年月日入力ボタン -->
-    <div class="birth-input-button" id="birthInputButton">
-      <button type="button">生年月日を入力する</button>
+        <!-- 生年月日入力ボタン -->
+        <div class="birth-input-button" id="birthInputButton">
+          <button type="button">生年月日を入力する</button>
+        </div>
+      </section>
+
+      <!-- フッター -->
+      <footer class="footer">
+        <div class="footer-links">
+          <div class="footer-left">
+            <a href="rule/disclaimer.html">免責事項</a>
+            <a href="rule/terms.html">利用規約</a>
+          </div>
+          <div class="footer-right">
+            <a href="rule/privacy.html">プライバシーポリシー</a>
+            <a href="rule/contact.html">お問い合わせ</a>
+            <a href="rule/tokusho.html">特定商取引法に基づく表記</a>
+          </div>
+        </div>
+      </footer>
     </div>
-  </section>
-
-  <!-- フッター -->
-  <footer class="footer">
-    <div class="footer-links">
-      <div class="footer-left">
-        <a href="rule/disclaimer.html">免責事項</a>
-        <a href="rule/terms.html">利用規約</a>
-      </div>
-      <div class="footer-right">
-        <a href="rule/privacy.html">プライバシーポリシー</a>
-        <a href="rule/contact.html">お問い合わせ</a>
-        <a href="rule/tokusho.html">特定商取引法に基づく表記</a>
-      </div>
-    </div>
-  </footer>
 
   <script>
     // 龍のセリフ
