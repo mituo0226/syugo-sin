@@ -48,11 +48,21 @@
     @media (min-width: 768px) {
       .container {
         padding: 60px 40px 160px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        text-align: center;
+      }
+      
+      .main-content {
+        display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: center;
         gap: 60px;
         text-align: left;
+        width: 100%;
+        max-width: 1200px;
       }
     }
 
@@ -350,6 +360,13 @@
         text-align: center;
       }
       
+      .main-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+      }
+      
       .content-right {
         display: flex;
         flex-direction: column;
@@ -393,24 +410,27 @@
 </head>
 <body>
   <div class="container">
-    <!-- ロゴマーク -->
-    <img src="photo/rogo2.png" alt="AI鑑定師 龍" class="logo" id="logo">
+    <!-- メインコンテンツ -->
+    <div class="main-content">
+      <!-- ロゴマーク -->
+      <img src="photo/rogo2.png" alt="AI鑑定師 龍" class="logo" id="logo">
 
-    <!-- 右側コンテンツ -->
-    <div class="content-right">
-      <!-- 番組説明 -->
-      <div class="intro-text" id="introText">
-        <h2>AI Judgment とは</h2>
-        <p>
-          本サービスは<strong>AIによる会話・カウンセリング体験</strong>を提供する番組です。<br>
-          架空のキャラクターを通じてAIがあなたの気持ちを受け止め、<br>
-          日常の不安や悩みに寄り添います。<br>
-          占いや未来予知ではなく、<strong>エンターテインメントとセルフケア</strong>を目的としています。
-        </p>
+      <!-- 右側コンテンツ -->
+      <div class="content-right">
+        <!-- 番組説明 -->
+        <div class="intro-text" id="introText">
+          <h2>AI Judgment とは</h2>
+          <p>
+            本サービスは<strong>AIによる会話・カウンセリング体験</strong>を提供する番組です。<br>
+            架空のキャラクターを通じてAIがあなたの気持ちを受け止め、<br>
+            日常の不安や悩みに寄り添います。<br>
+            占いや未来予知ではなく、<strong>エンターテインメントとセルフケア</strong>を目的としています。
+          </p>
+        </div>
+
+        <!-- 鑑定開始ボタン -->
+        <a href="dragon-intro.html" class="start-button" id="startButton">鑑定を開始する</a>
       </div>
-
-      <!-- 鑑定開始ボタン -->
-      <a href="dragon-intro.html" class="start-button" id="startButton">鑑定を開始する</a>
     </div>
 
     <!-- フッター -->
