@@ -39,11 +39,12 @@
     .hero {
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       align-items: center;
-      justify-content: flex-start;
-      text-align: center;
+      justify-content: center;
+      text-align: left;
       padding: 40px 20px 120px;
+      gap: 40px;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       position: relative;
@@ -57,10 +58,8 @@
       .hero {
         min-height: 100vh;
         padding: 80px 60px 140px;
-        justify-content: flex-start;
-        overflow-y: visible;
-        position: relative;
-        max-width: 1200px;
+        gap: 60px;
+        max-width: 1400px;
         margin: 0 auto;
       }
     }
@@ -74,8 +73,10 @@
     }
     
     .hero img {
-      max-width: 90%;
+      max-width: 45%;
+      min-width: 300px;
       height: auto;
+      flex-shrink: 0;
       opacity: 0;
       transform: scale(0.95);
       transition: all 2s ease;
@@ -91,24 +92,25 @@
     /* PC向け画像調整 */
     @media (min-width: 768px) {
       .hero img {
-        max-width: 400px;
-        max-height: 400px;
-        margin: 30px auto;
+        max-width: 500px;
+        max-height: 500px;
+        min-width: 400px;
+        margin: 0;
         border-radius: 15px;
         box-shadow: 0 0 50px rgba(100,150,255,0.6);
       }
     }
     
     #storyText {
-      position: absolute;
-      bottom: 30%;
-      left: 50%;
-      transform: translateX(-50%);
+      position: static;
+      flex: 1;
+      max-width: none;
+      width: auto;
+      transform: none;
       font-size: 1.2em;
       line-height: 1.8;
-      max-width: 95%;
       white-space: pre-line;
-      text-align: center;
+      text-align: left;
       opacity: 0;
       transition: opacity 1s ease;
       z-index: 10;
@@ -125,12 +127,6 @@
     /* PC向けストーリーテキスト調整 */
     @media (min-width: 768px) {
       #storyText {
-        position: absolute;
-        bottom: 25%;
-        left: 50%;
-        transform: translateX(-50%);
-        max-width: 1000px;
-        width: 90%;
         font-size: 1.3em;
         line-height: 2.0;
         padding: 40px 50px;
@@ -147,8 +143,6 @@
     /* 大きな画面向けストーリーテキスト調整 */
     @media (min-width: 1200px) {
       #storyText {
-        max-width: 1200px;
-        width: 95%;
         font-size: 1.4em;
         line-height: 2.1;
         padding: 45px 60px;
@@ -190,7 +184,7 @@
     @media (min-width: 768px) {
       .birth-input-button {
         position: absolute;
-        bottom: 15%;
+        bottom: 10%;
         left: 50%;
         transform: translateX(-50%) translateY(50px);
         width: auto;
@@ -233,6 +227,25 @@
       box-shadow: 0 6px 20px rgba(102,204,255,0.4);
     }
 
+    /* スマートフォン向け調整 */
+    @media (max-width: 768px) {
+      .hero {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+      }
+      
+      .hero img {
+        max-width: 80%;
+        min-width: auto;
+      }
+      
+      #storyText {
+        max-width: 98%;
+        text-align: center;
+      }
+    }
+    
     /* iPhone向け調整 */
     @media (max-width: 600px) {
       body {
