@@ -16,6 +16,9 @@
       touch-action: pan-y;
       position: relative;
       min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
     
     /* 神秘的な背景効果 */
@@ -93,17 +96,24 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 20px;
       position: relative;
       z-index: 1;
     }
     
+    /* メインコンテンツエリア */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+    }
+    
     /* PC向けコンテナ調整 */
     @media (min-width: 768px) {
-      .container {
+      .main-content {
         padding: 40px 20px;
         justify-content: center;
       }
@@ -292,19 +302,12 @@
     
     /* モバイル向け調整 */
     @media (max-width: 600px) {
-      body {
-        position: fixed;
-        width: 100%;
-        height: 100%;
-      }
-      
-      .container {
-        height: 100vh;
-        overflow-y: scroll;
-        -webkit-overflow-scrolling: touch;
+      .main-content {
+        height: auto;
         padding: 20px 15px;
         justify-content: flex-start;
         padding-top: 40px;
+        min-height: calc(100vh - 150px);
       }
       
       .dragon-image,
@@ -344,9 +347,153 @@
     
     /* iPhone X以降のノッチ対応 */
     @supports (padding: max(0px)) {
-      .container {
+      .main-content {
         padding-top: max(40px, env(safe-area-inset-top));
-        padding-bottom: max(40px, env(safe-area-inset-bottom));
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
+      }
+      
+      .footer {
+        padding-bottom: max(25px, env(safe-area-inset-bottom) + 25px);
+      }
+    }
+
+    /* フッター */
+    .footer {
+      margin-top: auto;
+      padding: 25px 20px;
+      background: rgba(13, 13, 26, 0.8);
+      border-top: 1px solid rgba(102, 204, 255, 0.3);
+      width: 100%;
+      box-sizing: border-box;
+      position: relative;
+      z-index: 10;
+    }
+    
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+    }
+    
+    .footer-links::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 1px;
+      height: 60%;
+      background: linear-gradient(to bottom, transparent, rgba(102, 204, 255, 0.5), transparent);
+    }
+    
+    .footer-left {
+      display: flex;
+      gap: 20px;
+      margin-right: 40px;
+    }
+    
+    .footer-right {
+      display: flex;
+      gap: 20px;
+      margin-left: 40px;
+    }
+    
+    .footer-links a {
+      color: #66ccff;
+      text-decoration: none;
+      font-size: 0.9em;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    
+    .footer-links a:hover {
+      background: rgba(102, 204, 255, 0.1);
+      border-color: rgba(102, 204, 255, 0.3);
+      transform: translateY(-1px);
+    }
+
+    /* PC向けフッター調整 */
+    @media (min-width: 768px) {
+      .footer {
+        padding: 35px 40px;
+      }
+      
+      .footer-left,
+      .footer-right {
+        gap: 20px;
+      }
+      
+      .footer-left {
+        margin-right: 50px;
+      }
+      
+      .footer-right {
+        margin-left: 50px;
+      }
+      
+      .footer-links a {
+        font-size: 1em;
+        padding: 10px 20px;
+      }
+    }
+
+    /* スマートフォン向け調整 */
+    @media (max-width: 600px) {
+      .footer {
+        padding: 15px 10px;
+      }
+      
+      .footer-links {
+        flex-direction: column;
+        gap: 8px;
+        padding: 0 10px;
+      }
+      
+      .footer-left,
+      .footer-right {
+        gap: 6px;
+        margin: 0;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .footer-links::before {
+        display: none;
+      }
+      
+      .footer-links a {
+        font-size: 0.7em;
+        padding: 5px 8px;
+        text-align: center;
+        min-width: auto;
+      }
+    }
+    
+    /* より小さなスマートフォン向け調整 */
+    @media (max-width: 400px) {
+      .footer {
+        padding: 12px 5px;
+      }
+      
+      .footer-links {
+        gap: 6px;
+        padding: 0 5px;
+      }
+      
+      .footer-left,
+      .footer-right {
+        gap: 4px;
+      }
+      
+      .footer-links a {
+        font-size: 0.65em;
+        padding: 4px 6px;
       }
     }
   </style>
@@ -369,20 +516,38 @@
   </div>
 
   <div class="container">
-    <!-- 画像コンテナ -->
-    <div class="image-container" id="imageContainer">
-      <img class="dragon-image" src="photo/ryu.png" alt="AI鑑定師 龍">
-      <img class="guardian-image" id="guardianImage" src="" alt="守護神">
+    <!-- メインコンテンツをラップ -->
+    <div class="main-content">
+      <!-- 画像コンテナ -->
+      <div class="image-container" id="imageContainer">
+        <img class="dragon-image" src="photo/ryu.png" alt="AI鑑定師 龍">
+        <img class="guardian-image" id="guardianImage" src="" alt="守護神">
+      </div>
+
+      <!-- 龍の言葉 -->
+      <div id="dragonMessage"></div>
+
+      <!-- 相談入力フォーム -->
+      <div id="consultationForm" class="consultation-form">
+        <textarea id="worryInput" placeholder="あなたの悩みや相談したいことを自由にお書きください..." maxlength="1000"></textarea>
+        <button class="action-button" id="startConsultationButton">鑑定開始</button>
+      </div>
     </div>
 
-    <!-- 龍の言葉 -->
-    <div id="dragonMessage"></div>
-
-    <!-- 相談入力フォーム -->
-    <div id="consultationForm" class="consultation-form">
-      <textarea id="worryInput" placeholder="あなたの悩みや相談したいことを自由にお書きください..." maxlength="1000"></textarea>
-      <button class="action-button" id="startConsultationButton">鑑定開始</button>
-    </div>
+    <!-- フッターをコンテナ内に移動 -->
+    <footer class="footer">
+      <div class="footer-links">
+        <div class="footer-left">
+          <a href="rule/disclaimer.html">免責事項</a>
+          <a href="rule/terms.html">利用規約</a>
+        </div>
+        <div class="footer-right">
+          <a href="rule/privacy.html">プライバシーポリシー</a>
+          <a href="rule/contact.html">お問い合わせ</a>
+          <a href="rule/tokusho.html">特定商取引法に基づく表記</a>
+        </div>
+      </div>
+    </footer>
   </div>
   
   <script type="module">
