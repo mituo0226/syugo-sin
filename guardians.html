@@ -105,7 +105,9 @@
     @media (min-width: 768px) {
       .container {
         padding: 40px 20px;
-        justify-content: center;
+        justify-content: flex-start;
+        align-items: center;
+        padding-top: 60px;
       }
     }
     
@@ -134,9 +136,23 @@
     /* PC向け画像調整 */
     @media (min-width: 768px) {
       .guardian-image {
-        max-width: 400px;
-        max-height: 400px;
+        max-width: 500px;
+        max-height: 500px;
         margin-bottom: 40px;
+        animation: pcImageFloat 5s ease-in-out infinite alternate;
+        margin-top: 20px;
+      }
+    }
+    
+    /* PC向け画像演出 */
+    @keyframes pcImageFloat {
+      0% {
+        transform: scale(1) translateY(0px);
+        box-shadow: 0 0 50px rgba(100,150,255,0.6);
+      }
+      100% {
+        transform: scale(1.02) translateY(-5px);
+        box-shadow: 0 0 70px rgba(100,150,255,0.8);
       }
     }
     
@@ -168,6 +184,23 @@
         font-size: 1.3em;
         line-height: 2.0;
         padding: 30px;
+        animation: pcTextGlow 4s ease-in-out infinite alternate;
+        margin-top: 20px;
+        min-width: 600px;
+        max-width: 800px;
+        width: 100%;
+      }
+    }
+    
+    /* PC向けテキスト演出 */
+    @keyframes pcTextGlow {
+      0% {
+        border-color: rgba(102, 204, 255, 0.5);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7), 0 0 25px rgba(102, 204, 255, 0.3);
+      }
+      100% {
+        border-color: rgba(102, 204, 255, 0.9);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(102, 204, 255, 0.6);
       }
     }
     
@@ -228,9 +261,10 @@
     /* PC向けボタン調整 */
     @media (min-width: 768px) {
       .consult-button {
-        position: relative;
+        position: fixed;
+        bottom: 100px;
         left: 50%;
-        transform: translateX(-50%) translateY(50px);
+        transform: translateX(-50%);
         width: auto;
         max-width: 500px;
         background: rgba(13, 13, 26, 0.95);
@@ -240,11 +274,37 @@
         -webkit-backdrop-filter: blur(15px);
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        margin-top: 60px;
+        margin-top: 0;
+        animation: pcButtonFloat 3s ease-in-out infinite alternate;
+        z-index: 1000;
       }
       
       .consult-button.show {
-        transform: translateX(-50%) translateY(0);
+        transform: translateX(-50%);
+        animation: pcButtonFloat 3s ease-in-out infinite alternate, pcButtonGlow 2s ease-in-out infinite alternate;
+      }
+    }
+    
+    /* PC向け演出アニメーション */
+    @keyframes pcButtonFloat {
+      0% {
+        transform: translateX(-50%) translateY(0px);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(102, 204, 255, 0.3);
+      }
+      100% {
+        transform: translateX(-50%) translateY(-10px);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(102, 204, 255, 0.5);
+      }
+    }
+    
+    @keyframes pcButtonGlow {
+      0% {
+        border-color: rgba(102, 204, 255, 0.3);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(102, 204, 255, 0.3);
+      }
+      100% {
+        border-color: rgba(102, 204, 255, 0.8);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(102, 204, 255, 0.7);
       }
     }
     
@@ -422,11 +482,13 @@
         if (j > message.length) {
           clearInterval(interval);
           
-          // メッセージ完了後、個別相談ボタンを表示
+          // メッセージ完了後、個別相談ボタンを表示（PCでは2秒後）
+          const button = document.getElementById("consultButton");
+          const isPC = window.innerWidth >= 768;
+          const delay = isPC ? 2000 : 1000; // PCでは2秒、スマホでは1秒
           setTimeout(() => {
-            const button = document.getElementById("consultButton");
             button.classList.add('show');
-          }, 1000);
+          }, delay);
         }
       }, 50);
     }
