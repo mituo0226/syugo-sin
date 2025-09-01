@@ -233,16 +233,26 @@
         flex-direction: column;
         text-align: center;
         gap: 20px;
+        justify-content: flex-start;
+        padding: 60px 15px 120px;
       }
       
       .hero img {
         max-width: 80%;
         min-width: auto;
+        margin: 20px 0;
       }
       
       #storyText {
-        max-width: 98%;
+        position: absolute;
+        bottom: 30%;
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: 95%;
+        width: auto;
         text-align: center;
+        font-size: 1.1em;
+        padding: 20px;
       }
     }
     
@@ -254,18 +264,23 @@
         overflow-y: auto;
       }
       .hero {
-        min-height: auto;
-        height: auto;
-        overflow-y: visible;
+        min-height: 100vh;
+        height: 100vh;
+        overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         padding: 60px 15px 100px;
+        position: relative;
       }
       #storyText { 
+        position: absolute;
+        bottom: 35%;
+        left: 50%;
+        transform: translateX(-50%);
         font-size: 1.1em; 
         text-align: center; 
         max-width: 98%;
         padding: 20px;
-        bottom: 45%;
+        width: auto;
       }
       .birth-input-button {
         position: relative !important;
@@ -294,16 +309,11 @@
         width: 100% !important;
         max-width: 350px !important;
         border-radius: 15px !important;
-        font-weight: bold !important;
+                font-weight: bold !important;
       }
     }
-      
-    .hero img {
-      max-width: 80%;
-      margin: 15px 0;
-    }
-      
-    /* iPhone X以降のノッチ対応 */
+        
+      /* iPhone X以降のノッチ対応 */
     @supports (padding: max(0px)) {
       .hero {
         padding-top: max(40px, env(safe-area-inset-top));
