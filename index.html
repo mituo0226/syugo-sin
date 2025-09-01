@@ -68,38 +68,42 @@
 
     /* ロゴマーク */
     .logo {
-      max-width: 200px;
-      max-height: 200px;
+      max-width: 280px;
+      max-height: 280px;
       margin-bottom: 40px;
       opacity: 0;
       transform: scale(0.5);
-      transition: all 2s ease;
+      transition: all 2.5s ease;
       position: relative;
       z-index: 2;
+      border-radius: 20px;
+      box-shadow: 0 0 60px rgba(100,150,255,0.8);
     }
     
     .logo.show {
       opacity: 1;
       transform: scale(1);
-      animation: logoGlow 2s ease-in-out infinite alternate;
+      animation: logoGlow 4s ease-in-out infinite alternate;
     }
     
     @keyframes logoGlow {
       0% {
-        filter: brightness(1) drop-shadow(0 0 10px rgba(102, 204, 255, 0.5));
+        filter: brightness(1) drop-shadow(0 0 20px rgba(102, 204, 255, 0.8));
         transform: scale(1);
+        box-shadow: 0 0 60px rgba(100,150,255,0.8);
       }
       100% {
-        filter: brightness(1.2) drop-shadow(0 0 20px rgba(102, 204, 255, 0.8));
+        filter: brightness(1.3) drop-shadow(0 0 30px rgba(102, 204, 255, 1));
         transform: scale(1.05);
+        box-shadow: 0 0 80px rgba(100,150,255,1), 0 0 120px rgba(102,204,255,0.4);
       }
     }
     
     /* PC向けロゴ調整 */
     @media (min-width: 768px) {
       .logo {
-        max-width: 400px;
-        max-height: 400px;
+        max-width: 500px;
+        max-height: 500px;
         margin-bottom: 0;
       }
     }
@@ -128,17 +132,29 @@
     .intro-text.show {
       opacity: 1;
       transform: translateY(0);
+      animation: textGlow 3s ease-in-out infinite alternate;
+    }
+    
+    @keyframes textGlow {
+      0% {
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(102, 204, 255, 0.2);
+        border-color: rgba(102, 204, 255, 0.4);
+      }
+      100% {
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(102, 204, 255, 0.4);
+        border-color: rgba(102, 204, 255, 0.6);
+      }
     }
     
     .intro-text h2 { 
       color: #66ccff; 
       margin-bottom: 15px; 
-      font-size: 1.5em;
+      font-size: 1.3em;
     }
     
     .intro-text p {
       margin: 15px 0;
-      font-size: 1.1em;
+      font-size: 0.95em;
     }
 
     /* 鑑定開始ボタン */
@@ -164,17 +180,19 @@
     .start-button.show {
       opacity: 1;
       transform: translateY(0);
-      animation: mysticalGlow 2s ease-in-out infinite alternate;
+      animation: mysticalGlow 3s ease-in-out infinite alternate;
     }
     
     @keyframes mysticalGlow {
       0% {
         box-shadow: 0 8px 25px rgba(102,204,255,0.4), 0 0 20px rgba(102, 204, 255, 0.3);
         filter: brightness(1);
+        transform: translateY(0);
       }
       100% {
-        box-shadow: 0 8px 25px rgba(102,204,255,0.6), 0 0 30px rgba(102, 204, 255, 0.6);
-        filter: brightness(1.1);
+        box-shadow: 0 12px 35px rgba(102,204,255,0.7), 0 0 40px rgba(102, 204, 255, 0.5);
+        filter: brightness(1.2);
+        transform: translateY(-3px);
       }
     }
     
@@ -234,8 +252,8 @@
       }
       
       .logo {
-        max-width: 150px;
-        max-height: 150px;
+        max-width: 200px;
+        max-height: 200px;
         margin-bottom: 30px;
       }
       
@@ -246,7 +264,11 @@
       }
       
       .intro-text h2 {
-        font-size: 1.3em;
+        font-size: 1.2em;
+      }
+      
+      .intro-text p {
+        font-size: 0.85em;
       }
       
       .start-button {
