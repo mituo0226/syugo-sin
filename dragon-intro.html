@@ -156,6 +156,9 @@
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
         animation: pcTextGlow 4s ease-in-out infinite alternate;
         margin-top: 20px;
+        min-width: 600px;
+        max-width: 800px;
+        width: 100%;
       }
     }
     
@@ -214,10 +217,10 @@
     /* PC向けボタン調整 */
     @media (min-width: 768px) {
       .birth-input-button {
-        position: relative;
-        bottom: auto;
-        left: auto;
-        transform: none;
+        position: fixed;
+        bottom: 100px;
+        left: 50%;
+        transform: translateX(-50%);
         width: auto;
         max-width: 450px;
         background: rgba(13, 13, 26, 0.95);
@@ -227,12 +230,13 @@
         -webkit-backdrop-filter: blur(20px);
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
         border: 2px solid rgba(102, 204, 255, 0.3);
-        margin-top: 40px;
+        margin-top: 0;
         animation: pcButtonFloat 3s ease-in-out infinite alternate;
+        z-index: 1000;
       }
       
       .birth-input-button.show {
-        transform: none;
+        transform: translateX(-50%);
         animation: pcButtonFloat 3s ease-in-out infinite alternate, pcButtonGlow 2s ease-in-out infinite alternate;
       }
     }
@@ -240,11 +244,11 @@
     /* PC向け演出アニメーション */
     @keyframes pcButtonFloat {
       0% {
-        transform: translateY(0px);
+        transform: translateX(-50%) translateY(0px);
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(102, 204, 255, 0.3);
       }
       100% {
-        transform: translateY(-10px);
+        transform: translateX(-50%) translateY(-10px);
         box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(102, 204, 255, 0.5);
       }
     }
@@ -467,14 +471,16 @@
             setTimeout(showNextLine, 1500);
           }
         }, 50);
-      } else {
-        // メッセージ終了後、生年月日入力ボタンを表示
-        const button = document.getElementById("birthInputButton");
-        setTimeout(() => {
-          button.classList.add('show');
-          console.log("ボタンが表示されました");
-        }, 1000);
-      }
+             } else {
+         // メッセージ終了後、生年月日入力ボタンを表示（PCでは2秒後）
+         const button = document.getElementById("birthInputButton");
+         const isPC = window.innerWidth >= 768;
+         const delay = isPC ? 2000 : 1000; // PCでは2秒、スマホでは1秒
+         setTimeout(() => {
+           button.classList.add('show');
+           console.log("ボタンが表示されました");
+         }, delay);
+       }
     }
 
     // ページロード後の演出
