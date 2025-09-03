@@ -509,7 +509,7 @@
       console.log("鑑定開始ボタンがクリックされました");
       console.log("相談内容:", worryText);
       
-      // gofu.htmlに遷移（全データを渡す）
+      // shop/gofu.htmlに遷移（全データを渡す）
       const params = new URLSearchParams();
       params.set('nickname', window.userData.nickname);
       params.set('birthYear', window.userData.birthYear);
@@ -518,7 +518,7 @@
       params.set('guardianKey', window.userData.guardianKey);
       params.set('worry', worryText);
       
-      window.location.href = `gofu.html?${params.toString()}`;
+      window.location.href = `shop/gofu.html?${params.toString()}`;
     });
   </script>
 </body>
