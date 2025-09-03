@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>護符商品案内 | AI鑑定師 龍</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d1a;
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
+      position: relative;
+      min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* 神秘的な背景効果 */
+    .mystical-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(102, 204, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(199, 125, 255, 0.05) 0%, transparent 50%);
+      z-index: -1;
+      animation: bgPulse 8s ease-in-out infinite;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+    
+    @keyframes bgPulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.6; }
+    }
+    
+    /* 浮遊する粒子 */
+    .floating-particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: -1;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+    
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: #66ccff;
+      border-radius: 50%;
+      animation: float 6s linear infinite;
+    }
+    
+    .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+    .particle:nth-child(2) { left: 20%; animation-delay: 1s; }
+    .particle:nth-child(3) { left: 30%; animation-delay: 2s; }
+    .particle:nth-child(4) { left: 40%; animation-delay: 3s; }
+    .particle:nth-child(5) { left: 50%; animation-delay: 4s; }
+    .particle:nth-child(6) { left: 60%; animation-delay: 5s; }
+    .particle:nth-child(7) { left: 70%; animation-delay: 0s; }
+    .particle:nth-child(8) { left: 80%; animation-delay: 1s; }
+    .particle:nth-child(9) { left: 90%; animation-delay: 2s; }
+    
+    @keyframes float {
+      0% {
+        top: 100%;
+        opacity: 0;
+        transform: translateY(0) scale(0);
+      }
+      10% {
+        opacity: 1;
+        transform: translateY(-10px) scale(1);
+      }
+      90% {
+        opacity: 1;
+        transform: translateY(-90vh) scale(1);
+      }
+      100% {
+        top: 0;
+        opacity: 0;
+        transform: translateY(-100vh) scale(0);
+      }
+    }
+    
+         .container {
+       min-height: 100vh;
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       justify-content: flex-start;
+       text-align: center;
+       padding: 20px;
+       padding-bottom: 120px;
+       position: relative;
+       z-index: 1;
+       overflow-x: hidden;
+     }
+    
+    /* PC向けコンテナ調整 */
+    @media (min-width: 768px) {
+      .container {
+        padding: 40px 20px;
+        justify-content: flex-start;
+        padding-top: 40px;
+        padding-bottom: 40px;
+      }
+    }
+    
+    /* ローディング画面 */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #0d0d1a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 2s ease;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+    
+    .loading-screen.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    .loading-image {
+      max-width: 200px;
+      max-height: 200px;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: all 2s ease;
+      border-radius: 12px;
+      box-shadow: 0 0 40px rgba(100,150,255,0.5);
+      margin-bottom: 30px;
+    }
+    
+    .loading-image.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+    
+    .loading-text {
+      font-size: 1.5em;
+      color: #66ccff;
+      text-shadow: 0 0 10px rgba(102, 204, 255, 0.5);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+    
+    /* 雲のアニメーション */
+    .cloud-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.1) 100%);
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 3s ease;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+    
+    .cloud-animation.show {
+      opacity: 1;
+    }
+    
+    .cloud-animation.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    /* メインコンテンツ */
+    .main-content {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 2s ease;
+      width: 100%;
+      max-width: 1200px;
+      min-height: auto;
+    }
+    
+    .main-content.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* タイトル */
+    .title {
+      font-size: 2.5em;
+      color: #66ccff;
+      text-shadow: 0 0 20px rgba(102, 204, 255, 0.5);
+      margin-bottom: 20px;
+      animation: titleGlow 3s ease-in-out infinite alternate;
+    }
+    
+    @keyframes titleGlow {
+      0% { text-shadow: 0 0 20px rgba(102, 204, 255, 0.5); }
+      100% { text-shadow: 0 0 30px rgba(102, 204, 255, 0.8); }
+    }
+    
+    /* 説明文 */
+    .description {
+      font-size: 1.2em;
+      line-height: 1.8;
+      margin-bottom: 40px;
+      background: rgba(13, 13, 26, 0.9);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 25px;
+      border: 2px solid rgba(102, 204, 255, 0.4);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(102, 204, 255, 0.2);
+    }
+    
+    /* 商品リスト */
+    .product-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+      width: 100%;
+    }
+    
+    .product-item {
+      background: rgba(13, 13, 26, 0.9);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 25px;
+      border: 2px solid rgba(102, 204, 255, 0.4);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(102, 204, 255, 0.2);
+      transition: all 0.3s ease;
+      overflow: hidden;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+    
+    .product-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(102, 204, 255, 0.4);
+    }
+    
+    .product-image {
+      width: 100%;
+      max-width: 200px;
+      height: auto;
+      object-fit: contain;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+      -webkit-user-drag: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    
+    .product-image.clickable {
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .product-image.clickable:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 35px rgba(102, 204, 255, 0.4);
+    }
+    
+         .product-name {
+       margin-bottom: 10px;
+       text-align: center;
+     }
+     
+     .product-name-main {
+       font-size: 1.4em;
+       font-weight: bold;
+       color: #66ccff;
+       margin-bottom: 5px;
+     }
+     
+     .product-name-ruby {
+       font-size: 0.9em;
+       color: #99e0ff;
+       opacity: 0.8;
+     }
+    
+    .product-price {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #ffd700;
+      margin-bottom: 15px;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+    
+    .product-description {
+      font-size: 1.0em;
+      line-height: 1.6;
+      margin-bottom: 15px;
+      color: #ccc;
+    }
+    
+         .product-service {
+       font-size: 0.9em;
+       line-height: 1.5;
+       color: #66ccff;
+       background: rgba(102, 204, 255, 0.1);
+       padding: 15px;
+       border-radius: 10px;
+       border-left: 3px solid #66ccff;
+       margin-bottom: 20px;
+     }
+     
+     /* 商品ごとの免責事項 */
+     .product-disclaimer {
+       font-size: 0.6em;
+       line-height: 1.3;
+       color: #999;
+       background: rgba(255, 255, 255, 0.05);
+       padding: 8px 12px;
+       border-radius: 6px;
+       border: 1px solid rgba(255, 255, 255, 0.1);
+       margin-top: 10px;
+       text-align: left;
+     }
+    
+    /* ボタン */
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 30px;
+      margin-bottom: 50px;
+    }
+    
+    .action-button {
+      padding: 15px 40px;
+      font-size: 1.2em;
+      background: linear-gradient(90deg, #66ccff, #3399ff);
+      border: none;
+      border-radius: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #000;
+      box-shadow: 0 4px 15px rgba(102,204,255,0.3);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      width: 100%;
+      margin-top: 10px;
+    }
+    
+    .action-button:hover {
+      background: linear-gradient(90deg, #99e0ff, #66ccff);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102,204,255,0.4);
+    }
+    
+    .action-button.secondary {
+      background: linear-gradient(90deg, #9d4edd, #7b2cbf);
+    }
+    
+    .action-button.secondary:hover {
+      background: linear-gradient(90deg, #b565f0, #9d4edd);
+    }
+    
+    .action-button.tertiary {
+      background: linear-gradient(90deg, #ff6b6b, #ee5a52);
+    }
+    
+    .action-button.tertiary:hover {
+      background: linear-gradient(90deg, #ff8e8e, #ff6b6b);
+    }
+    
+    /* 小さなリンクボタン */
+    .small-link {
+      font-size: 0.9em;
+      color: #66ccff;
+      text-decoration: none;
+      padding: 8px 15px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      background: rgba(102, 204, 255, 0.1);
+      border: 1px solid rgba(102, 204, 255, 0.3);
+    }
+    
+    .small-link:hover {
+      background: rgba(102, 204, 255, 0.2);
+      color: #99e0ff;
+      transform: translateY(-1px);
+    }
+    
+    .small-link.secondary {
+      color: #9d4edd;
+      background: rgba(157, 78, 221, 0.1);
+      border: 1px solid rgba(157, 78, 221, 0.3);
+    }
+    
+    .small-link.secondary:hover {
+      background: rgba(157, 78, 221, 0.2);
+      color: #b565f0;
+    }
+    
+    .small-link.tertiary {
+      color: #ff6b6b;
+      background: rgba(255, 107, 107, 0.1);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+    }
+    
+    .small-link.tertiary:hover {
+      background: rgba(255, 107, 107, 0.2);
+      color: #ff8e8e;
+    }
+    
+    /* モバイル向け調整 */
+    @media (max-width: 600px) {
+      .container {
+        min-height: 100vh;
+        padding: 20px 15px;
+        justify-content: flex-start;
+        padding-top: 40px;
+        padding-bottom: 100px;
+      }
+      
+      .title {
+        font-size: 2.0em;
+      }
+      
+      .description {
+        font-size: 1.1em;
+        padding: 20px;
+      }
+      
+      .product-list {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+        width: 100%;
+      }
+      
+      .product-item {
+        padding: 20px;
+        overflow: hidden;
+      }
+      
+      .product-image {
+        max-width: 150px;
+        height: auto;
+        width: 100%;
+        object-fit: contain;
+        -webkit-user-drag: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+      
+      .product-image.clickable:hover {
+        transform: scale(1.03);
+        box-shadow: 0 8px 25px rgba(102, 204, 255, 0.4);
+      }
+      
+      .action-button {
+        font-size: 1.1em;
+        padding: 12px 30px;
+        width: 100%;
+      }
+      
+             .small-link {
+         font-size: 0.8em;
+         padding: 6px 12px;
+         width: 100%;
+         text-align: center;
+         margin-bottom: 5px;
+       }
+       
+       .disclaimer {
+         margin-top: 30px;
+         padding: 15px;
+       }
+       
+       .disclaimer-text {
+         font-size: 0.65em;
+       }
+       
+       .back-to-top {
+         font-size: 0.8em;
+         padding: 8px 16px;
+       }
+    }
+    
+         /* 免責事項 */
+     .disclaimer {
+       margin-top: 50px;
+       padding: 20px;
+       background: rgba(13, 13, 26, 0.8);
+       border-radius: 15px;
+       border: 1px solid rgba(255, 255, 255, 0.1);
+       text-align: center;
+     }
+     
+     .disclaimer-text {
+       font-size: 0.7em;
+       line-height: 1.4;
+       color: #999;
+       margin-bottom: 20px;
+       text-align: left;
+     }
+     
+     .back-to-top {
+       display: inline-block;
+       padding: 10px 20px;
+       background: rgba(102, 204, 255, 0.1);
+       border: 1px solid rgba(102, 204, 255, 0.3);
+       border-radius: 8px;
+       color: #66ccff;
+       text-decoration: none;
+       font-size: 0.9em;
+       transition: all 0.3s ease;
+     }
+     
+     .back-to-top:hover {
+       background: rgba(102, 204, 255, 0.2);
+       color: #99e0ff;
+       transform: translateY(-1px);
+     }
+     
+                       /* iPhone X以降のノッチ対応 */
+       @supports (padding: max(0px)) {
+         .container {
+           padding-top: max(40px, env(safe-area-inset-top));
+           padding-bottom: max(40px, env(safe-area-inset-bottom));
+         }
+       }
+       
+                        /* iPhone向けスクロール調整 */
+         @supports (-webkit-touch-callout: none) {
+           body {
+             position: fixed;
+             width: 100%;
+             height: 100%;
+             overflow: hidden;
+             -webkit-user-select: none;
+             -webkit-touch-callout: none;
+             -webkit-transform: translateZ(0);
+             transform: translateZ(0);
+           }
+           
+           .container {
+             position: absolute;
+             top: 0;
+             left: 0;
+             right: 0;
+             bottom: 0;
+             overflow-y: auto;
+             -webkit-overflow-scrolling: touch;
+             -webkit-transform: translateZ(0);
+             transform: translateZ(0);
+           }
+           
+           .product-image {
+             -webkit-transform: translateZ(0);
+             transform: translateZ(0);
+             -webkit-backface-visibility: hidden;
+             backface-visibility: hidden;
+             -webkit-perspective: 1000;
+             perspective: 1000;
+             will-change: transform;
+           }
+           
+           .mystical-bg,
+           .floating-particles,
+           .loading-screen,
+           .cloud-animation {
+             -webkit-backface-visibility: hidden;
+             backface-visibility: hidden;
+             -webkit-perspective: 1000;
+             perspective: 1000;
+             will-change: transform;
+           }
+         }
+  </style>
+</head>
+<body>
+  <!-- 神秘的な背景 -->
+  <div class="mystical-bg"></div>
+  
+  <!-- 浮遊する粒子 -->
+  <div class="floating-particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <!-- ローディング画面 -->
+  <div class="loading-screen" id="loadingScreen">
+    <img class="loading-image" id="loadingImage" src="photo/ryu.png" alt="AI鑑定師 龍">
+    <div class="loading-text">鑑定中...</div>
+  </div>
+
+  <!-- 雲のアニメーション -->
+  <div class="cloud-animation" id="cloudAnimation"></div>
+
+  <div class="container">
+    <div class="main-content" id="mainContent">
+      <!-- タイトル -->
+      <h1 class="title">個別鑑定商品案内</h1>
+      
+      <!-- サービス紹介リンク -->
+      <div style="text-align:center;margin-bottom:20px;">
+        <p style="color:#ffcc00;font-weight:bold;">
+          ご購入前に必ず 
+          <a href="rule/note.html" style="color:#66ccff;text-decoration:underline;">
+            サービス内容のご案内
+          </a>
+          をお読みください
+        </p>
+      </div>
+      
+      <!-- 説明 -->
+      <div class="description">
+        鑑定には護符デジタル画像商品のご購入が必要となります
+      </div>
+      
+      <!-- 商品リスト -->
+      <div class="product-list" id="products">
+        <!-- 商品1 -->
+        <div class="product-item">
+          <img class="product-image clickable" src="photo/gofu/gofu500.png" alt="光輪呪文護符｜高僧祈祷の魔除け" onclick="openGofuDetail('gofu/gofu500.html')">
+                     <div class="product-name">
+             <div class="product-name-main">光輪呪文護符</div>
+             <div class="product-name-ruby">こうりんじゅもんごふ</div>
+           </div>
+          <div class="product-price">🪙 500円</div>
+          <div class="product-description">
+            金箔の下地に光輪が浮かび、宝石が散りばめられた荘厳な護符。その中央には、霊能者の高僧によって書き記され、祈祷をもって力を込められた呪文が閉じ込められています。静かに発光する光が護りの象徴となり、持つ人に魔除けの力を与えるとされています。
+          </div>
+          <div class="product-service">
+            この護符をご購入いただくと、龍による 鑑定3分 をお受けいただけます。短時間で要点を示すお試し鑑定。
+          </div>
+          <a href="https://square.link/u/tIaJ5bI8" target="_blank">
+            <button class="action-button" data-product="gofu500" data-price="500">購入する</button>
+          </a>
+          <div class="product-disclaimer">
+            この商品はデジタルのダウンロード画像です、また商品の説明は、イメージのプロフィールになります。商品を購入しても、説明の通りの効果はありません、想像上の架空の解説です。また、AI の鑑定をする時間を有料で提供するために制作されたキャラクターアイテムであり、実際の宗教的意味はありません。
+          </div>
+        </div>
+        
+        <!-- 商品2 -->
+        <div class="product-item">
+          <img class="product-image clickable" src="photo/gofu/gofu1000.png" alt="観音霊威護符｜邪気浄化と人生再生" onclick="openGofuDetail('gofu/gofu1000.html')">
+                     <div class="product-name">
+             <div class="product-name-main">観音霊威護符</div>
+             <div class="product-name-ruby">かんのんれいいごふ</div>
+           </div>
+          <div class="product-price">🪙 1,000円</div>
+          <div class="product-description">
+            金箔の下地に光の環が広がり、宝石のように輝く装飾がちりばめられた荘厳な護符。その中心には、日本各地で祀られる観音像の霊威が込められており、積み重なった人々の祈りと念が封じられています。邪気や悪霊を吸収して浄化する力を持ち、持つ者の過去の苦しみを帳消しにし、新たな人生の道を切り開くとされています。
+          </div>
+          <div class="product-service">
+            この護符をご購入いただくと、龍による 鑑定10分 をお受けいただけます。テーマを絞って今必要な指針を受け取ることができます。
+          </div>
+          <button class="action-button" data-product="gofu1000" data-price="1000">購入する</button>
+          <div class="product-disclaimer">
+            この商品はデジタルのダウンロード画像です、また商品の説明は、イメージのプロフィールになります。商品を購入しても、説明の通りの効果はありません、想像上の架空の解説です。また、AI の鑑定をする時間を有料で提供するために制作されたキャラクターアイテムであり、実際の宗教的意味はありません。
+          </div>
+        </div>
+        
+        <!-- 商品3 -->
+        <div class="product-item">
+          <img class="product-image clickable" src="photo/gofu/gofu3000.png" alt="龍神威護符｜邪念祓いと人生転換" onclick="openGofuDetail('gofu/gofu3000.html')">
+                     <div class="product-name">
+             <div class="product-name-main">龍神威護符</div>
+             <div class="product-name-ruby">りゅうじんいごふ</div>
+           </div>
+          <div class="product-price">🪙 3,000円</div>
+          <div class="product-description">
+            金箔の上に龍が躍動する姿が描かれ、周囲には宝石の煌めきと光の環が重なり合う荘厳な護符。その姿は単なる装飾ではなく、日本各地の神社仏閣に祀られてきた龍神の霊力を写し取ったものとされています。世に満ちる邪念や悪しき気を払いのけ、持つ者の心の迷いを打ち消し、新たな道を歩ませる力を宿します。人生を転換させたいとき、大きな試練に挑むときに心強い護りとなります。
+          </div>
+          <div class="product-service">
+            この護符をご購入いただくと、龍による 鑑定45分 をお受けいただけます。時間をかけて深く心を整理し、未来を切り拓く道筋を得られます。
+          </div>
+          <button class="action-button" data-product="gofu3000" data-price="3000">購入する</button>
+          <div class="product-disclaimer">
+            この商品はデジタルのダウンロード画像です、また商品の説明は、イメージのプロフィールになります。商品を購入しても、説明の通りの効果はありません、想像上の架空の解説です。また、AI の鑑定をする時間を有料で提供するために制作されたキャラクターアイテムであり、実際の宗教的意味はありません。
+          </div>
+        </div>
+        
+        <!-- 商品4 -->
+        <div class="product-item">
+          <img class="product-image clickable" src="photo/gofu/gofu10000.png" alt="黄金財福護符｜大開運と大富豪の幸運" onclick="openGofuDetail('gofu/gofu10000.html')">
+                     <div class="product-name">
+             <div class="product-name-main">黄金財福護符</div>
+             <div class="product-name-ruby">おうごんざいふくごふ</div>
+           </div>
+          <div class="product-price">🪙 10,000円</div>
+          <div class="product-description">
+            金箔の輝きと宝石のきらめきが重厚に組み合わされた荘厳な護符。天照大御神のパワーで経済的・社会的地位を押し上げる強力な財運の波動が込められています。地球上でもごくわずかな大富豪が持つ幸運を象徴し、運命を大転換させる力を宿しています。持つ者は、金運・事業運・社会的地位において優位に進む加護を得るとされる特別な護符です。
+          </div>
+          <div class="product-service">
+            この護符をご購入いただくと、龍による 鑑定240分（60分×4回まで分割利用可能） をお受けいただけます。じっくりと人生全体を見直し、運命の大転換を後押しします。
+          </div>
+          <button class="action-button" data-product="gofu10000" data-price="10000">購入する</button>
+          <div class="product-disclaimer">
+            この商品はデジタルのダウンロード画像です、また商品の説明は、イメージのプロフィールになります。商品を購入しても、説明の通りの効果はありません、想像上の架空の解説です。また、AI の鑑定をする時間を有料で提供するために制作されたキャラクターアイテムであり、実際の宗教的意味はありません。
+          </div>
+                 </div>
+       </div>
+       
+       <!-- 免責事項 -->
+       <div class="disclaimer">
+         <p class="disclaimer-text">
+           この番組はAIによる会話、相談を提供するもので、占いではありません。<br>
+           また実在する鑑定師は存在せず、全てAIによる自動会話です<br>
+           会話内容に満足いただけない場合があっても、有料サービスに対する返金等のクレームは受け付けません<br>
+           実在する人間の鑑定師は存在しない事を、くれぐれも事前に理解してご利用ください
+         </p>
+         <a href="index.html" class="back-to-top">初めに戻る</a>
+       </div>
+     </div>
+   </div>
+  
+  <script type="module">
+    import { guardians } from './guardians.js';
+
+         // ページ読み込み時の処理
+     window.addEventListener("load", function() {
+       try {
+         // URLパラメータから情報を取得
+         const urlParams = new URLSearchParams(window.location.search);
+         const nickname = urlParams.get('nickname');
+         const birthYear = urlParams.get('birthYear');
+         const birthMonth = urlParams.get('birthMonth');
+         const birthDay = urlParams.get('birthDay');
+         const guardianKey = urlParams.get('guardianKey');
+         const worry = urlParams.get('worry');
+         
+         // 守護神を取得
+         const guardian = guardians[guardianKey];
+         
+         // データを保存
+         window.userData = {
+           nickname: nickname,
+           birthYear: birthYear,
+           birthMonth: birthMonth,
+           birthDay: birthDay,
+           guardianKey: guardianKey,
+           guardian: guardian,
+           worry: worry
+         };
+         
+         // URLハッシュをチェックしてローディングをスキップするかどうか判定
+         if (window.location.hash === '#products') {
+           // 商品一覧に直接アクセスの場合、ローディングをスキップ
+           skipLoadingAndShowProducts();
+         } else {
+           // 通常の初期表示開始
+           startInitialDisplay();
+         }
+         
+       } catch (error) {
+         console.error("ページ読み込みエラー:", error);
+         // エラーが発生した場合のデフォルト表示
+         startInitialDisplay();
+       }
+     });
+
+         // 初期表示開始
+     function startInitialDisplay() {
+       // ローディング画像表示
+       const loadingImage = document.getElementById('loadingImage');
+       setTimeout(() => {
+         loadingImage.classList.add('show');
+         
+         // 3秒後に雲のアニメーション開始
+         setTimeout(() => {
+           const cloudAnimation = document.getElementById('cloudAnimation');
+           cloudAnimation.classList.add('show');
+           
+           // 雲のアニメーション2秒後にローディング画面と雲をフェードアウト
+           setTimeout(() => {
+             const loadingScreen = document.getElementById('loadingScreen');
+             const cloudAnimation = document.getElementById('cloudAnimation');
+             loadingScreen.classList.add('fade-out');
+             cloudAnimation.classList.add('fade-out');
+             
+             // ローディング画面が消えた後にメインコンテンツを表示
+             setTimeout(() => {
+               const mainContent = document.getElementById('mainContent');
+               mainContent.classList.add('show');
+             }, 500);
+           }, 2000);
+         }, 3000);
+       }, 500);
+     }
+     
+     // ローディングをスキップして商品一覧を直接表示
+     function skipLoadingAndShowProducts() {
+       // ローディング画面と雲のアニメーションを即座に非表示
+       const loadingScreen = document.getElementById('loadingScreen');
+       const cloudAnimation = document.getElementById('cloudAnimation');
+       loadingScreen.style.display = 'none';
+       cloudAnimation.style.display = 'none';
+       
+       // メインコンテンツを即座に表示
+       const mainContent = document.getElementById('mainContent');
+       mainContent.classList.add('show');
+       
+       // 商品一覧セクションにスクロール
+       setTimeout(() => {
+         const productsSection = document.getElementById('products');
+         if (productsSection) {
+           productsSection.scrollIntoView({ behavior: 'smooth' });
+         }
+       }, 100);
+     }
+
+    // 護符詳細ページを開く関数（グローバルスコープに配置）
+    window.openGofuDetail = function(url) {
+      console.log('openGofuDetail called with URL:', url);
+      window.open(url, '_blank');
+    };
+    
+    // 各商品の購入ボタンのクリックイベント
+    document.addEventListener("click", function(e) {
+      if (e.target.classList.contains("action-button") && e.target.dataset.product) {
+        const product = e.target.dataset.product;
+        const price = e.target.dataset.price;
+        console.log(`商品 ${product} (${price}円) の購入ボタンがクリックされました`);
+        // 購入ページに遷移（ここに遷移先を設定）
+        // window.location.href = `purchase.html?product=${product}&price=${price}`;
+      }
+    });
+    
+    // 護符画像のクリックイベント（バックアップ用）
+    document.addEventListener("click", function(e) {
+      if (e.target.classList.contains("product-image") && e.target.classList.contains("clickable")) {
+        console.log('護符画像がクリックされました:', e.target.src);
+        const src = e.target.src;
+        let url = '';
+        
+        if (src.includes('gofu500.png')) {
+          url = 'gofu/gofu500.html';
+        } else if (src.includes('gofu1000.png')) {
+          url = 'gofu/gofu1000.html';
+        } else if (src.includes('gofu3000.png')) {
+          url = 'gofu/gofu3000.html';
+        } else if (src.includes('gofu10000.png')) {
+          url = 'gofu/gofu10000.html';
+        }
+        
+        if (url) {
+          console.log('開くURL:', url);
+          window.open(url, '_blank');
+        }
+      }
+         });
+   </script>
+   
+       <footer style="position: fixed !important; bottom: 0; left: 0; right: 0; background: rgba(13, 13, 26, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid rgba(102, 204, 255, 0.3); z-index: 100; padding: 15px 10px; padding-bottom: max(15px, env(safe-area-inset-bottom)); box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5); text-align:center; font-size:0.9em; color:#ccc;">
+      <a href="rule/disclaimer.html" style="color:#66ccff; margin:0 8px;">免責事項</a> |
+      <a href="rule/terms.html" style="color:#66ccff; margin:0 8px;">利用規約</a> |
+      <a href="rule/privacy.html" style="color:#66ccff; margin:0 8px;">プライバシーポリシー</a> |
+      <a href="rule/tokusho.html" style="color:#66ccff; margin:0 8px;">特定商取引法</a> |
+      <a href="rule/contact.html" style="color:#66ccff; margin:0 8px;">お問い合わせ</a>
+    </footer>
+ </body>
+</html>
