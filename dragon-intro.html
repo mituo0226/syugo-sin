@@ -407,10 +407,49 @@
       }
     }
 
+    /* Skipリンクのスタイル */
+    .skip-link {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 2000;
+      background: rgba(13, 13, 26, 0.9);
+      color: #66ccff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      text-decoration: none;
+      font-size: 0.9em;
+      border: 1px solid rgba(102, 204, 255, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      opacity: 0.8;
+    }
+
+    .skip-link:hover {
+      opacity: 1;
+      background: rgba(13, 13, 26, 0.95);
+      border-color: rgba(102, 204, 255, 0.8);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 204, 255, 0.3);
+    }
+
+    /* スマートフォン向けskipリンク調整 */
+    @media (max-width: 768px) {
+      .skip-link {
+        top: 15px;
+        right: 15px;
+        padding: 6px 12px;
+        font-size: 0.8em;
+      }
+    }
 
   </style>
 </head>
   <body>
+    <!-- Skipリンク -->
+    <a href="b-form.html" class="skip-link">Skip</a>
+    
     <div class="page-container">
       <section class="hero">
         <!-- 龍の画像 -->
