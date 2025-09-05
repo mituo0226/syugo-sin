@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>AI鑑定師 龍との対話 | 守護神占い</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d1a;
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
+      position: relative;
+      min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* 神秘的な背景効果 */
+    .mystical-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(102, 204, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(199, 125, 255, 0.05) 0%, transparent 50%);
+      z-index: -1;
+      animation: bgPulse 8s ease-in-out infinite;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+    
+    @keyframes bgPulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.6; }
+    }
+    
+    /* 浮遊する粒子 */
+    .floating-particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: -1;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+    
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: #66ccff;
+      border-radius: 50%;
+      animation: float 6s linear infinite;
+    }
+    
+    .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+    .particle:nth-child(2) { left: 20%; animation-delay: 1s; }
+    .particle:nth-child(3) { left: 30%; animation-delay: 2s; }
+    .particle:nth-child(4) { left: 40%; animation-delay: 3s; }
+    .particle:nth-child(5) { left: 50%; animation-delay: 4s; }
+    .particle:nth-child(6) { left: 60%; animation-delay: 5s; }
+    .particle:nth-child(7) { left: 70%; animation-delay: 0s; }
+    .particle:nth-child(8) { left: 80%; animation-delay: 1s; }
+    .particle:nth-child(9) { left: 90%; animation-delay: 2s; }
+    
+    @keyframes float {
+      0% {
+        top: 100%;
+        opacity: 0;
+        transform: translateY(0) scale(0);
+      }
+      10% {
+        opacity: 1;
+        transform: translateY(-10px) scale(1);
+      }
+      90% {
+        opacity: 1;
+        transform: translateY(-90vh) scale(1);
+      }
+      100% {
+        top: 0;
+        opacity: 0;
+        transform: translateY(-100vh) scale(0);
+      }
+    }
+    
+    /* メインコンテナ */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      max-width: 100vw;
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* タイマー領域 */
+    .timer-area {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(13, 13, 26, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(102, 204, 255, 0.3);
+      padding: 15px 20px;
+      z-index: 100;
+      text-align: center;
+    }
+    
+    .timer-text {
+      font-size: 1.2em;
+      color: #66ccff;
+      text-shadow: 0 0 10px rgba(102, 204, 255, 0.5);
+      font-weight: bold;
+    }
+    
+    .timer-warning {
+      color: #ff6b6b;
+      animation: pulse 1s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    /* チャット画面 */
+    .chat-area {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 80px 20px 20px;
+      margin-bottom: 120px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    /* メッセージ */
+    .message {
+      max-width: 80%;
+      padding: 15px 20px;
+      border-radius: 20px;
+      word-wrap: break-word;
+      animation: messageSlide 0.3s ease-out;
+      position: relative;
+    }
+    
+    @keyframes messageSlide {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .message.user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #66ccff, #3399ff);
+      color: #000;
+      border-bottom-right-radius: 5px;
+    }
+    
+    .message.ai {
+      align-self: flex-start;
+      background: linear-gradient(135deg, #9d4edd, #7b2cbf);
+      color: #fff;
+      border-bottom-left-radius: 5px;
+    }
+    
+    .message.system {
+      align-self: center;
+      background: rgba(255, 107, 107, 0.2);
+      color: #ff6b6b;
+      border: 1px solid rgba(255, 107, 107, 0.5);
+      text-align: center;
+      max-width: 90%;
+    }
+    
+    .message-time {
+      font-size: 0.8em;
+      opacity: 0.7;
+      margin-top: 5px;
+    }
+    
+    /* 入力領域 */
+    .input-area {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(13, 13, 26, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(102, 204, 255, 0.3);
+      padding: 15px 20px;
+      padding-bottom: max(15px, env(safe-area-inset-bottom));
+      z-index: 100;
+    }
+    
+    .input-container {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .message-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(102, 204, 255, 0.3);
+      border-radius: 15px;
+      padding: 12px 15px;
+      color: #fff;
+      font-size: 1em;
+      font-family: inherit;
+      resize: none;
+      min-height: 20px;
+      max-height: 100px;
+      transition: all 0.3s ease;
+    }
+    
+    .message-input:focus {
+      outline: none;
+      border-color: #66ccff;
+      box-shadow: 0 0 10px rgba(102, 204, 255, 0.3);
+    }
+    
+    .message-input:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .send-button {
+      background: linear-gradient(90deg, #66ccff, #3399ff);
+      border: none;
+      border-radius: 15px;
+      padding: 12px 20px;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+    
+    .send-button:hover:not(:disabled) {
+      background: linear-gradient(90deg, #99e0ff, #66ccff);
+      transform: translateY(-2px);
+    }
+    
+    .send-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    /* 購入ボタン */
+    .purchase-button {
+      display: none;
+      background: linear-gradient(90deg, #ff6b6b, #ee5a52);
+      border: none;
+      border-radius: 15px;
+      padding: 12px 20px;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    
+    .purchase-button:hover {
+      background: linear-gradient(90deg, #ff8e8e, #ff6b6b);
+      transform: translateY(-2px);
+    }
+    
+    .purchase-button.show {
+      display: inline-block;
+    }
+    
+    /* モバイル向け調整 */
+    @media (max-width: 600px) {
+      .timer-area {
+        padding: 10px 15px;
+      }
+      
+      .timer-text {
+        font-size: 1.1em;
+      }
+      
+      .chat-area {
+        padding: 70px 15px 20px;
+        margin-bottom: 100px;
+      }
+      
+      .message {
+        max-width: 85%;
+        padding: 12px 15px;
+        font-size: 0.95em;
+      }
+      
+      .input-area {
+        padding: 10px 15px;
+      }
+      
+      .input-container {
+        gap: 8px;
+      }
+      
+      .message-input {
+        font-size: 0.95em;
+        padding: 10px 12px;
+      }
+      
+      .send-button,
+      .purchase-button {
+        padding: 10px 15px;
+        font-size: 0.9em;
+      }
+    }
+    
+    /* iPhone X以降のノッチ対応 */
+    @supports (padding: max(0px)) {
+      .timer-area {
+        padding-top: max(15px, env(safe-area-inset-top));
+      }
+      
+      .input-area {
+        padding-bottom: max(15px, env(safe-area-inset-bottom));
+      }
+    }
+    
+    /* スクロールバーのカスタマイズ */
+    .chat-area::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .chat-area::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+    
+    .chat-area::-webkit-scrollbar-thumb {
+      background: rgba(102, 204, 255, 0.5);
+      border-radius: 3px;
+    }
+    
+    .chat-area::-webkit-scrollbar-thumb:hover {
+      background: rgba(102, 204, 255, 0.7);
+    }
+  </style>
+</head>
+<body>
+  <!-- 神秘的な背景 -->
+  <div class="mystical-bg"></div>
+  
+  <!-- 浮遊する粒子 -->
+  <div class="floating-particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <div class="chat-container">
+    <!-- タイマー領域 -->
+    <div class="timer-area">
+      <div class="timer-text" id="timerText">残り時間: 00:00</div>
+    </div>
+    
+    <!-- チャット画面 -->
+    <div class="chat-area" id="chatArea">
+      <!-- メッセージがここに動的に追加される -->
+    </div>
+    
+    <!-- 入力領域 -->
+    <div class="input-area">
+      <div class="input-container">
+        <textarea 
+          class="message-input" 
+          id="messageInput" 
+          placeholder="メッセージを入力してください..."
+          rows="1"
+        ></textarea>
+        <button class="send-button" id="sendButton">送信</button>
+        <a href="../shop/gofu.html" class="purchase-button" id="purchaseButton">購入ページへ</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // グローバル変数
+    let remainingSeconds = 0;
+    let timerInterval = null;
+    let isSessionExpired = false;
+    
+    // ページ読み込み時の処理
+    window.addEventListener("load", function() {
+      console.log("チャットページ読み込み開始");
+      
+      try {
+        // sessionStorageから残り時間を取得
+        const creditMinutes = sessionStorage.getItem('ss_credit_minutes');
+        if (creditMinutes) {
+          remainingSeconds = parseInt(creditMinutes) * 60;
+          console.log(`残り時間: ${creditMinutes}分 (${remainingSeconds}秒)`);
+        } else {
+          // フォールバック: localStorageから取得
+          const ticketMinutes = localStorage.getItem('ticketMinutes');
+          if (ticketMinutes) {
+            remainingSeconds = parseInt(ticketMinutes) * 60;
+            console.log(`チケット時間: ${ticketMinutes}分 (${remainingSeconds}秒)`);
+          } else {
+            remainingSeconds = 0;
+            console.warn('残り時間が見つかりません');
+          }
+        }
+        
+        // チャット履歴を復元
+        loadChatHistory();
+        
+        // タイマー開始
+        startTimer();
+        
+        // 初期メッセージを追加
+        if (remainingSeconds > 0) {
+          addSystemMessage('AI鑑定師 龍がお待ちしています。何でもお聞きください。');
+        } else {
+          handleSessionExpired();
+        }
+        
+        // イベントリスナー設定
+        setupEventListeners();
+        
+      } catch (error) {
+        console.error("ページ読み込みエラー:", error);
+        addSystemMessage('エラーが発生しました。ページを再読み込みしてください。');
+      }
+    });
+    
+    // イベントリスナー設定
+    function setupEventListeners() {
+      const messageInput = document.getElementById('messageInput');
+      const sendButton = document.getElementById('sendButton');
+      
+      // 送信ボタンクリック
+      sendButton.addEventListener('click', sendMessage);
+      
+      // Enterキーで送信（Shift+Enterは改行）
+      messageInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+      
+      // テキストエリアの自動リサイズ
+      messageInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+      });
+    }
+    
+    // タイマー開始
+    function startTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+      
+      updateTimerDisplay();
+      
+      timerInterval = setInterval(() => {
+        if (remainingSeconds > 0) {
+          remainingSeconds--;
+          updateTimerDisplay();
+          
+          // 残り時間が少なくなったら警告
+          if (remainingSeconds <= 60 && remainingSeconds > 0) {
+            const timerText = document.getElementById('timerText');
+            timerText.classList.add('timer-warning');
+          }
+        } else {
+          handleSessionExpired();
+        }
+      }, 1000);
+    }
+    
+    // タイマー表示更新
+    function updateTimerDisplay() {
+      const minutes = Math.floor(remainingSeconds / 60);
+      const seconds = remainingSeconds % 60;
+      const timerText = document.getElementById('timerText');
+      
+      timerText.textContent = `残り時間: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+    
+    // セッション期限切れ処理
+    function handleSessionExpired() {
+      if (isSessionExpired) return;
+      
+      isSessionExpired = true;
+      clearInterval(timerInterval);
+      
+      // 入力欄と送信ボタンを無効化
+      const messageInput = document.getElementById('messageInput');
+      const sendButton = document.getElementById('sendButton');
+      const purchaseButton = document.getElementById('purchaseButton');
+      
+      messageInput.disabled = true;
+      sendButton.disabled = true;
+      purchaseButton.classList.add('show');
+      
+      // タイマー表示を更新
+      const timerText = document.getElementById('timerText');
+      timerText.textContent = '時間終了';
+      timerText.classList.add('timer-warning');
+      
+      // 終了メッセージを追加
+      addSystemMessage('鑑定時間が終了しました。追加チケットをご購入ください。');
+    }
+    
+    // メッセージ送信
+    function sendMessage() {
+      if (isSessionExpired) return;
+      
+      const messageInput = document.getElementById('messageInput');
+      const message = messageInput.value.trim();
+      
+      if (!message) return;
+      
+      // ユーザーメッセージを追加
+      addUserMessage(message);
+      
+      // 入力欄をクリア
+      messageInput.value = '';
+      messageInput.style.height = 'auto';
+      
+      // AI応答をシミュレート（ダミー）
+      setTimeout(() => {
+        addAIMessage('API応答（ダミー）');
+      }, 1000);
+      
+      // チャット履歴を保存
+      saveChatHistory();
+    }
+    
+    // ユーザーメッセージ追加
+    function addUserMessage(text) {
+      const chatArea = document.getElementById('chatArea');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message user';
+      
+      const time = new Date().toLocaleTimeString('ja-JP', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+      
+      messageDiv.innerHTML = `
+        <div>${escapeHtml(text)}</div>
+        <div class="message-time">${time}</div>
+      `;
+      
+      chatArea.appendChild(messageDiv);
+      scrollToBottom();
+    }
+    
+    // AIメッセージ追加
+    function addAIMessage(text) {
+      const chatArea = document.getElementById('chatArea');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message ai';
+      
+      const time = new Date().toLocaleTimeString('ja-JP', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+      
+      messageDiv.innerHTML = `
+        <div>${escapeHtml(text)}</div>
+        <div class="message-time">${time}</div>
+      `;
+      
+      chatArea.appendChild(messageDiv);
+      scrollToBottom();
+    }
+    
+    // システムメッセージ追加
+    function addSystemMessage(text) {
+      const chatArea = document.getElementById('chatArea');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message system';
+      
+      messageDiv.innerHTML = `<div>${escapeHtml(text)}</div>`;
+      
+      chatArea.appendChild(messageDiv);
+      scrollToBottom();
+    }
+    
+    // HTMLエスケープ
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    // チャット履歴保存
+    function saveChatHistory() {
+      const chatArea = document.getElementById('chatArea');
+      const messages = Array.from(chatArea.children).map(messageDiv => {
+        const messageText = messageDiv.querySelector('div:first-child').textContent;
+        const messageTime = messageDiv.querySelector('.message-time')?.textContent || '';
+        const messageType = messageDiv.className.includes('user') ? 'user' : 
+                           messageDiv.className.includes('ai') ? 'ai' : 'system';
+        
+        return {
+          type: messageType,
+          text: messageText,
+          time: messageTime
+        };
+      });
+      
+      localStorage.setItem('chatHistory', JSON.stringify(messages));
+    }
+    
+    // チャット履歴復元
+    function loadChatHistory() {
+      const chatHistory = localStorage.getItem('chatHistory');
+      if (!chatHistory) return;
+      
+      try {
+        const messages = JSON.parse(chatHistory);
+        const chatArea = document.getElementById('chatArea');
+        
+        messages.forEach(msg => {
+          const messageDiv = document.createElement('div');
+          messageDiv.className = `message ${msg.type}`;
+          
+          if (msg.type === 'system') {
+            messageDiv.innerHTML = `<div>${escapeHtml(msg.text)}</div>`;
+          } else {
+            messageDiv.innerHTML = `
+              <div>${escapeHtml(msg.text)}</div>
+              <div class="message-time">${msg.time}</div>
+            `;
+          }
+          
+          chatArea.appendChild(messageDiv);
+        });
+        
+        scrollToBottom();
+      } catch (error) {
+        console.error('チャット履歴復元エラー:', error);
+      }
+    }
+    
+    // チャット画面を最下部にスクロール
+    function scrollToBottom() {
+      const chatArea = document.getElementById('chatArea');
+      setTimeout(() => {
+        chatArea.scrollTop = chatArea.scrollHeight;
+      }, 100);
+    }
+    
+    // ページ離脱時の処理
+    window.addEventListener('beforeunload', function() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+      saveChatHistory();
+    });
+  </script>
+</body>
+</html>
