@@ -624,7 +624,7 @@
 
   <!-- ローディング画面 -->
   <div class="loading-screen" id="loadingScreen">
-    <img class="loading-image" id="loadingImage" src="photo/ryu.png" alt="AI鑑定師 龍">
+    <img class="loading-image" id="loadingImage" src="../photo/ryu.png" alt="AI鑑定師 龍">
     <div class="loading-text">鑑定中...</div>
   </div>
 
@@ -640,7 +640,7 @@
       <div style="text-align:center;margin-bottom:20px;">
         <p style="color:#ffcc00;font-weight:bold;">
           ご購入前に必ず 
-          <a href="rule/note.html" style="color:#66ccff;text-decoration:underline;">
+          <a href="../rule/note.html" style="color:#66ccff;text-decoration:underline;">
             サービス内容のご案内
           </a>
           をお読みください
@@ -656,7 +656,7 @@
       <div class="product-list" id="products">
         <!-- 商品1 -->
         <div class="product-item">
-          <img class="product-image clickable" src="photo/gofu/gofu500.png" alt="光輪呪文護符｜高僧祈祷の魔除け" onclick="openGofuDetail('gofu/gofu500.html')">
+          <img class="product-image clickable" src="../photo/gofu/gofu500.png" alt="光輪呪文護符｜高僧祈祷の魔除け" onclick="openGofuDetail('../gofu/gofu500.html')">
                      <div class="product-name">
              <div class="product-name-main">光輪呪文護符</div>
              <div class="product-name-ruby">こうりんじゅもんごふ</div>
@@ -678,7 +678,7 @@
         
         <!-- 商品2 -->
         <div class="product-item">
-          <img class="product-image clickable" src="photo/gofu/gofu1000.png" alt="観音霊威護符｜邪気浄化と人生再生" onclick="openGofuDetail('gofu/gofu1000.html')">
+          <img class="product-image clickable" src="../photo/gofu/gofu1000.png" alt="観音霊威護符｜邪気浄化と人生再生" onclick="openGofuDetail('../gofu/gofu1000.html')">
                      <div class="product-name">
              <div class="product-name-main">観音霊威護符</div>
              <div class="product-name-ruby">かんのんれいいごふ</div>
@@ -698,7 +698,7 @@
         
         <!-- 商品3 -->
         <div class="product-item">
-          <img class="product-image clickable" src="photo/gofu/gofu3000.png" alt="龍神威護符｜邪念祓いと人生転換" onclick="openGofuDetail('gofu/gofu3000.html')">
+          <img class="product-image clickable" src="../photo/gofu/gofu3000.png" alt="龍神威護符｜邪念祓いと人生転換" onclick="openGofuDetail('../gofu/gofu3000.html')">
                      <div class="product-name">
              <div class="product-name-main">龍神威護符</div>
              <div class="product-name-ruby">りゅうじんいごふ</div>
@@ -718,7 +718,7 @@
         
         <!-- 商品4 -->
         <div class="product-item">
-          <img class="product-image clickable" src="photo/gofu/gofu10000.png" alt="黄金財福護符｜大開運と大富豪の幸運" onclick="openGofuDetail('gofu/gofu10000.html')">
+          <img class="product-image clickable" src="../photo/gofu/gofu10000.png" alt="黄金財福護符｜大開運と大富豪の幸運" onclick="openGofuDetail('../gofu/gofu10000.html')">
                      <div class="product-name">
              <div class="product-name-main">黄金財福護符</div>
              <div class="product-name-ruby">おうごんざいふくごふ</div>
@@ -745,7 +745,7 @@
            会話内容に満足いただけない場合があっても、有料サービスに対する返金等のクレームは受け付けません<br>
            実在する人間の鑑定師は存在しない事を、くれぐれも事前に理解してご利用ください
          </p>
-         <a href="index.html" class="back-to-top">初めに戻る</a>
+         <a href="../index.html" class="back-to-top">初めに戻る</a>
        </div>
      </div>
    </div>
@@ -951,13 +951,13 @@
         let url = '';
         
         if (src.includes('gofu500.png')) {
-          url = 'gofu/gofu500.html';
+          url = '../gofu/gofu500.html';
         } else if (src.includes('gofu1000.png')) {
-          url = 'gofu/gofu1000.html';
+          url = '../gofu/gofu1000.html';
         } else if (src.includes('gofu3000.png')) {
-          url = 'gofu/gofu3000.html';
+          url = '../gofu/gofu3000.html';
         } else if (src.includes('gofu10000.png')) {
-          url = 'gofu/gofu10000.html';
+          url = '../gofu/gofu10000.html';
         }
         
         if (url) {
@@ -969,11 +969,11 @@
    </script>
    
        <footer style="position: fixed !important; bottom: 0; left: 0; right: 0; background: rgba(13, 13, 26, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid rgba(102, 204, 255, 0.3); z-index: 100; padding: 15px 10px; padding-bottom: max(15px, env(safe-area-inset-bottom)); box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5); text-align:center; font-size:0.9em; color:#ccc;">
-      <a href="rule/disclaimer.html" style="color:#66ccff; margin:0 8px;">免責事項</a> |
-      <a href="rule/terms.html" style="color:#66ccff; margin:0 8px;">利用規約</a> |
-      <a href="rule/privacy.html" style="color:#66ccff; margin:0 8px;">プライバシーポリシー</a> |
-      <a href="rule/tokusho.html" style="color:#66ccff; margin:0 8px;">特定商取引法</a> |
-      <a href="rule/contact.html" style="color:#66ccff; margin:0 8px;">お問い合わせ</a>
+      <a href="../rule/disclaimer.html" style="color:#66ccff; margin:0 8px;">免責事項</a> |
+      <a href="../rule/terms.html" style="color:#66ccff; margin:0 8px;">利用規約</a> |
+      <a href="../rule/privacy.html" style="color:#66ccff; margin:0 8px;">プライバシーポリシー</a> |
+      <a href="../rule/tokusho.html" style="color:#66ccff; margin:0 8px;">特定商取引法</a> |
+      <a href="../rule/contact.html" style="color:#66ccff; margin:0 8px;">お問い合わせ</a>
     </footer>
  </body>
 </html>
