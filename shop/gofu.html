@@ -751,99 +751,180 @@
    </div>
   
   <script type="module">
-    import { guardians } from './guardians.js';
+    // ページ読み込み時の処理
+    window.addEventListener("load", function() {
+      console.log("ページ読み込み開始");
+      
+      try {
+        // URLパラメータから情報を取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const nickname = urlParams.get('nickname');
+        const birthYear = urlParams.get('birthYear');
+        const birthMonth = urlParams.get('birthMonth');
+        const birthDay = urlParams.get('birthDay');
+        const guardianKey = urlParams.get('guardianKey');
+        const worry = urlParams.get('worry');
+        
+        console.log("URLパラメータ:", { nickname, birthYear, birthMonth, birthDay, guardianKey, worry });
+        
+        // データを保存（guardianは後で設定）
+        window.userData = {
+          nickname: nickname,
+          birthYear: birthYear,
+          birthMonth: birthMonth,
+          birthDay: birthDay,
+          guardianKey: guardianKey,
+          guardian: null,
+          worry: worry
+        };
+        
+        // URLハッシュをチェックしてローディングをスキップするかどうか判定
+        if (window.location.hash === '#products') {
+          console.log("商品一覧に直接アクセス - ローディングをスキップ");
+          // 商品一覧に直接アクセスの場合、ローディングをスキップ
+          skipLoadingAndShowProducts();
+        } else {
+          console.log("通常の初期表示開始");
+          // 通常の初期表示開始
+          startInitialDisplay();
+        }
+        
+      } catch (error) {
+        console.error("ページ読み込みエラー:", error);
+        // エラーが発生した場合のデフォルト表示
+        startInitialDisplay();
+      }
+    });
+    
+    // guardians.jsのインポートを非同期で処理
+    import('./guardians.js').then(module => {
+      console.log("guardians.js読み込み成功");
+      const { guardians } = module;
+      
+      // 守護神データを設定
+      if (window.userData && window.userData.guardianKey) {
+        window.userData.guardian = guardians[window.userData.guardianKey];
+        console.log("守護神データ設定完了:", window.userData.guardian);
+      }
+    }).catch(error => {
+      console.error("guardians.js読み込みエラー:", error);
+      // エラーが発生しても処理を続行
+    });
+    
+    // フォールバック機能：10秒後に確実にメインコンテンツを表示
+    setTimeout(() => {
+      const mainContent = document.getElementById('mainContent');
+      if (mainContent && !mainContent.classList.contains('show')) {
+        console.log("フォールバック: メインコンテンツを強制表示");
+        showMainContent();
+      }
+    }, 10000);
 
-         // ページ読み込み時の処理
-     window.addEventListener("load", function() {
-       try {
-         // URLパラメータから情報を取得
-         const urlParams = new URLSearchParams(window.location.search);
-         const nickname = urlParams.get('nickname');
-         const birthYear = urlParams.get('birthYear');
-         const birthMonth = urlParams.get('birthMonth');
-         const birthDay = urlParams.get('birthDay');
-         const guardianKey = urlParams.get('guardianKey');
-         const worry = urlParams.get('worry');
-         
-         // 守護神を取得
-         const guardian = guardians[guardianKey];
-         
-         // データを保存
-         window.userData = {
-           nickname: nickname,
-           birthYear: birthYear,
-           birthMonth: birthMonth,
-           birthDay: birthDay,
-           guardianKey: guardianKey,
-           guardian: guardian,
-           worry: worry
-         };
-         
-         // URLハッシュをチェックしてローディングをスキップするかどうか判定
-         if (window.location.hash === '#products') {
-           // 商品一覧に直接アクセスの場合、ローディングをスキップ
-           skipLoadingAndShowProducts();
-         } else {
-           // 通常の初期表示開始
-           startInitialDisplay();
-         }
-         
-       } catch (error) {
-         console.error("ページ読み込みエラー:", error);
-         // エラーが発生した場合のデフォルト表示
-         startInitialDisplay();
-       }
-     });
-
-         // 初期表示開始
-     function startInitialDisplay() {
-       // ローディング画像表示
-       const loadingImage = document.getElementById('loadingImage');
-       setTimeout(() => {
-         loadingImage.classList.add('show');
-         
-         // 3秒後に雲のアニメーション開始
-         setTimeout(() => {
-           const cloudAnimation = document.getElementById('cloudAnimation');
-           cloudAnimation.classList.add('show');
-           
-           // 雲のアニメーション2秒後にローディング画面と雲をフェードアウト
-           setTimeout(() => {
-             const loadingScreen = document.getElementById('loadingScreen');
-             const cloudAnimation = document.getElementById('cloudAnimation');
-             loadingScreen.classList.add('fade-out');
-             cloudAnimation.classList.add('fade-out');
-             
-             // ローディング画面が消えた後にメインコンテンツを表示
-             setTimeout(() => {
-               const mainContent = document.getElementById('mainContent');
-               mainContent.classList.add('show');
-             }, 500);
-           }, 2000);
-         }, 3000);
-       }, 500);
-     }
+    // 初期表示開始
+    function startInitialDisplay() {
+      console.log("初期表示開始");
+      
+      try {
+        // ローディング画像表示
+        const loadingImage = document.getElementById('loadingImage');
+        if (!loadingImage) {
+          console.error("ローディング画像要素が見つかりません");
+          showMainContent();
+          return;
+        }
+        
+        setTimeout(() => {
+          console.log("ローディング画像表示");
+          loadingImage.classList.add('show');
+          
+          // 3秒後に雲のアニメーション開始
+          setTimeout(() => {
+            console.log("雲のアニメーション開始");
+            const cloudAnimation = document.getElementById('cloudAnimation');
+            if (cloudAnimation) {
+              cloudAnimation.classList.add('show');
+            }
+            
+            // 雲のアニメーション2秒後にローディング画面と雲をフェードアウト
+            setTimeout(() => {
+              console.log("ローディング画面フェードアウト開始");
+              const loadingScreen = document.getElementById('loadingScreen');
+              const cloudAnimation = document.getElementById('cloudAnimation');
+              
+              if (loadingScreen) {
+                loadingScreen.classList.add('fade-out');
+              }
+              if (cloudAnimation) {
+                cloudAnimation.classList.add('fade-out');
+              }
+              
+              // ローディング画面が消えた後にメインコンテンツを表示
+              setTimeout(() => {
+                console.log("メインコンテンツ表示");
+                showMainContent();
+              }, 500);
+            }, 2000);
+          }, 3000);
+        }, 500);
+        
+      } catch (error) {
+        console.error("初期表示エラー:", error);
+        // エラーが発生した場合は即座にメインコンテンツを表示
+        showMainContent();
+      }
+    }
+    
+    // メインコンテンツ表示関数
+    function showMainContent() {
+      try {
+        const mainContent = document.getElementById('mainContent');
+        if (mainContent) {
+          mainContent.classList.add('show');
+          console.log("メインコンテンツ表示完了");
+        } else {
+          console.error("メインコンテンツ要素が見つかりません");
+        }
+      } catch (error) {
+        console.error("メインコンテンツ表示エラー:", error);
+      }
+    }
      
-     // ローディングをスキップして商品一覧を直接表示
-     function skipLoadingAndShowProducts() {
-       // ローディング画面と雲のアニメーションを即座に非表示
-       const loadingScreen = document.getElementById('loadingScreen');
-       const cloudAnimation = document.getElementById('cloudAnimation');
-       loadingScreen.style.display = 'none';
-       cloudAnimation.style.display = 'none';
-       
-       // メインコンテンツを即座に表示
-       const mainContent = document.getElementById('mainContent');
-       mainContent.classList.add('show');
-       
-       // 商品一覧セクションにスクロール
-       setTimeout(() => {
-         const productsSection = document.getElementById('products');
-         if (productsSection) {
-           productsSection.scrollIntoView({ behavior: 'smooth' });
-         }
-       }, 100);
-     }
+    // ローディングをスキップして商品一覧を直接表示
+    function skipLoadingAndShowProducts() {
+      console.log("ローディングスキップ開始");
+      
+      try {
+        // ローディング画面と雲のアニメーションを即座に非表示
+        const loadingScreen = document.getElementById('loadingScreen');
+        const cloudAnimation = document.getElementById('cloudAnimation');
+        
+        if (loadingScreen) {
+          loadingScreen.style.display = 'none';
+        }
+        if (cloudAnimation) {
+          cloudAnimation.style.display = 'none';
+        }
+        
+        // メインコンテンツを即座に表示
+        showMainContent();
+        
+        // 商品一覧セクションにスクロール
+        setTimeout(() => {
+          const productsSection = document.getElementById('products');
+          if (productsSection) {
+            productsSection.scrollIntoView({ behavior: 'smooth' });
+            console.log("商品一覧にスクロール完了");
+          } else {
+            console.error("商品一覧セクションが見つかりません");
+          }
+        }, 100);
+        
+      } catch (error) {
+        console.error("ローディングスキップエラー:", error);
+        // エラーが発生した場合は通常の表示にフォールバック
+        showMainContent();
+      }
+    }
 
     // 護符詳細ページを開く関数（グローバルスコープに配置）
     window.openGofuDetail = function(url) {
