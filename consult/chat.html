@@ -417,12 +417,24 @@
     let remainingSeconds = 0;
     let timerInterval = null;
     let isSessionExpired = false;
+    let userData = null;
     
     // ページ読み込み時の処理
     window.addEventListener("load", function() {
       console.log("チャットページ読み込み開始");
       
       try {
+        // localStorageからuserDataを取得
+        const userDataStr = localStorage.getItem("userData");
+        if (userDataStr) {
+          try {
+            userData = JSON.parse(userDataStr);
+            console.log("userDataを復元:", userData);
+          } catch (error) {
+            console.error("userDataの解析エラー:", error);
+          }
+        }
+        
         // sessionStorageから残り時間を取得
         const creditMinutes = sessionStorage.getItem('ss_credit_minutes');
         if (creditMinutes) {
@@ -544,7 +556,7 @@
     }
     
     // メッセージ送信
-    function sendMessage() {
+    async function sendMessage() {
       if (isSessionExpired) return;
       
       const messageInput = document.getElementById('messageInput');
@@ -559,10 +571,8 @@
       messageInput.value = '';
       messageInput.style.height = 'auto';
       
-      // AI応答をシミュレート（ダミー）
-      setTimeout(() => {
-        addAIMessage('API応答（ダミー）');
-      }, 1000);
+      // AI応答を取得
+      await getAIResponse(message);
       
       // チャット履歴を保存
       saveChatHistory();
@@ -606,6 +616,114 @@
       
       chatArea.appendChild(messageDiv);
       scrollToBottom();
+    }
+    
+    // AIメッセージをタイプライター効果で追加
+    function addAIMessageWithTyping(text) {
+      const chatArea = document.getElementById('chatArea');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message ai';
+      
+      const time = new Date().toLocaleTimeString('ja-JP', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+      
+      messageDiv.innerHTML = `
+        <div class="typing-content"></div>
+        <div class="message-time">${time}</div>
+      `;
+      
+      chatArea.appendChild(messageDiv);
+      scrollToBottom();
+      
+      // タイプライター効果
+      const contentDiv = messageDiv.querySelector('.typing-content');
+      let index = 0;
+      const typingInterval = setInterval(() => {
+        if (index < text.length) {
+          contentDiv.textContent += text[index];
+          index++;
+          scrollToBottom();
+        } else {
+          clearInterval(typingInterval);
+        }
+      }, 30); // 30ms間隔でタイプライター効果
+    }
+    
+    // API呼び出し
+    async function getAIResponse(userMessage) {
+      if (!userData) {
+        addAIMessage('ユーザー情報が見つかりません。');
+        return;
+      }
+      
+      // ローディング表示
+      const loadingDiv = document.createElement('div');
+      loadingDiv.className = 'message ai';
+      loadingDiv.innerHTML = '<div>龍が鑑定中...</div>';
+      document.getElementById('chatArea').appendChild(loadingDiv);
+      scrollToBottom();
+      
+      try {
+        // 守護神名を取得
+        const guardianName = userData.guardian ? userData.guardian.name : '不明';
+        
+        // APIリクエストデータ
+        const requestData = {
+          text: userMessage,
+          year: userData.birthYear,
+          month: userData.birthMonth,
+          day: userData.birthDay,
+          category: "総合",
+          prompt: `ニックネーム: ${userData.nickname} / 守護神: ${guardianName} / 相談: ${userData.worry}`
+        };
+        
+        console.log('API呼び出し:', requestData);
+        
+        const response = await fetch('/api/consult', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestData)
+        });
+        
+        // ローディング表示を削除
+        loadingDiv.remove();
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('API応答:', data);
+          
+          // paragraphsまたはhtmlを取得
+          let responseText = '';
+          if (data.paragraphs) {
+            responseText = data.paragraphs.join('\n\n');
+          } else if (data.html) {
+            responseText = data.html;
+          } else if (data.text) {
+            responseText = data.text;
+          } else {
+            responseText = '鑑定結果を取得できませんでした。';
+          }
+          
+          // タイプライター効果でAI応答を表示
+          addAIMessageWithTyping(responseText);
+          
+        } else {
+          console.error('API呼び出しエラー:', response.status);
+          addAIMessage('鑑定中にエラーが発生しました。しばらく時間をおいて再度お試しください。');
+        }
+        
+      } catch (error) {
+        console.error('API呼び出しエラー:', error);
+        // ローディング表示を削除
+        if (loadingDiv.parentNode) {
+          loadingDiv.remove();
+        }
+        addAIMessage('鑑定中にエラーが発生しました。しばらく時間をおいて再度お試しください。');
+      }
     }
     
     // システムメッセージ追加
