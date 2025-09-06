@@ -775,27 +775,35 @@
       console.log("ページ読み込み開始");
       
       try {
-        // URLパラメータから情報を取得
-        const urlParams = new URLSearchParams(window.location.search);
-        const nickname = urlParams.get('nickname');
-        const birthYear = urlParams.get('birthYear');
-        const birthMonth = urlParams.get('birthMonth');
-        const birthDay = urlParams.get('birthDay');
-        const guardianKey = urlParams.get('guardianKey');
-        const worry = urlParams.get('worry');
+        // localStorageからuserDataを取得
+        const userDataStr = localStorage.getItem("userData");
+        let userData = null;
         
-        console.log("URLパラメータ:", { nickname, birthYear, birthMonth, birthDay, guardianKey, worry });
+        if (userDataStr) {
+          try {
+            userData = JSON.parse(userDataStr);
+            console.log("localStorageからuserDataを取得:", userData);
+          } catch (error) {
+            console.error("userDataの解析エラー:", error);
+          }
+        }
         
-        // データを保存（guardianは後で設定）
-        window.userData = {
-          nickname: nickname,
-          birthYear: birthYear,
-          birthMonth: birthMonth,
-          birthDay: birthDay,
-          guardianKey: guardianKey,
-          guardian: null,
-          worry: worry
-        };
+        // データが取得できない場合はデフォルト値を設定
+        if (!userData) {
+          console.warn("userDataが見つかりません。デフォルト値を設定します。");
+          userData = {
+            nickname: "ゲスト",
+            birthYear: "1990",
+            birthMonth: "1",
+            birthDay: "1",
+            guardianKey: "senju",
+            guardian: null,
+            worry: "相談内容が設定されていません"
+          };
+        }
+        
+        // データを保存
+        window.userData = userData;
         
         // URLハッシュをチェックしてローディングをスキップするかどうか判定
         if (window.location.hash === '#products') {
