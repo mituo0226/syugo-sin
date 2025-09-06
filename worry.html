@@ -420,8 +420,13 @@
         const birthDay = urlParams.get('birthDay');
         const guardianKey = urlParams.get('guardianKey');
         
-        // 守護神を取得
-        const guardian = guardians[guardianKey];
+        // デバッグ用ログ
+        console.log("URLパラメータ:", urlParams);
+        console.log("window.userData:", window.userData);
+        console.log("取得したデータ:", { nickname, birthYear, birthMonth, birthDay, guardianKey });
+        
+        // 守護神を安全に取得
+        const guardian = guardians[guardianKey] || { name: "守護神", image: "default.png" };
         
         // データを保存
         window.userData = {
@@ -445,10 +450,15 @@
 
     // 初期表示開始
     function startInitialDisplay() {
-      // 守護神の画像を設定
+      // 守護神の画像を安全に設定
       const guardianImage = document.getElementById('guardianImage');
-      guardianImage.src = `photo/${window.userData.guardianKey}.png`;
-      guardianImage.alt = window.userData.guardian.name;
+      if (window.userData.guardianKey && window.userData.guardian) {
+        guardianImage.src = `photo/${window.userData.guardianKey}.png`;
+        guardianImage.alt = window.userData.guardian.name;
+      } else {
+        guardianImage.src = 'photo/default.png';
+        guardianImage.alt = '守護神';
+      }
       
       // 画像コンテナ表示
       const imageContainer = document.getElementById('imageContainer');
