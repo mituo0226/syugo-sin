@@ -1,13 +1,21 @@
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
-import { consult } from "./consult/consult.js";  // 
+import path from "path";
+import { fileURLToPath } from "url";
+import { consult } from "./consult/consult.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const port = 8787;
 
 app.use(cors());
 app.use(bodyParser.json());
+
+// 静的ファイルを配信
+app.use(express.static(__dirname));
 
 app.post("/api/consult", async (req, res) => {
   try {
