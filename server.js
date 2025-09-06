@@ -14,8 +14,8 @@ const port = 8787;
 app.use(cors());
 app.use(bodyParser.json());
 
-// 静的ファイルを配信
-app.use(express.static(__dirname));
+// consult フォルダを公開 (例: consult/chat.html を開ける)
+app.use("/consult", express.static(path.join(__dirname, "consult")));
 
 app.post("/api/consult", async (req, res) => {
   try {
