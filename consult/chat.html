@@ -476,7 +476,18 @@
         
         // 初期メッセージを追加
         if (remainingSeconds > 0) {
-          addSystemMessage('AI鑑定師 龍がお待ちしています。何でもお聞きください。');
+          // worryがある場合は自動でAPI呼び出し、ない場合はウェルカムメッセージ
+          if (userData && userData.worry) {
+            console.log('worryが見つかりました。自動でAPI呼び出しを開始します:', userData.worry);
+            // ユーザーメッセージを表示
+            addUserMessage(userData.worry);
+            // 少し遅延してからAPI呼び出し
+            setTimeout(() => {
+              getAIResponse(userData.worry);
+            }, 1000);
+          } else {
+            addAIMessage('ようこそ。まずはあなたの悩みを教えてください。');
+          }
         } else {
           handleSessionExpired();
         }
