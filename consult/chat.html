@@ -449,23 +449,49 @@
           right: 0;
           z-index: 1000;
           padding: 10px;
-          background: #222;
-          color: #fff;
+          background: #e0e0e0;
+          color: #000;
           border-bottom: 2px solid #66ccff;
           font-size: 14px;
+          font-weight: bold;
         `;
         adminBox.innerHTML = `
-          <label>残り時間を設定: <input id="adminMinutes" type="number" value="10" min="0" max="999" style="width: 60px; margin: 0 5px; padding: 2px 5px; background: #333; color: #fff; border: 1px solid #666; border-radius: 3px;" /> 分</label>
-          <button onclick="setMinutes()" style="margin-left: 10px; padding: 5px 10px; background: #66ccff; color: #000; border: none; border-radius: 3px; cursor: pointer; font-weight: bold;">設定</button>
+          <label>管理者コントロール - 残り時間を設定: <input id="adminMinutes" type="number" value="10" min="0" max="999" style="width: 60px; margin: 0 5px; padding: 2px 5px; background: #fff; color: #000; border: 1px solid #999; border-radius: 3px;" /> 分</label>
+          <button onclick="updateRemainingTime()" style="margin-left: 10px; padding: 5px 10px; background: #66ccff; color: #000; border: none; border-radius: 3px; cursor: pointer; font-weight: bold;">残り時間を更新</button>
         `;
         document.body.prepend(adminBox);
 
-        window.setMinutes = () => {
+        window.updateRemainingTime = () => {
           const min = document.getElementById("adminMinutes").value;
           if (min && min >= 0) {
+            // remainingSecondsを直接更新
+            remainingSeconds = parseInt(min) * 60;
+            console.log(`管理者が残り時間を${min}分（${remainingSeconds}秒）に更新しました`);
+            
+            // タイマー表示を更新
+            updateTimerDisplay();
+            
+            // sessionStorageも更新
             sessionStorage.setItem("ss_credit_minutes", min);
-            console.log(`管理者が残り時間を${min}分に設定しました`);
-            location.reload();
+            
+            // セッション期限切れ状態をリセット
+            if (isSessionExpired) {
+              isSessionExpired = false;
+              const messageInput = document.getElementById('messageInput');
+              const sendButton = document.getElementById('sendButton');
+              const purchaseButton = document.getElementById('purchaseButton');
+              
+              messageInput.disabled = false;
+              sendButton.disabled = false;
+              purchaseButton.classList.remove('show');
+              
+              const timerText = document.getElementById('timerText');
+              timerText.classList.remove('timer-warning');
+            }
+            
+            // タイマーを再開
+            startTimer();
+            
           } else {
             alert("有効な分数を入力してください（0以上）");
           }
