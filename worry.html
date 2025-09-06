@@ -506,19 +506,15 @@
       // 相談内容を保存
       window.userData.worry = worryText;
       
+      // localStorageにuserDataを保存
+      localStorage.setItem("userData", JSON.stringify(window.userData));
+      
       console.log("鑑定開始ボタンがクリックされました");
       console.log("相談内容:", worryText);
+      console.log("userDataをlocalStorageに保存:", window.userData);
       
-      // shop/gofu.htmlに遷移（全データを渡す）
-      const params = new URLSearchParams();
-      params.set('nickname', window.userData.nickname);
-      params.set('birthYear', window.userData.birthYear);
-      params.set('birthMonth', window.userData.birthMonth);
-      params.set('birthDay', window.userData.birthDay);
-      params.set('guardianKey', window.userData.guardianKey);
-      params.set('worry', worryText);
-      
-      window.location.href = `shop/gofu.html?${params.toString()}`;
+      // shop/gofu.htmlに遷移（URLパラメータは使わない）
+      window.location.href = 'shop/gofu.html';
     });
   </script>
 </body>
