@@ -439,6 +439,39 @@
     window.addEventListener("load", function() {
       console.log("チャットページ読み込み開始");
       
+      // 管理者UIの表示チェック
+      if (new URLSearchParams(location.search).get("admin") === "1") {
+        const adminBox = document.createElement("div");
+        adminBox.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 1000;
+          padding: 10px;
+          background: #222;
+          color: #fff;
+          border-bottom: 2px solid #66ccff;
+          font-size: 14px;
+        `;
+        adminBox.innerHTML = `
+          <label>残り時間を設定: <input id="adminMinutes" type="number" value="10" min="0" max="999" style="width: 60px; margin: 0 5px; padding: 2px 5px; background: #333; color: #fff; border: 1px solid #666; border-radius: 3px;" /> 分</label>
+          <button onclick="setMinutes()" style="margin-left: 10px; padding: 5px 10px; background: #66ccff; color: #000; border: none; border-radius: 3px; cursor: pointer; font-weight: bold;">設定</button>
+        `;
+        document.body.prepend(adminBox);
+
+        window.setMinutes = () => {
+          const min = document.getElementById("adminMinutes").value;
+          if (min && min >= 0) {
+            sessionStorage.setItem("ss_credit_minutes", min);
+            console.log(`管理者が残り時間を${min}分に設定しました`);
+            location.reload();
+          } else {
+            alert("有効な分数を入力してください（0以上）");
+          }
+        };
+      }
+      
       try {
         // localStorageからuserDataを取得
         const userDataStr = localStorage.getItem("userData");
@@ -473,6 +506,14 @@
         
         // タイマー開始
         startTimer();
+        
+        // 管理者UIが表示されている場合、タイマー領域の位置を調整
+        if (new URLSearchParams(location.search).get("admin") === "1") {
+          const timerArea = document.querySelector('.timer-area');
+          if (timerArea) {
+            timerArea.style.top = '50px'; // 管理者UIの下に配置
+          }
+        }
         
         // 初期メッセージを追加
         if (remainingSeconds > 0) {
