@@ -201,6 +201,22 @@
       margin-top: 5px;
     }
     
+    /* 鑑定中メッセージの演出 */
+    .reading-content {
+      animation: readingPulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes readingPulse {
+      0%, 100% { 
+        opacity: 0.8;
+        text-shadow: 0 0 5px rgba(157, 78, 221, 0.5);
+      }
+      50% { 
+        opacity: 1;
+        text-shadow: 0 0 10px rgba(157, 78, 221, 0.8);
+      }
+    }
+    
     /* 入力領域 */
     .input-area {
       position: fixed;
@@ -658,72 +674,100 @@
         return;
       }
       
-      // ローディング表示
-      const loadingDiv = document.createElement('div');
-      loadingDiv.className = 'message ai';
-      loadingDiv.innerHTML = '<div>龍が鑑定中...</div>';
-      document.getElementById('chatArea').appendChild(loadingDiv);
+      // 守護神名を取得
+      const guardianName = userData.guardian ? userData.guardian.name : '不明';
+      
+      // 鑑定中メッセージの候補
+      const readingMessages = [
+        '龍が深く息を整えています…',
+        `守護神・${guardianName}と交信を始めています…`,
+        'あなたの心を読み解いています…',
+        '未来の扉を開こうとしています…',
+        `龍と${guardianName}が力を合わせています…`,
+        '星々の導きを感じ取っています…',
+        'あなたの運命を照らしています…',
+        `${guardianName}の加護を求めています…`
+      ];
+      
+      // 鑑定中メッセージを表示
+      const readingDiv = document.createElement('div');
+      readingDiv.className = 'message ai';
+      readingDiv.innerHTML = '<div class="reading-content">龍が深く息を整えています…</div>';
+      document.getElementById('chatArea').appendChild(readingDiv);
       scrollToBottom();
       
-      try {
-        // 守護神名を取得
-        const guardianName = userData.guardian ? userData.guardian.name : '不明';
+      // 鑑定中メッセージを1.5秒ごとに切り替え
+      let messageIndex = 0;
+      const readingInterval = setInterval(() => {
+        messageIndex = (messageIndex + 1) % readingMessages.length;
+        const contentDiv = readingDiv.querySelector('.reading-content');
+        contentDiv.textContent = readingMessages[messageIndex];
+      }, 1500);
+      
+      // 3〜5秒の待機後にAPI呼び出し
+      const waitTime = 3000 + Math.random() * 2000; // 3〜5秒
+      
+      setTimeout(async () => {
+        // 鑑定中メッセージの切り替えを停止
+        clearInterval(readingInterval);
         
-        // APIリクエストデータ
-        const requestData = {
-          text: userMessage,
-          year: userData.birthYear,
-          month: userData.birthMonth,
-          day: userData.birthDay,
-          category: "総合",
-          prompt: `ニックネーム: ${userData.nickname} / 守護神: ${guardianName} / 相談: ${userData.worry}`
-        };
-        
-        console.log('API呼び出し:', requestData);
-        
-        const response = await fetch('/api/consult', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestData)
-        });
-        
-        // ローディング表示を削除
-        loadingDiv.remove();
-        
-        if (response.ok) {
-          const data = await response.json();
-          console.log('API応答:', data);
+        try {
+          // APIリクエストデータ
+          const requestData = {
+            text: userMessage,
+            year: userData.birthYear,
+            month: userData.birthMonth,
+            day: userData.birthDay,
+            category: "総合",
+            prompt: `ニックネーム: ${userData.nickname} / 守護神: ${guardianName} / 相談: ${userData.worry}`
+          };
           
-          // paragraphsまたはhtmlを取得
-          let responseText = '';
-          if (data.paragraphs) {
-            responseText = data.paragraphs.join('\n\n');
-          } else if (data.html) {
-            responseText = data.html;
-          } else if (data.text) {
-            responseText = data.text;
+          console.log('API呼び出し:', requestData);
+          
+          const response = await fetch('/api/consult', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData)
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            console.log('API応答:', data);
+            
+            // paragraphsまたはhtmlを取得
+            let responseText = '';
+            if (data.paragraphs) {
+              responseText = data.paragraphs.join('\n\n');
+            } else if (data.html) {
+              responseText = data.html;
+            } else if (data.text) {
+              responseText = data.text;
+            } else {
+              responseText = '鑑定結果を取得できませんでした。';
+            }
+            
+            // 鑑定中メッセージを削除
+            readingDiv.remove();
+            
+            // タイプライター効果でAI応答を表示
+            addAIMessageWithTyping(responseText);
+            
           } else {
-            responseText = '鑑定結果を取得できませんでした。';
+            console.error('API呼び出しエラー:', response.status);
+            // 鑑定中メッセージを削除
+            readingDiv.remove();
+            addAIMessage('鑑定中にエラーが発生しました。しばらく時間をおいて再度お試しください。');
           }
           
-          // タイプライター効果でAI応答を表示
-          addAIMessageWithTyping(responseText);
-          
-        } else {
-          console.error('API呼び出しエラー:', response.status);
+        } catch (error) {
+          console.error('API呼び出しエラー:', error);
+          // 鑑定中メッセージを削除
+          readingDiv.remove();
           addAIMessage('鑑定中にエラーが発生しました。しばらく時間をおいて再度お試しください。');
         }
-        
-      } catch (error) {
-        console.error('API呼び出しエラー:', error);
-        // ローディング表示を削除
-        if (loadingDiv.parentNode) {
-          loadingDiv.remove();
-        }
-        addAIMessage('鑑定中にエラーが発生しました。しばらく時間をおいて再度お試しください。');
-      }
+      }, waitTime);
     }
     
     // システムメッセージ追加
