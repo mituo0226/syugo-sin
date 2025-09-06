@@ -9,13 +9,18 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const port = 8787;
+const PORT = 8787;
 
 app.use(cors());
 app.use(bodyParser.json());
 
-// consult フォルダを公開 (例: consult/chat.html を開ける)
-app.use("/consult", express.static(path.join(__dirname, "consult")));
+// 静的ファイル配信
+app.use(express.static(path.join(process.cwd())));
+
+// 個別フォルダをマウント
+app.use("/consult", express.static(path.join(process.cwd(), "consult")));
+app.use("/pay", express.static(path.join(process.cwd(), "pay")));
+app.use("/shop", express.static(path.join(process.cwd(), "shop")));
 
 app.post("/api/consult", async (req, res) => {
   try {
@@ -27,6 +32,6 @@ app.post("/api/consult", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`APIサーバー起動中 → http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`APIサーバー起動中 → http://localhost:${PORT}`);
 });
