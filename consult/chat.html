@@ -434,6 +434,7 @@
     let timerInterval = null;
     let isSessionExpired = false;
     let userData = null;
+    let unlimitedMode = false;
     
     // ページ読み込み時の処理
     window.addEventListener("load", function() {
@@ -456,8 +457,17 @@
           font-weight: bold;
         `;
         adminBox.innerHTML = `
-          <label>管理者コントロール - 残り時間を設定: <input id="adminMinutes" type="number" value="10" min="0" max="999" style="width: 60px; margin: 0 5px; padding: 2px 5px; background: #fff; color: #000; border: 1px solid #999; border-radius: 3px;" /> 分</label>
-          <button onclick="updateRemainingTime()" style="margin-left: 10px; padding: 5px 10px; background: #66ccff; color: #000; border: none; border-radius: 3px; cursor: pointer; font-weight: bold;">残り時間を更新</button>
+          <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <label style="display: flex; align-items: center; gap: 5px;">
+              残り時間を設定: 
+              <input id="adminMinutes" type="number" value="10" min="0" max="999" style="width: 60px; padding: 2px 5px; background: #fff; color: #000; border: 1px solid #999; border-radius: 3px;" /> 分
+            </label>
+            <button onclick="updateRemainingTime()" style="padding: 5px 10px; background: #66ccff; color: #000; border: none; border-radius: 3px; cursor: pointer; font-weight: bold;">残り時間を更新</button>
+            <label style="display: flex; align-items: center; gap: 5px;">
+              <input id="unlimitedModeCheck" type="checkbox" onchange="toggleUnlimitedMode()" style="transform: scale(1.2);" />
+              無制限モード
+            </label>
+          </div>
         `;
         document.body.prepend(adminBox);
 
@@ -494,6 +504,36 @@
             
           } else {
             alert("有効な分数を入力してください（0以上）");
+          }
+        };
+
+        window.toggleUnlimitedMode = () => {
+          const checkbox = document.getElementById("unlimitedModeCheck");
+          unlimitedMode = checkbox.checked;
+          console.log(`無制限モード: ${unlimitedMode ? 'ON' : 'OFF'}`);
+          
+          if (unlimitedMode) {
+            // 無制限モードON: タイマーを停止
+            if (timerInterval) {
+              clearInterval(timerInterval);
+            }
+            // セッション期限切れ状態をリセット
+            if (isSessionExpired) {
+              isSessionExpired = false;
+              const messageInput = document.getElementById('messageInput');
+              const sendButton = document.getElementById('sendButton');
+              const purchaseButton = document.getElementById('purchaseButton');
+              
+              messageInput.disabled = false;
+              sendButton.disabled = false;
+              purchaseButton.classList.remove('show');
+              
+              const timerText = document.getElementById('timerText');
+              timerText.classList.remove('timer-warning');
+            }
+          } else {
+            // 無制限モードOFF: タイマーを再開
+            startTimer();
           }
         };
       }
@@ -600,6 +640,11 @@
       updateTimerDisplay();
       
       timerInterval = setInterval(() => {
+        if (unlimitedMode) {
+          // 無制限モード時は何もしない
+          return;
+        }
+        
         if (remainingSeconds > 0) {
           remainingSeconds--;
           updateTimerDisplay();
