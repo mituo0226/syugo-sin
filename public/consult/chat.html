@@ -1199,20 +1199,60 @@
     // 管理画面を開く
     function openAdminPanel() {
       // 新しいタブで管理画面を開く
-      window.open('/admin.html', '_blank');
+      window.open('https://syugo-sin-worker.mituo0226.workers.dev/admin.html', '_blank');
     }
     
     // 管理画面からの通知を受信
     window.addEventListener('message', function(event) {
-      // セキュリティチェック
-      if (event.origin !== window.location.origin) {
-        return;
-      }
+      console.log('PostMessageを受信:', event.data, 'from:', event.origin);
       
       if (event.data.type === 'ADMIN_TIME_UPDATE') {
         handleAdminTimeUpdate(event.data);
       }
     });
+    
+    // BroadcastChannelで通知を受信
+    if (typeof BroadcastChannel !== 'undefined') {
+      const channel = new BroadcastChannel('admin-updates');
+      channel.addEventListener('message', function(event) {
+        console.log('BroadcastChannelで通知を受信:', event.data);
+        if (event.data.type === 'ADMIN_TIME_UPDATE') {
+          handleAdminTimeUpdate(event.data);
+        }
+      });
+    }
+    
+    // localStorageの変更を監視
+    window.addEventListener('storage', function(event) {
+      if (event.key === 'adminTimeUpdate') {
+        console.log('localStorageで通知を受信:', event.newValue);
+        try {
+          const data = JSON.parse(event.newValue);
+          if (data.type === 'ADMIN_TIME_UPDATE') {
+            handleAdminTimeUpdate(data);
+          }
+        } catch (error) {
+          console.error('localStorage通知の解析エラー:', error);
+        }
+      }
+    });
+    
+    // 定期的にlocalStorageをチェック（フォールバック）
+    setInterval(function() {
+      const updateData = localStorage.getItem('adminTimeUpdate');
+      if (updateData) {
+        try {
+          const data = JSON.parse(updateData);
+          if (data.type === 'ADMIN_TIME_UPDATE' && data.timestamp > (Date.now() - 5000)) {
+            console.log('定期的チェックで通知を発見:', data);
+            handleAdminTimeUpdate(data);
+            localStorage.removeItem('adminTimeUpdate');
+          }
+        } catch (error) {
+          console.error('定期的チェックの解析エラー:', error);
+        }
+      }
+    }, 1000);
     
     // 管理画面からの時間更新を処理
     function handleAdminTimeUpdate(data) {
