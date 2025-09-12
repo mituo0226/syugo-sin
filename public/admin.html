@@ -67,6 +67,22 @@
       max-width: 90%;
       margin: 0 auto;
     }
+    .message.reading {
+      background: linear-gradient(135deg, #9d4edd, #7b2cbf);
+      color: #fff;
+      margin-right: auto;
+      animation: readingPulse 2s ease-in-out infinite;
+    }
+    @keyframes readingPulse {
+      0%, 100% { 
+        opacity: 0.8;
+        text-shadow: 0 0 5px rgba(157, 78, 221, 0.5);
+      }
+      50% { 
+        opacity: 1;
+        text-shadow: 0 0 10px rgba(157, 78, 221, 0.8);
+      }
+    }
     .input-area {
       padding: 20px;
       background: rgba(13, 13, 26, 0.8);
@@ -190,7 +206,6 @@
     
     <div class="links">
       <a href="/consult/chat.html" target="_blank">本番チャット画面</a>
-      <a href="/shop/gofu.html" target="_blank">商品ページ</a>
     </div>
   </div>
 
@@ -279,67 +294,105 @@
     async function getAIResponse(userMessage) {
       const startTime = Date.now();
       
-      try {
-        // テスト用のリクエストデータ
-        const requestData = {
-          text: userMessage,
-          year: 1990,
-          month: 1,
-          day: 1,
-          category: "総合",
-          prompt: `ニックネーム: テストユーザー / 守護神: テスト守護神 / 相談: ${userMessage}`
-        };
+      // 鑑定中メッセージを表示
+      const readingDiv = document.createElement('div');
+      readingDiv.className = 'message reading';
+      readingDiv.innerHTML = '<div>龍が深く息を整えています…</div>';
+      document.getElementById('chatArea').appendChild(readingDiv);
+      scrollToBottom();
+      
+      // 鑑定中メッセージを1.5秒ごとに切り替え
+      const readingMessages = [
+        '龍が深く息を整えています…',
+        '守護神と交信を始めています…',
+        'あなたの心を読み解いています…',
+        '未来の扉を開こうとしています…',
+        '星々の導きを感じ取っています…',
+        'あなたの運命を照らしています…'
+      ];
+      
+      let messageIndex = 0;
+      const readingInterval = setInterval(() => {
+        messageIndex = (messageIndex + 1) % readingMessages.length;
+        const contentDiv = readingDiv.querySelector('div');
+        contentDiv.textContent = readingMessages[messageIndex];
+      }, 1500);
+      
+      // 3〜5秒の待機後にAPI呼び出し
+      const waitTime = 3000 + Math.random() * 2000;
+      
+      setTimeout(async () => {
+        // 鑑定中メッセージの切り替えを停止
+        clearInterval(readingInterval);
         
-        addDebugLog(`API呼び出し開始: ${JSON.stringify(requestData)}`);
-        
-        const response = await fetch(getApiEndpoint(), {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestData)
-        });
-        
-        const endTime = Date.now();
-        const responseTime = endTime - startTime;
-        
-        document.getElementById('responseTime').textContent = `${responseTime}ms`;
-        document.getElementById('lastApiCall').textContent = new Date().toLocaleTimeString();
-        
-        if (response.ok) {
-          const data = await response.json();
-          addDebugLog(`API応答成功: ${JSON.stringify(data)}`);
+        try {
+          // テスト用のリクエストデータ
+          const requestData = {
+            text: userMessage,
+            year: 1990,
+            month: 1,
+            day: 1,
+            category: "総合",
+            prompt: `ニックネーム: テストユーザー / 守護神: テスト守護神 / 相談: ${userMessage}`
+          };
           
-          // レスポンスを表示
-          let responseText = '';
-          if (data.paragraphs) {
-            responseText = data.paragraphs.join('\n\n');
-          } else if (data.html) {
-            responseText = data.html;
-          } else if (data.text) {
-            responseText = data.text;
+          addDebugLog(`API呼び出し開始: ${JSON.stringify(requestData)}`);
+          
+          const response = await fetch(getApiEndpoint(), {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData)
+          });
+          
+          const endTime = Date.now();
+          const responseTime = endTime - startTime;
+          
+          document.getElementById('responseTime').textContent = `${responseTime}ms`;
+          document.getElementById('lastApiCall').textContent = new Date().toLocaleTimeString();
+          
+          if (response.ok) {
+            const data = await response.json();
+            addDebugLog(`API応答成功: ${JSON.stringify(data)}`);
+            
+            // レスポンスを表示
+            let responseText = '';
+            if (data.paragraphs) {
+              responseText = data.paragraphs.join('\n\n');
+            } else if (data.html) {
+              responseText = data.html;
+            } else if (data.text) {
+              responseText = data.text;
+            } else {
+              responseText = 'レスポンス形式が不明です。';
+            }
+            
+            // 鑑定中メッセージを削除
+            readingDiv.remove();
+            addAIMessage(responseText);
+            
           } else {
-            responseText = 'レスポンス形式が不明です。';
+            const errorText = await response.text();
+            addDebugLog(`API呼び出しエラー: ${response.status} - ${errorText}`);
+            // 鑑定中メッセージを削除
+            readingDiv.remove();
+            addSystemMessage(`API呼び出しエラー: ${response.status}`);
           }
           
-          addAIMessage(responseText);
+        } catch (error) {
+          const endTime = Date.now();
+          const responseTime = endTime - startTime;
           
-        } else {
-          const errorText = await response.text();
-          addDebugLog(`API呼び出しエラー: ${response.status} - ${errorText}`);
-          addSystemMessage(`API呼び出しエラー: ${response.status}`);
+          document.getElementById('responseTime').textContent = `${responseTime}ms (エラー)`;
+          document.getElementById('lastApiCall').textContent = new Date().toLocaleTimeString();
+          
+          addDebugLog(`API呼び出し例外: ${error.message}`);
+          // 鑑定中メッセージを削除
+          readingDiv.remove();
+          addSystemMessage(`API呼び出し例外: ${error.message}`);
         }
-        
-      } catch (error) {
-        const endTime = Date.now();
-        const responseTime = endTime - startTime;
-        
-        document.getElementById('responseTime').textContent = `${responseTime}ms (エラー)`;
-        document.getElementById('lastApiCall').textContent = new Date().toLocaleTimeString();
-        
-        addDebugLog(`API呼び出し例外: ${error.message}`);
-        addSystemMessage(`API呼び出し例外: ${error.message}`);
-      }
+      }, waitTime);
     }
     
     // HTMLエスケープ
