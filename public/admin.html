@@ -168,11 +168,118 @@
       background: linear-gradient(90deg, #34ce57, #28a745);
       transform: translateY(-2px);
     }
+    .user-form {
+      margin-bottom: 20px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      border: 1px solid rgba(102, 204, 255, 0.3);
+    }
+    .user-form h3 {
+      color: #66ccff;
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+    .form-row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    .form-group {
+      flex: 1;
+      min-width: 150px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #66ccff;
+      font-weight: bold;
+      font-size: 0.9em;
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(102, 204, 255, 0.3);
+      border-radius: 5px;
+      color: #fff;
+      font-size: 0.9em;
+      box-sizing: border-box;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #66ccff;
+      box-shadow: 0 0 5px rgba(102, 204, 255, 0.3);
+    }
+    .save-button {
+      background: linear-gradient(90deg, #28a745, #20c997);
+      border: none;
+      border-radius: 5px;
+      padding: 8px 15px;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+    }
+    .save-button:hover {
+      background: linear-gradient(90deg, #34ce57, #28a745);
+      transform: translateY(-1px);
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>🧪 テスト用チャット画面</h1>
+    
+    <!-- ユーザー情報入力フォーム -->
+    <div class="user-form">
+      <h3>👤 ユーザー情報設定</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="nickname">ニックネーム:</label>
+          <input type="text" id="nickname" placeholder="テストユーザー" value="テストユーザー">
+        </div>
+        <div class="form-group">
+          <label for="birthYear">生年:</label>
+          <input type="number" id="birthYear" placeholder="1990" value="1990" min="1900" max="2024">
+        </div>
+        <div class="form-group">
+          <label for="birthMonth">生月:</label>
+          <input type="number" id="birthMonth" placeholder="1" value="1" min="1" max="12">
+        </div>
+        <div class="form-group">
+          <label for="birthDay">生日:</label>
+          <input type="number" id="birthDay" placeholder="1" value="1" min="1" max="31">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="guardian">守護神:</label>
+          <select id="guardian">
+            <option value="amida">阿弥陀如来</option>
+            <option value="dainichi">大日如来</option>
+            <option value="fudo">不動明王</option>
+            <option value="fugen">普賢菩薩</option>
+            <option value="kokuzo">虚空蔵菩薩</option>
+            <option value="monju">文殊菩薩</option>
+            <option value="seishi">勢至菩薩</option>
+            <option value="senju">千手観音</option>
+            <option value="yakushi">薬師如来</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="worry">相談内容:</label>
+          <input type="text" id="worry" placeholder="恋愛について相談したい" value="恋愛について相談したい">
+        </div>
+        <div class="form-group">
+          <button id="saveUserData" class="save-button">情報を保存</button>
+        </div>
+      </div>
+    </div>
     
     <div class="chat-container">
       <div class="chat-area" id="chatArea">
@@ -290,9 +397,47 @@
       scrollToBottom();
     }
     
+    // ユーザー情報を取得
+    function getUserData() {
+      return {
+        nickname: document.getElementById('nickname').value || 'テストユーザー',
+        year: parseInt(document.getElementById('birthYear').value) || 1990,
+        month: parseInt(document.getElementById('birthMonth').value) || 1,
+        day: parseInt(document.getElementById('birthDay').value) || 1,
+        guardian: document.getElementById('guardian').value || 'amida',
+        worry: document.getElementById('worry').value || '恋愛について相談したい'
+      };
+    }
+    
+    // 守護神名を取得
+    function getGuardianName(guardianKey) {
+      const guardianNames = {
+        'amida': '阿弥陀如来',
+        'dainichi': '大日如来',
+        'fudo': '不動明王',
+        'fugen': '普賢菩薩',
+        'kokuzo': '虚空蔵菩薩',
+        'monju': '文殊菩薩',
+        'seishi': '勢至菩薩',
+        'senju': '千手観音',
+        'yakushi': '薬師如来'
+      };
+      return guardianNames[guardianKey] || '不明';
+    }
+    
+    // ユーザー情報をlocalStorageに保存
+    function saveUserData() {
+      const userData = getUserData();
+      localStorage.setItem('userData', JSON.stringify(userData));
+      addSystemMessage('ユーザー情報を保存しました');
+      addDebugLog(`ユーザー情報を保存: ${JSON.stringify(userData)}`);
+    }
+    
     // API呼び出し
     async function getAIResponse(userMessage) {
       const startTime = Date.now();
+      const userData = getUserData();
+      const guardianName = getGuardianName(userData.guardian);
       
       // 鑑定中メッセージを表示
       const readingDiv = document.createElement('div');
@@ -304,7 +449,7 @@
       // 鑑定中メッセージを1.5秒ごとに切り替え
       const readingMessages = [
         '龍が深く息を整えています…',
-        '守護神と交信を始めています…',
+        `守護神・${guardianName}と交信を始めています…`,
         'あなたの心を読み解いています…',
         '未来の扉を開こうとしています…',
         '星々の導きを感じ取っています…',
@@ -326,14 +471,14 @@
         clearInterval(readingInterval);
         
         try {
-          // テスト用のリクエストデータ
+          // ユーザー情報を使用したリクエストデータ
           const requestData = {
             text: userMessage,
-            year: 1990,
-            month: 1,
-            day: 1,
+            year: userData.year,
+            month: userData.month,
+            day: userData.day,
             category: "総合",
-            prompt: `ニックネーム: テストユーザー / 守護神: テスト守護神 / 相談: ${userMessage}`
+            prompt: `ニックネーム: ${userData.nickname} / 守護神: ${guardianName} / 相談: ${userData.worry}`
           };
           
           addDebugLog(`API呼び出し開始: ${JSON.stringify(requestData)}`);
@@ -425,9 +570,13 @@
       // イベントリスナー設定
       const messageInput = document.getElementById('messageInput');
       const sendButton = document.getElementById('sendButton');
+      const saveButton = document.getElementById('saveUserData');
       
       // 送信ボタンクリック
       sendButton.addEventListener('click', sendMessage);
+      
+      // 保存ボタンクリック
+      saveButton.addEventListener('click', saveUserData);
       
       // Enterキーで送信（Shift+Enterは改行）
       messageInput.addEventListener('keydown', function(e) {
@@ -442,7 +591,29 @@
         this.style.height = 'auto';
         this.style.height = Math.min(this.scrollHeight, 100) + 'px';
       });
+      
+      // 保存されたユーザー情報を読み込み
+      loadUserData();
     });
+    
+    // 保存されたユーザー情報を読み込み
+    function loadUserData() {
+      const savedData = localStorage.getItem('userData');
+      if (savedData) {
+        try {
+          const userData = JSON.parse(savedData);
+          document.getElementById('nickname').value = userData.nickname || 'テストユーザー';
+          document.getElementById('birthYear').value = userData.year || 1990;
+          document.getElementById('birthMonth').value = userData.month || 1;
+          document.getElementById('birthDay').value = userData.day || 1;
+          document.getElementById('guardian').value = userData.guardian || 'amida';
+          document.getElementById('worry').value = userData.worry || '恋愛について相談したい';
+          addDebugLog(`保存されたユーザー情報を読み込み: ${savedData}`);
+        } catch (error) {
+          addDebugLog(`ユーザー情報の読み込みエラー: ${error.message}`);
+        }
+      }
+    }
   </script>
 </body>
 </html>
