@@ -1,0 +1,1345 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>AI鑑定師 龍との対話 | 守護神占い</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d1a;
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
+      position: relative;
+      min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* 神秘的な背景効果 */
+    .mystical-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(102, 204, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(199, 125, 255, 0.05) 0%, transparent 50%);
+      z-index: -1;
+      animation: bgPulse 8s ease-in-out infinite;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+    
+    @keyframes bgPulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.6; }
+    }
+    
+    /* 浮遊する粒子 */
+    .floating-particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: -1;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+    
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: #66ccff;
+      border-radius: 50%;
+      animation: float 6s linear infinite;
+    }
+    
+    .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+    .particle:nth-child(2) { left: 20%; animation-delay: 1s; }
+    .particle:nth-child(3) { left: 30%; animation-delay: 2s; }
+    .particle:nth-child(4) { left: 40%; animation-delay: 3s; }
+    .particle:nth-child(5) { left: 50%; animation-delay: 4s; }
+    .particle:nth-child(6) { left: 60%; animation-delay: 5s; }
+    .particle:nth-child(7) { left: 70%; animation-delay: 0s; }
+    .particle:nth-child(8) { left: 80%; animation-delay: 1s; }
+    .particle:nth-child(9) { left: 90%; animation-delay: 2s; }
+    
+    @keyframes float {
+      0% {
+        top: 100%;
+        opacity: 0;
+        transform: translateY(0) scale(0);
+      }
+      10% {
+        opacity: 1;
+        transform: translateY(-10px) scale(1);
+      }
+      90% {
+        opacity: 1;
+        transform: translateY(-90vh) scale(1);
+      }
+      100% {
+        top: 0;
+        opacity: 0;
+        transform: translateY(-100vh) scale(0);
+      }
+    }
+    
+    /* メインコンテナ */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      max-width: 100vw;
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* タイマー領域 */
+    .timer-area {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(13, 13, 26, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(102, 204, 255, 0.3);
+      padding: 15px 20px;
+      z-index: 100;
+      text-align: center;
+    }
+    
+    .timer-text {
+      font-size: 1.2em;
+      color: #66ccff;
+      text-shadow: 0 0 10px rgba(102, 204, 255, 0.5);
+      font-weight: bold;
+    }
+    
+    .timer-warning {
+      color: #ff6b6b;
+      animation: pulse 1s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    /* チャット画面 */
+    .chat-area {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 80px 20px 20px;
+      margin-bottom: 120px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    /* メッセージ */
+    .message {
+      max-width: 80%;
+      padding: 15px 20px;
+      border-radius: 20px;
+      word-wrap: break-word;
+      animation: messageSlide 0.3s ease-out;
+      position: relative;
+      line-height: 1.8;
+    }
+    
+    .message br {
+      margin-bottom: 8px;
+      display: block;
+      content: "";
+    }
+    
+    @keyframes messageSlide {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .message.user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #66ccff, #3399ff);
+      color: #000;
+      border-bottom-right-radius: 5px;
+    }
+    
+    .message.ai {
+      align-self: flex-start;
+      background: linear-gradient(135deg, #9d4edd, #7b2cbf);
+      color: #fff;
+      border-bottom-left-radius: 5px;
+    }
+    
+    .message.system {
+      align-self: center;
+      background: rgba(255, 107, 107, 0.2);
+      color: #ff6b6b;
+      border: 1px solid rgba(255, 107, 107, 0.5);
+      text-align: center;
+      max-width: 90%;
+    }
+    
+    .message-time {
+      font-size: 0.8em;
+      opacity: 0.7;
+      margin-top: 5px;
+    }
+    
+    /* 鑑定中メッセージの演出 */
+    .reading-content {
+      animation: readingPulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes readingPulse {
+      0%, 100% { 
+        opacity: 0.8;
+        text-shadow: 0 0 5px rgba(157, 78, 221, 0.5);
+      }
+      50% { 
+        opacity: 1;
+        text-shadow: 0 0 10px rgba(157, 78, 221, 0.8);
+      }
+    }
+    
+    /* 入力領域 */
+    .input-area {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(13, 13, 26, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(102, 204, 255, 0.3);
+      padding: 15px 20px;
+      padding-bottom: max(15px, env(safe-area-inset-bottom));
+      z-index: 100;
+    }
+    
+    .input-container {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .message-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(102, 204, 255, 0.3);
+      border-radius: 15px;
+      padding: 12px 15px;
+      color: #fff;
+      font-size: 1em;
+      font-family: inherit;
+      resize: none;
+      min-height: 20px;
+      max-height: 100px;
+      transition: all 0.3s ease;
+    }
+    
+    .message-input:focus {
+      outline: none;
+      border-color: #66ccff;
+      box-shadow: 0 0 10px rgba(102, 204, 255, 0.3);
+    }
+    
+    .message-input:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .send-button {
+      background: linear-gradient(90deg, #66ccff, #3399ff);
+      border: none;
+      border-radius: 15px;
+      padding: 12px 20px;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+    
+    .send-button:hover:not(:disabled) {
+      background: linear-gradient(90deg, #99e0ff, #66ccff);
+      transform: translateY(-2px);
+    }
+    
+    .send-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    /* 購入ボタン */
+    .purchase-button {
+      display: none;
+      background: linear-gradient(90deg, #ff6b6b, #ee5a52);
+      border: none;
+      border-radius: 15px;
+      padding: 12px 20px;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    
+    .purchase-button:hover {
+      background: linear-gradient(90deg, #ff8e8e, #ff6b6b);
+      transform: translateY(-2px);
+    }
+    
+    .purchase-button.show {
+      display: inline-block;
+    }
+    
+    /* モバイル向け調整 */
+    @media (max-width: 600px) {
+      .timer-area {
+        padding: 10px 15px;
+      }
+      
+      .timer-text {
+        font-size: 1.1em;
+      }
+      
+      .chat-area {
+        padding: 70px 15px 20px;
+        margin-bottom: 100px;
+      }
+      
+      .message {
+        max-width: 85%;
+        padding: 12px 15px;
+        font-size: 0.95em;
+      }
+      
+      .input-area {
+        padding: 10px 15px;
+      }
+      
+      .input-container {
+        gap: 8px;
+      }
+      
+      .message-input {
+        font-size: 0.95em;
+        padding: 10px 12px;
+      }
+      
+      .send-button,
+      .purchase-button {
+        padding: 10px 15px;
+        font-size: 0.9em;
+      }
+      
+      .debug-panel {
+        bottom: 70px;
+        right: 10px;
+        padding: 8px;
+      }
+      
+      .debug-button {
+        padding: 6px 10px;
+        font-size: 0.75em;
+        margin: 1px;
+      }
+    }
+    
+    /* iPhone X以降のノッチ対応 */
+    @supports (padding: max(0px)) {
+      .timer-area {
+        padding-top: max(15px, env(safe-area-inset-top));
+      }
+      
+      .input-area {
+        padding-bottom: max(15px, env(safe-area-inset-bottom));
+      }
+    }
+    
+    /* スクロールバーのカスタマイズ */
+    .chat-area::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .chat-area::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+    
+    .chat-area::-webkit-scrollbar-thumb {
+      background: rgba(102, 204, 255, 0.5);
+      border-radius: 3px;
+    }
+    
+    .chat-area::-webkit-scrollbar-thumb:hover {
+      background: rgba(102, 204, 255, 0.7);
+    }
+    
+    /* デバッグUI */
+    .debug-panel {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background: rgba(13, 13, 26, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(102, 204, 255, 0.3);
+      border-radius: 10px;
+      padding: 10px;
+      z-index: 200;
+      display: none;
+    }
+    
+    .debug-panel.show {
+      display: block;
+    }
+    
+    .debug-button {
+      background: linear-gradient(90deg, #ff6b6b, #ee5a52);
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #fff;
+      font-size: 0.8em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 2px;
+      white-space: nowrap;
+    }
+    
+    .debug-button:hover {
+      background: linear-gradient(90deg, #ff8e8e, #ff6b6b);
+      transform: translateY(-1px);
+    }
+    
+    .debug-button.unlimited {
+      background: linear-gradient(90deg, #9d4edd, #7b2cbf);
+    }
+    
+    .debug-button.unlimited:hover {
+      background: linear-gradient(90deg, #b366e6, #9d4edd);
+    }
+  </style>
+</head>
+<body>
+  <!-- 神秘的な背景 -->
+  <div class="mystical-bg"></div>
+  
+  <!-- 浮遊する粒子 -->
+  <div class="floating-particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <div class="chat-container">
+    <!-- タイマー領域 -->
+    <div class="timer-area">
+      <div class="timer-text" id="timerText">残り時間: 00:00</div>
+    </div>
+    
+    <!-- チャット画面 -->
+    <div class="chat-area" id="chatArea">
+      <!-- メッセージがここに動的に追加される -->
+    </div>
+    
+    <!-- 入力領域 -->
+    <div class="input-area">
+      <div class="input-container">
+        <textarea 
+          class="message-input" 
+          id="messageInput" 
+          placeholder="メッセージを入力してください..."
+          rows="1"
+        ></textarea>
+        <button class="send-button" id="sendButton">送信</button>
+        <a href="../../shop/gofu.html" class="purchase-button" id="purchaseButton">購入ページへ</a>
+      </div>
+    </div>
+    
+    <!-- デバッグパネル（開発環境のみ） -->
+    <div class="debug-panel" id="debugPanel">
+      <button class="debug-button" id="addTimeButton">+5分追加</button>
+      <button class="debug-button unlimited" id="unlimitedButton">無制限モード</button>
+      <button class="debug-button" id="adminButton" onclick="openAdminPanel()">管理画面</button>
+    </div>
+  </div>
+
+  <script>
+    // グローバル変数
+    let remainingSeconds = 0;
+    let timerInterval = null;
+    let isSessionExpired = false;
+    let userData = null;
+    let unlimitedMode = false;
+    
+    // API接続先を環境によって自動切り替え
+    function getApiEndpoint() {
+      const hostname = window.location.hostname;
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://127.0.0.1:8787/api/consult';
+      } else if (hostname.includes('syugo-sin.com') || hostname.includes('workers.dev')) {
+        return 'https://syugo-sin-worker.mituo0226.workers.dev/api/consult';
+      } else {
+        // フォールバック
+        return '/api/consult';
+      }
+    }
+    
+    // 開発環境かどうかを判定
+    function isDevelopment() {
+      return !window.location.hostname.includes('syugo-sin.com');
+    }
+    
+    // ハイブリッド方式でユーザーデータを取得
+    function getUserDataHybrid() {
+      // 1. まずURLパラメータを確認
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlNickname = urlParams.get('nickname');
+      const urlYear = urlParams.get('year');
+      const urlMonth = urlParams.get('month');
+      const urlDay = urlParams.get('day');
+      const urlGuardian = urlParams.get('guardian');
+      const urlWorry = urlParams.get('worry');
+      
+      // URLパラメータに情報がある場合
+      if (urlNickname && urlYear && urlMonth && urlDay && urlGuardian) {
+        const userDataFromUrl = {
+          nickname: urlNickname,
+          year: parseInt(urlYear),
+          month: parseInt(urlMonth),
+          day: parseInt(urlDay),
+          guardian: { key: urlGuardian },
+          worry: urlWorry || ''
+        };
+        
+        // localStorageに保存し直す
+        localStorage.setItem('userData', JSON.stringify(userDataFromUrl));
+        console.log('URLパラメータからユーザーデータを取得し、localStorageに保存:', userDataFromUrl);
+        return userDataFromUrl;
+      }
+      
+      // 2. localStorageから取得
+      const userDataStr = localStorage.getItem("userData");
+      if (userDataStr) {
+        try {
+          const userDataFromStorage = JSON.parse(userDataStr);
+          console.log('localStorageからユーザーデータを取得:', userDataFromStorage);
+          return userDataFromStorage;
+        } catch (error) {
+          console.error("userDataの解析エラー:", error);
+        }
+      }
+      
+      // 3. どちらにも情報がない場合
+      return null;
+    }
+    
+    // ページ読み込み時の処理
+    window.addEventListener("load", function() {
+      console.log("チャットページ読み込み開始");
+      
+      // デバッグパネルの表示（開発環境のみ）
+      if (isDevelopment()) {
+        const debugPanel = document.getElementById('debugPanel');
+        debugPanel.classList.add('show');
+        
+        // デバッグボタンのイベントリスナー
+        document.getElementById('addTimeButton').addEventListener('click', function() {
+          remainingSeconds += 5 * 60; // 5分追加
+          updateTimerDisplay();
+          sessionStorage.setItem('ss_credit_minutes', Math.floor(remainingSeconds / 60).toString());
+          
+          // セッション期限切れ状態をリセット
+          if (isSessionExpired) {
+            isSessionExpired = false;
+            const messageInput = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendButton');
+            const purchaseButton = document.getElementById('purchaseButton');
+            
+            messageInput.disabled = false;
+            sendButton.disabled = false;
+            purchaseButton.classList.remove('show');
+            
+            const timerText = document.getElementById('timerText');
+            timerText.classList.remove('timer-warning');
+          }
+          
+          // タイマーを再開
+          startTimer();
+          
+          console.log('5分追加しました');
+        });
+        
+        document.getElementById('unlimitedButton').addEventListener('click', function() {
+          unlimitedMode = !unlimitedMode;
+          const button = document.getElementById('unlimitedButton');
+          if (unlimitedMode) {
+            button.textContent = '制限モード';
+            button.classList.remove('unlimited');
+            // タイマーを停止
+            if (timerInterval) {
+              clearInterval(timerInterval);
+            }
+            // セッション期限切れ状態をリセット
+            if (isSessionExpired) {
+              isSessionExpired = false;
+              const messageInput = document.getElementById('messageInput');
+              const sendButton = document.getElementById('sendButton');
+              const purchaseButton = document.getElementById('purchaseButton');
+              
+              messageInput.disabled = false;
+              sendButton.disabled = false;
+              purchaseButton.classList.remove('show');
+              
+              const timerText = document.getElementById('timerText');
+              timerText.classList.remove('timer-warning');
+            }
+          } else {
+            button.textContent = '無制限モード';
+            button.classList.add('unlimited');
+            // タイマーを再開
+            startTimer();
+          }
+          updateTimerDisplay();
+          console.log(`無制限モード: ${unlimitedMode ? 'ON' : 'OFF'}`);
+        });
+      }
+      
+      // 管理者UIの表示チェック
+      if (new URLSearchParams(location.search).get("admin") === "1") {
+        const adminBox = document.createElement("div");
+        adminBox.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 1000;
+          padding: 10px;
+          background: #e0e0e0;
+          color: #000;
+          border-bottom: 2px solid #66ccff;
+          font-size: 14px;
+          font-weight: bold;
+        `;
+        adminBox.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <label style="display: flex; align-items: center; gap: 5px;">
+              残り時間を設定: 
+              <input id="adminMinutes" type="number" value="10" min="0" max="999" style="width: 60px; padding: 2px 5px; background: #fff; color: #000; border: 1px solid #999; border-radius: 3px;" /> 分
+            </label>
+            <button onclick="updateRemainingTime()" style="padding: 5px 10px; background: #66ccff; color: #000; border: none; border-radius: 3px; cursor: pointer; font-weight: bold;">残り時間を更新</button>
+            <label style="display: flex; align-items: center; gap: 5px;">
+              <input id="unlimitedModeCheck" type="checkbox" onchange="toggleUnlimitedMode()" style="transform: scale(1.2);" />
+              無制限モード
+            </label>
+            <button onclick="openAdminPanel()" style="padding: 5px 10px; background: #9d4edd; color: #fff; border: none; border-radius: 3px; cursor: pointer; font-weight: bold;">管理画面</button>
+          </div>
+        `;
+        document.body.prepend(adminBox);
+
+        window.updateRemainingTime = () => {
+          const min = document.getElementById("adminMinutes").value;
+          if (min && min >= 0) {
+            // remainingSecondsを直接更新
+            remainingSeconds = parseInt(min) * 60;
+            console.log(`管理者が残り時間を${min}分（${remainingSeconds}秒）に更新しました`);
+            
+            // タイマー表示を更新
+            updateTimerDisplay();
+            
+            // sessionStorageも更新
+            sessionStorage.setItem("ss_credit_minutes", min);
+            
+            // セッション期限切れ状態をリセット
+            if (isSessionExpired) {
+              isSessionExpired = false;
+              const messageInput = document.getElementById('messageInput');
+              const sendButton = document.getElementById('sendButton');
+              const purchaseButton = document.getElementById('purchaseButton');
+              
+              messageInput.disabled = false;
+              sendButton.disabled = false;
+              purchaseButton.classList.remove('show');
+              
+              const timerText = document.getElementById('timerText');
+              timerText.classList.remove('timer-warning');
+            }
+            
+            // タイマーを再開
+            startTimer();
+            
+          } else {
+            alert("有効な分数を入力してください（0以上）");
+          }
+        };
+
+        window.toggleUnlimitedMode = () => {
+          const checkbox = document.getElementById("unlimitedModeCheck");
+          unlimitedMode = checkbox.checked;
+          console.log(`無制限モード: ${unlimitedMode ? 'ON' : 'OFF'}`);
+          
+          if (unlimitedMode) {
+            // 無制限モードON: タイマーを停止
+            if (timerInterval) {
+              clearInterval(timerInterval);
+            }
+            // セッション期限切れ状態をリセット
+            if (isSessionExpired) {
+              isSessionExpired = false;
+              const messageInput = document.getElementById('messageInput');
+              const sendButton = document.getElementById('sendButton');
+              const purchaseButton = document.getElementById('purchaseButton');
+              
+              messageInput.disabled = false;
+              sendButton.disabled = false;
+              purchaseButton.classList.remove('show');
+              
+              const timerText = document.getElementById('timerText');
+              timerText.classList.remove('timer-warning');
+            }
+          } else {
+            // 無制限モードOFF: タイマーを再開
+            startTimer();
+          }
+        };
+      }
+      
+      try {
+        // ハイブリッド方式でユーザーデータを取得
+        userData = getUserDataHybrid();
+        if (userData) {
+          console.log("userDataを取得:", userData);
+        } else {
+          console.warn("ユーザー情報が見つかりません");
+          // ユーザー情報がない場合は購入ページにリダイレクト
+          window.location.href = '../../shop/gofu.html';
+          return;
+        }
+        
+        // sessionStorageから残り時間を取得
+        const creditMinutes = sessionStorage.getItem('ss_credit_minutes');
+        if (creditMinutes) {
+          remainingSeconds = parseInt(creditMinutes) * 60;
+          console.log(`残り時間: ${creditMinutes}分 (${remainingSeconds}秒)`);
+        } else {
+          // フォールバック: localStorageから取得
+          const ticketMinutes = localStorage.getItem('ticketMinutes');
+          if (ticketMinutes) {
+            remainingSeconds = parseInt(ticketMinutes) * 60;
+            // sessionStorageにも保存
+            sessionStorage.setItem('ss_credit_minutes', ticketMinutes);
+            console.log(`チケット時間: ${ticketMinutes}分 (${remainingSeconds}秒)`);
+          } else {
+            remainingSeconds = 0;
+            console.warn('残り時間が見つかりません');
+          }
+        }
+        
+        // チャット履歴を復元
+        loadChatHistory();
+        
+        // タイマー開始
+        startTimer();
+        
+        // 管理者UIが表示されている場合、タイマー領域の位置を調整
+        if (new URLSearchParams(location.search).get("admin") === "1") {
+          const timerArea = document.querySelector('.timer-area');
+          if (timerArea) {
+            timerArea.style.top = '50px'; // 管理者UIの下に配置
+          }
+        }
+        
+        // 初期メッセージを追加
+        if (remainingSeconds > 0) {
+          // worryがある場合は自動でAPI呼び出し、ない場合はウェルカムメッセージ
+          if (userData && userData.worry) {
+            console.log('worryが見つかりました。自動でAPI呼び出しを開始します:', userData.worry);
+            // ユーザーメッセージを表示
+            addUserMessage(userData.worry);
+            // 少し遅延してからAPI呼び出し
+            setTimeout(() => {
+              getAIResponse(userData.worry);
+            }, 1000);
+          } else {
+            addAIMessage('ようこそ。まずはあなたの悩みを教えてください。');
+          }
+        } else {
+          handleSessionExpired();
+        }
+        
+        // イベントリスナー設定
+        setupEventListeners();
+        
+      } catch (error) {
+        console.error("ページ読み込みエラー:", error);
+        addSystemMessage('エラーが発生しました。ページを再読み込みしてください。');
+      }
+    });
+    
+    // イベントリスナー設定
+    function setupEventListeners() {
+      const messageInput = document.getElementById('messageInput');
+      const sendButton = document.getElementById('sendButton');
+      
+      // 送信ボタンクリック
+      sendButton.addEventListener('click', sendMessage);
+      
+      // Enterキーで送信（Shift+Enterは改行）
+      messageInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+      
+      // テキストエリアの自動リサイズ
+      messageInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+      });
+    }
+    
+    // タイマー開始
+    function startTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+      
+      updateTimerDisplay();
+      
+      timerInterval = setInterval(() => {
+        if (unlimitedMode) {
+          // 無制限モード時は何もしない
+          return;
+        }
+        
+        if (remainingSeconds > 0) {
+          remainingSeconds--;
+          updateTimerDisplay();
+          
+          // 残り時間が少なくなったら警告
+          if (remainingSeconds <= 60 && remainingSeconds > 0) {
+            const timerText = document.getElementById('timerText');
+            timerText.classList.add('timer-warning');
+          }
+        } else {
+          handleSessionExpired();
+        }
+      }, 1000);
+    }
+    
+    // タイマー表示更新
+    function updateTimerDisplay() {
+      const minutes = Math.floor(remainingSeconds / 60);
+      const seconds = remainingSeconds % 60;
+      const timerText = document.getElementById('timerText');
+      
+      if (unlimitedMode) {
+        timerText.textContent = '無制限モード';
+        timerText.classList.remove('timer-warning');
+      } else {
+        timerText.textContent = `残り時間: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      }
+      
+      // sessionStorageに残り時間を保存
+      if (!unlimitedMode) {
+        sessionStorage.setItem('ss_credit_minutes', minutes.toString());
+      }
+    }
+    
+    // セッション期限切れ処理
+    function handleSessionExpired() {
+      if (isSessionExpired) return;
+      
+      isSessionExpired = true;
+      clearInterval(timerInterval);
+      
+      // 入力欄と送信ボタンを無効化
+      const messageInput = document.getElementById('messageInput');
+      const sendButton = document.getElementById('sendButton');
+      const purchaseButton = document.getElementById('purchaseButton');
+      
+      messageInput.disabled = true;
+      sendButton.disabled = true;
+      purchaseButton.classList.add('show');
+      
+      // タイマー表示を更新
+      const timerText = document.getElementById('timerText');
+      timerText.textContent = '時間終了';
+      timerText.classList.add('timer-warning');
+      
+      // 終了メッセージを追加
+      addSystemMessage('鑑定時間が終了しました。追加チケットをご購入ください。');
+    }
+    
+    // メッセージ送信
+    async function sendMessage() {
+      if (isSessionExpired) return;
+      
+      const messageInput = document.getElementById('messageInput');
+      const message = messageInput.value.trim();
+      
+      if (!message) return;
+      
+      // ユーザーメッセージを追加
+      addUserMessage(message);
+      
+      // 入力欄をクリア
+      messageInput.value = '';
+      messageInput.style.height = 'auto';
+      
+      // AI応答を取得
+      await getAIResponse(message);
+      
+      // チャット履歴を保存
+      saveChatHistory();
+    }
+    
+    // ユーザーメッセージ追加
+    function addUserMessage(text) {
+      const chatArea = document.getElementById('chatArea');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message user';
+      
+      const time = new Date().toLocaleTimeString('ja-JP', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+      
+      messageDiv.innerHTML = `
+        <div>${escapeHtml(text)}</div>
+        <div class="message-time">${time}</div>
+      `;
+      
+      chatArea.appendChild(messageDiv);
+      scrollToBottom();
+    }
+    
+    // AIメッセージ追加
+    function addAIMessage(text) {
+      const chatArea = document.getElementById('chatArea');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message ai';
+      
+      const time = new Date().toLocaleTimeString('ja-JP', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+      
+      const formatted = formatText(escapeHtml(text));
+      
+      messageDiv.innerHTML = `
+        <div>${formatted}</div>
+        <div class="message-time">${time}</div>
+      `;
+      
+      chatArea.appendChild(messageDiv);
+      scrollToBottom();
+    }
+    
+    // AIメッセージをタイプライター効果で追加
+    function addAIMessageWithTyping(text) {
+      const chatArea = document.getElementById('chatArea');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message ai';
+      
+      const time = new Date().toLocaleTimeString('ja-JP', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+      
+      messageDiv.innerHTML = `
+        <div class="typing-content"></div>
+        <div class="message-time">${time}</div>
+      `;
+      
+      chatArea.appendChild(messageDiv);
+      scrollToBottom();
+      
+      // タイプライター効果
+      const contentDiv = messageDiv.querySelector('.typing-content');
+      let index = 0;
+      const typingInterval = setInterval(() => {
+        if (index < text.length) {
+          const currentText = text.substring(0, index + 1);
+          const formatted = formatText(escapeHtml(currentText));
+          contentDiv.innerHTML = formatted;
+          index++;
+          scrollToBottom();
+        } else {
+          clearInterval(typingInterval);
+        }
+      }, 30); // 30ms間隔でタイプライター効果
+    }
+    
+    // API呼び出し
+    async function getAIResponse(userMessage) {
+      if (!userData) {
+        addAIMessage('ユーザー情報が見つかりません。');
+        return;
+      }
+      
+      // 守護神名を取得
+      const guardianName = userData.guardian ? userData.guardian.name : '不明';
+      
+      // 鑑定中メッセージの候補
+      const readingMessages = [
+        '龍が深く息を整えています…',
+        `守護神・${guardianName}と交信を始めています…`,
+        'あなたの心を読み解いています…',
+        '未来の扉を開こうとしています…',
+        `龍と${guardianName}が力を合わせています…`,
+        '星々の導きを感じ取っています…',
+        'あなたの運命を照らしています…',
+        `${guardianName}の加護を求めています…`
+      ];
+      
+      // 鑑定中メッセージを表示
+      const readingDiv = document.createElement('div');
+      readingDiv.className = 'message ai';
+      readingDiv.innerHTML = '<div class="reading-content">龍が深く息を整えています…</div>';
+      document.getElementById('chatArea').appendChild(readingDiv);
+      scrollToBottom();
+      
+      // 鑑定中メッセージを1.5秒ごとに切り替え
+      let messageIndex = 0;
+      const readingInterval = setInterval(() => {
+        messageIndex = (messageIndex + 1) % readingMessages.length;
+        const contentDiv = readingDiv.querySelector('.reading-content');
+        contentDiv.textContent = readingMessages[messageIndex];
+      }, 1500);
+      
+      // 3〜5秒の待機後にAPI呼び出し
+      const waitTime = 3000 + Math.random() * 2000; // 3〜5秒
+      
+      setTimeout(async () => {
+        // 鑑定中メッセージの切り替えを停止
+        clearInterval(readingInterval);
+        
+        try {
+          // APIリクエストデータ
+          const requestData = {
+            text: userMessage,
+            year: userData.birthYear,
+            month: userData.birthMonth,
+            day: userData.birthDay,
+            category: "総合",
+            prompt: `ニックネーム: ${userData.nickname} / 守護神: ${guardianName} / 相談: ${userData.worry}`
+          };
+          
+          console.log('API呼び出し:', requestData);
+          
+          const response = await fetch(getApiEndpoint(), {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData)
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            console.log('API応答:', data);
+            
+            // paragraphsまたはhtmlを取得
+            let responseText = '';
+            if (data.paragraphs) {
+              responseText = data.paragraphs.join('\n\n');
+            } else if (data.html) {
+              responseText = data.html;
+            } else if (data.text) {
+              responseText = data.text;
+            } else {
+              responseText = '鑑定結果を取得できませんでした。';
+            }
+            
+            // 鑑定中メッセージを削除
+            readingDiv.remove();
+            
+            // タイプライター効果でAI応答を表示
+            addAIMessageWithTyping(responseText);
+            
+          } else {
+            console.error('API呼び出しエラー:', response.status);
+            // 鑑定中メッセージを削除
+            readingDiv.remove();
+            addAIMessage('鑑定中にエラーが発生しました。しばらく時間をおいて再度お試しください。');
+          }
+          
+        } catch (error) {
+          console.error('API呼び出しエラー:', error);
+          // 鑑定中メッセージを削除
+          readingDiv.remove();
+          addAIMessage('鑑定中にエラーが発生しました。しばらく時間をおいて再度お試しください。');
+        }
+      }, waitTime);
+    }
+    
+    // システムメッセージ追加
+    function addSystemMessage(text) {
+      const chatArea = document.getElementById('chatArea');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message system';
+      
+      messageDiv.innerHTML = `<div>${escapeHtml(text)}</div>`;
+      
+      chatArea.appendChild(messageDiv);
+      scrollToBottom();
+    }
+    
+    // HTMLエスケープ
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    // テキストフォーマット（改行を<br>に変換）
+    function formatText(text) {
+      return text
+        .replace(/\n{2,}/g, "<br><br>")
+        .replace(/\n/g, "<br>");
+    }
+    
+    // チャット履歴保存
+    function saveChatHistory() {
+      const chatArea = document.getElementById('chatArea');
+      const messages = Array.from(chatArea.children).map(messageDiv => {
+        const messageText = messageDiv.querySelector('div:first-child').textContent;
+        const messageTime = messageDiv.querySelector('.message-time')?.textContent || '';
+        const messageType = messageDiv.className.includes('user') ? 'user' : 
+                           messageDiv.className.includes('ai') ? 'ai' : 'system';
+        
+        return {
+          type: messageType,
+          text: messageText,
+          time: messageTime
+        };
+      });
+      
+      localStorage.setItem('chatHistory', JSON.stringify(messages));
+    }
+    
+    // チャット履歴復元
+    function loadChatHistory() {
+      const chatHistory = localStorage.getItem('chatHistory');
+      if (!chatHistory) return;
+      
+      try {
+        const messages = JSON.parse(chatHistory);
+        const chatArea = document.getElementById('chatArea');
+        
+        messages.forEach(msg => {
+          const messageDiv = document.createElement('div');
+          messageDiv.className = `message ${msg.type}`;
+          
+          if (msg.type === 'system') {
+            messageDiv.innerHTML = `<div>${escapeHtml(msg.text)}</div>`;
+          } else {
+            messageDiv.innerHTML = `
+              <div>${escapeHtml(msg.text)}</div>
+              <div class="message-time">${msg.time}</div>
+            `;
+          }
+          
+          chatArea.appendChild(messageDiv);
+        });
+        
+        scrollToBottom();
+      } catch (error) {
+        console.error('チャット履歴復元エラー:', error);
+      }
+    }
+    
+    // チャット画面を最下部にスクロール
+    function scrollToBottom() {
+      const chatArea = document.getElementById('chatArea');
+      setTimeout(() => {
+        chatArea.scrollTop = chatArea.scrollHeight;
+      }, 100);
+    }
+    
+    // 管理画面を開く
+    function openAdminPanel() {
+      // 新しいタブで管理画面を開く
+      window.open('https://syugo-sin-worker.mituo0226.workers.dev/admin.html', '_blank');
+    }
+    
+    // 管理画面からの通知を受信
+    window.addEventListener('message', function(event) {
+      console.log('PostMessageを受信:', event.data, 'from:', event.origin);
+      
+      if (event.data.type === 'ADMIN_TIME_UPDATE') {
+        handleAdminTimeUpdate(event.data);
+      }
+    });
+    
+    // BroadcastChannelで通知を受信
+    if (typeof BroadcastChannel !== 'undefined') {
+      const channel = new BroadcastChannel('admin-updates');
+      channel.addEventListener('message', function(event) {
+        console.log('BroadcastChannelで通知を受信:', event.data);
+        if (event.data.type === 'ADMIN_TIME_UPDATE') {
+          handleAdminTimeUpdate(event.data);
+        }
+      });
+    }
+    
+    // localStorageの変更を監視
+    window.addEventListener('storage', function(event) {
+      if (event.key === 'adminTimeUpdate') {
+        console.log('localStorageで通知を受信:', event.newValue);
+        try {
+          const data = JSON.parse(event.newValue);
+          if (data.type === 'ADMIN_TIME_UPDATE') {
+            handleAdminTimeUpdate(data);
+          }
+        } catch (error) {
+          console.error('localStorage通知の解析エラー:', error);
+        }
+      }
+    });
+    
+    // 定期的にlocalStorageをチェック（フォールバック）
+    setInterval(function() {
+      const updateData = localStorage.getItem('adminTimeUpdate');
+      if (updateData) {
+        try {
+          const data = JSON.parse(updateData);
+          if (data.type === 'ADMIN_TIME_UPDATE' && data.timestamp > (Date.now() - 5000)) {
+            console.log('定期的チェックで通知を発見:', data);
+            handleAdminTimeUpdate(data);
+            localStorage.removeItem('adminTimeUpdate');
+          }
+        } catch (error) {
+          console.error('定期的チェックの解析エラー:', error);
+        }
+      }
+    }, 1000);
+    
+    // 管理画面からの時間更新を処理
+    function handleAdminTimeUpdate(data) {
+      console.log('管理画面から時間更新通知を受信:', data);
+      
+      switch (data.action) {
+        case 'set':
+          if (data.minutes !== null) {
+            remainingSeconds = data.minutes * 60;
+            updateTimerDisplay();
+            sessionStorage.setItem('ss_credit_minutes', data.minutes.toString());
+            
+            // セッション期限切れ状態をリセット
+            if (isSessionExpired) {
+              resetSessionExpired();
+            }
+            
+            // タイマーを再開
+            startTimer();
+            
+            addSystemMessage(`管理者が残り時間を${data.minutes}分に設定しました`);
+          }
+          break;
+          
+        case 'add':
+          if (data.minutes !== null) {
+            remainingSeconds += data.minutes * 60;
+            updateTimerDisplay();
+            sessionStorage.setItem('ss_credit_minutes', Math.floor(remainingSeconds / 60).toString());
+            
+            // セッション期限切れ状態をリセット
+            if (isSessionExpired) {
+              resetSessionExpired();
+            }
+            
+            // タイマーを再開
+            startTimer();
+            
+            addSystemMessage(`管理者が${data.minutes}分を追加しました`);
+          }
+          break;
+          
+        case 'unlimited':
+          unlimitedMode = !unlimitedMode;
+          updateTimerDisplay();
+          
+          if (unlimitedMode) {
+            // タイマーを停止
+            if (timerInterval) {
+              clearInterval(timerInterval);
+            }
+            // セッション期限切れ状態をリセット
+            if (isSessionExpired) {
+              resetSessionExpired();
+            }
+            addSystemMessage('管理者が無制限モードを有効にしました');
+          } else {
+            // タイマーを再開
+            startTimer();
+            addSystemMessage('管理者が無制限モードを無効にしました');
+          }
+          break;
+      }
+    }
+    
+    // セッション期限切れ状態をリセット
+    function resetSessionExpired() {
+      isSessionExpired = false;
+      const messageInput = document.getElementById('messageInput');
+      const sendButton = document.getElementById('sendButton');
+      const purchaseButton = document.getElementById('purchaseButton');
+      
+      messageInput.disabled = false;
+      sendButton.disabled = false;
+      purchaseButton.classList.remove('show');
+      
+      const timerText = document.getElementById('timerText');
+      timerText.classList.remove('timer-warning');
+    }
+    
+    // ページ離脱時の処理
+    window.addEventListener('beforeunload', function() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+      saveChatHistory();
+    });
+  </script>
+</body>
+</html>
