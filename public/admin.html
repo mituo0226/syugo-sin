@@ -387,6 +387,35 @@
       scrollToBottom();
     }
     
+    // AIメッセージをタイプライター効果で追加
+    function addAIMessageWithTyping(text) {
+      const chatArea = document.getElementById('chatArea');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message ai';
+      
+      messageDiv.innerHTML = `
+        <div class="typing-content"></div>
+      `;
+      
+      chatArea.appendChild(messageDiv);
+      scrollToBottom();
+      
+      // タイプライター効果
+      const contentDiv = messageDiv.querySelector('.typing-content');
+      let index = 0;
+      const typingInterval = setInterval(() => {
+        if (index < text.length) {
+          const currentText = text.substring(0, index + 1);
+          const formatted = formatText(escapeHtml(currentText));
+          contentDiv.innerHTML = formatted;
+          index++;
+          scrollToBottom();
+        } else {
+          clearInterval(typingInterval);
+        }
+      }, 30); // 30ms間隔でタイプライター効果
+    }
+    
     // システムメッセージ追加
     function addSystemMessage(text) {
       const chatArea = document.getElementById('chatArea');
@@ -409,6 +438,28 @@
       };
     }
     
+    // 生年月日から守護神を自動決定
+    function calculateGuardian(year, month, day) {
+      // 生年月日の数字を合計
+      const sum = year + month + day;
+      // 合計を9で割った余りで守護神を決定
+      const guardianIndex = sum % 9;
+      
+      const guardians = [
+        { key: 'amida', name: '阿弥陀如来' },
+        { key: 'dainichi', name: '大日如来' },
+        { key: 'fudo', name: '不動明王' },
+        { key: 'fugen', name: '普賢菩薩' },
+        { key: 'kokuzo', name: '虚空蔵菩薩' },
+        { key: 'monju', name: '文殊菩薩' },
+        { key: 'seishi', name: '勢至菩薩' },
+        { key: 'senju', name: '千手観音' },
+        { key: 'yakushi', name: '薬師如来' }
+      ];
+      
+      return guardians[guardianIndex];
+    }
+    
     // 守護神名を取得
     function getGuardianName(guardianKey) {
       const guardianNames = {
@@ -423,6 +474,19 @@
         'yakushi': '薬師如来'
       };
       return guardianNames[guardianKey] || '不明';
+    }
+    
+    // 生年月日変更時の処理
+    function updateGuardianFromBirthday() {
+      const year = parseInt(document.getElementById('birthYear').value) || 1990;
+      const month = parseInt(document.getElementById('birthMonth').value) || 1;
+      const day = parseInt(document.getElementById('birthDay').value) || 1;
+      
+      const guardian = calculateGuardian(year, month, day);
+      document.getElementById('guardian').value = guardian.key;
+      
+      // 守護神が自動決定されたことを表示
+      addSystemMessage(`生年月日から守護神「${guardian.name}」が決定されました`);
     }
     
     // ユーザー情報をlocalStorageに保存
@@ -477,8 +541,8 @@
             year: userData.year,
             month: userData.month,
             day: userData.day,
-            category: "総合",
-            prompt: `ニックネーム: ${userData.nickname} / 守護神: ${guardianName} / 相談: ${userData.worry}`
+            guardian: `${userData.nickname} / ${guardianName} / ${userData.worry}`,
+            category: "総合"
           };
           
           addDebugLog(`API呼び出し開始: ${JSON.stringify(requestData)}`);
@@ -515,7 +579,7 @@
             
             // 鑑定中メッセージを削除
             readingDiv.remove();
-            addAIMessage(responseText);
+            addAIMessageWithTyping(responseText);
             
           } else {
             const errorText = await response.text();
@@ -591,6 +655,11 @@
         this.style.height = 'auto';
         this.style.height = Math.min(this.scrollHeight, 100) + 'px';
       });
+      
+      // 生年月日変更時のイベントリスナー
+      document.getElementById('birthYear').addEventListener('change', updateGuardianFromBirthday);
+      document.getElementById('birthMonth').addEventListener('change', updateGuardianFromBirthday);
+      document.getElementById('birthDay').addEventListener('change', updateGuardianFromBirthday);
       
       // 保存されたユーザー情報を読み込み
       loadUserData();
