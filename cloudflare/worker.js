@@ -164,13 +164,24 @@ export default {
     // ---- 静的ファイル配信 ----
     // 管理画面の配信
     if (url.pathname === "/admin.html") {
+      // キャッシュ無効化のためのヘッダーを追加
+      const headers = {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0",
+        ...corsHeaders(),
+      };
       const adminHtml = `
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>管理画面 - 守護神占い</title>
+  <title>管理画面 - 守護神占い v20250112</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <style>
     * {
       margin: 0;
@@ -424,16 +435,6 @@ export default {
       <h2>残り時間管理</h2>
       
       <div class="control-grid">
-        <!-- 残り時間設定 -->
-        <div class="control-card">
-          <h3>⏰ 残り時間設定</h3>
-          <div class="input-group">
-            <input type="number" id="setMinutes" placeholder="分数 (0-999)" min="0" max="999">
-            <button class="btn btn-small" onclick="setTime()">設定</button>
-          </div>
-          <p style="color: #ccc; font-size: 0.9em;">指定した分数に残り時間を設定します</p>
-        </div>
-        
         <!-- 時間追加 -->
         <div class="control-card">
           <h3>➕ 時間追加</h3>
@@ -454,12 +455,17 @@ export default {
       
       <!-- クイックアクション -->
       <div class="quick-actions">
-        <button class="quick-btn" onclick="quickSetTime(5)">5分設定</button>
-        <button class="quick-btn" onclick="quickSetTime(10)">10分設定</button>
-        <button class="quick-btn" onclick="quickSetTime(30)">30分設定</button>
-        <button class="quick-btn" onclick="quickSetTime(60)">60分設定</button>
         <button class="quick-btn" onclick="quickAddTime(5)">5分追加</button>
         <button class="quick-btn" onclick="quickAddTime(10)">10分追加</button>
+        <button class="quick-btn" onclick="quickAddTime(30)">30分追加</button>
+        <button class="quick-btn" onclick="quickAddTime(60)">60分追加</button>
+      </div>
+      
+      <!-- チャット画面へのリンク -->
+      <div style="text-align: center; margin-top: 30px; padding: 20px; background: rgba(102, 204, 255, 0.1); border-radius: 10px; border: 1px solid rgba(102, 204, 255, 0.3);">
+        <h3 style="color: #66ccff; margin-bottom: 15px;">💬 チャット画面</h3>
+        <p style="color: #ccc; margin-bottom: 15px;">AI鑑定師 龍との対話画面に移動します</p>
+        <a href="https://syugo-sin.com/consult/chat.html" target="_blank" style="display: inline-block; background: linear-gradient(90deg, #66ccff, #3399ff); color: #000; text-decoration: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; transition: all 0.3s ease;">チャット画面を開く</a>
       </div>
       
       <div id="messageContainer"></div>
@@ -493,8 +499,12 @@ export default {
       }
       
       const apiUrl = \`\${getApiEndpoint()}/admin/session\`;
-      console.log('API URL:', apiUrl);
+      console.log('=== DEBUG INFO ===');
+      console.log('Current hostname:', window.location.hostname);
+      console.log('API endpoint:', getApiEndpoint());
+      console.log('Full API URL:', apiUrl);
       console.log('Password:', password);
+      console.log('==================');
       
       try {
         const response = await fetch(apiUrl, {
@@ -530,18 +540,6 @@ export default {
       }
     }
     
-    // 残り時間設定
-    async function setTime() {
-      const minutes = document.getElementById('setMinutes').value;
-      
-      if (!minutes || minutes < 0 || minutes > 999) {
-        showMessage('有効な分数を入力してください (0-999)', 'error');
-        return;
-      }
-      
-      await adminAction('set', parseInt(minutes));
-    }
-    
     // 時間追加
     async function addTime() {
       const minutes = document.getElementById('addMinutes').value;
@@ -557,11 +555,6 @@ export default {
     // 無制限モード切り替え
     async function toggleUnlimited() {
       await adminAction('unlimited');
-    }
-    
-    // クイック時間設定
-    async function quickSetTime(minutes) {
-      await adminAction('set', minutes);
     }
     
     // クイック時間追加
@@ -617,13 +610,24 @@ export default {
         timestamp: Date.now()
       };
       
+      console.log('チャット画面に通知を送信:', message);
+      
       // 同じオリジンのウィンドウにメッセージを送信
       if (window.opener && !window.opener.closed) {
-        window.opener.postMessage(message, window.location.origin);
+        console.log('openerウィンドウに通知を送信');
+        window.opener.postMessage(message, '*');
       }
       
-      // 他のタブにも通知
-      window.postMessage(message, window.location.origin);
+      // 他のタブにも通知（BroadcastChannelを使用）
+      if (typeof BroadcastChannel !== 'undefined') {
+        const channel = new BroadcastChannel('admin-updates');
+        channel.postMessage(message);
+        console.log('BroadcastChannelで通知を送信');
+      }
+      
+      // フォールバック: localStorageを使用
+      localStorage.setItem('adminTimeUpdate', JSON.stringify(message));
+      console.log('localStorageに通知を保存');
     }
     
     // メッセージ表示
@@ -655,10 +659,7 @@ export default {
 </html>`;
       
       return new Response(adminHtml, {
-        headers: {
-          "Content-Type": "text/html; charset=utf-8",
-          ...corsHeaders(),
-        },
+        headers: headers,
       });
     }
 
