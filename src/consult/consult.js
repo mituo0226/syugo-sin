@@ -40,9 +40,17 @@ export async function runConsult(payload, apiKey) {
 
 返答は適度に段落を分け、改行を入れて読みやすくしてください。`;
 
+    // 守護神情報からニックネームを抽出
+    const guardianParts = guardian.split(' / ');
+    const nickname = guardianParts[0] || '相談者';
+    const guardianName = guardianParts[1] || '守護神';
+    const worry = guardianParts[2] || '';
+    
     const userPrompt = `相談内容: ${text}
 生年月日: ${year}-${month}-${day}
-守護神情報: ${guardian}
+ニックネーム: ${nickname}
+守護神: ${guardianName}
+相談者の悩み: ${worry}
 カテゴリー: ${category}`;
 
     // OpenAI API を呼び出し
@@ -79,7 +87,9 @@ export async function runConsult(payload, apiKey) {
     // ログ出力
     console.log('相談内容:', text);
     console.log('生年月日:', `${year}-${month}-${day}`);
-    console.log('守護神情報:', guardian);
+    console.log('ニックネーム:', nickname);
+    console.log('守護神:', guardianName);
+    console.log('相談者の悩み:', worry);
     console.log('カテゴリー:', category);
 
     return aiResponse;
@@ -90,7 +100,9 @@ export async function runConsult(payload, apiKey) {
     // ログ出力
     console.log('相談内容:', text);
     console.log('生年月日:', `${year}-${month}-${day}`);
-    console.log('守護神情報:', guardian);
+    console.log('ニックネーム:', nickname);
+    console.log('守護神:', guardianName);
+    console.log('相談者の悩み:', worry);
     console.log('カテゴリー:', category);
     
     return "鑑定結果の取得中にエラーが発生しました";
