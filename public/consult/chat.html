@@ -497,6 +497,7 @@
     <div class="debug-panel" id="debugPanel">
       <button class="debug-button" id="addTimeButton">+5分追加</button>
       <button class="debug-button unlimited" id="unlimitedButton">無制限モード</button>
+      <button class="debug-button" id="adminButton" onclick="openAdminPanel()">管理画面</button>
     </div>
   </div>
 
@@ -668,6 +669,7 @@
               <input id="unlimitedModeCheck" type="checkbox" onchange="toggleUnlimitedMode()" style="transform: scale(1.2);" />
               無制限モード
             </label>
+            <button onclick="openAdminPanel()" style="padding: 5px 10px; background: #9d4edd; color: #fff; border: none; border-radius: 3px; cursor: pointer; font-weight: bold;">管理画面</button>
           </div>
         `;
         document.body.prepend(adminBox);
@@ -1192,6 +1194,103 @@
       setTimeout(() => {
         chatArea.scrollTop = chatArea.scrollHeight;
       }, 100);
+    }
+    
+    // 管理画面を開く
+    function openAdminPanel() {
+      // 新しいタブで管理画面を開く
+      window.open('/admin.html', '_blank');
+    }
+    
+    // 管理画面からの通知を受信
+    window.addEventListener('message', function(event) {
+      // セキュリティチェック
+      if (event.origin !== window.location.origin) {
+        return;
+      }
+      
+      if (event.data.type === 'ADMIN_TIME_UPDATE') {
+        handleAdminTimeUpdate(event.data);
+      }
+    });
+    
+    // 管理画面からの時間更新を処理
+    function handleAdminTimeUpdate(data) {
+      console.log('管理画面から時間更新通知を受信:', data);
+      
+      switch (data.action) {
+        case 'set':
+          if (data.minutes !== null) {
+            remainingSeconds = data.minutes * 60;
+            updateTimerDisplay();
+            sessionStorage.setItem('ss_credit_minutes', data.minutes.toString());
+            
+            // セッション期限切れ状態をリセット
+            if (isSessionExpired) {
+              resetSessionExpired();
+            }
+            
+            // タイマーを再開
+            startTimer();
+            
+            addSystemMessage(`管理者が残り時間を${data.minutes}分に設定しました`);
+          }
+          break;
+          
+        case 'add':
+          if (data.minutes !== null) {
+            remainingSeconds += data.minutes * 60;
+            updateTimerDisplay();
+            sessionStorage.setItem('ss_credit_minutes', Math.floor(remainingSeconds / 60).toString());
+            
+            // セッション期限切れ状態をリセット
+            if (isSessionExpired) {
+              resetSessionExpired();
+            }
+            
+            // タイマーを再開
+            startTimer();
+            
+            addSystemMessage(`管理者が${data.minutes}分を追加しました`);
+          }
+          break;
+          
+        case 'unlimited':
+          unlimitedMode = !unlimitedMode;
+          updateTimerDisplay();
+          
+          if (unlimitedMode) {
+            // タイマーを停止
+            if (timerInterval) {
+              clearInterval(timerInterval);
+            }
+            // セッション期限切れ状態をリセット
+            if (isSessionExpired) {
+              resetSessionExpired();
+            }
+            addSystemMessage('管理者が無制限モードを有効にしました');
+          } else {
+            // タイマーを再開
+            startTimer();
+            addSystemMessage('管理者が無制限モードを無効にしました');
+          }
+          break;
+      }
+    }
+    
+    // セッション期限切れ状態をリセット
+    function resetSessionExpired() {
+      isSessionExpired = false;
+      const messageInput = document.getElementById('messageInput');
+      const sendButton = document.getElementById('sendButton');
+      const purchaseButton = document.getElementById('purchaseButton');
+      
+      messageInput.disabled = false;
+      sendButton.disabled = false;
+      purchaseButton.classList.remove('show');
+      
+      const timerText = document.getElementById('timerText');
+      timerText.classList.remove('timer-warning');
     }
     
     // ページ離脱時の処理
