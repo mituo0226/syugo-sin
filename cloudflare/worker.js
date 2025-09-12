@@ -564,6 +564,8 @@ export default {
     
     // 管理アクション実行
     async function adminAction(action, minutes = null) {
+      console.log('adminAction呼び出し:', { action, minutes, type: typeof minutes });
+      
       if (!adminSessionId) {
         showMessage('ログインしてください', 'error');
         return;
@@ -578,6 +580,8 @@ export default {
         requestData.minutes = minutes;
       }
       
+      console.log('APIリクエストデータ:', requestData);
+      
       try {
         const response = await fetch(\`\${getApiEndpoint()}/admin/time\`, {
           method: 'POST',
@@ -588,9 +592,11 @@ export default {
         });
         
         const data = await response.json();
+        console.log('APIレスポンス:', data);
         
         if (data.ok) {
           showMessage(data.message, 'success');
+          console.log('notifyChatWindow呼び出し前:', { action, minutes });
           notifyChatWindow(action, minutes);
         } else {
           showMessage(data.error || '操作に失敗しました', 'error');
@@ -603,6 +609,8 @@ export default {
     
     // チャット画面に通知を送信
     function notifyChatWindow(action, minutes) {
+      console.log('notifyChatWindow呼び出し:', { action, minutes, type: typeof minutes });
+      
       const message = {
         type: 'ADMIN_TIME_UPDATE',
         action: action,
