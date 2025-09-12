@@ -57,6 +57,110 @@ export default {
       }
     }
 
+    // ---- 管理用APIエンドポイント ----
+    // 管理用セッション作成
+    if (url.pathname === "/admin/session" && request.method === "POST") {
+      const payload = await safeJson(request);
+      const { password } = payload;
+      
+      // 簡単なパスワード認証
+      if (password === "admin123") {
+        const sessionId = Date.now().toString();
+        return json({ 
+          ok: true, 
+          sessionId,
+          message: "管理セッションを作成しました" 
+        }, env, request);
+      } else {
+        return json({ 
+          ok: false, 
+          error: "認証に失敗しました" 
+        }, env, request, 401);
+      }
+    }
+
+    // 残り時間の一括管理
+    if (url.pathname === "/admin/time" && request.method === "POST") {
+      const payload = await safeJson(request);
+      const { sessionId, action, minutes } = payload;
+      
+      // セッション認証（簡易版）
+      if (!sessionId) {
+        return json({ 
+          ok: false, 
+          error: "無効なセッションです" 
+        }, env, request, 401);
+      }
+      
+      try {
+        switch (action) {
+          case "set":
+            if (minutes < 0 || minutes > 999) {
+              return json({ 
+                ok: false, 
+                error: "分数は0-999の範囲で指定してください" 
+              }, env, request, 400);
+            }
+            return json({ 
+              ok: true, 
+              message: `残り時間を${minutes}分に設定しました`,
+              minutes 
+            }, env, request);
+            
+          case "add":
+            if (minutes < 0 || minutes > 999) {
+              return json({ 
+                ok: false, 
+                error: "追加分数は0-999の範囲で指定してください" 
+              }, env, request, 400);
+            }
+            return json({ 
+              ok: true, 
+              message: `${minutes}分を追加しました`,
+              minutes 
+            }, env, request);
+            
+          case "unlimited":
+            return json({ 
+              ok: true, 
+              message: "無制限モードを切り替えました",
+              unlimited: true 
+            }, env, request);
+            
+          default:
+            return json({ 
+              ok: false, 
+              error: "無効なアクションです" 
+            }, env, request, 400);
+        }
+      } catch (error) {
+        return json({ 
+          ok: false, 
+          error: "サーバーエラーが発生しました" 
+        }, env, request, 500);
+      }
+    }
+
+    // 管理用セッション状態確認
+    if (url.pathname === "/admin/status" && request.method === "GET") {
+      const sessionId = url.searchParams.get("sessionId");
+      
+      if (!sessionId) {
+        return json({ 
+          ok: false, 
+          error: "無効なセッションです" 
+        }, env, request, 401);
+      }
+      
+      return json({ 
+        ok: true, 
+        session: {
+          createdAt: Date.now(),
+          lastAccess: Date.now()
+        }
+      }, env, request);
+    }
+
     // ---- 静的ファイル配信 ----
     // 管理画面の配信
     if (url.pathname === "/admin.html") {
@@ -365,6 +469,20 @@ export default {
   <script>
     let adminSessionId = null;
     
+    // API接続先を環境によって自動切り替え
+    function getApiEndpoint() {
+      const hostname = window.location.hostname;
+      console.log('Current hostname:', hostname);
+      
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://127.0.0.1:8787';
+      } else if (hostname.includes('syugo-sin.com')) {
+        return 'https://syugo-sin-worker.mituo0226.workers.dev';
+      } else {
+        return 'https://syugo-sin-worker.mituo0226.workers.dev';
+      }
+    }
+    
     // ログイン処理
     async function login() {
       const password = document.getElementById('adminPassword').value;
@@ -374,13 +492,41 @@ export default {
         return;
       }
       
-      if (password === 'admin123') {
-        adminSessionId = Date.now().toString();
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('adminPanel').classList.add('show');
-        showMessage('ログインに成功しました', 'success');
-      } else {
-        showMessage('パスワードが間違っています', 'error');
+      const apiUrl = \`\${getApiEndpoint()}/admin/session\`;
+      console.log('API URL:', apiUrl);
+      console.log('Password:', password);
+      
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ password })
+        });
+        
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        
+        const data = await response.json();
+        console.log('Response data:', data);
+        
+        if (data.ok) {
+          adminSessionId = data.sessionId;
+          document.getElementById('loginSection').style.display = 'none';
+          document.getElementById('adminPanel').classList.add('show');
+          showMessage('ログインに成功しました', 'success');
+        } else {
+          showMessage(data.error || 'ログインに失敗しました', 'error');
+        }
+      } catch (error) {
+        showMessage('サーバーに接続できません', 'error');
+        console.error('Login error:', error);
+        console.error('Error details:', {
+          message: error.message,
+          stack: error.stack,
+          apiUrl: apiUrl
+        });
       }
     }
     
@@ -393,8 +539,7 @@ export default {
         return;
       }
       
-      showMessage(\`残り時間を\${minutes}分に設定しました\`, 'success');
-      notifyChatWindow('set', parseInt(minutes));
+      await adminAction('set', parseInt(minutes));
     }
     
     // 時間追加
@@ -406,26 +551,61 @@ export default {
         return;
       }
       
-      showMessage(\`\${minutes}分を追加しました\`, 'success');
-      notifyChatWindow('add', parseInt(minutes));
+      await adminAction('add', parseInt(minutes));
     }
     
     // 無制限モード切り替え
     async function toggleUnlimited() {
-      showMessage('無制限モードを切り替えました', 'success');
-      notifyChatWindow('unlimited');
+      await adminAction('unlimited');
     }
     
     // クイック時間設定
     async function quickSetTime(minutes) {
-      showMessage(\`残り時間を\${minutes}分に設定しました\`, 'success');
-      notifyChatWindow('set', minutes);
+      await adminAction('set', minutes);
     }
     
     // クイック時間追加
     async function quickAddTime(minutes) {
-      showMessage(\`\${minutes}分を追加しました\`, 'success');
-      notifyChatWindow('add', minutes);
+      await adminAction('add', minutes);
+    }
+    
+    // 管理アクション実行
+    async function adminAction(action, minutes = null) {
+      if (!adminSessionId) {
+        showMessage('ログインしてください', 'error');
+        return;
+      }
+      
+      const requestData = {
+        sessionId: adminSessionId,
+        action: action
+      };
+      
+      if (minutes !== null) {
+        requestData.minutes = minutes;
+      }
+      
+      try {
+        const response = await fetch(\`\${getApiEndpoint()}/admin/time\`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.ok) {
+          showMessage(data.message, 'success');
+          notifyChatWindow(action, minutes);
+        } else {
+          showMessage(data.error || '操作に失敗しました', 'error');
+        }
+      } catch (error) {
+        showMessage('サーバーに接続できません', 'error');
+        console.error('Admin action error:', error);
+      }
     }
     
     // チャット画面に通知を送信
