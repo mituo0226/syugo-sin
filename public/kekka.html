@@ -1,0 +1,757 @@
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>鑑定結果 | AI鑑定師 龍</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d1a;
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
+      position: relative;
+      min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    /* 龍と守護神の表示スタイル */
+    .dragon-reveal {
+      text-align: center;
+      margin-bottom: 40px;
+      animation: dragonAppear 2s ease-in-out;
+    }
+    
+    .dragon-image {
+      max-width: 100px;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 0 30px rgba(102, 204, 255, 0.6);
+    }
+    
+    @keyframes dragonAppear {
+      0% {
+        opacity: 0;
+        transform: scale(0.5) translateY(50px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+    
+    .guardian-reveal {
+      animation: guardianAppear 2s ease-in-out 0.5s both;
+    }
+    
+    @keyframes guardianAppear {
+      0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .guardian {
+      max-width: 180px;
+      height: auto;
+      border-radius: 15px;
+      box-shadow: 0 0 40px rgba(157, 78, 221, 0.6);
+      margin: 20px auto;
+    }
+
+    .glow-text {
+      background: linear-gradient(45deg, #c77dff, #9d4edd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 1.5em;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+
+    .result {
+      display: none;
+      padding: 40px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      margin: 20px 0;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .loading-screen {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at center, rgba(13, 13, 26, 0.98) 0%, rgba(26, 26, 46, 0.95) 50%, rgba(13, 13, 26, 0.98) 100%);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* 神秘的な背景エフェクト */
+    .mystical-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(199, 125, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(102, 204, 255, 0.05) 0%, transparent 70%);
+      animation: mysticalPulse 8s ease-in-out infinite;
+    }
+
+    @keyframes mysticalPulse {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.1); }
+    }
+
+    /* 浮遊する光の粒子 */
+    .floating-particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: radial-gradient(circle, #c77dff, transparent);
+      border-radius: 50%;
+      animation: floatParticle 6s linear infinite;
+    }
+
+    .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+    .particle:nth-child(2) { left: 20%; animation-delay: 1s; }
+    .particle:nth-child(3) { left: 30%; animation-delay: 2s; }
+    .particle:nth-child(4) { left: 40%; animation-delay: 3s; }
+    .particle:nth-child(5) { left: 50%; animation-delay: 4s; }
+    .particle:nth-child(6) { left: 60%; animation-delay: 5s; }
+    .particle:nth-child(7) { left: 70%; animation-delay: 0.5s; }
+    .particle:nth-child(8) { left: 80%; animation-delay: 1.5s; }
+    .particle:nth-child(9) { left: 90%; animation-delay: 2.5s; }
+
+    @keyframes floatParticle {
+      0% {
+        top: 100%;
+        opacity: 0;
+        transform: scale(0);
+      }
+      10% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      90% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      100% {
+        top: -10%;
+        opacity: 0;
+        transform: scale(0);
+      }
+    }
+
+    /* 神秘的なスピナー */
+    .loading-spinner {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin-bottom: 30px;
+    }
+
+    .spinner-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      animation: spinRing 3s linear infinite;
+    }
+
+    .spinner-ring:nth-child(1) {
+      border-top: 3px solid rgba(157, 78, 221, 0.8);
+      animation-duration: 3s;
+    }
+
+    .spinner-ring:nth-child(2) {
+      border-right: 3px solid rgba(199, 125, 255, 0.6);
+      animation-duration: 2.5s;
+      animation-direction: reverse;
+    }
+
+    .spinner-ring:nth-child(3) {
+      border-bottom: 3px solid rgba(102, 204, 255, 0.4);
+      animation-duration: 2s;
+    }
+
+    .spinner-ring:nth-child(4) {
+      border-left: 3px solid rgba(157, 78, 221, 0.3);
+      animation-duration: 1.5s;
+      animation-direction: reverse;
+    }
+
+    @keyframes spinRing {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* 中心の神秘的な光 */
+    .spinner-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 40px;
+      height: 40px;
+      background: radial-gradient(circle, rgba(199, 125, 255, 0.8), rgba(157, 78, 221, 0.4));
+      border-radius: 50%;
+      animation: centerPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes centerPulse {
+      0%, 100% { 
+        transform: translate(-50%, -50%) scale(1);
+        box-shadow: 0 0 20px rgba(199, 125, 255, 0.5);
+      }
+      50% { 
+        transform: translate(-50%, -50%) scale(1.2);
+        box-shadow: 0 0 40px rgba(199, 125, 255, 0.8);
+      }
+    }
+
+    /* 神託テキスト */
+    .oracle-text {
+      font-size: 1.3em;
+      color: #c77dff;
+      text-shadow: 0 0 10px rgba(199, 125, 255, 0.5);
+      margin-bottom: 20px;
+      animation: textGlow 3s ease-in-out infinite;
+      font-weight: bold;
+      letter-spacing: 2px;
+      min-height: 2em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .oracle-text.fade-in {
+      animation: textGlow 3s ease-in-out infinite, fadeInText 0.5s ease-in-out;
+    }
+
+    @keyframes fadeInText {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes textGlow {
+      0%, 100% { 
+        text-shadow: 0 0 10px rgba(199, 125, 255, 0.5);
+        transform: scale(1);
+      }
+      50% { 
+        text-shadow: 0 0 20px rgba(199, 125, 255, 0.8), 0 0 30px rgba(199, 125, 255, 0.3);
+        transform: scale(1.05);
+      }
+    }
+
+    /* 進行状況インジケーター */
+    .progress-indicator {
+      width: 200px;
+      height: 4px;
+      background: rgba(157, 78, 221, 0.2);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 20px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #9d4edd, #c77dff, #9d4edd);
+      border-radius: 2px;
+      width: 0%;
+      animation: progressFill 8s ease-in-out forwards;
+      box-shadow: 0 0 10px rgba(199, 125, 255, 0.5);
+    }
+
+    @keyframes progressFill {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+
+    .guardian-message-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 15px 30px;
+      background: linear-gradient(45deg, #9d4edd, #c77dff);
+      border: none;
+      border-radius: 25px;
+      color: #fff;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      opacity: 0;
+      transform: translateX(-50%) translateY(50px);
+      z-index: 2500;
+    }
+
+    .guardian-message-btn.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .guardian-message-btn:hover {
+      background: linear-gradient(45deg, #c77dff, #9d4edd);
+      transform: translateX(-50%) translateY(-2px);
+      box-shadow: 0 10px 25px rgba(157, 78, 221, 0.4);
+    }
+
+    /* フルスクリーン守護神表示 */
+    .guardian-fullscreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 2000;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+      box-sizing: border-box;
+    }
+
+    .guardian-fullscreen.show {
+      opacity: 1;
+    }
+
+    .guardian-fullscreen img {
+      max-width: 85vw;
+      max-height: 65vh;
+      width: auto;
+      height: auto;
+      border-radius: 20px;
+      box-shadow: 0 0 50px rgba(157, 78, 221, 0.8);
+      margin-bottom: 25px;
+      animation: float 3s ease-in-out infinite;
+      object-fit: cover;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+    }
+
+    .guardian-fullscreen h2 {
+      font-size: 1.8em;
+      margin-bottom: 8px;
+      margin-top: 0;
+      background: linear-gradient(45deg, #c77dff, #9d4edd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-align: center;
+    }
+
+    .guardian-fullscreen p {
+      font-size: 1.1em;
+      line-height: 1.4;
+      max-width: 500px;
+      text-align: center;
+      margin: 0 0 25px 0;
+      padding: 0 20px;
+    }
+
+    /* レスポンシブ対応 */
+    @media (max-width: 600px) {
+      .container {
+        padding: 10px;
+      }
+      
+      .guardian {
+        max-width: 150px;
+      }
+      
+      .guardian-message-btn {
+        bottom: 20px;
+        width: calc(100% - 40px);
+        max-width: 400px;
+      }
+      
+      .guardian-fullscreen img {
+        max-width: 90vw;
+        max-height: 60vh;
+        margin-bottom: 20px;
+      }
+      
+      .guardian-fullscreen h2 {
+        font-size: 1.4em;
+        margin-bottom: 6px;
+        margin-top: 0;
+      }
+      
+      .guardian-fullscreen p {
+        font-size: 0.95em;
+        line-height: 1.3;
+        padding: 0 15px;
+        margin: 0 0 20px 0;
+        max-width: 90vw;
+      }
+    }
+
+    /* iPhone X以降のノッチ対応 */
+    @supports (padding: max(0px)) {
+      .guardian-message-btn {
+        bottom: max(20px, env(safe-area-inset-bottom) + 10px);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  
+  <div class="container">
+    <!-- 鑑定結果表示エリア -->
+    <div class="result" id="resultBox">
+      <h2 class="glow-text">あなたの守護神を伝えよう･･･</h2>
+      <div id="guardian"></div>
+    </div>
+
+    <!-- ローディング画面 -->
+    <div class="loading-screen" id="loadingScreen">
+      <div class="mystical-bg"></div>
+      <div class="floating-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+      </div>
+      <div class="loading-spinner">
+        <div class="spinner-ring"></div>
+        <div class="spinner-ring"></div>
+        <div class="spinner-ring"></div>
+        <div class="spinner-ring"></div>
+        <div class="spinner-center"></div>
+      </div>
+      <div class="oracle-text">神託を降ろしています…</div>
+      <div class="progress-indicator">
+        <div class="progress-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- フルスクリーン守護神表示 -->
+  <div class="guardian-fullscreen" id="guardianFullscreen">
+    <img id="fullscreenGuardianImg" src="" alt="守護神">
+    <h2 id="fullscreenGuardianName"></h2>
+    <p id="fullscreenGuardianDesc"></p>
+    <button id="fullscreenGuardianBtn" class="guardian-message-btn">
+      守護神の言葉を聞く
+    </button>
+  </div>
+  
+  <script>
+    // 守護神の言葉ページに移動する関数
+    function goToGuardianMessage(guardianName, zodiacSign) {
+      // 十二支から守護神のキーを取得
+      const guardianKeyMap = {
+        '子': 'senju',
+        '丑': 'kokuzo',
+        '寅': 'kokuzo',
+        '卯': 'monju',
+        '辰': 'fugen',
+        '巳': 'fugen',
+        '午': 'seishi',
+        '未': 'dainichi',
+        '申': 'dainichi',
+        '酉': 'fudo',
+        '戌': 'amida',
+        '亥': 'yakushi'
+      };
+      
+      const guardianKey = guardianKeyMap[zodiacSign];
+      if (guardianKey) {
+        // URLパラメータから生年月日を取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const year = urlParams.get('year');
+        const month = urlParams.get('month');
+        const day = urlParams.get('day');
+        
+        const params = new URLSearchParams({
+          guardian: guardianKey
+        });
+        
+        // 生年月日パラメータがあれば追加
+        if (year && month && day) {
+          params.set('birthYear', year);
+          params.set('birthMonth', month);
+          params.set('birthDay', day);
+        }
+        
+        window.location.href = `guardians.html?${params.toString()}`;
+      } else {
+        // フォールバック
+        window.location.href = 'guardians.html';
+      }
+    }
+
+    // URLパラメータから生年月日を取得する関数
+    function getBirthDateFromURL() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const year = urlParams.get('year');
+      const month = urlParams.get('month');
+      const day = urlParams.get('day');
+      
+      if (!year || !month || !day) {
+        return null;
+      }
+      
+      return {
+        year: parseInt(year),
+        month: parseInt(month),
+        day: parseInt(day)
+      };
+    }
+
+    // 十二支を計算する関数
+    function getZodiac(year, month, day) {
+      const zodiacSigns = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+      const zodiacYear = year - 4;
+      return zodiacSigns[zodiacYear % 12];
+    }
+
+    // 守護神データ
+    const guardians = {
+      '子': { name:'千手観音', desc:'無限の慈悲をもって汝を抱擁する者なり', image:'/photo/senju.png' },
+      '丑': { name:'虚空蔵菩薩', desc:'無尽の智慧を授けし導き手なり', image:'/photo/kokuzo.png' },
+      '寅': { name:'虚空蔵菩薩', desc:'無尽の智慧を授けし導き手なり', image:'/photo/kokuzo.png' },
+      '卯': { name:'文殊菩薩', desc:'智慧の剣をもって迷いを断つ者なり', image:'/photo/monju.png' },
+      '辰': { name:'普賢菩薩', desc:'実践の徳を授ける者なり', image:'/photo/fugen.png' },
+      '巳': { name:'普賢菩薩', desc:'実践の徳を授ける者なり', image:'/photo/fugen.png' },
+      '午': { name:'勢至菩薩', desc:'智慧の光を放ち衆生を救う者なり', image:'/photo/seishi.png' },
+      '未': { name:'大日如来', desc:'宇宙の理をもって全てを照らす者なり', image:'/photo/dainichi.png' },
+      '申': { name:'大日如来', desc:'宇宙の理をもって全てを照らす者なり', image:'/photo/dainichi.png' },
+      '酉': { name:'不動明王', desc:'不動の意志にて悪を退ける者なり', image:'/photo/fudo.png' },
+      '戌': { name:'阿弥陀如来', desc:'無限の慈悲をもって衆生を救う者なり', image:'/photo/amida.png' },
+      '亥': { name:'薬師如来', desc:'病苦を除き健康を授ける者なり', image:'/photo/yakushi.png' }
+    };
+
+    // フルスクリーン表示の処理を簡素化
+    function showFullscreenGuardian(guardian, zodiac) {
+      const fullscreenImg = document.getElementById('fullscreenGuardianImg');
+      const fullscreenName = document.getElementById('fullscreenGuardianName');
+      const fullscreenDesc = document.getElementById('fullscreenGuardianDesc');
+      const fullscreenContainer = document.getElementById('guardianFullscreen');
+      const fullscreenBtn = document.getElementById('fullscreenGuardianBtn');
+      
+      if (!fullscreenImg || !fullscreenName || !fullscreenDesc || !fullscreenContainer || !fullscreenBtn) {
+        return false;
+      }
+      
+      fullscreenImg.src = guardian.image;
+      fullscreenName.textContent = `そなたを守護するは ${guardian.name}`;
+      fullscreenDesc.textContent = guardian.desc;
+      
+
+      
+      // ボタンのイベントリスナーを設定
+      fullscreenBtn.setAttribute('data-guardian-name', guardian.name);
+      fullscreenBtn.setAttribute('data-zodiac-sign', zodiac);
+      fullscreenBtn.addEventListener('click', function() {
+        const name = this.getAttribute('data-guardian-name');
+        const zodiacSign = this.getAttribute('data-zodiac-sign');
+        goToGuardianMessage(name, zodiacSign);
+      });
+      
+      fullscreenContainer.style.display = 'flex';
+      setTimeout(() => fullscreenContainer.classList.add('show'), 10);
+      
+      return true;
+    }
+
+    // フルスクリーン表示を終了
+    function hideFullscreenGuardian() {
+      const fullscreenContainer = document.getElementById('guardianFullscreen');
+      if (fullscreenContainer) {
+        fullscreenContainer.classList.remove('show');
+        setTimeout(() => fullscreenContainer.style.display = 'none', 1000);
+      }
+    }
+
+    // 結果表示処理
+    function displayResults(guardian, zodiac) {
+      const guardianElement = document.getElementById("guardian");
+      const resultBox = document.getElementById("resultBox");
+      
+      if (!guardianElement || !resultBox) {
+        return;
+      }
+      
+
+      
+      // 龍と守護神を表示
+      guardianElement.innerHTML = `
+        <div class="dragon-reveal">
+          <img class="dragon-image" src="/photo/ryu.png" alt="AI鑑定師 龍">
+        </div>
+        <div class="guardian-reveal" style="opacity: 0;">
+          <img class="guardian" src="${guardian.image}" alt="${guardian.name}">
+          <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
+          <div>${guardian.desc}</div>
+        </div>
+      `;
+      
+      // ボタンはフルスクリーン表示内に移動済み
+      
+      // 結果を表示
+      resultBox.style.display = "block";
+      resultBox.scrollIntoView({ behavior: 'smooth' });
+      
+      // アニメーションシーケンス
+      setTimeout(() => {
+        const guardianReveal = document.querySelector('.guardian-reveal');
+        if (guardianReveal) {
+          guardianReveal.style.transition = 'opacity 2s ease-in-out';
+          guardianReveal.style.opacity = '1';
+        }
+        
+        // フルスクリーン表示
+        setTimeout(() => {
+          if (showFullscreenGuardian(guardian, zodiac)) {
+            setTimeout(() => {
+              const fullscreenBtn = document.getElementById('fullscreenGuardianBtn');
+              if (fullscreenBtn) {
+                setTimeout(() => fullscreenBtn.classList.add('show'), 100);
+              }
+            }, 2000);
+          }
+        }, 2000);
+      }, 2000);
+    }
+
+    // 神託テキストの段階的変化
+    const oracleMessages = [
+      "神託を降ろしています…",
+      "天界の扉を開いています…",
+      "守護神の力を召喚しています…",
+      "運命の糸を紡いでいます…",
+      "神託を降ろしています…"
+    ];
+
+    let currentMessageIndex = 0;
+    let messageInterval;
+
+    function updateOracleText() {
+      const oracleText = document.querySelector('.oracle-text');
+      if (oracleText) {
+        oracleText.style.opacity = '0';
+        setTimeout(() => {
+          oracleText.textContent = oracleMessages[currentMessageIndex];
+          oracleText.style.opacity = '1';
+          currentMessageIndex = (currentMessageIndex + 1) % oracleMessages.length;
+        }, 300);
+      }
+    }
+
+    // メイン処理
+    function startProcess() {
+      const birthDate = getBirthDateFromURL();
+      if (!birthDate) {
+        alert('生年月日のパラメータが無効です。');
+        return;
+      }
+      
+      // ローディング画面表示
+      const loading = document.getElementById("loadingScreen");
+      if (loading) {
+        loading.style.display = "flex";
+      }
+
+      // 神託テキストの段階的変化を開始
+      messageInterval = setInterval(updateOracleText, 1600);
+      
+      // 8秒後に結果表示（より長い神秘的なアニメーション）
+      setTimeout(() => {
+        try {
+          // メッセージ更新を停止
+          if (messageInterval) {
+            clearInterval(messageInterval);
+          }
+
+          // ローディング画面を非表示
+          if (loading) {
+            loading.style.display = "none";
+          }
+          
+          // 十二支を計算
+          const zodiac = getZodiac(birthDate.year, birthDate.month, birthDate.day);
+          const guardian = guardians[zodiac];
+          
+          if (!guardian) {
+            throw new Error("守護神データが見つかりません");
+          }
+          
+          // 結果表示
+          displayResults(guardian, zodiac);
+          
+        } catch (error) {
+          console.error("鑑定処理エラー:", error);
+          alert("鑑定処理中にエラーが発生しました。ページを再読み込みしてください。");
+        }
+      }, 8000);
+    }
+
+    // ページ読み込み時に処理開始
+    document.addEventListener("DOMContentLoaded", startProcess);
+
+    // 既にDOMが読み込まれている場合の対応
+    if (document.readyState !== 'loading') {
+      startProcess();
+    }
+  </script>
+</body>
+</html>

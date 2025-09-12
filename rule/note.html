@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>サービス紹介 | AI鑑定師 龍</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d1a;
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
+      position: relative;
+      min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* 神秘的な背景効果 */
+    .mystical-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(102, 204, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(199, 125, 255, 0.05) 0%, transparent 50%);
+      z-index: -1;
+      animation: bgPulse 8s ease-in-out infinite;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+    
+    @keyframes bgPulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.6; }
+    }
+    
+    /* 浮遊する粒子 */
+    .floating-particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: -1;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+    
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: #66ccff;
+      border-radius: 50%;
+      animation: float 6s linear infinite;
+    }
+    
+    .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+    .particle:nth-child(2) { left: 20%; animation-delay: 1s; }
+    .particle:nth-child(3) { left: 30%; animation-delay: 2s; }
+    .particle:nth-child(4) { left: 40%; animation-delay: 3s; }
+    .particle:nth-child(5) { left: 50%; animation-delay: 4s; }
+    .particle:nth-child(6) { left: 60%; animation-delay: 5s; }
+    .particle:nth-child(7) { left: 70%; animation-delay: 0s; }
+    .particle:nth-child(8) { left: 80%; animation-delay: 1s; }
+    .particle:nth-child(9) { left: 90%; animation-delay: 2s; }
+    
+    @keyframes float {
+      0% {
+        top: 100%;
+        opacity: 0;
+        transform: translateY(0) scale(0);
+      }
+      10% {
+        opacity: 1;
+        transform: translateY(-10px) scale(1);
+      }
+      90% {
+        opacity: 1;
+        transform: translateY(-90vh) scale(1);
+      }
+      100% {
+        top: 0;
+        opacity: 0;
+        transform: translateY(-100vh) scale(0);
+      }
+    }
+    
+    .container {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+      z-index: 1;
+      overflow-x: hidden;
+    }
+    
+    /* タイトル */
+    .title {
+      font-size: 2.5em;
+      color: #66ccff;
+      text-shadow: 0 0 20px rgba(102, 204, 255, 0.5);
+      margin-bottom: 30px;
+      text-align: center;
+      animation: titleGlow 3s ease-in-out infinite alternate;
+    }
+    
+    @keyframes titleGlow {
+      0% { text-shadow: 0 0 20px rgba(102, 204, 255, 0.5); }
+      100% { text-shadow: 0 0 30px rgba(102, 204, 255, 0.8); }
+    }
+    
+    /* サービス紹介セクション */
+    .service-section {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 30px;
+      margin: 20px 0;
+      max-width: 800px;
+      width: 100%;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    
+    .service-section h2 {
+      color: #66ccff;
+      font-size: 1.8em;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .service-section p {
+      font-size: 1.1em;
+      line-height: 1.8;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    
+    .service-section ul {
+      margin: 20px 0;
+      padding-left: 20px;
+    }
+    
+    .service-section li {
+      font-size: 1.0em;
+      line-height: 1.6;
+      margin-bottom: 10px;
+      color: #ff6b6b;
+    }
+    
+    .service-section .note {
+      font-size: 0.9em;
+      color: #ccc;
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .service-section .note a {
+      color: #66ccff;
+      text-decoration: none;
+    }
+    
+    .service-section .note a:hover {
+      text-decoration: underline;
+    }
+    
+    /* 戻るボタン */
+    .back-button {
+      padding: 15px 40px;
+      font-size: 1.2em;
+      background: linear-gradient(90deg, #66ccff, #3399ff);
+      border: none;
+      border-radius: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #000;
+      box-shadow: 0 4px 15px rgba(102,204,255,0.3);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 30px;
+    }
+    
+    .back-button:hover {
+      background: linear-gradient(90deg, #99e0ff, #66ccff);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102,204,255,0.4);
+    }
+    
+    /* モバイル向け調整 */
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+      
+      .title {
+        font-size: 2.0em;
+        margin-bottom: 20px;
+      }
+      
+      .service-section {
+        padding: 20px;
+        margin: 15px 0;
+      }
+      
+      .service-section h2 {
+        font-size: 1.5em;
+      }
+      
+      .service-section p {
+        font-size: 1.0em;
+      }
+      
+      .service-section li {
+        font-size: 0.9em;
+      }
+      
+      .back-button {
+        font-size: 1.1em;
+        padding: 12px 30px;
+      }
+    }
+    
+    /* iPhone X以降のノッチ対応 */
+    @supports (padding: max(0px)) {
+      .container {
+        padding-top: max(20px, env(safe-area-inset-top));
+        padding-bottom: max(30px, env(safe-area-inset-bottom));
+      }
+    }
+    
+    /* iPhone向けスクロール調整 */
+    @supports (-webkit-touch-callout: none) {
+      body {
+        -webkit-overflow-scrolling: touch;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+      }
+      
+      .container {
+        -webkit-overflow-scrolling: touch;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+      }
+      
+      .mystical-bg,
+      .floating-particles {
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        -webkit-perspective: 1000;
+        perspective: 1000;
+        will-change: transform;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 神秘的な背景 -->
+  <div class="mystical-bg"></div>
+  
+  <!-- 浮遊する粒子 -->
+  <div class="floating-particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <div class="container">
+    <!-- タイトル -->
+    <h1 class="title">サービス紹介</h1>
+    
+    <!-- サービス紹介セクション -->
+    <div class="service-section">
+      <h2>サービスについて</h2>
+      <p>
+        本サービスは<strong>架空のキャラクター</strong>を通じて
+        <strong>AI との会話体験</strong>を提供する
+        エンターテインメント／セルフケア支援サービスです。<br><br>
+        日常の不安や気持ちの整理、ちょっとした雑談やリフレッシュなどを安心して楽しめます。
+      </p>
+      
+      <h3 style="color:#ff6b6b;margin-top:30px;margin-bottom:15px;">提供しないサービス</h3>
+      <ul>
+        <li>占い・霊視・未来予知の提供は行いません。</li>
+        <li>医療・法律・投資などの専門的助言は行いません。</li>
+        <li>結果や成果の保証はいたしません。</li>
+      </ul>
+      
+      <div class="note">
+        ※詳細は <a href="disclaimer.html">免責事項</a> をご確認ください。
+      </div>
+    </div>
+    
+    <!-- 戻るボタン -->
+            <a href="../shop/gofu.html#products" class="back-button">商品ページに戻る</a>
+  </div>
+  
+  <script>
+    // 右クリックメニュー無効化
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+    
+    // キーボードショートカット無効化
+    document.addEventListener('keydown', function(e) {
+      // Ctrl+S, Ctrl+U, F12, Ctrl+Shift+I などを無効化
+      if (
+        (e.ctrlKey && (e.key === 's' || e.key === 'u' || e.key === 'i')) ||
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && e.key === 'I')
+      ) {
+        e.preventDefault();
+      }
+    });
+    
+    // ドラッグ&ドロップ無効化
+    document.addEventListener('dragstart', function(e) {
+      e.preventDefault();
+    });
+    
+    // テキスト選択無効化
+    document.addEventListener('selectstart', function(e) {
+      e.preventDefault();
+    });
+  </script>
+</body>
+</html>

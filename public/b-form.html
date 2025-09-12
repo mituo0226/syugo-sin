@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <title>生年月日入力 - 守護神鑑定</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 500px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      padding: 40px;
+      box-shadow: 0 0 30px rgba(147, 51, 234, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2em;
+      background: linear-gradient(45deg, #c77dff, #9d4edd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1.1em;
+      color: #c77dff;
+    }
+
+    select {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid rgba(157, 78, 221, 0.3);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 1.1em;
+      transition: all 0.3s ease;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: #c77dff;
+      box-shadow: 0 0 15px rgba(157, 78, 221, 0.5);
+    }
+
+    select option {
+      background: #1a1a2e;
+      color: #fff;
+    }
+
+    .form-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .form-group {
+      flex: 1;
+    }
+
+    .form-group:nth-child(1) {
+      flex: 3; /* 西暦: 4桁+年 = 5文字程度 */
+    }
+
+    .form-group:nth-child(2) {
+      flex: 1.5; /* 月: 1-2桁+月 = 2-3文字程度 */
+    }
+
+    .form-group:nth-child(3) {
+      flex: 1.5; /* 日: 1-2桁+日 = 2-3文字程度 */
+    }
+
+    button {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(45deg, #9d4edd, #c77dff);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 1.2em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: linear-gradient(45deg, #c77dff, #9d4edd);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(157, 78, 221, 0.4);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .error-message {
+      color: #ff6b6b;
+      background: rgba(255, 107, 107, 0.1);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 30px 20px;
+      }
+      
+      h1 {
+        font-size: 1.5em;
+      }
+      
+      .form-row {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .form-group {
+        flex: none;
+      }
+
+      .form-group:nth-child(1) {
+        width: 80%; /* 西暦: 4桁+年 = 5文字程度 */
+      }
+
+      .form-group:nth-child(2) {
+        width: 50%; /* 月: 1-2桁+月 = 2-3文字程度 */
+      }
+
+      .form-group:nth-child(3) {
+        width: 50%; /* 日: 1-2桁+日 = 2-3文字程度 */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>生年月日を入力してください</h1>
+    
+    <form id="birthForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="year">西暦</label>
+          <select id="year" required>
+            <option value="">選択</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="month">月</label>
+          <select id="month" required>
+            <option value="">選択</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="day">日</label>
+          <select id="day" required>
+            <option value="">選択</option>
+          </select>
+        </div>
+      </div>
+      
+      <button type="submit" id="submitBtn">守護神を導き出す</button>
+    </form>
+  </div>
+
+  <script>
+    // 初期化フラグ
+    let isInitialized = false;
+
+    // セレクトボックスの初期化関数
+    function initializeSelects() {
+      if (isInitialized) {
+        console.log('Already initialized, skipping...');
+        return;
+      }
+      
+      console.log('Initializing select boxes...');
+      
+      // 要素の存在確認
+      const yearSelect = document.getElementById("year");
+      const monthSelect = document.getElementById("month");
+      const daySelect = document.getElementById("day");
+      
+      if (!yearSelect || !monthSelect || !daySelect) {
+        console.log('Elements not found, retrying in 100ms...');
+        setTimeout(initializeSelects, 100);
+        return;
+      }
+      
+      try {
+        // 初期化フラグを設定
+        isInitialized = true;
+        
+        // 年の選択肢を追加
+        yearSelect.innerHTML = '<option value="">選択</option>';
+        for (let y = 2025; y >= 1900; y--) {
+          const opt = document.createElement("option");
+          opt.value = y;
+          opt.textContent = y + "年";
+          yearSelect.appendChild(opt);
+        }
+        console.log('Year select initialized');
+        
+        // 月の選択肢を追加
+        monthSelect.innerHTML = '<option value="">選択</option>';
+        for (let m = 1; m <= 12; m++) {
+          const opt = document.createElement("option");
+          opt.value = m;
+          opt.textContent = m + "月";
+          monthSelect.appendChild(opt);
+        }
+        console.log('Month select initialized');
+        
+        // 日の選択肢を追加
+        daySelect.innerHTML = '<option value="">選択</option>';
+        for (let d = 1; d <= 31; d++) {
+          const opt = document.createElement("option");
+          opt.value = d;
+          opt.textContent = d + "日";
+          daySelect.appendChild(opt);
+        }
+        console.log('Day select initialized');
+        
+        // イベントリスナーの設定
+        setupEventListeners();
+        console.log('Initialization completed successfully');
+        
+      } catch (error) {
+        console.error('Error in initializeSelects:', error);
+        isInitialized = false;
+      }
+    }
+
+    // イベントリスナーの設定
+    function setupEventListeners() {
+      const yearSelect = document.getElementById("year");
+      const monthSelect = document.getElementById("month");
+      const daySelect = document.getElementById("day");
+      
+      // 年の変更イベント
+      if (yearSelect) {
+        yearSelect.addEventListener("change", function() {
+          console.log('Year changed to:', this.value);
+          adjustDayOptions();
+          validateCurrentInput();
+        });
+        console.log('Year event listener added');
+      }
+      
+      // 月の変更イベント
+      if (monthSelect) {
+        monthSelect.addEventListener("change", function() {
+          console.log('Month changed to:', this.value);
+          adjustDayOptions();
+          validateCurrentInput();
+        });
+        console.log('Month event listener added');
+      }
+      
+      // 日の変更イベント
+      if (daySelect) {
+        daySelect.addEventListener("change", function() {
+          console.log('Day changed to:', this.value);
+          validateCurrentInput();
+        });
+        console.log('Day event listener added');
+      }
+    }
+
+    // 日の選択肢を調整する関数
+    function adjustDayOptions() {
+      const yearSelect = document.getElementById("year");
+      const monthSelect = document.getElementById("month");
+      const daySelect = document.getElementById("day");
+      
+      if (!yearSelect || !monthSelect || !daySelect) {
+        console.log('Elements not found in adjustDayOptions');
+        return;
+      }
+      
+      const year = parseInt(yearSelect.value);
+      const month = parseInt(monthSelect.value);
+      
+      console.log('Adjusting days for:', year, month);
+      
+      if (!year || !month) {
+        console.log('Year or month not selected');
+        return;
+      }
+      
+      const daysInMonth = new Date(year, month, 0).getDate();
+      const currentDay = daySelect.value;
+      
+      console.log('Days in month:', daysInMonth, 'Current day:', currentDay);
+      
+      // 日の選択肢を再生成
+      daySelect.innerHTML = '<option value="">選択</option>';
+      for (let d = 1; d <= daysInMonth; d++) {
+        const opt = document.createElement("option");
+        opt.value = d;
+        opt.textContent = d + "日";
+        daySelect.appendChild(opt);
+      }
+      
+      // 以前選択されていた日が有効な範囲内であれば復元
+      if (currentDay && parseInt(currentDay) <= daysInMonth) {
+        daySelect.value = currentDay;
+        console.log('Day restored to:', currentDay);
+      }
+    }
+
+    // 現在の入力を検証する関数
+    function validateCurrentInput() {
+      const yearSelect = document.getElementById("year");
+      const monthSelect = document.getElementById("month");
+      const daySelect = document.getElementById("day");
+      
+      if (!yearSelect || !monthSelect || !daySelect) return false;
+      
+      const year = parseInt(yearSelect.value);
+      const month = parseInt(monthSelect.value);
+      const day = parseInt(daySelect.value);
+      
+      console.log('Validating:', year, month, day);
+      
+      // すべての値が選択されている場合のみ検証
+      if (year && month && day) {
+        const inputDate = new Date(year, month - 1, day);
+        const today = new Date();
+        
+        // 日付が有効かチェック
+        if (inputDate.getFullYear() !== year || 
+            inputDate.getMonth() !== month - 1 || 
+            inputDate.getDate() !== day) {
+          showErrorMessage("無効な日付です。");
+          return false;
+        }
+        
+        // 未来の日付かチェック
+        if (inputDate > today) {
+          showErrorMessage("未来の日付は選択できません。");
+          return false;
+        }
+        
+        // 年齢制限チェック（120歳以上）
+        const age = today.getFullYear() - year;
+        if (age > 120) {
+          showErrorMessage("120歳以上の方は選択できません。");
+          return false;
+        }
+        
+        clearErrorDisplay();
+        console.log('Validation passed');
+        return true;
+      }
+      
+      return false;
+    }
+
+    // エラーメッセージを表示する関数
+    function showErrorMessage(message) {
+      clearErrorDisplay();
+      
+      const errorDiv = document.createElement("div");
+      errorDiv.className = "error-message";
+      errorDiv.textContent = message;
+      
+      const form = document.getElementById("birthForm");
+      if (form) {
+        form.appendChild(errorDiv);
+      }
+    }
+
+
+
+    // エラー表示をクリアする関数
+    function clearErrorDisplay() {
+      const existingError = document.querySelector(".error-message");
+      
+      if (existingError) {
+        existingError.remove();
+      }
+    }
+
+    // フォーム送信処理
+    function setupFormSubmission() {
+      const form = document.getElementById("birthForm");
+      if (!form) {
+        console.log('Form not found, retrying...');
+        setTimeout(setupFormSubmission, 100);
+        return;
+      }
+      
+      form.addEventListener("submit", function(e) {
+        e.preventDefault();
+        console.log('Form submitted');
+        
+        const yearSelect = document.getElementById("year");
+        const monthSelect = document.getElementById("month");
+        const daySelect = document.getElementById("day");
+        
+        if (!yearSelect || !monthSelect || !daySelect) {
+          console.error('Select elements not found during submission');
+          return;
+        }
+        
+        const year = yearSelect.value;
+        const month = monthSelect.value;
+        const day = daySelect.value;
+        
+        console.log('Form values:', year, month, day);
+        
+        // 入力チェック
+        if (!year || !month || !day) {
+          showErrorMessage("生年月日をすべて選択してください。");
+          return;
+        }
+        
+        // 日付の妥当性チェック
+        if (!validateCurrentInput()) {
+          return;
+        }
+        
+
+        
+        // ボタンを無効化
+        const submitBtn = document.getElementById("submitBtn");
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = "処理中...";
+        }
+        
+        // 結果ページにリダイレクト
+        setTimeout(() => {
+          const params = new URLSearchParams({
+            year: year,
+            month: month,
+            day: day
+          });
+          window.location.href = `kekka.html?${params.toString()}`;
+        }, 1000);
+      });
+      
+      console.log('Form submission handler added');
+    }
+
+    // 初期化処理
+    function initialize() {
+      console.log('Starting initialization...');
+      initializeSelects();
+      setupFormSubmission();
+    }
+
+    // DOMContentLoadedで初期化
+    document.addEventListener("DOMContentLoaded", function() {
+      console.log("DOMContentLoaded event triggered");
+      initialize();
+    });
+
+    // 既にDOMが読み込まれている場合の対応
+    if (document.readyState !== 'loading') {
+      console.log("Document already loaded, initializing immediately");
+      initialize();
+    }
+  </script>
+</body>
+</html>

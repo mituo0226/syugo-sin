@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>千手観音 | 守護神詳細 | AI鑑定師 龍</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%);
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(13, 13, 26, 0.8);
+      border: 1px solid rgba(102, 204, 255, 0.4);
+      border-radius: 8px;
+      padding: 10px 20px;
+      color: #66ccff;
+      font-size: 0.9em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      text-decoration: none;
+      z-index: 1000;
+    }
+
+    .back-button:hover {
+      background: rgba(102, 204, 255, 0.2);
+      border-color: rgba(102, 204, 255, 0.8);
+      transform: scale(1.05);
+    }
+
+    .guardian-header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 40px 0;
+    }
+
+    .guardian-image {
+      width: 200px;
+      height: 200px;
+      border-radius: 20px;
+      object-fit: cover;
+      margin-bottom: 20px;
+      box-shadow: 0 0 40px rgba(157, 78, 221, 0.6);
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .guardian-name {
+      font-size: 2.5em;
+      background: linear-gradient(45deg, #c77dff, #9d4edd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      text-shadow: 0 0 20px rgba(199, 125, 255, 0.3);
+    }
+
+    .guardian-catch {
+      font-size: 1.3em;
+      color: #b8b8b8;
+      margin-bottom: 20px;
+    }
+
+    .guardian-message {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-style: italic;
+      font-size: 1.1em;
+      line-height: 1.8;
+      color: #e0e0e0;
+      text-align: center;
+    }
+
+    .section {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .section h3 {
+      font-size: 1.5em;
+      color: #c77dff;
+      margin-bottom: 20px;
+      border-bottom: 2px solid rgba(199, 125, 255, 0.3);
+      padding-bottom: 10px;
+    }
+
+    .story-text {
+      font-size: 1.1em;
+      line-height: 1.8;
+      color: #e0e0e0;
+      margin-bottom: 20px;
+    }
+
+    .abilities-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .abilities-list li {
+      font-size: 1em;
+      color: #b8b8b8;
+      margin-bottom: 12px;
+      padding-left: 25px;
+      position: relative;
+      line-height: 1.6;
+    }
+
+    .abilities-list li::before {
+      content: '✦';
+      position: absolute;
+      left: 0;
+      color: #c77dff;
+      font-size: 1.2em;
+    }
+
+    .personality-text {
+      font-size: 1.1em;
+      line-height: 1.8;
+      color: #e0e0e0;
+    }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .benefit-item {
+      background: rgba(199, 125, 255, 0.1);
+      border-radius: 15px;
+      padding: 20px;
+      border: 1px solid rgba(199, 125, 255, 0.2);
+    }
+
+    .benefit-title {
+      font-size: 1.1em;
+      color: #c77dff;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    .benefit-desc {
+      font-size: 0.95em;
+      color: #b8b8b8;
+      line-height: 1.6;
+    }
+
+    .pray-times {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .pray-times li {
+      font-size: 1em;
+      color: #b8b8b8;
+      margin-bottom: 10px;
+      padding-left: 25px;
+      position: relative;
+      line-height: 1.6;
+    }
+
+    .pray-times li::before {
+      content: '✧';
+      position: absolute;
+      left: 0;
+      color: #c77dff;
+    }
+
+    /* レスポンシブ対応 */
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+
+      .guardian-header {
+        padding: 20px 0;
+      }
+
+      .guardian-image {
+        width: 150px;
+        height: 150px;
+      }
+
+      .guardian-name {
+        font-size: 2em;
+      }
+
+      .guardian-catch {
+        font-size: 1.1em;
+      }
+
+      .section {
+        padding: 20px;
+      }
+
+      .guardian-message {
+        padding: 20px;
+        font-size: 1em;
+      }
+
+      .benefits-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .back-button {
+        top: 15px;
+        left: 15px;
+        padding: 8px 16px;
+        font-size: 0.8em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="../public/guardians-list.html" class="back-button">← 一覧に戻る</a>
+
+  <div class="container">
+    <div class="guardian-header">
+      <img src="../photo/senju.png" alt="千手観音" class="guardian-image">
+      <h1 class="guardian-name">千手観音</h1>
+      <p class="guardian-catch">千の手で、すべてを包みこむ慈悲の守護者</p>
+    </div>
+
+    <div class="guardian-message">
+      "……泣いてもよい。悲しみを隠さず、我のもとに委ねなさい。汝の痛みを幾千の手で受け止めよう。けれど、この手はただ抱くだけではない。汝が再び歩み出すための力を授けるためにあるのだ。"
+    </div>
+
+    <div class="section">
+      <h3>千手観音の物語</h3>
+      <p class="story-text">
+        かつて『すべての命を救う』と誓った観音は、その誓いの重さに心も体も砕け散った。阿弥陀如来の光により蘇り、千の手と千の眼を持つ新たな姿となった。
+      </p>
+    </div>
+
+    <div class="section">
+      <h3>主な能力</h3>
+      <ul class="abilities-list">
+        <li>千の手：あらゆる苦しみを抱きとめる</li>
+        <li>千の眼：隠された涙や声なき叫びを見抜く</li>
+        <li>慈悲の光：絶望を和らげ、心を温める</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3>性格・特徴</h3>
+      <p class="personality-text">
+        柔らかく落ち着いた雰囲気で母や姉のように寄り添う。ただし諦めることだけは許さない芯の強さを持つ。
+      </p>
+    </div>
+
+    <div class="section">
+      <h3>ご利益</h3>
+      <div class="benefits-grid">
+        <div class="benefit-item">
+          <div class="benefit-title">苦しみの救済</div>
+          <div class="benefit-desc">あらゆる苦しみや悲しみを千の手で受け止め、心を癒してくれる</div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-title">希望の光</div>
+          <div class="benefit-desc">絶望的な状況でも希望を見出し、前に進む力を授けてくれる</div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-title">慈悲の抱擁</div>
+          <div class="benefit-desc">母のような優しさで心を包み、安心感を与えてくれる</div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-title">再起の力</div>
+          <div class="benefit-desc">挫折や失敗から立ち上がる勇気と力を授けてくれる</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>お祈りに適した時</h3>
+      <ul class="pray-times">
+        <li>深い悲しみや苦しみに包まれている時</li>
+        <li>絶望的な状況で希望を見失った時</li>
+        <li>心が疲れ果てて癒しを求める時</li>
+        <li>挫折や失敗から立ち上がりたい時</li>
+        <li>母のような優しさと安心感を求める時</li>
+      </ul>
+    </div>
+  </div>
+
+
+</body>
+</html>

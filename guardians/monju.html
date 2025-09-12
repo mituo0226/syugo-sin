@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>文殊菩薩 | 守護神詳細 | AI鑑定師 龍</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%);
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(13, 13, 26, 0.8);
+      border: 1px solid rgba(102, 204, 255, 0.4);
+      border-radius: 8px;
+      padding: 10px 20px;
+      color: #66ccff;
+      font-size: 0.9em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      text-decoration: none;
+      z-index: 1000;
+    }
+
+    .back-button:hover {
+      background: rgba(102, 204, 255, 0.2);
+      border-color: rgba(102, 204, 255, 0.8);
+      transform: scale(1.05);
+    }
+
+    .guardian-header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 40px 0;
+    }
+
+    .guardian-image {
+      width: 200px;
+      height: 200px;
+      border-radius: 20px;
+      object-fit: cover;
+      margin-bottom: 20px;
+      box-shadow: 0 0 40px rgba(157, 78, 221, 0.6);
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .guardian-name {
+      font-size: 2.5em;
+      background: linear-gradient(45deg, #c77dff, #9d4edd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      text-shadow: 0 0 20px rgba(199, 125, 255, 0.3);
+    }
+
+    .guardian-catch {
+      font-size: 1.3em;
+      color: #b8b8b8;
+      margin-bottom: 20px;
+    }
+
+    .guardian-message {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-style: italic;
+      font-size: 1.1em;
+      line-height: 1.8;
+      color: #e0e0e0;
+      text-align: center;
+    }
+
+    .section {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .section h3 {
+      font-size: 1.5em;
+      color: #c77dff;
+      margin-bottom: 20px;
+      border-bottom: 2px solid rgba(199, 125, 255, 0.3);
+      padding-bottom: 10px;
+    }
+
+    .story-text {
+      font-size: 1.1em;
+      line-height: 1.8;
+      color: #e0e0e0;
+      margin-bottom: 20px;
+    }
+
+    .abilities-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .abilities-list li {
+      font-size: 1em;
+      color: #b8b8b8;
+      margin-bottom: 12px;
+      padding-left: 25px;
+      position: relative;
+      line-height: 1.6;
+    }
+
+    .abilities-list li::before {
+      content: '✦';
+      position: absolute;
+      left: 0;
+      color: #c77dff;
+      font-size: 1.2em;
+    }
+
+    .personality-text {
+      font-size: 1.1em;
+      line-height: 1.8;
+      color: #e0e0e0;
+    }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .benefit-item {
+      background: rgba(199, 125, 255, 0.1);
+      border-radius: 15px;
+      padding: 20px;
+      border: 1px solid rgba(199, 125, 255, 0.2);
+    }
+
+    .benefit-title {
+      font-size: 1.1em;
+      color: #c77dff;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    .benefit-desc {
+      font-size: 0.95em;
+      color: #b8b8b8;
+      line-height: 1.6;
+    }
+
+    .pray-times {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .pray-times li {
+      font-size: 1em;
+      color: #b8b8b8;
+      margin-bottom: 10px;
+      padding-left: 25px;
+      position: relative;
+      line-height: 1.6;
+    }
+
+    .pray-times li::before {
+      content: '✧';
+      position: absolute;
+      left: 0;
+      color: #c77dff;
+    }
+
+    /* レスポンシブ対応 */
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+
+      .guardian-header {
+        padding: 20px 0;
+      }
+
+      .guardian-image {
+        width: 150px;
+        height: 150px;
+      }
+
+      .guardian-name {
+        font-size: 2em;
+      }
+
+      .guardian-catch {
+        font-size: 1.1em;
+      }
+
+      .section {
+        padding: 20px;
+      }
+
+      .guardian-message {
+        padding: 20px;
+        font-size: 1em;
+      }
+
+      .benefits-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .back-button {
+        top: 15px;
+        left: 15px;
+        padding: 8px 16px;
+        font-size: 0.8em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="../public/guardians-list.html" class="back-button">← 一覧に戻る</a>
+
+  <div class="container">
+    <div class="guardian-header">
+      <img src="../photo/monju.png" alt="文殊菩薩" class="guardian-image">
+      <h1 class="guardian-name">文殊菩薩</h1>
+      <p class="guardian-catch">慈愛のまなざしと智慧の剣で、迷いを晴らす母なる守護者</p>
+    </div>
+
+    <div class="guardian-message">
+      "愛しき子よ、恐れることはない。この剣は汝を守り、苦しみを断ち切るためにある。どんなに深い悩みも、私が共に抱きしめよう。そして汝が歩むべき道を、優しい光で照らしていこう。忘れるな、汝は決してひとりではない。私は常に、汝のそばにいるのだから。"
+    </div>
+
+    <div class="section">
+      <h3>文殊菩薩の物語</h3>
+      <p class="story-text">
+        文殊菩薩は、智慧を象徴する存在。手にする剣は、争いのためではなく、人を縛る苦悩や因縁を断ち切り、心を自由にするための神の力を宿している。その眼差しは母のように優しく、苦しみを包み込みながら、進むべき道を明るく照らす。文殊の存在は『安心できる抱擁』と『未来へ導く光』を併せ持ち、悩める者を救い出してくれる。
+      </p>
+    </div>
+
+    <div class="section">
+      <h3>主な能力</h3>
+      <ul class="abilities-list">
+        <li>慈愛の剣：苦しみや因縁を断ち切り、心を解き放つ</li>
+        <li>真理の光：迷いを晴らし、道を示す</li>
+        <li>母性の慈悲：心を包み込み、安心と希望を与える</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3>性格・特徴</h3>
+      <p class="personality-text">
+        柔らかく温かい雰囲気を纏い、人々を安心させる存在。決して恐れを抱かせず、優しい抱擁の中で自然と成長へ導いてくれる。『そっと背中を押してくれる母』のような守護者。
+      </p>
+    </div>
+
+    <div class="section">
+      <h3>ご利益</h3>
+      <div class="benefits-grid">
+        <div class="benefit-item">
+          <div class="benefit-title">苦悩の解放</div>
+          <div class="benefit-desc">心を縛る苦しみや因縁を断ち切り、自由な心を授ける</div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-title">道の開示</div>
+          <div class="benefit-desc">迷いを晴らし、進むべき道を明るく照らしてくれる</div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-title">母性の抱擁</div>
+          <div class="benefit-desc">優しい慈悲で心を包み、安心と希望を与えてくれる</div>
+        </div>
+        <div class="benefit-item">
+          <div class="benefit-title">成長の導き</div>
+          <div class="benefit-desc">自然な成長を促し、背中を優しく押してくれる</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>お祈りに適した時</h3>
+      <ul class="pray-times">
+        <li>心が苦しみや因縁に縛られている時</li>
+        <li>迷いが深く、進むべき道が見えない時</li>
+        <li>母のような優しさと安心感を求める時</li>
+        <li>成長への導きを求める時</li>
+        <li>心を自由にしたい時</li>
+      </ul>
+    </div>
+  </div>
+
+
+</body>
+</html>

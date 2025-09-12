@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>観音霊威護符｜邪気浄化と人生再生</title>
+  <meta name="description" content="日本中の観音像の霊力を封じ込めた護符。邪気や悪霊を吸収して浄化し、持つ者の人生を再生へと導く力を宿す。">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d1a;
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      overflow-y: auto;
+      position: relative;
+      min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* 神秘的な背景効果 */
+    .mystical-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(102, 204, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(199, 125, 255, 0.05) 0%, transparent 50%);
+      z-index: -1;
+      animation: bgPulse 8s ease-in-out infinite;
+    }
+    
+    @keyframes bgPulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.6; }
+    }
+    
+    /* 浮遊する粒子 */
+    .floating-particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: #66ccff;
+      border-radius: 50%;
+      animation: float 6s linear infinite;
+    }
+    
+    .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+    .particle:nth-child(2) { left: 20%; animation-delay: 1s; }
+    .particle:nth-child(3) { left: 30%; animation-delay: 2s; }
+    .particle:nth-child(4) { left: 40%; animation-delay: 3s; }
+    .particle:nth-child(5) { left: 50%; animation-delay: 4s; }
+    .particle:nth-child(6) { left: 60%; animation-delay: 5s; }
+    .particle:nth-child(7) { left: 70%; animation-delay: 0s; }
+    .particle:nth-child(8) { left: 80%; animation-delay: 1s; }
+    .particle:nth-child(9) { left: 90%; animation-delay: 2s; }
+    
+    @keyframes float {
+      0% {
+        top: 100%;
+        opacity: 0;
+        transform: translateY(0) scale(0);
+      }
+      10% {
+        opacity: 1;
+        transform: translateY(-10px) scale(1);
+      }
+      90% {
+        opacity: 1;
+        transform: translateY(-90vh) scale(1);
+      }
+      100% {
+        top: 0;
+        opacity: 0;
+        transform: translateY(-100vh) scale(0);
+      }
+    }
+    
+    .container {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+      z-index: 1;
+    }
+    
+    /* タイトル */
+    .title {
+      position: relative;
+      margin: 0 0 30px 0;
+      z-index: 10;
+      text-align: center;
+      animation: titleGlow 3s ease-in-out infinite alternate;
+    }
+    
+    .title-main {
+      font-size: 1.6em;
+      color: #66ccff;
+      text-shadow: 0 0 20px rgba(102, 204, 255, 0.5);
+      margin-bottom: 5px;
+    }
+    
+    .title-ruby {
+      font-size: 0.8em;
+      color: #99e0ff;
+      text-shadow: 0 0 10px rgba(153, 224, 255, 0.5);
+      opacity: 0.9;
+    }
+    
+    @keyframes titleGlow {
+      0% { text-shadow: 0 0 20px rgba(102, 204, 255, 0.5); }
+      100% { text-shadow: 0 0 30px rgba(102, 204, 255, 0.8); }
+    }
+    
+    /* 護符画像 */
+    .gofu-image {
+      max-width: 90vw;
+      max-height: 60vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 15px;
+      box-shadow: 0 0 50px rgba(102, 204, 255, 0.3);
+      -webkit-user-drag: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      pointer-events: none;
+      animation: imageGlow 4s ease-in-out infinite alternate;
+      margin: 20px 0;
+    }
+    
+    @keyframes imageGlow {
+      0% { box-shadow: 0 0 50px rgba(102, 204, 255, 0.3); }
+      100% { box-shadow: 0 0 80px rgba(102, 204, 255, 0.6); }
+    }
+    
+    /* 戻るボタン */
+    .back-button {
+      position: relative;
+      padding: 15px 40px;
+      font-size: 1.2em;
+      background: linear-gradient(90deg, #66ccff, #3399ff);
+      border: none;
+      border-radius: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #000;
+      box-shadow: 0 4px 15px rgba(102,204,255,0.3);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      z-index: 10;
+      margin: 20px 0 40px 0;
+    }
+    
+    .back-button:hover {
+      background: linear-gradient(90deg, #99e0ff, #66ccff);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102,204,255,0.4);
+    }
+    
+    /* 説明文 */
+    .description {
+      position: relative;
+      font-size: 1.1em;
+      line-height: 1.6;
+      text-align: center;
+      max-width: 80vw;
+      background: rgba(13, 13, 26, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 20px;
+      border: 2px solid rgba(102, 204, 255, 0.3);
+      z-index: 10;
+      margin: 20px 0 40px 0;
+    }
+    
+    /* モバイル向け調整 */
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+      
+      .title {
+        font-size: 1.2em;
+        margin-bottom: 20px;
+      }
+      
+      .title-main {
+        font-size: 1.3em;
+      }
+      
+      .title-ruby {
+        font-size: 0.7em;
+      }
+      
+      .gofu-image {
+        max-width: 95vw;
+        max-height: 70vh;
+      }
+      
+      .description {
+        font-size: 1.0em;
+        padding: 15px;
+        margin: 15px 0 30px 0;
+      }
+      
+      .back-button {
+        font-size: 1.1em;
+        padding: 12px 30px;
+        margin: 15px 0 30px 0;
+      }
+    }
+    
+    /* iPhone X以降のノッチ対応 */
+    @supports (padding: max(0px)) {
+      .container {
+        padding-top: max(20px, env(safe-area-inset-top));
+        padding-bottom: max(30px, env(safe-area-inset-bottom));
+      }
+    }
+    
+         /* iPhone向けスクロール調整 */
+     @supports (-webkit-touch-callout: none) {
+       body {
+         -webkit-overflow-scrolling: touch;
+       }
+     }
+  </style>
+</head>
+<body>
+  <!-- 神秘的な背景 -->
+  <div class="mystical-bg"></div>
+  
+  <!-- 浮遊する粒子 -->
+  <div class="floating-particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <div class="container">
+    <!-- タイトル -->
+           <h1 class="title">
+         <div class="title-main">観音霊威護符</div>
+         <div class="title-ruby">かんのんれいいごふ</div>
+       </h1>
+    
+    <!-- 護符画像 -->
+    <img class="gofu-image" src="../photo/gofu/gofu1000.png" alt="金箔和紙に宝石装飾と発光する紋様。観音像の霊力が込められ、邪気や悪霊を浄化し、人生を立て直す力を宿す護符アート。">
+    
+    <!-- 説明文 -->
+    <div class="description">
+      金箔の下地に光の環が広がり、宝石のように輝く装飾がちりばめられた荘厳な護符。その中心には、日本各地で祀られる観音像の霊威が込められており、積み重なった人々の祈りと念が封じられています。邪気や悪霊を吸収して浄化する力を持ち、持つ者の過去の苦しみを帳消しにし、新たな人生の道を切り開くとされています。
+    </div>
+    
+    <!-- 戻るボタン -->
+    <button class="back-button" onclick="goBack()">商品一覧に戻る</button>
+  </div>
+  
+  <script>
+    // 戻るボタンの処理
+    function goBack() {
+              // 直接shop/gofu.htmlの一覧ページに移動（ローディングを飛ばす）
+        window.location.href = '../shop/gofu.html#products';
+    }
+    
+    // 右クリックメニュー無効化
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+    
+    // キーボードショートカット無効化
+    document.addEventListener('keydown', function(e) {
+      // Ctrl+S, Ctrl+U, F12, Ctrl+Shift+I などを無効化
+      if (
+        (e.ctrlKey && (e.key === 's' || e.key === 'u' || e.key === 'i')) ||
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && e.key === 'I')
+      ) {
+        e.preventDefault();
+      }
+    });
+    
+    // ドラッグ&ドロップ無効化
+    document.addEventListener('dragstart', function(e) {
+      e.preventDefault();
+    });
+    
+    // 画像のダウンロード防止
+    document.addEventListener('selectstart', function(e) {
+      e.preventDefault();
+    });
+  </script>
+</body>
+</html>

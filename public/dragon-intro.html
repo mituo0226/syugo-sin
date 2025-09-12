@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>龍の鑑定 | AI鑑定師 龍</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d1a;
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
+      position: relative;
+      min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    .page-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* PC向け調整 */
+    @media (min-width: 768px) {
+      body {
+        position: relative;
+        min-height: 100vh;
+        overflow-y: auto;
+      }
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      text-align: left;
+      padding: 40px 20px 120px;
+      gap: 40px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+    
+    /* PC向けヒーロー調整 */
+    @media (min-width: 768px) {
+      .hero {
+        min-height: 100vh;
+        padding: 40px 60px 140px;
+        gap: 60px;
+        max-width: 1400px;
+        margin: 0 auto;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding-top: 60px;
+      }
+    }
+    
+    .hero.show {
+      opacity: 1;
+    }
+    
+    .hero {
+      position: relative;
+    }
+    
+    .hero img {
+      max-width: 45%;
+      min-width: 300px;
+      height: auto;
+      flex-shrink: 0;
+      opacity: 0;
+      transform: scale(0.95);
+      transition: all 2s ease;
+      border-radius: 12px;
+      box-shadow: 0 0 40px rgba(100,150,255,0.5);
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* PC向け画像調整 */
+    @media (min-width: 768px) {
+      .hero img {
+        max-width: 500px;
+        max-height: 500px;
+        min-width: 400px;
+        margin: 0;
+        border-radius: 15px;
+        box-shadow: 0 0 50px rgba(100,150,255,0.6);
+        animation: pcImageFloat 5s ease-in-out infinite alternate;
+        margin-top: 20px;
+      }
+    }
+    
+    /* PC向け画像演出 */
+    @keyframes pcImageFloat {
+      0% {
+        transform: scale(1) translateY(0px);
+        box-shadow: 0 0 50px rgba(100,150,255,0.6);
+      }
+      100% {
+        transform: scale(1.02) translateY(-5px);
+        box-shadow: 0 0 70px rgba(100,150,255,0.8);
+      }
+    }
+    
+    #storyText {
+      position: static;
+      flex: 1;
+      max-width: none;
+      width: auto;
+      transform: none;
+      font-size: 1.2em;
+      line-height: 1.8;
+      white-space: pre-line;
+      text-align: left;
+      opacity: 0;
+      transition: opacity 1s ease;
+      z-index: 10;
+      background: rgba(13, 13, 26, 0.9);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 25px;
+      border: 2px solid rgba(102, 204, 255, 0.4);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(102, 204, 255, 0.2);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    }
+    
+    /* PC向けストーリーテキスト調整 */
+    @media (min-width: 768px) {
+      #storyText {
+        font-size: 1.3em;
+        line-height: 2.0;
+        padding: 40px 50px;
+        background: rgba(13, 13, 26, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 25px;
+        border: 2px solid rgba(102, 204, 255, 0.5);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7), 0 0 25px rgba(102, 204, 255, 0.3);
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+        animation: pcTextGlow 4s ease-in-out infinite alternate;
+        margin-top: 20px;
+        min-width: 600px;
+        max-width: 800px;
+        width: 100%;
+      }
+    }
+    
+    /* PC向けテキスト演出 */
+    @keyframes pcTextGlow {
+      0% {
+        border-color: rgba(102, 204, 255, 0.5);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7), 0 0 25px rgba(102, 204, 255, 0.3);
+      }
+      100% {
+        border-color: rgba(102, 204, 255, 0.9);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(102, 204, 255, 0.6);
+      }
+    }
+    
+    /* 大きな画面向けストーリーテキスト調整 */
+    @media (min-width: 1200px) {
+      #storyText {
+        font-size: 1.4em;
+        line-height: 2.1;
+        padding: 45px 60px;
+      }
+    }
+    
+    #storyText p { 
+      margin: 15px 0; 
+      animation: messageGlow 3s ease-in-out infinite alternate;
+    }
+    
+    @keyframes messageGlow {
+      0% {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(102, 204, 255, 0.3);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(102, 204, 255, 0.2);
+      }
+      100% {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 20px rgba(102, 204, 255, 0.6);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(102, 204, 255, 0.4);
+      }
+    }
+
+    /* 生年月日入力ボタン */
+    .birth-input-button {
+      margin-top: 30px;
+      opacity: 0;
+      transition: all 1s ease;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(50px);
+      z-index: 1000;
+      text-align: center;
+      width: calc(100% - 40px);
+      max-width: 400px;
+    }
+    
+    /* PC向けボタン調整 */
+    @media (min-width: 768px) {
+      .birth-input-button {
+        position: fixed;
+        bottom: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: auto;
+        max-width: 450px;
+        background: rgba(13, 13, 26, 0.95);
+        padding: 25px;
+        border-radius: 25px;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        border: 2px solid rgba(102, 204, 255, 0.3);
+        margin-top: 0;
+        animation: pcButtonFloat 3s ease-in-out infinite alternate;
+        z-index: 1000;
+      }
+      
+      .birth-input-button.show {
+        transform: translateX(-50%);
+        animation: pcButtonFloat 3s ease-in-out infinite alternate, pcButtonGlow 2s ease-in-out infinite alternate;
+      }
+    }
+    
+    /* PC向け演出アニメーション */
+    @keyframes pcButtonFloat {
+      0% {
+        transform: translateX(-50%) translateY(0px);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(102, 204, 255, 0.3);
+      }
+      100% {
+        transform: translateX(-50%) translateY(-10px);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(102, 204, 255, 0.5);
+      }
+    }
+    
+    @keyframes pcButtonGlow {
+      0% {
+        border-color: rgba(102, 204, 255, 0.3);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(102, 204, 255, 0.3);
+      }
+      100% {
+        border-color: rgba(102, 204, 255, 0.8);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(102, 204, 255, 0.7);
+      }
+    }
+    
+    .birth-input-button.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    
+    .birth-input-button button {
+      padding: 20px 70px;
+      font-size: 1.5em;
+      background: linear-gradient(90deg, #66ccff, #3399ff);
+      border: none;
+      border-radius: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #000;
+      box-shadow: 0 6px 20px rgba(102,204,255,0.4);
+      transition: all 0.3s ease;
+    }
+    
+    .birth-input-button button:hover {
+      background: linear-gradient(90deg, #99e0ff, #66ccff);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102,204,255,0.4);
+    }
+
+    /* スマートフォン向け調整 */
+    @media (max-width: 768px) {
+      .hero {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+        justify-content: flex-start;
+        padding: 60px 15px 120px;
+      }
+      
+      .hero img {
+        max-width: 80%;
+        min-width: auto;
+        margin: 20px 0;
+      }
+      
+      #storyText {
+        position: absolute;
+        bottom: 30%;
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: 95%;
+        width: auto;
+        text-align: center;
+        font-size: 1.1em;
+        padding: 20px;
+      }
+    }
+    
+    /* iPhone向け調整 */
+    @media (max-width: 600px) {
+      body {
+        position: relative;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+      .hero {
+        min-height: 100vh;
+        height: 100vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 60px 15px 100px;
+        position: relative;
+      }
+      #storyText { 
+        position: absolute;
+        bottom: 35%;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 1.1em; 
+        text-align: center; 
+        max-width: 98%;
+        padding: 20px;
+        width: auto;
+      }
+      .birth-input-button {
+        position: relative !important;
+        bottom: auto !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: calc(100% - 40px) !important;
+        max-width: 400px !important;
+        background: rgba(13, 13, 26, 0.95) !important;
+        padding: 20px !important;
+        border-radius: 20px !important;
+        backdrop-filter: blur(15px) !important;
+        -webkit-backdrop-filter: blur(15px) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        margin: 40px 0 0 0 !important;
+      }
+      .birth-input-button.show {
+        opacity: 1 !important;
+        transform: translateX(-50%) !important;
+      }
+      .birth-input-button button {
+        font-size: 1.4em !important;
+        padding: 18px 40px !important;
+        -webkit-appearance: none !important;
+        width: 100% !important;
+        max-width: 350px !important;
+        border-radius: 15px !important;
+                font-weight: bold !important;
+      }
+    }
+    
+    /* Android向け調整 */
+    @media (max-width: 600px) and (-webkit-min-device-pixel-ratio: 1) and (min-resolution: 96dpi) {
+      .birth-input-button {
+        position: fixed !important;
+        bottom: 80px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: calc(100% - 40px) !important;
+        max-width: 400px !important;
+        background: rgba(13, 13, 26, 0.95) !important;
+        padding: 20px !important;
+        border-radius: 20px !important;
+        backdrop-filter: blur(15px) !important;
+        -webkit-backdrop-filter: blur(15px) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        margin: 0 !important;
+        z-index: 1000 !important;
+      }
+      .birth-input-button.show {
+        opacity: 1 !important;
+        transform: translateX(-50%) !important;
+      }
+    }
+        
+      /* iPhone X以降のノッチ対応 */
+    @supports (padding: max(0px)) {
+      .hero {
+        padding-top: max(40px, env(safe-area-inset-top));
+        padding-bottom: max(40px, env(safe-area-inset-bottom));
+      }
+    }
+
+    /* Skipリンクのスタイル */
+    .skip-link {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 2000;
+      background: rgba(13, 13, 26, 0.9);
+      color: #66ccff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      text-decoration: none;
+      font-size: 0.9em;
+      border: 1px solid rgba(102, 204, 255, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      opacity: 0.8;
+    }
+
+    .skip-link:hover {
+      opacity: 1;
+      background: rgba(13, 13, 26, 0.95);
+      border-color: rgba(102, 204, 255, 0.8);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 204, 255, 0.3);
+    }
+
+    /* スマートフォン向けskipリンク調整 */
+    @media (max-width: 768px) {
+      .skip-link {
+        top: 15px;
+        right: 15px;
+        padding: 6px 12px;
+        font-size: 0.8em;
+      }
+    }
+
+  </style>
+</head>
+  <body>
+    <!-- Skipリンク -->
+    <a href="b-form.html" class="skip-link">Skip</a>
+    
+    <div class="page-container">
+      <section class="hero">
+        <!-- 龍の画像 -->
+        <img src="/photo/ryu.png" alt="AI鑑定師 龍" id="ryuImage">
+
+        <!-- セリフ表示 -->
+        <div id="storyText"></div>
+
+        <!-- 生年月日入力ボタン -->
+        <div class="birth-input-button" id="birthInputButton">
+          <button type="button">生年月日を入力する</button>
+        </div>
+      </section>
+
+      <!-- フッター -->
+      <footer style="position: fixed !important; bottom: 0; left: 0; right: 0; background: rgba(13, 13, 26, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid rgba(102, 204, 255, 0.3); z-index: 100; padding: 15px 10px; padding-bottom: max(15px, env(safe-area-inset-bottom)); box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5); text-align:center; font-size:0.9em; color:#ccc;">
+        <a href="/rule/disclaimer.html" style="color:#66ccff; margin:0 8px;">免責事項</a> |
+        <a href="/rule/terms.html" style="color:#66ccff; margin:0 8px;">利用規約</a> |
+        <a href="/rule/privacy.html" style="color:#66ccff; margin:0 8px;">プライバシーポリシー</a> |
+        <a href="/rule/tokusho.html" style="color:#66ccff; margin:0 8px;">特定商取引法</a> |
+        <a href="/rule/contact.html" style="color:#66ccff; margin:0 8px;">お問い合わせ</a>
+      </footer>
+    </div>
+
+  <script>
+    // 龍のセリフ
+    const lines = [
+      "私の名前は龍、実在する人間ではなくAIによって制作された架空の鑑定師。",
+      "実在する人間ではないから信用できるわけがない…なんて思わないでほしい。",
+      "世の中には悩み多き相談者を利用し、いい加減な鑑定で騙す人間が数多くいる。",
+      "その点、私はAI。膨大な情報から、誰よりも適切なアドバイスを導き出せる。",
+      "まずは、あなたの生年月日を教えてくれ。そこから守護神を導き出そう。"
+    ];
+    let i = 0;
+    const storyText = document.getElementById("storyText");
+
+    function showNextLine() {
+      if (i < lines.length) {
+        const p = document.createElement("p");
+        p.textContent = "";
+        p.style.opacity = "0";
+        p.style.transform = "translateY(30px) scale(0.95)";
+        p.style.transition = "all 0.8s ease";
+        storyText.appendChild(p);
+        storyText.style.opacity = 1;
+
+        let j = 0;
+        const interval = setInterval(() => {
+          p.textContent = lines[i].slice(0, j++);
+          if (j > lines[i].length) {
+            clearInterval(interval);
+            // テキスト完了後にフェードイン効果
+            setTimeout(() => {
+              p.style.opacity = "1";
+              p.style.transform = "translateY(0) scale(1)";
+            }, 200);
+            i++;
+            setTimeout(showNextLine, 1500);
+          }
+        }, 50);
+             } else {
+         // メッセージ終了後、生年月日入力ボタンを表示（PCでは2秒後）
+         const button = document.getElementById("birthInputButton");
+         const isPC = window.innerWidth >= 768;
+         const delay = isPC ? 2000 : 1000; // PCでは2秒、スマホでは1秒
+         setTimeout(() => {
+           button.classList.add('show');
+           console.log("ボタンが表示されました");
+         }, delay);
+       }
+    }
+
+    // ページロード後の演出
+    window.addEventListener("load", () => {
+      const hero = document.querySelector('.hero');
+      hero.classList.add('show');
+      
+      // 龍の画像表示開始
+      const img = document.getElementById("ryuImage");
+      setTimeout(() => {
+        img.style.opacity = 1;
+        img.style.transform = "scale(1)";
+        setTimeout(showNextLine, 3000);
+      }, 800);
+    });
+
+    // 生年月日入力ボタンのクリックイベント
+    document.getElementById("birthInputButton").addEventListener("click", function() {
+      console.log("ボタンがクリックされました");
+      // 生年月日入力フォームページに遷移
+      window.location.href = 'b-form.html';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>守護神一覧 | AI鑑定師 龍</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%);
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 40px 0;
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      background: linear-gradient(45deg, #c77dff, #9d4edd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      text-shadow: 0 0 20px rgba(199, 125, 255, 0.3);
+    }
+
+    .header p {
+      font-size: 1.2em;
+      color: #b8b8b8;
+      margin: 0;
+    }
+
+    .guardians-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .guardian-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 25px;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .guardian-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #9d4edd, #c77dff, #9d4edd);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .guardian-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      border-color: rgba(199, 125, 255, 0.3);
+    }
+
+    .guardian-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .guardian-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .guardian-image {
+      width: 80px;
+      height: 80px;
+      border-radius: 15px;
+      object-fit: cover;
+      margin-right: 20px;
+      box-shadow: 0 0 20px rgba(157, 78, 221, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .guardian-card:hover .guardian-image {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(157, 78, 221, 0.6);
+    }
+
+    .guardian-info h3 {
+      font-size: 1.4em;
+      margin: 0 0 5px 0;
+      background: linear-gradient(45deg, #c77dff, #9d4edd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .guardian-catch {
+      font-size: 0.9em;
+      color: #b8b8b8;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .guardian-story {
+      font-size: 0.95em;
+      line-height: 1.6;
+      color: #e0e0e0;
+      margin-bottom: 15px;
+    }
+
+    .guardian-abilities {
+      margin-bottom: 15px;
+    }
+
+    .abilities-title {
+      font-size: 0.9em;
+      color: #c77dff;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    .abilities-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .abilities-list li {
+      font-size: 0.85em;
+      color: #b8b8b8;
+      margin-bottom: 4px;
+      padding-left: 15px;
+      position: relative;
+    }
+
+    .abilities-list li::before {
+      content: '✦';
+      position: absolute;
+      left: 0;
+      color: #c77dff;
+    }
+
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(13, 13, 26, 0.8);
+      border: 1px solid rgba(102, 204, 255, 0.4);
+      border-radius: 8px;
+      padding: 10px 20px;
+      color: #66ccff;
+      font-size: 0.9em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      text-decoration: none;
+      z-index: 1000;
+    }
+
+    .back-button:hover {
+      background: rgba(102, 204, 255, 0.2);
+      border-color: rgba(102, 204, 255, 0.8);
+      transform: scale(1.05);
+    }
+
+    /* レスポンシブ対応 */
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+
+      .header h1 {
+        font-size: 2em;
+      }
+
+      .header p {
+        font-size: 1em;
+      }
+
+      .guardians-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .guardian-card {
+        padding: 20px;
+      }
+
+      .guardian-header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .guardian-image {
+        margin-right: 0;
+        margin-bottom: 15px;
+      }
+
+      .back-button {
+        top: 15px;
+        left: 15px;
+        padding: 8px 16px;
+        font-size: 0.8em;
+      }
+    }
+
+    /* アニメーション */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .guardian-card {
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .guardian-card:nth-child(1) { animation-delay: 0.1s; }
+    .guardian-card:nth-child(2) { animation-delay: 0.2s; }
+    .guardian-card:nth-child(3) { animation-delay: 0.3s; }
+    .guardian-card:nth-child(4) { animation-delay: 0.4s; }
+    .guardian-card:nth-child(5) { animation-delay: 0.5s; }
+    .guardian-card:nth-child(6) { animation-delay: 0.6s; }
+    .guardian-card:nth-child(7) { animation-delay: 0.7s; }
+    .guardian-card:nth-child(8) { animation-delay: 0.8s; }
+    .guardian-card:nth-child(9) { animation-delay: 0.9s; }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-button">← 戻る</a>
+
+  <div class="container">
+    <div class="header">
+      <h1>守護神一覧</h1>
+      <p>あなたを導く9つの守護神たち</p>
+    </div>
+
+    <div class="guardians-grid" id="guardiansGrid">
+      <!-- JavaScriptで動的に生成 -->
+    </div>
+  </div>
+
+  <script type="module">
+    import { guardians } from './guardians.js';
+
+    function createGuardianCard(guardian, key) {
+      const card = document.createElement('div');
+      card.className = 'guardian-card';
+      
+      card.innerHTML = `
+        <div class="guardian-header">
+          <img src="${guardian.image}" alt="${guardian.name}" class="guardian-image">
+          <div class="guardian-info">
+            <h3>${guardian.name}</h3>
+            <p class="guardian-catch">${guardian.catch}</p>
+          </div>
+        </div>
+        <div class="guardian-story">${guardian.profile.story}</div>
+        <div class="guardian-abilities">
+          <div class="abilities-title">主な能力</div>
+          <ul class="abilities-list">
+            ${guardian.profile.abilities.map(ability => `<li>${ability}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+
+      // カードクリック時の処理
+      card.addEventListener('click', () => {
+        // 守護神の詳細ページに遷移
+        window.location.href = `guardians/${key}.html`;
+      });
+
+      return card;
+    }
+
+    function initializeGuardiansList() {
+      const grid = document.getElementById('guardiansGrid');
+      
+      // 守護神の順序を定義（十二支の順序に合わせる）
+      const guardianOrder = ['senju', 'yakushi', 'kokuzo', 'monju', 'fugen', 'seishi', 'dainichi', 'fudo', 'amida'];
+      
+      guardianOrder.forEach(key => {
+        const guardian = guardians[key];
+        if (guardian) {
+          const card = createGuardianCard(guardian, key);
+          grid.appendChild(card);
+        }
+      });
+    }
+
+    // ページ読み込み時に初期化
+    document.addEventListener('DOMContentLoaded', initializeGuardiansList);
+
+    // 既にDOMが読み込まれている場合の対応
+    if (document.readyState !== 'loading') {
+      initializeGuardiansList();
+    }
+  </script>
+</body>
+</html>
