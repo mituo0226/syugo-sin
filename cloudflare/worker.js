@@ -45,7 +45,10 @@ export default {
         }, env.OPENAI_API_KEY);
 
         // 結果を段落配列に分割
-        const paragraphs = result.split("\n\n");
+        const paragraphs = result
+          .split(/\n{2,}/)
+          .map(p => p.trim())
+          .filter(p => p);
 
         return json({ ok: true, paragraphs }, env, request);
       } catch (err) {
