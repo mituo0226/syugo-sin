@@ -26,3 +26,6 @@ build/
 # ログファイル
 logs
 *.log
+
+# Wrangler の一時ファイル
+.wrangler/
