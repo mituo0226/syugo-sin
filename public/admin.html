@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>管理画面 | AI鑑定師 龍</title>
+  <title>テスト用チャット画面 | AI鑑定師 龍</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body { 
@@ -13,10 +13,10 @@
       min-height: 100vh;
     }
     .container { 
-      max-width: 800px; 
+      max-width: 1000px; 
       margin: 0 auto; 
       background: rgba(13, 13, 26, 0.9); 
-      padding: 30px; 
+      padding: 20px; 
       border-radius: 15px; 
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
       backdrop-filter: blur(10px);
@@ -26,285 +26,369 @@
       text-align: center; 
       color: #66ccff; 
       text-shadow: 0 0 20px rgba(102, 204, 255, 0.5);
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
-    .form-group { 
-      margin-bottom: 20px; 
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 70vh;
+      border: 1px solid rgba(102, 204, 255, 0.3);
+      border-radius: 10px;
+      overflow: hidden;
     }
-    label { 
-      display: block; 
-      margin-bottom: 8px; 
-      font-weight: bold; 
-      color: #66ccff;
+    .chat-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.3);
     }
-    input, button { 
-      padding: 12px; 
-      border: 1px solid rgba(102, 204, 255, 0.3); 
-      border-radius: 8px; 
-      width: 100%; 
-      box-sizing: border-box; 
-      background: rgba(255, 255, 255, 0.1);
+    .message {
+      margin-bottom: 15px;
+      padding: 10px 15px;
+      border-radius: 10px;
+      max-width: 80%;
+    }
+    .message.user {
+      background: linear-gradient(135deg, #66ccff, #3399ff);
+      color: #000;
+      margin-left: auto;
+      text-align: right;
+    }
+    .message.ai {
+      background: linear-gradient(135deg, #9d4edd, #7b2cbf);
       color: #fff;
-      font-size: 16px;
+      margin-right: auto;
     }
-    input:focus {
+    .message.system {
+      background: rgba(255, 107, 107, 0.2);
+      color: #ff6b6b;
+      border: 1px solid rgba(255, 107, 107, 0.5);
+      text-align: center;
+      max-width: 90%;
+      margin: 0 auto;
+    }
+    .input-area {
+      padding: 20px;
+      background: rgba(13, 13, 26, 0.8);
+      border-top: 1px solid rgba(102, 204, 255, 0.3);
+    }
+    .input-container {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+    .message-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(102, 204, 255, 0.3);
+      border-radius: 10px;
+      padding: 12px 15px;
+      color: #fff;
+      font-size: 1em;
+      font-family: inherit;
+      resize: none;
+      min-height: 20px;
+      max-height: 100px;
+    }
+    .message-input:focus {
       outline: none;
       border-color: #66ccff;
       box-shadow: 0 0 10px rgba(102, 204, 255, 0.3);
     }
-    button { 
-      background: linear-gradient(90deg, #66ccff, #3399ff); 
-      color: #000; 
-      border: none; 
-      cursor: pointer; 
-      margin-top: 10px; 
+    .send-button {
+      background: linear-gradient(90deg, #66ccff, #3399ff);
+      border: none;
+      border-radius: 10px;
+      padding: 12px 20px;
+      color: #000;
       font-weight: bold;
+      cursor: pointer;
       transition: all 0.3s ease;
+      white-space: nowrap;
     }
-    button:hover { 
+    .send-button:hover:not(:disabled) {
       background: linear-gradient(90deg, #99e0ff, #66ccff);
       transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(102, 204, 255, 0.4);
     }
-    .message { 
-      padding: 15px; 
-      margin: 15px 0; 
-      border-radius: 8px; 
-      font-weight: bold;
+    .send-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
     }
-    .success { 
-      background: rgba(76, 175, 80, 0.2); 
-      color: #4caf50; 
-      border: 1px solid rgba(76, 175, 80, 0.5); 
-    }
-    .error { 
-      background: rgba(244, 67, 54, 0.2); 
-      color: #f44336; 
-      border: 1px solid rgba(244, 67, 54, 0.5); 
-    }
-    .hidden { 
-      display: none; 
-    }
-    .admin-panel {
-      background: rgba(102, 204, 255, 0.1);
+    .debug-info {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.5);
       border-radius: 10px;
-      padding: 20px;
       border: 1px solid rgba(102, 204, 255, 0.3);
     }
-    .quick-actions {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 10px;
-      margin: 20px 0;
+    .debug-info h3 {
+      color: #66ccff;
+      margin-top: 0;
     }
-    .quick-btn {
-      background: linear-gradient(90deg, #9d4edd, #7b2cbf);
-      color: #fff;
+    .debug-info pre {
+      background: rgba(0, 0, 0, 0.3);
       padding: 10px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.3s ease;
+      border-radius: 5px;
+      overflow-x: auto;
+      font-size: 0.9em;
     }
-    .quick-btn:hover {
-      background: linear-gradient(90deg, #b565f0, #9d4edd);
-      transform: translateY(-2px);
+    .links {
+      margin-top: 20px;
+      text-align: center;
     }
-    .chat-link {
+    .links a {
       display: inline-block;
+      margin: 0 10px;
+      padding: 10px 20px;
       background: linear-gradient(90deg, #28a745, #20c997);
       color: white;
       text-decoration: none;
-      padding: 15px 30px;
       border-radius: 8px;
       font-weight: bold;
-      text-align: center;
-      margin: 20px 0;
       transition: all 0.3s ease;
     }
-    .chat-link:hover {
+    .links a:hover {
       background: linear-gradient(90deg, #34ce57, #28a745);
       transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>🔮 管理画面</h1>
+    <h1>🧪 テスト用チャット画面</h1>
     
-    <div id="loginSection">
-      <h2>ログイン</h2>
-      <div class="form-group">
-        <label for="password">パスワード:</label>
-        <input type="password" id="password" placeholder="管理者パスワード">
+    <div class="chat-container">
+      <div class="chat-area" id="chatArea">
+        <div class="message system">
+          <div>テスト用チャット画面です。APIの動作確認を行えます。</div>
+        </div>
       </div>
-      <button onclick="login()">ログイン</button>
-      <div id="loginMessage"></div>
+      
+      <div class="input-area">
+        <div class="input-container">
+          <textarea 
+            class="message-input" 
+            id="messageInput" 
+            placeholder="テストメッセージを入力してください..."
+            rows="1"
+          ></textarea>
+          <button class="send-button" id="sendButton">送信</button>
+        </div>
+      </div>
     </div>
-
-    <div id="adminPanel" class="hidden admin-panel">
-      <h2>残り時間管理</h2>
-      
-      <div class="form-group">
-        <label for="addMinutes">追加分数:</label>
-        <input type="number" id="addMinutes" placeholder="追加する分数" min="1" max="999">
-        <button onclick="addTime()">時間追加</button>
+    
+    <div class="debug-info">
+      <h3>🔧 デバッグ情報</h3>
+      <div>
+        <strong>API接続先:</strong> <span id="apiEndpoint">-</span><br>
+        <strong>レスポンス時間:</strong> <span id="responseTime">-</span><br>
+        <strong>最後のAPI呼び出し:</strong> <span id="lastApiCall">-</span>
       </div>
-      
-      <div class="quick-actions">
-        <button class="quick-btn" onclick="quickAddTime(5)">5分追加</button>
-        <button class="quick-btn" onclick="quickAddTime(10)">10分追加</button>
-        <button class="quick-btn" onclick="quickAddTime(30)">30分追加</button>
-        <button class="quick-btn" onclick="quickAddTime(60)">60分追加</button>
-      </div>
-      
-      <div class="form-group">
-        <button onclick="toggleUnlimited()">無制限モード切り替え</button>
-      </div>
-      
-      <div class="form-group">
-        <a href="/consult/chat.html" target="_blank" class="chat-link">チャット画面を開く</a>
-      </div>
-      
-      <div id="messageContainer"></div>
+      <pre id="debugLog">デバッグログがここに表示されます...</pre>
+    </div>
+    
+    <div class="links">
+      <a href="/consult/chat.html" target="_blank">本番チャット画面</a>
+      <a href="/shop/gofu.html" target="_blank">商品ページ</a>
     </div>
   </div>
 
   <script>
-    let adminSessionId = null;
-    
     // API接続先を環境によって自動切り替え
     function getApiEndpoint() {
       const hostname = window.location.hostname;
       if (hostname === 'localhost' || hostname === '127.0.0.1') {
-        return 'http://127.0.0.1:8787';
+        return 'http://127.0.0.1:8787/api/consult';
       } else {
-        // 本番環境では必ず正しいWorker URLを使用
-        return 'https://syugo-sin-worker.mituo0226.workers.dev';
+        return 'https://syugo-sin-worker.mituo0226.workers.dev/api/consult';
       }
     }
     
-    async function login() {
-      const password = document.getElementById('password').value;
-      if (!password) {
-        showMessage('パスワードを入力してください', 'error', 'loginMessage');
-        return;
-      }
+    // デバッグ情報を更新
+    function updateDebugInfo() {
+      document.getElementById('apiEndpoint').textContent = getApiEndpoint();
+    }
+    
+    // デバッグログを追加
+    function addDebugLog(message) {
+      const debugLog = document.getElementById('debugLog');
+      const timestamp = new Date().toLocaleTimeString();
+      debugLog.textContent += `[${timestamp}] ${message}\n`;
+      debugLog.scrollTop = debugLog.scrollHeight;
+    }
+    
+    // メッセージ送信
+    async function sendMessage() {
+      const messageInput = document.getElementById('messageInput');
+      const sendButton = document.getElementById('sendButton');
+      const message = messageInput.value.trim();
+      
+      if (!message) return;
+      
+      // ユーザーメッセージを追加
+      addUserMessage(message);
+      
+      // 入力欄をクリア
+      messageInput.value = '';
+      messageInput.style.height = 'auto';
+      
+      // 送信ボタンを無効化
+      sendButton.disabled = true;
+      sendButton.textContent = '送信中...';
+      
+      // API呼び出し
+      await getAIResponse(message);
+      
+      // 送信ボタンを有効化
+      sendButton.disabled = false;
+      sendButton.textContent = '送信';
+    }
+    
+    // ユーザーメッセージ追加
+    function addUserMessage(text) {
+      const chatArea = document.getElementById('chatArea');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message user';
+      messageDiv.innerHTML = `<div>${escapeHtml(text)}</div>`;
+      chatArea.appendChild(messageDiv);
+      scrollToBottom();
+    }
+    
+    // AIメッセージ追加
+    function addAIMessage(text) {
+      const chatArea = document.getElementById('chatArea');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message ai';
+      messageDiv.innerHTML = `<div>${formatText(escapeHtml(text))}</div>`;
+      chatArea.appendChild(messageDiv);
+      scrollToBottom();
+    }
+    
+    // システムメッセージ追加
+    function addSystemMessage(text) {
+      const chatArea = document.getElementById('chatArea');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message system';
+      messageDiv.innerHTML = `<div>${escapeHtml(text)}</div>`;
+      chatArea.appendChild(messageDiv);
+      scrollToBottom();
+    }
+    
+    // API呼び出し
+    async function getAIResponse(userMessage) {
+      const startTime = Date.now();
       
       try {
-        const response = await fetch(`${getApiEndpoint()}/admin/session`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ password })
-        });
+        // テスト用のリクエストデータ
+        const requestData = {
+          text: userMessage,
+          year: 1990,
+          month: 1,
+          day: 1,
+          category: "総合",
+          prompt: `ニックネーム: テストユーザー / 守護神: テスト守護神 / 相談: ${userMessage}`
+        };
         
-        const data = await response.json();
-        if (data.ok) {
-          adminSessionId = data.sessionId;
-          document.getElementById('loginSection').classList.add('hidden');
-          document.getElementById('adminPanel').classList.remove('hidden');
-          showMessage('ログイン成功', 'success', 'messageContainer');
-        } else {
-          showMessage(data.error || 'ログイン失敗', 'error', 'loginMessage');
-        }
-      } catch (error) {
-        showMessage('サーバーエラー', 'error', 'loginMessage');
-        console.error('Login error:', error);
-      }
-    }
-    
-    async function addTime() {
-      const minutes = document.getElementById('addMinutes').value;
-      if (!minutes || minutes < 1) {
-        showMessage('有効な分数を入力してください', 'error', 'messageContainer');
-        return;
-      }
-      
-      await adminAction('add', parseInt(minutes));
-    }
-    
-    async function quickAddTime(minutes) {
-      await adminAction('add', minutes);
-    }
-    
-    async function toggleUnlimited() {
-      await adminAction('unlimited');
-    }
-    
-    async function adminAction(action, minutes = null) {
-      if (!adminSessionId) {
-        showMessage('ログインしてください', 'error', 'messageContainer');
-        return;
-      }
-      
-      const requestData = { sessionId: adminSessionId, action };
-      if (minutes !== null) requestData.minutes = minutes;
-      
-      try {
-        const response = await fetch(`${getApiEndpoint()}/admin/time`, {
+        addDebugLog(`API呼び出し開始: ${JSON.stringify(requestData)}`);
+        
+        const response = await fetch(getApiEndpoint(), {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+          },
           body: JSON.stringify(requestData)
         });
         
-        const data = await response.json();
-        if (data.ok) {
-          showMessage(data.message, 'success', 'messageContainer');
-          notifyChatWindow(action, minutes);
+        const endTime = Date.now();
+        const responseTime = endTime - startTime;
+        
+        document.getElementById('responseTime').textContent = `${responseTime}ms`;
+        document.getElementById('lastApiCall').textContent = new Date().toLocaleTimeString();
+        
+        if (response.ok) {
+          const data = await response.json();
+          addDebugLog(`API応答成功: ${JSON.stringify(data)}`);
+          
+          // レスポンスを表示
+          let responseText = '';
+          if (data.paragraphs) {
+            responseText = data.paragraphs.join('\n\n');
+          } else if (data.html) {
+            responseText = data.html;
+          } else if (data.text) {
+            responseText = data.text;
+          } else {
+            responseText = 'レスポンス形式が不明です。';
+          }
+          
+          addAIMessage(responseText);
+          
         } else {
-          showMessage(data.error || '操作失敗', 'error', 'messageContainer');
+          const errorText = await response.text();
+          addDebugLog(`API呼び出しエラー: ${response.status} - ${errorText}`);
+          addSystemMessage(`API呼び出しエラー: ${response.status}`);
         }
+        
       } catch (error) {
-        showMessage('サーバーエラー', 'error', 'messageContainer');
-        console.error('Admin action error:', error);
+        const endTime = Date.now();
+        const responseTime = endTime - startTime;
+        
+        document.getElementById('responseTime').textContent = `${responseTime}ms (エラー)`;
+        document.getElementById('lastApiCall').textContent = new Date().toLocaleTimeString();
+        
+        addDebugLog(`API呼び出し例外: ${error.message}`);
+        addSystemMessage(`API呼び出し例外: ${error.message}`);
       }
     }
     
-    function notifyChatWindow(action, minutes) {
-      const message = {
-        type: 'ADMIN_TIME_UPDATE',
-        action: action,
-        minutes: minutes,
-        timestamp: Date.now()
-      };
-      
-      // PostMessage
-      if (window.opener && !window.opener.closed) {
-        window.opener.postMessage(message, '*');
-      }
-      
-      // BroadcastChannel
-      if (typeof BroadcastChannel !== 'undefined') {
-        const channel = new BroadcastChannel('admin-updates');
-        channel.postMessage(message);
-      }
-      
-      // localStorage
-      localStorage.setItem('adminTimeUpdate', JSON.stringify(message));
+    // HTMLエスケープ
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
     }
     
-    function showMessage(message, type, containerId) {
-      const container = document.getElementById(containerId);
-      const messageDiv = document.createElement('div');
-      messageDiv.className = `message ${type}`;
-      messageDiv.textContent = message;
-      container.innerHTML = '';
-      container.appendChild(messageDiv);
-      
+    // テキストフォーマット（改行を<br>に変換）
+    function formatText(text) {
+      return text
+        .replace(/\n{2,}/g, "<br><br>")
+        .replace(/\n/g, "<br>");
+    }
+    
+    // チャット画面を最下部にスクロール
+    function scrollToBottom() {
+      const chatArea = document.getElementById('chatArea');
       setTimeout(() => {
-        if (messageDiv.parentNode) {
-          messageDiv.parentNode.removeChild(messageDiv);
-        }
-      }, 3000);
+        chatArea.scrollTop = chatArea.scrollHeight;
+      }, 100);
     }
     
-    // Enterキーでログイン
-    document.getElementById('password').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        login();
-      }
+    // ページ読み込み時の処理
+    window.addEventListener('load', function() {
+      updateDebugInfo();
+      addDebugLog('テスト用チャット画面が読み込まれました');
+      
+      // イベントリスナー設定
+      const messageInput = document.getElementById('messageInput');
+      const sendButton = document.getElementById('sendButton');
+      
+      // 送信ボタンクリック
+      sendButton.addEventListener('click', sendMessage);
+      
+      // Enterキーで送信（Shift+Enterは改行）
+      messageInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+      
+      // テキストエリアの自動リサイズ
+      messageInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+      });
     });
   </script>
 </body>
