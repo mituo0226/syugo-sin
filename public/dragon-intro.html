@@ -458,7 +458,9 @@
     <div class="page-container">
       <section class="hero">
         <!-- 龍の画像 -->
-        <img src="photo/ryu.png" alt="AI鑑定師 龍" id="ryuImage">
+        <img src="photo/ryu.png" alt="AI鑑定師 龍" id="ryuImage" 
+             onload="console.log('龍画像の読み込み完了')" 
+             onerror="console.error('龍画像の読み込みエラー'); this.src='photo/rogo2.png';">
 
         <!-- セリフ表示 -->
         <div id="storyText"></div>
@@ -537,17 +539,22 @@
       if (img) {
         console.log("龍画像要素を発見:", img);
         setTimeout(() => {
-          img.classList.add('show');  // CSSクラスで表示
+          // 直接styleで表示（より確実）
+          img.style.opacity = "1";
+          img.style.transform = "scale(1)";
+          img.classList.add('show');  // CSSクラスも追加
           console.log("龍画像を表示しました");
           setTimeout(showNextLine, 3000);
         }, 800);
       } else {
         console.error("龍画像要素が見つかりません");
-        // フォールバック: CSSクラスで表示
+        // フォールバック: 直接styleで表示
         setTimeout(() => {
           const fallbackImg = document.querySelector('.hero img');
           if (fallbackImg) {
-            fallbackImg.classList.add('show');  // CSSクラスで表示
+            fallbackImg.style.opacity = "1";
+            fallbackImg.style.transform = "scale(1)";
+            fallbackImg.classList.add('show');
             console.log("フォールバックで龍画像を表示しました");
           }
           setTimeout(showNextLine, 3000);
