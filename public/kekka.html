@@ -561,7 +561,12 @@
     function getZodiac(year, month, day) {
       const zodiacSigns = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
       const zodiacYear = year - 4;
-      return zodiacSigns[zodiacYear % 12];
+      const zodiacIndex = zodiacYear % 12;
+      const zodiac = zodiacSigns[zodiacIndex];
+      
+      console.log(`十二支計算: ${year}年 → ${zodiacYear} → ${zodiacIndex} → ${zodiac}`);
+      
+      return zodiac;
     }
 
     // 守護神データ
@@ -763,6 +768,8 @@
           const guardian = guardians[zodiac];
           console.log("取得された守護神データ:", guardian);
           console.log("守護神画像パス:", guardian ? guardian.image : "undefined");
+          console.log("守護神名:", guardian ? guardian.name : "undefined");
+          console.log("利用可能な守護神キー:", Object.keys(guardians));
           
           if (!guardian) {
             throw new Error("守護神データが見つかりません");
