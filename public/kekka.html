@@ -637,19 +637,25 @@
       console.log("守護神画像パス (displayResults内):", guardian.image);
       console.log("innerHTMLに設定する内容を準備中...");
       
-      // 龍と守護神を表示
-      guardianElement.innerHTML = `
+      // テンプレートリテラルの内容を事前に確認
+      const templateContent = `
         <div class="dragon-reveal">
           <img class="dragon-image" src="../photo/ryu.png" alt="AI鑑定師 龍">
         </div>
         <div class="guardian-reveal" style="opacity: 0;">
-          <img class="guardian" src="../photo/amida.png" alt="${guardian.name}" 
+          <img class="guardian" src="${guardian.image}" alt="${guardian.name}" 
                onload="console.log('守護神画像読み込み完了:', this.src); this.style.opacity = '1';" 
                onerror="console.error('守護神画像読み込みエラー:', this.src); console.log('フォールバック前のsrc:', this.src); this.src = '../photo/ryu.png'; console.log('フォールバック後のsrc:', this.src);">
           <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
           <div>${guardian.desc}</div>
         </div>
       `;
+      
+      console.log("生成されたテンプレート内容:", templateContent);
+      console.log("guardian.imageの実際の値:", JSON.stringify(guardian.image));
+      
+      // 龍と守護神を表示
+      guardianElement.innerHTML = templateContent;
       
       console.log("innerHTML設定完了");
       console.log("設定されたHTML:", guardianElement.innerHTML);
