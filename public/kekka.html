@@ -787,11 +787,6 @@
 
     // ページ読み込み時に処理開始
     document.addEventListener("DOMContentLoaded", startProcess);
-
-    // 既にDOMが読み込まれている場合の対応
-    if (document.readyState !== 'loading') {
-      startProcess();
-    }
   </script>
 </body>
 </html>
