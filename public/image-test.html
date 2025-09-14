@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>画像表示テスト | AI鑑定師 龍</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d1a;
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      text-align: center;
+      color: #66ccff;
+      margin-bottom: 30px;
+    }
+    
+    .test-section {
+      margin-bottom: 40px;
+      padding: 20px;
+      border: 2px solid #66ccff;
+      border-radius: 10px;
+    }
+    
+    .test-section h2 {
+      color: #c77dff;
+      margin-top: 0;
+    }
+    
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    
+    .image-item {
+      text-align: center;
+      padding: 15px;
+      border: 1px solid #333;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .image-item img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+    
+    .image-item .filename {
+      font-size: 12px;
+      color: #999;
+      word-break: break-all;
+    }
+    
+    .status {
+      padding: 5px 10px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    
+    .status.success {
+      background: #4caf50;
+      color: white;
+    }
+    
+    .status.error {
+      background: #f44336;
+      color: white;
+    }
+    
+    .path-info {
+      background: #1a1a2e;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      font-family: monospace;
+    }
+    
+    .console-log {
+      background: #000;
+      color: #0f0;
+      padding: 15px;
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🖼️ 画像表示テストページ</h1>
+    
+    <div class="path-info">
+      <strong>現在のパス情報:</strong><br>
+      ページURL: <span id="currentUrl"></span><br>
+      ページパス: <span id="currentPath"></span><br>
+      ベースURL: <span id="baseUrl"></span>
+    </div>
+    
+    <div class="test-section">
+      <h2>📁 相対パス (../photo/) テスト</h2>
+      <p>publicフォルダから見た相対パス: <code>../photo/</code></p>
+      <div class="image-grid" id="relativePathGrid">
+        <!-- 相対パスの画像がここに動的に追加される -->
+      </div>
+    </div>
+    
+    <div class="test-section">
+      <h2>📁 絶対パス (/photo/) テスト</h2>
+      <p>ルートからの絶対パス: <code>/photo/</code></p>
+      <div class="image-grid" id="absolutePathGrid">
+        <!-- 絶対パスの画像がここに動的に追加される -->
+      </div>
+    </div>
+    
+    <div class="test-section">
+      <h2>📁 直接パス (photo/) テスト</h2>
+      <p>同じディレクトリからのパス: <code>photo/</code></p>
+      <div class="image-grid" id="directPathGrid">
+        <!-- 直接パスの画像がここに動的に追加される -->
+      </div>
+    </div>
+    
+    <div class="console-log" id="consoleLog">
+      <strong>コンソールログ:</strong><br>
+    </div>
+  </div>
+
+  <script>
+    // パス情報を表示
+    document.getElementById('currentUrl').textContent = window.location.href;
+    document.getElementById('currentPath').textContent = window.location.pathname;
+    document.getElementById('baseUrl').textContent = window.location.origin;
+    
+    // コンソールログを表示
+    const consoleLog = document.getElementById('consoleLog');
+    const originalLog = console.log;
+    const originalError = console.error;
+    
+    function addToConsole(message, type = 'log') {
+      const timestamp = new Date().toLocaleTimeString();
+      const color = type === 'error' ? '#ff6b6b' : '#4ecdc4';
+      consoleLog.innerHTML += `<span style="color: ${color}">[${timestamp}] ${message}</span><br>`;
+      consoleLog.scrollTop = consoleLog.scrollHeight;
+    }
+    
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      addToConsole(args.join(' '), 'log');
+    };
+    
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      addToConsole(args.join(' '), 'error');
+    };
+    
+    // 画像ファイルリスト
+    const imageFiles = [
+      'ryu.png',
+      'rogo2.png',
+      'amida.png',
+      'dainichi.png',
+      'fudo.png',
+      'fugen.png',
+      'kokuzo.png',
+      'monju.png',
+      'seishi.png',
+      'senju.png',
+      'yakushi.png'
+    ];
+    
+    // 画像表示テスト関数
+    function createImageTest(filename, pathType, containerId) {
+      const container = document.getElementById(containerId);
+      const imageItem = document.createElement('div');
+      imageItem.className = 'image-item';
+      
+      const img = document.createElement('img');
+      img.src = pathType + filename;
+      img.alt = filename;
+      
+      const status = document.createElement('div');
+      status.className = 'status error';
+      status.textContent = '読み込み中...';
+      
+      const filenameDiv = document.createElement('div');
+      filenameDiv.className = 'filename';
+      filenameDiv.textContent = pathType + filename;
+      
+      img.onload = function() {
+        status.className = 'status success';
+        status.textContent = '✅ 成功';
+        console.log(`画像読み込み成功: ${pathType}${filename}`);
+      };
+      
+      img.onerror = function() {
+        status.className = 'status error';
+        status.textContent = '❌ エラー';
+        console.error(`画像読み込みエラー: ${pathType}${filename}`);
+      };
+      
+      imageItem.appendChild(img);
+      imageItem.appendChild(status);
+      imageItem.appendChild(filenameDiv);
+      container.appendChild(imageItem);
+    }
+    
+    // 各パスタイプでテスト実行
+    console.log('画像表示テスト開始');
+    
+    imageFiles.forEach(filename => {
+      createImageTest(filename, '../photo/', 'relativePathGrid');
+      createImageTest(filename, '/photo/', 'absolutePathGrid');
+      createImageTest(filename, 'photo/', 'directPathGrid');
+    });
+    
+    console.log('画像表示テスト完了');
+  </script>
+</body>
+</html>
