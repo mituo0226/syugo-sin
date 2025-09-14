@@ -301,6 +301,7 @@
 
     function initializeGuardiansList() {
       const grid = document.getElementById('guardiansGrid');
+      grid.innerHTML = ''; // 重複生成防止
       
       // 守護神の順序を定義（十二支の順序に合わせる）
       const guardianOrder = ['senju', 'yakushi', 'kokuzo', 'monju', 'fugen', 'seishi', 'dainichi', 'fudo', 'amida'];
@@ -316,11 +317,6 @@
 
     // ページ読み込み時に初期化
     document.addEventListener('DOMContentLoaded', initializeGuardiansList);
-
-    // 既にDOMが読み込まれている場合の対応
-    if (document.readyState !== 'loading') {
-      initializeGuardiansList();
-    }
   </script>
 </body>
 </html>
