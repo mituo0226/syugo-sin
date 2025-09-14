@@ -453,10 +453,10 @@
       // 守護神の画像を安全に設定
       const guardianImage = document.getElementById('guardianImage');
       if (window.userData.guardianKey && window.userData.guardian) {
-        guardianImage.src = `/photo/${window.userData.guardianKey}.png`;
+        guardianImage.src = `photo/${window.userData.guardianKey}.png`;
         guardianImage.alt = window.userData.guardian.name;
       } else {
-        guardianImage.src = '/photo/default.png';
+        guardianImage.src = 'photo/default.png';
         guardianImage.alt = '守護神';
       }
       

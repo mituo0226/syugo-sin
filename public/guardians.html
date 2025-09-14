@@ -424,7 +424,7 @@
           
           // 守護神画像を設定
           const guardianImage = document.getElementById('guardianImage');
-          guardianImage.src = `/photo/${guardianKey}.png`;
+          guardianImage.src = `photo/${guardianKey}.png`;
           guardianImage.alt = guardian.name;
           
           // 画像表示アニメーション開始
@@ -439,7 +439,7 @@
         } else {
           // デフォルト表示
           const guardianImage = document.getElementById('guardianImage');
-          guardianImage.src = '/photo/senju.png';
+          guardianImage.src = 'photo/senju.png';
           guardianImage.alt = '千手観音';
           
           setTimeout(() => {
@@ -453,7 +453,7 @@
         console.error("ページ読み込みエラー:", error);
         // エラーが発生した場合のデフォルト表示
         const guardianImage = document.getElementById('guardianImage');
-        guardianImage.src = '/photo/senju.png';
+        guardianImage.src = 'photo/senju.png';
         guardianImage.alt = '千手観音';
         
         setTimeout(() => {
