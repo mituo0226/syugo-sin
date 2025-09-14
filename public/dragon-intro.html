@@ -92,6 +92,11 @@
       z-index: 1;
     }
     
+    .hero img.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+    
     /* PC向け画像調整 */
     @media (min-width: 768px) {
       .hero img {
@@ -532,8 +537,7 @@
       if (img) {
         console.log("龍画像要素を発見:", img);
         setTimeout(() => {
-          img.style.opacity = 1;
-          img.style.transform = "scale(1)";
+          img.classList.add('show');  // CSSクラスで表示
           console.log("龍画像を表示しました");
           setTimeout(showNextLine, 3000);
         }, 800);
@@ -543,8 +547,7 @@
         setTimeout(() => {
           const fallbackImg = document.querySelector('.hero img');
           if (fallbackImg) {
-            fallbackImg.style.opacity = 1;
-            fallbackImg.style.transform = "scale(1)";
+            fallbackImg.classList.add('show');  // CSSクラスで表示
             console.log("フォールバックで龍画像を表示しました");
           }
           setTimeout(showNextLine, 3000);
