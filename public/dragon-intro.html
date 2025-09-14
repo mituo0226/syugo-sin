@@ -529,11 +529,27 @@
       
       // 龍の画像表示開始
       const img = document.getElementById("ryuImage");
-      setTimeout(() => {
-        img.style.opacity = 1;
-        img.style.transform = "scale(1)";
-        setTimeout(showNextLine, 3000);
-      }, 800);
+      if (img) {
+        console.log("龍画像要素を発見:", img);
+        setTimeout(() => {
+          img.style.opacity = 1;
+          img.style.transform = "scale(1)";
+          console.log("龍画像を表示しました");
+          setTimeout(showNextLine, 3000);
+        }, 800);
+      } else {
+        console.error("龍画像要素が見つかりません");
+        // フォールバック: CSSクラスで表示
+        setTimeout(() => {
+          const fallbackImg = document.querySelector('.hero img');
+          if (fallbackImg) {
+            fallbackImg.style.opacity = 1;
+            fallbackImg.style.transform = "scale(1)";
+            console.log("フォールバックで龍画像を表示しました");
+          }
+          setTimeout(showNextLine, 3000);
+        }, 800);
+      }
     });
 
     // 生年月日入力ボタンのクリックイベント
