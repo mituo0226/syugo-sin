@@ -390,9 +390,9 @@
     <div class="main-content">
       <!-- 画像コンテナ -->
       <div class="image-container" id="imageContainer">
-        <img class="dragon-image" src="photo/ryu.png" alt="AI鑑定師 龍">
+        <img class="dragon-image" src="../photo/ryu.png" alt="AI鑑定師 龍">
         <img class="guardian-image" id="guardianImage" src="" alt="守護神"
-             onerror="this.onerror=null; this.src='photo/ryu.png'">
+             onerror="this.onerror=null; this.src='../photo/ryu.png'">
       </div>
 
       <!-- 龍の言葉 -->
@@ -462,10 +462,10 @@
       // 守護神の画像を安全に設定
       const guardianImage = document.getElementById('guardianImage');
       if (window.userData.guardianKey && window.userData.guardian) {
-        guardianImage.src = `photo/${window.userData.guardianKey}.png`;
+        guardianImage.src = `../photo/${window.userData.guardianKey}.png`;
         guardianImage.alt = window.userData.guardian.name;
       } else {
-        guardianImage.src = 'photo/ryu.png';
+        guardianImage.src = '../photo/ryu.png';
         guardianImage.alt = '守護神';
       }
       
