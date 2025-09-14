@@ -147,6 +147,14 @@
       -webkit-touch-callout: none;
       position: relative;
       z-index: 1;
+      opacity: 0;
+      transform: scale(0.9);
+      transition: all 1.5s ease;
+    }
+    
+    .dragon-image.show {
+      opacity: 1;
+      transform: scale(1);
     }
     
     /* 守護神の画像 */
@@ -459,6 +467,14 @@
       } else {
         guardianImage.src = 'photo/ryu.png';
         guardianImage.alt = '守護神';
+      }
+      
+      // 龍の画像を表示
+      const dragonImage = document.querySelector('.dragon-image');
+      if (dragonImage) {
+        setTimeout(() => {
+          dragonImage.classList.add('show');
+        }, 300);
       }
       
       // 画像コンテナ表示
