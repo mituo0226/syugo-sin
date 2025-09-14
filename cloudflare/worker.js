@@ -1,4 +1,4 @@
-import { runConsult } from "../src/consult/consult.js";
+import { runConsult } from "../public/consult/consult.js";
 
 export default {
   async fetch(request, env, ctx) {
