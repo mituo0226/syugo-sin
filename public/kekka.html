@@ -639,7 +639,9 @@
           <img class="dragon-image" src="../photo/ryu.png" alt="AI鑑定師 龍">
         </div>
         <div class="guardian-reveal" style="opacity: 0;">
-          <img class="guardian" src="${guardian.image}" alt="${guardian.name}">
+          <img class="guardian" src="${guardian.image}" alt="${guardian.name}" 
+               onload="console.log('守護神画像読み込み完了:', this.src)" 
+               onerror="console.error('守護神画像読み込みエラー:', this.src)">
           <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
           <div>${guardian.desc}</div>
         </div>
@@ -655,8 +657,14 @@
       setTimeout(() => {
         const guardianReveal = document.querySelector('.guardian-reveal');
         if (guardianReveal) {
-          guardianReveal.style.transition = 'opacity 2s ease-in-out';
-          guardianReveal.style.opacity = '1';
+          console.log("守護神表示開始:", guardianReveal);
+          // CSSアニメーションを確実に実行
+          guardianReveal.style.animation = 'none';
+          guardianReveal.offsetHeight; // リフローを強制
+          guardianReveal.style.animation = 'guardianAppear 2s ease-in-out 0.5s both';
+          console.log("守護神アニメーション適用完了");
+        } else {
+          console.error("守護神要素が見つかりません");
         }
         
         // フルスクリーン表示
