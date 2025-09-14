@@ -624,14 +624,18 @@
 
     // 結果表示処理
     function displayResults(guardian, zodiac) {
+      console.log("displayResults開始:", { guardian, zodiac });
+      
       const guardianElement = document.getElementById("guardian");
       const resultBox = document.getElementById("resultBox");
       
       if (!guardianElement || !resultBox) {
+        console.error("要素が見つかりません:", { guardianElement, resultBox });
         return;
       }
       
-
+      console.log("守護神画像パス (displayResults内):", guardian.image);
+      console.log("innerHTMLに設定する内容を準備中...");
       
       // 龍と守護神を表示
       guardianElement.innerHTML = `
@@ -646,6 +650,9 @@
           <div>${guardian.desc}</div>
         </div>
       `;
+      
+      console.log("innerHTML設定完了");
+      console.log("設定されたHTML:", guardianElement.innerHTML);
       
       // ボタンはフルスクリーン表示内に移動済み
       
@@ -744,7 +751,12 @@
           
           // 十二支を計算
           const zodiac = getZodiac(birthDate.year, birthDate.month, birthDate.day);
+          console.log("生年月日:", birthDate);
+          console.log("計算された十二支:", zodiac);
+          
           const guardian = guardians[zodiac];
+          console.log("取得された守護神データ:", guardian);
+          console.log("守護神画像パス:", guardian ? guardian.image : "undefined");
           
           if (!guardian) {
             throw new Error("守護神データが見つかりません");
