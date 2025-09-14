@@ -383,7 +383,8 @@
       <!-- 画像コンテナ -->
       <div class="image-container" id="imageContainer">
         <img class="dragon-image" src="photo/ryu.png" alt="AI鑑定師 龍">
-        <img class="guardian-image" id="guardianImage" src="" alt="守護神">
+        <img class="guardian-image" id="guardianImage" src="" alt="守護神"
+             onerror="this.onerror=null; this.src='photo/ryu.png'">
       </div>
 
       <!-- 龍の言葉 -->
@@ -426,7 +427,7 @@
         console.log("取得したデータ:", { nickname, birthYear, birthMonth, birthDay, guardianKey });
         
         // 守護神を安全に取得
-        const guardian = guardians[guardianKey] || { name: "守護神", image: "default.png" };
+        const guardian = guardians[guardianKey] || { name: "守護神", image: "ryu.png" };
         
         // データを保存
         window.userData = {
@@ -456,7 +457,7 @@
         guardianImage.src = `photo/${window.userData.guardianKey}.png`;
         guardianImage.alt = window.userData.guardian.name;
       } else {
-        guardianImage.src = 'photo/default.png';
+        guardianImage.src = 'photo/ryu.png';
         guardianImage.alt = '守護神';
       }
       
