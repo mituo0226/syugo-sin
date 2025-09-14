@@ -640,8 +640,8 @@
         </div>
         <div class="guardian-reveal" style="opacity: 0;">
           <img class="guardian" src="${guardian.image}" alt="${guardian.name}" 
-               onload="console.log('守護神画像読み込み完了:', this.src)" 
-               onerror="console.error('守護神画像読み込みエラー:', this.src)">
+               onload="console.log('守護神画像読み込み完了:', this.src); this.style.opacity = '1';" 
+               onerror="console.error('守護神画像読み込みエラー:', this.src); this.src = '../photo/ryu.png';">
           <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
           <div>${guardian.desc}</div>
         </div>
@@ -656,15 +656,22 @@
       // アニメーションシーケンス
       setTimeout(() => {
         const guardianReveal = document.querySelector('.guardian-reveal');
-        if (guardianReveal) {
+        const guardianImg = document.querySelector('.guardian');
+        if (guardianReveal && guardianImg) {
           console.log("守護神表示開始:", guardianReveal);
-          // CSSアニメーションを確実に実行
-          guardianReveal.style.animation = 'none';
-          guardianReveal.offsetHeight; // リフローを強制
+          console.log("守護神画像要素:", guardianImg);
+          console.log("守護神画像src:", guardianImg.src);
+          
+          // 直接styleで表示（より確実）
+          guardianReveal.style.opacity = '1';
+          guardianReveal.style.transform = 'scale(1) translateY(0)';
+          guardianImg.style.opacity = '1';
+          
+          // CSSアニメーションも適用
           guardianReveal.style.animation = 'guardianAppear 2s ease-in-out 0.5s both';
-          console.log("守護神アニメーション適用完了");
+          console.log("守護神表示完了");
         } else {
-          console.error("守護神要素が見つかりません");
+          console.error("守護神要素が見つかりません:", { guardianReveal, guardianImg });
         }
         
         // フルスクリーン表示
