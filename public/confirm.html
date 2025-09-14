@@ -312,7 +312,7 @@
       <!-- アクションボタン -->
       <div>
         <a href="#" class="action-button" id="startButton">鑑定を開始する</a>
-        <a href="../public/index.html" class="action-button secondary">トップページに戻る</a>
+        <a href="./index.html" class="action-button secondary">トップページに戻る</a>
       </div>
       
       <!-- ローディング表示 -->
@@ -454,7 +454,7 @@
           worry: localStorage.getItem('worry') || ''
         });
         
-        const chatUrl = `../consult/chat.html?${params.toString()}`;
+        const chatUrl = `./consult/chat.html?${params.toString()}`;
         startButton.href = chatUrl;
         console.log('チャットリンク生成:', chatUrl);
       } else {

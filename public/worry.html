@@ -407,16 +407,16 @@
 
     <!-- フッターをコンテナ内に移動 -->
     <footer style="position: fixed !important; bottom: 0; left: 0; right: 0; background: rgba(13, 13, 26, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid rgba(102, 204, 255, 0.3); z-index: 100; padding: 15px 10px; padding-bottom: max(15px, env(safe-area-inset-bottom)); box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5); text-align:center; font-size:0.9em; color:#ccc;">
-      <a href="/rule/disclaimer.html" style="color:#66ccff; margin:0 8px;">免責事項</a> |
-      <a href="/rule/terms.html" style="color:#66ccff; margin:0 8px;">利用規約</a> |
-      <a href="/rule/privacy.html" style="color:#66ccff; margin:0 8px;">プライバシーポリシー</a> |
-      <a href="/rule/tokusho.html" style="color:#66ccff; margin:0 8px;">特定商取引法</a> |
-      <a href="/rule/contact.html" style="color:#66ccff; margin:0 8px;">お問い合わせ</a>
+      <a href="./rule/disclaimer.html" style="color:#66ccff; margin:0 8px;">免責事項</a> |
+      <a href="./rule/terms.html" style="color:#66ccff; margin:0 8px;">利用規約</a> |
+      <a href="./rule/privacy.html" style="color:#66ccff; margin:0 8px;">プライバシーポリシー</a> |
+      <a href="./rule/tokusho.html" style="color:#66ccff; margin:0 8px;">特定商取引法</a> |
+      <a href="./rule/contact.html" style="color:#66ccff; margin:0 8px;">お問い合わせ</a>
     </footer>
   </div>
   
   <script type="module">
-    import { guardians } from './guardians.js';
+    import { guardians } from './js/guardians.js';
 
     // ページ読み込み時の処理
     window.addEventListener("load", function() {
@@ -540,7 +540,7 @@
       console.log("相談内容:", worryText);
       console.log("userDataをlocalStorageに保存:", window.userData);
       
-      // shop/gofu.htmlに遷移（URLパラメータは使わない）
+      // shop/gofu.htmlに遷移（鑑定中アニメーションを表示するため、ハッシュは付けない）
       window.location.href = 'shop/gofu.html';
     });
   </script>
