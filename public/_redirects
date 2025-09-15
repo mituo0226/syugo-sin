@@ -1,0 +1,11 @@
+# Cloudflare Pages redirects configuration
+
+# Admin routes
+/admin /admin/admin.html 200
+/admin/ /admin/admin.html 200
+
+# API routes (let them pass through to Worker)
+/api/* /api/:splat 200
+
+# Fallback for all other routes
+/* /index.html 200
