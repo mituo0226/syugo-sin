@@ -112,10 +112,8 @@ export default {
       }
     }
 
-    // 404 Not Found
-    return new Response(
-      JSON.stringify({ ok: false, error: "Not found" }),
-      { status: 404, headers: { "Content-Type": "application/json", ...corsHeaders } }
-    );
+    // 静的ファイルやその他のリクエストはCloudflare Pagesに委譲
+    // WorkerはAPIエンドポイントのみを処理し、それ以外はPagesに任せる
+    return fetch(request);
   }
 };
