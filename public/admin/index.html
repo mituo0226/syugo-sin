@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>管理画面 | AI鑑定師 龍</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d1a;
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+    
+    .header h1 {
+      font-size: 2.5em;
+      background: linear-gradient(45deg, #c77dff, #9d4edd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      text-shadow: 0 0 20px rgba(199, 125, 255, 0.3);
+    }
+    
+    .header p {
+      font-size: 1.2em;
+      color: #b8b8b8;
+      margin: 0;
+    }
+    
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+    
+    .admin-card {
+      background: rgba(13, 13, 26, 0.9);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 30px;
+      border: 2px solid rgba(102, 204, 255, 0.4);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(102, 204, 255, 0.2);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    
+    .admin-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(102, 204, 255, 0.4);
+      border-color: rgba(102, 204, 255, 0.6);
+    }
+    
+    .admin-card h3 {
+      font-size: 1.5em;
+      color: #66ccff;
+      margin-bottom: 15px;
+      text-shadow: 0 0 10px rgba(102, 204, 255, 0.5);
+    }
+    
+    .admin-card p {
+      color: #ccc;
+      line-height: 1.6;
+      margin: 0;
+    }
+    
+    .admin-card .icon {
+      font-size: 2em;
+      margin-bottom: 15px;
+      display: block;
+    }
+    
+    .back-link {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 12px 24px;
+      background: rgba(102, 204, 255, 0.1);
+      border: 1px solid rgba(102, 204, 255, 0.3);
+      border-radius: 8px;
+      color: #66ccff;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    
+    .back-link:hover {
+      background: rgba(102, 204, 255, 0.2);
+      color: #99e0ff;
+      transform: translateY(-1px);
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 15px;
+      }
+      
+      .header h1 {
+        font-size: 2.0em;
+      }
+      
+      .admin-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      
+      .admin-card {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>管理画面</h1>
+      <p>AI鑑定師 龍 - システム管理</p>
+    </div>
+    
+    <div class="admin-grid">
+      <a href="chat-test.html" class="admin-card">
+        <span class="icon">💬</span>
+        <h3>チャットテスト</h3>
+        <p>API接続テストとチャット機能の動作確認を行います。ユーザー情報の入力、守護神の自動判定、AI鑑定のテストが可能です。</p>
+      </a>
+      
+      <a href="payment-test.html" class="admin-card">
+        <span class="icon">💳</span>
+        <h3>決済テスト</h3>
+        <p>Square Sandbox決済のテストを行います。直リンク決済とAPI経由決済の両方をテストできます。</p>
+      </a>
+      
+      <a href="../consult/chat.html" class="admin-card" target="_blank">
+        <span class="icon">🌐</span>
+        <h3>本番チャット</h3>
+        <p>本番環境のチャット画面を新しいタブで開きます。実際のユーザー体験を確認できます。</p>
+      </a>
+      
+      <a href="../index.html" class="admin-card">
+        <span class="icon">🏠</span>
+        <h3>トップページ</h3>
+        <p>メインサイトのトップページに戻ります。ユーザー向けの画面を確認できます。</p>
+      </a>
+    </div>
+    
+    <a href="../index.html" class="back-link">← トップページに戻る</a>
+  </div>
+</body>
+</html>

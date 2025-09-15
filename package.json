@@ -1,0 +1,20 @@
+{
+  "name": "syugo-sin",
+  "version": "1.0.0",
+  "description": "AI鑑定師 龍 - 守護神鑑定サービス",
+  "main": "index.js",
+  "scripts": {
+    "dev": "wrangler pages dev public",
+    "deploy": "wrangler pages deploy public",
+    "build:functions": "echo 'Functions are ready'"
+  },
+  "dependencies": {
+    "squareup": "^35.0.0"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  },
+  "keywords": ["ai", "divination", "guardian", "square", "payment"],
+  "author": "mituo0226",
+  "license": "MIT"
+}

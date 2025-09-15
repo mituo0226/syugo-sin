@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Square決済テスト | AI鑑定師 龍</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d1a;
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+    
+    .header h1 {
+      font-size: 2.5em;
+      background: linear-gradient(45deg, #c77dff, #9d4edd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      text-shadow: 0 0 20px rgba(199, 125, 255, 0.3);
+    }
+    
+    .header p {
+      font-size: 1.2em;
+      color: #b8b8b8;
+      margin: 0;
+    }
+    
+    .test-section {
+      background: rgba(13, 13, 26, 0.9);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 30px;
+      border: 2px solid rgba(102, 204, 255, 0.4);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(102, 204, 255, 0.2);
+      margin-bottom: 30px;
+    }
+    
+    .test-section h3 {
+      font-size: 1.5em;
+      color: #66ccff;
+      margin-bottom: 15px;
+      text-shadow: 0 0 10px rgba(102, 204, 255, 0.5);
+    }
+    
+    .test-section p {
+      color: #ccc;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    
+    .test-button {
+      padding: 15px 30px;
+      font-size: 1.1em;
+      background: linear-gradient(90deg, #66ccff, #3399ff);
+      border: none;
+      border-radius: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #000;
+      box-shadow: 0 4px 15px rgba(102,204,255,0.3);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      margin-right: 15px;
+    }
+    
+    .test-button:hover {
+      background: linear-gradient(90deg, #99e0ff, #66ccff);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102,204,255,0.4);
+    }
+    
+    .test-button.secondary {
+      background: linear-gradient(90deg, #9d4edd, #7b2cbf);
+    }
+    
+    .test-button.secondary:hover {
+      background: linear-gradient(90deg, #b565f0, #9d4edd);
+    }
+    
+    .console-log {
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid rgba(102, 204, 255, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      color: #66ccff;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    
+    .back-link {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 12px 24px;
+      background: rgba(102, 204, 255, 0.1);
+      border: 1px solid rgba(102, 204, 255, 0.3);
+      border-radius: 8px;
+      color: #66ccff;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    
+    .back-link:hover {
+      background: rgba(102, 204, 255, 0.2);
+      color: #99e0ff;
+      transform: translateY(-1px);
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 15px;
+      }
+      
+      .header h1 {
+        font-size: 2.0em;
+      }
+      
+      .test-section {
+        padding: 20px;
+      }
+      
+      .test-button {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+        margin-right: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Square Sandbox 決済テスト</h1>
+      <p>決済機能のテストとデバッグ</p>
+    </div>
+    
+    <div class="test-section">
+      <h3>① Sandbox直リンク決済テスト</h3>
+      <p>Square Sandboxの固定Checkout URLに直接遷移して決済をテストします。このURLは後で実際のSandbox URLに差し替えてください。</p>
+      <button class="test-button" onclick="directPaymentTest()">
+        直リンクで決済
+      </button>
+    </div>
+    
+    <div class="test-section">
+      <h3>② API経由決済テスト</h3>
+      <p>API経由で決済リンクを生成し、Square Sandboxの決済ページに遷移します。実際の決済フローをテストできます。</p>
+      <button class="test-button secondary" id="apiTestBtn">
+        API経由で決済
+      </button>
+    </div>
+    
+    <div class="test-section">
+      <h3>コンソールログ</h3>
+      <p>テスト実行時のログが表示されます。</p>
+      <div class="console-log" id="consoleLog">
+        ログがここに表示されます...
+      </div>
+    </div>
+    
+    <a href="index.html" class="back-link">← 管理画面に戻る</a>
+  </div>
+
+  <script>
+    // ログ表示関数
+    function addLog(message) {
+      const logElement = document.getElementById('consoleLog');
+      const timestamp = new Date().toLocaleTimeString();
+      logElement.innerHTML += `[${timestamp}] ${message}\n`;
+      logElement.scrollTop = logElement.scrollHeight;
+      console.log(message);
+    }
+    
+    // API接続先を環境によって自動切り替え
+    function getPaymentApiEndpoint() {
+      const hostname = window.location.hostname;
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://127.0.0.1:8787/api/create-payment-link';
+      } else {
+        return 'https://syugo-sin-worker.mituo0226.workers.dev/api/create-payment-link';
+      }
+    }
+    
+    // 直リンク決済テスト
+    function directPaymentTest() {
+      addLog('直リンク決済テスト開始');
+      addLog('注意: このURLはダミーです。実際のSandbox URLに差し替えてください');
+      
+      // ダミーURL（後で実際のSandbox URLに差し替え）
+      const dummyUrl = 'https://sandbox.squareup.com/checkout/test';
+      addLog(`遷移先URL: ${dummyUrl}`);
+      
+      // 実際の実装時は以下のコメントアウトを外す
+      // window.open(dummyUrl, '_blank');
+      
+      addLog('直リンク決済テスト完了（ダミーURLのため実際の遷移は行いません）');
+    }
+    
+    // API経由決済テスト
+    async function apiPaymentTest() {
+      try {
+        addLog('API経由決済テスト開始');
+        
+        // ユーザー情報を取得または生成
+        const user = JSON.parse(localStorage.getItem('user')) || { uid: crypto.randomUUID() };
+        localStorage.setItem('user', JSON.stringify(user));
+        addLog(`ユーザーUID: ${user.uid}`);
+        
+        const apiEndpoint = getPaymentApiEndpoint();
+        addLog(`API接続先: ${apiEndpoint}`);
+        
+        const response = await fetch(apiEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ uid: user.uid })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          addLog(`API応答成功: ${JSON.stringify(data)}`);
+          
+          if (data.checkoutUrl) {
+            addLog(`生成された決済URL: ${data.checkoutUrl}`);
+            addLog('決済ページに遷移します...');
+            window.location.href = data.checkoutUrl;
+          } else {
+            addLog('エラー: checkoutUrlが取得できませんでした');
+          }
+        } else {
+          const errorText = await response.text();
+          addLog(`API応答エラー (${response.status}): ${errorText}`);
+        }
+      } catch (error) {
+        addLog(`API経由決済テストエラー: ${error.message}`);
+      }
+    }
+    
+    // ページ読み込み時の処理
+    document.addEventListener('DOMContentLoaded', function() {
+      addLog('Square決済テストページ読み込み完了');
+      addLog(`現在の環境: ${window.location.hostname}`);
+      
+      // API経由決済テストボタンのイベントリスナー
+      document.getElementById('apiTestBtn').addEventListener('click', apiPaymentTest);
+    });
+  </script>
+</body>
+</html>

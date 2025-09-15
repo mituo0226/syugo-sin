@@ -312,7 +312,8 @@
     </div>
     
     <div class="links">
-      <a href="/consult/chat.html" target="_blank">本番チャット画面</a>
+      <a href="../consult/chat.html" target="_blank">本番チャット画面</a>
+      <a href="payment-test.html" class="action-button">決済テストページ</a>
     </div>
   </div>
 
@@ -326,6 +327,7 @@
         return 'https://syugo-sin-worker.mituo0226.workers.dev/api/consult';
       }
     }
+
     
     // デバッグ情報を更新
     function updateDebugInfo() {
@@ -663,9 +665,11 @@
       
       // 保存されたユーザー情報を読み込み
       loadUserData();
+
     });
     
     // 保存されたユーザー情報を読み込み
+
     function loadUserData() {
       const savedData = localStorage.getItem('userData');
       if (savedData) {

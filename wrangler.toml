@@ -4,3 +4,8 @@ compatibility_date = "2025-09-12"
 
 [vars]
 ALLOW_ORIGIN = "*"
+
+# Square API設定（本番環境用）
+# 実際のデプロイ時は Cloudflare Dashboard で環境変数を設定してください
+# SQUARE_ACCESS_TOKEN = "your_production_square_access_token"
+# SQUARE_LOCATION_ID = "your_production_square_location_id"
