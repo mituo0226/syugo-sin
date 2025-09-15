@@ -2,6 +2,9 @@ name = "syugo-sin-worker"
 main = "cloudflare/worker.js"
 compatibility_date = "2025-09-12"
 
+# 静的ファイルは完全にCloudflare Pagesに委譲
+# WorkerはAPIエンドポイントのみを処理
+
 [vars]
 ALLOW_ORIGIN = "*"
 
