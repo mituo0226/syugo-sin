@@ -284,9 +284,12 @@
       </div>
       
       <!-- 決済テスト開始ボタン -->
-      <button class="test-button secondary" id="paymentTestBtn" onclick="startPaymentTest()" style="margin-top: 20px; display: none;">
+      <button class="test-button secondary" id="paymentTestBtn" onclick="startPaymentTest()" style="margin-top: 20px; display: inline-block;">
         決済テスト開始
       </button>
+      <p style="color: #ccc; font-size: 0.9em; margin-top: 10px;">
+        ※ 決済テストを開始する前に、上記のフォームにデータを入力して「データを保存」ボタンを押してください。
+      </p>
     </div>
     
     <div class="test-section">
@@ -535,10 +538,14 @@
         addLog('決済テスト開始');
         
         // localStorageからUIDを取得
-        const uid = localStorage.getItem('uid');
+        let uid = localStorage.getItem('uid');
         if (!uid) {
-          addLog('エラー: UIDが見つかりません。先にデータを保存してください。');
-          return;
+          // UIDが存在しない場合は新規生成
+          uid = crypto.randomUUID();
+          localStorage.setItem('uid', uid);
+          addLog(`新しいUIDを生成: ${uid}`);
+        } else {
+          addLog(`既存のUIDを使用: ${uid}`);
         }
         
         addLog(`使用するUID: ${uid}`);
