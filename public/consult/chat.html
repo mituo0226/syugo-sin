@@ -842,6 +842,20 @@
         clearInterval(timerInterval);
       }
       
+      // expireAtから残り時間を計算
+      const expireAt = localStorage.getItem('expireAt');
+      if (expireAt) {
+        const expireTime = new Date(expireAt).getTime();
+        const currentTime = new Date().getTime();
+        const remainingTime = Math.max(0, Math.floor((expireTime - currentTime) / 1000));
+        remainingSeconds = remainingTime;
+        
+        console.log('expireAtから残り時間を計算:', {
+          expireAt: expireAt,
+          remainingSeconds: remainingSeconds
+        });
+      }
+      
       updateTimerDisplay();
       
       timerInterval = setInterval(() => {
@@ -850,8 +864,16 @@
           return;
         }
         
+        // expireAtから残り時間を再計算
+        const expireAt = localStorage.getItem('expireAt');
+        if (expireAt) {
+          const expireTime = new Date(expireAt).getTime();
+          const currentTime = new Date().getTime();
+          const remainingTime = Math.max(0, Math.floor((expireTime - currentTime) / 1000));
+          remainingSeconds = remainingTime;
+        }
+        
         if (remainingSeconds > 0) {
-          remainingSeconds--;
           updateTimerDisplay();
           
           // 残り時間が少なくなったら警告

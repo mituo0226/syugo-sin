@@ -349,67 +349,19 @@
       try {
         // URLパラメータから情報を取得
         const urlParams = new URLSearchParams(window.location.search);
-        const product = urlParams.get('product');
-        const nickname = urlParams.get('nickname');
         const uid = urlParams.get('uid');
-        const birthYear = urlParams.get('birthYear');
-        const birthMonth = urlParams.get('birthMonth');
-        const birthDay = urlParams.get('birthDay');
-        const guardianKey = urlParams.get('guardianKey');
+        const checkoutId = urlParams.get('checkoutId');
         
-        console.log("URLパラメータ:", { product, nickname, birthYear, birthMonth, birthDay, guardianKey });
+        console.log("URLパラメータ:", { uid, checkoutId });
         
-        // 商品が指定されていない場合はエラー
-        if (!product) {
-          showError('商品情報が取得できませんでした。');
+        // UIDが指定されていない場合はエラー
+        if (!uid) {
+          showError('ユーザーIDが取得できませんでした。');
           return;
         }
         
-        // チケット時間を取得
-        const ticketMinutes = productTicketMap[product];
-        if (!ticketMinutes) {
-          showError('無効な商品です。');
-          return;
-        }
-        
-        // 商品名を取得
-        const productName = productNameMap[product] || product;
-        
-        // チケット情報をlocalStorageに保存
-        localStorage.setItem('ticketMinutes', ticketMinutes.toString());
-        console.log(`チケット付与: ${ticketMinutes}分`);
-        
-        // ユーザー情報をlocalStorageに保存（ハイブリッド方式）
-        saveUserDataToLocalStorage({
-          nickname,
-          birthYear,
-          birthMonth,
-          birthDay,
-          guardianKey
-        });
-        
-        // チャット開始ボタンのリンクを生成
-        generateChatLink({
-          nickname,
-          birthYear,
-          birthMonth,
-          birthDay,
-          guardianKey
-        });
-        
-        // 画面表示を更新
-        updateDisplay(productName, ticketMinutes);
-        
-        // メール送信処理を実行
-        sendPurchaseData({
-          nickname,
-          birthYear,
-          birthMonth,
-          birthDay,
-          guardianKey,
-          product,
-          ticketMinutes
-        });
+        // 決済検証を実行
+        verifyPayment(uid, checkoutId);
         
         // メインコンテンツを表示
         setTimeout(() => {
@@ -422,6 +374,101 @@
         showError('ページの読み込み中にエラーが発生しました。');
       }
     });
+    
+    // 決済検証関数
+    async function verifyPayment(uid, checkoutId) {
+      const loadingElement = document.getElementById('loading');
+      const errorElement = document.getElementById('error');
+      
+      try {
+        loadingElement.classList.add('show');
+        errorElement.classList.remove('show');
+        
+        console.log('決済検証開始:', { uid, checkoutId });
+        
+        // /api/verifyを呼び出し
+        const response = await fetch('/api/verify', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ uid, checkoutId })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('決済検証成功:', data);
+          
+          if (data.ok && data.expireAt) {
+            // 有効期限をlocalStorageに保存
+            localStorage.setItem('expireAt', data.expireAt);
+            console.log('有効期限を保存:', data.expireAt);
+            
+            // 画面表示を更新
+            updateDisplay('AI鑑定師 龍 - 鑑定チケット', 3);
+            
+            // チャット開始ボタンのリンクを生成
+            generateChatLinkFromUID(uid);
+            
+            // 成功メッセージを表示
+            showSuccess();
+          } else {
+            showError('決済の検証に失敗しました。');
+          }
+        } else {
+          const errorData = await response.json();
+          console.error('決済検証エラー:', errorData);
+          showError(`決済検証エラー: ${errorData.error || 'Unknown error'}`);
+        }
+        
+      } catch (error) {
+        console.error('決済検証エラー:', error);
+        showError('決済の検証中にエラーが発生しました。');
+      } finally {
+        loadingElement.classList.remove('show');
+      }
+    }
+    
+    // 成功表示
+    function showSuccess() {
+      const ticketInfo = document.getElementById('ticketInfo');
+      const productInfo = document.getElementById('productInfo');
+      
+      ticketInfo.textContent = '3分の鑑定チケットが付与されました';
+      productInfo.textContent = '購入商品: AI鑑定師 龍 - 鑑定チケット';
+    }
+    
+    // UIDからチャットリンクを生成
+    function generateChatLinkFromUID(uid) {
+      const startButton = document.getElementById('startButton');
+      
+      // 既存のユーザーデータを取得
+      const existingData = localStorage.getItem('userData');
+      if (existingData) {
+        try {
+          const userData = JSON.parse(existingData);
+          // URLパラメータを生成
+          const params = new URLSearchParams({
+            nickname: userData.name || '',
+            year: userData.birthday ? new Date(userData.birthday).getFullYear() : '',
+            month: userData.birthday ? new Date(userData.birthday).getMonth() + 1 : '',
+            day: userData.birthday ? new Date(userData.birthday).getDate() : '',
+            guardian: userData.guardian || '',
+            worry: userData.question || ''
+          });
+          
+          const chatUrl = `./consult/chat.html?${params.toString()}`;
+          startButton.href = chatUrl;
+          console.log('チャットリンク生成:', chatUrl);
+        } catch (error) {
+          console.error('ユーザーデータの解析エラー:', error);
+          startButton.href = './consult/chat.html';
+        }
+      } else {
+        startButton.href = './consult/chat.html';
+        console.log('ユーザーデータが見つからないため、通常のリンクを使用');
+      }
+    }
     
     // ユーザー情報をlocalStorageに保存
     function saveUserDataToLocalStorage(userData) {
