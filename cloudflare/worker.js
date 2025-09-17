@@ -1,5 +1,4 @@
 import { runConsult } from "../public/consult/consult.js";
-import { Client, Environment } from 'square';
 
 export default {
   async fetch(request, env, ctx) {
@@ -83,46 +82,55 @@ export default {
           });
         }
 
-        // Square Client初期化
-        const client = new Client({
-          accessToken: env.SQUARE_ACCESS_TOKEN,
-          environment: Environment.Sandbox,
-        });
-
-        // Checkout APIを使用して決済リンクを作成
-        const checkoutApi = client.checkoutApi;
-        
-        const checkoutRequestBody = {
-          idempotencyKey: `${uid}-${Date.now()}`,
+        // Square API Checkoutを直接HTTPリクエストで呼び出し
+        const checkoutData = {
+          idempotency_key: `${uid}-${Date.now()}`,
           order: {
-            locationId: env.SQUARE_LOCATION_ID,
-            lineItems: [
+            location_id: env.SQUARE_LOCATION_ID,
+            line_items: [
               {
                 name: "AI鑑定師 龍 - 鑑定チケット",
                 quantity: "1",
-                basePriceMoney: {
+                base_price_money: {
                   amount: 10, // 10円（テスト用）
                   currency: "JPY"
                 }
               }
             ]
           },
-          askForShippingAddress: false,
-          merchantSupportEmail: "support@example.com",
-          prePopulateBuyerEmail: "test@example.com",
-          redirectUrl: `${url.origin}/confirm.html?uid=${uid}`
+          ask_for_shipping_address: false,
+          merchant_support_email: "support@example.com",
+          pre_populate_buyer_email: "test@example.com",
+          redirect_url: `${url.origin}/confirm.html?uid=${uid}`
         };
 
-        const response = await checkoutApi.createCheckout(env.SQUARE_LOCATION_ID, checkoutRequestBody);
+        console.log('Square API request data:', JSON.stringify(checkoutData, null, 2));
         
-        if (response.result && response.result.checkout) {
+        const squareResponse = await fetch('https://connect.squareupsandbox.com/v2/online-checkout/payment-links', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${env.SQUARE_ACCESS_TOKEN}`,
+            'Content-Type': 'application/json',
+            'Square-Version': '2024-04-17'
+          },
+          body: JSON.stringify(checkoutData)
+        });
+
+        if (!squareResponse.ok) {
+          const errorText = await squareResponse.text();
+          throw new Error(`Square API error: ${squareResponse.status} - ${errorText}`);
+        }
+
+        const squareData = await squareResponse.json();
+        
+        if (squareData.payment_link && squareData.payment_link.url) {
           return new Response(JSON.stringify({ 
-            checkoutUrl: response.result.checkout.checkoutPageUrl 
+            checkoutUrl: squareData.payment_link.url 
           }), {
             headers: { "Content-Type": "application/json", ...corsHeaders }
           });
         } else {
-          throw new Error("Failed to create checkout");
+          throw new Error("Failed to create payment link - invalid response");
         }
 
       } catch (error) {
@@ -170,18 +178,25 @@ export default {
           });
         }
 
-        // Square Client初期化
-        const client = new Client({
-          accessToken: env.SQUARE_ACCESS_TOKEN,
-          environment: Environment.Sandbox,
+        // Square API Ordersを直接HTTPリクエストで呼び出し
+        const squareResponse = await fetch(`https://connect.squareupsandbox.com/v2/orders/${checkoutId}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${env.SQUARE_ACCESS_TOKEN}`,
+            'Content-Type': 'application/json',
+            'Square-Version': '2024-04-17'
+          }
         });
 
-        // Orders APIを使用して決済を検証
-        const ordersApi = client.ordersApi;
-        const response = await ordersApi.retrieveOrder(checkoutId);
+        if (!squareResponse.ok) {
+          const errorText = await squareResponse.text();
+          throw new Error(`Square API error: ${squareResponse.status} - ${errorText}`);
+        }
+
+        const squareData = await squareResponse.json();
         
-        if (response.result && response.result.order) {
-          const order = response.result.order;
+        if (squareData.order) {
+          const order = squareData.order;
           
           // 決済が完了しているかチェック
           if (order.state === "COMPLETED") {
@@ -205,7 +220,7 @@ export default {
             });
           }
         } else {
-          throw new Error("Failed to retrieve order");
+          throw new Error("Failed to retrieve order - invalid response");
         }
 
       } catch (error) {
