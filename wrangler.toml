@@ -10,5 +10,6 @@ ALLOW_ORIGIN = "*"
 
 # Square API設定（本番環境用）
 # 実際のデプロイ時は Cloudflare Dashboard で環境変数を設定してください
-# SQUARE_ACCESS_TOKEN = "your_production_square_access_token"
-# SQUARE_LOCATION_ID = "your_production_square_location_id"
+SQUARE_APPLICATION_ID = "sandbox-sq0idb-eSzFL1OkuVb004jahtDJNA"
+SQUARE_ACCESS_TOKEN = "EAAAl_UqOgNBMBjJ2JSz2o5Bu26NQKVMKqFm1yxsnHLZWFBFejQQN2ZkKEiLuoPT"
+SQUARE_LOCATION_ID = "LTNYEG1WCPG4X"

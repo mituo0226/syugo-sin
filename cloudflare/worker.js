@@ -1,5 +1,5 @@
 import { runConsult } from "../public/consult/consult.js";
-import { Client, Environment } from 'squareup';
+import { Client, Environment } from 'square';
 
 export default {
   async fetch(request, env, ctx) {
@@ -60,7 +60,21 @@ export default {
       }
 
       try {
-        const { uid } = await request.json();
+        let requestBody;
+        try {
+          requestBody = await request.json();
+        } catch (jsonError) {
+          console.error("JSON parse error:", jsonError);
+          return new Response(JSON.stringify({ 
+            error: "Invalid JSON format",
+            details: jsonError.message 
+          }), {
+            status: 400,
+            headers: { "Content-Type": "application/json", ...corsHeaders }
+          });
+        }
+        
+        const { uid } = requestBody;
         
         if (!uid) {
           return new Response(JSON.stringify({ error: "UID is required" }), {
@@ -78,7 +92,7 @@ export default {
         // Checkout APIを使用して決済リンクを作成
         const checkoutApi = client.checkoutApi;
         
-        const requestBody = {
+        const checkoutRequestBody = {
           idempotencyKey: `${uid}-${Date.now()}`,
           order: {
             locationId: env.SQUARE_LOCATION_ID,
@@ -99,7 +113,7 @@ export default {
           redirectUrl: `${url.origin}/confirm.html?uid=${uid}`
         };
 
-        const response = await checkoutApi.createCheckout(env.SQUARE_LOCATION_ID, requestBody);
+        const response = await checkoutApi.createCheckout(env.SQUARE_LOCATION_ID, checkoutRequestBody);
         
         if (response.result && response.result.checkout) {
           return new Response(JSON.stringify({ 
@@ -133,7 +147,21 @@ export default {
       }
 
       try {
-        const { uid, checkoutId } = await request.json();
+        let requestBody;
+        try {
+          requestBody = await request.json();
+        } catch (jsonError) {
+          console.error("JSON parse error:", jsonError);
+          return new Response(JSON.stringify({ 
+            error: "Invalid JSON format",
+            details: jsonError.message 
+          }), {
+            status: 400,
+            headers: { "Content-Type": "application/json", ...corsHeaders }
+          });
+        }
+        
+        const { uid, checkoutId } = requestBody;
         
         if (!uid || !checkoutId) {
           return new Response(JSON.stringify({ error: "UID and checkoutId are required" }), {
