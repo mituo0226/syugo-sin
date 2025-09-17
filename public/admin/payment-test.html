@@ -98,6 +98,74 @@
       background: linear-gradient(90deg, #b565f0, #9d4edd);
     }
     
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #66ccff;
+      font-weight: bold;
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid rgba(102, 204, 255, 0.3);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    
+    .form-group textarea {
+      height: 80px;
+      resize: vertical;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #66ccff;
+      box-shadow: 0 0 10px rgba(102, 204, 255, 0.3);
+    }
+    
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .data-table th,
+    .data-table td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid rgba(102, 204, 255, 0.2);
+    }
+    
+    .data-table th {
+      background: rgba(102, 204, 255, 0.1);
+      color: #66ccff;
+      font-weight: bold;
+    }
+    
+    .data-table td {
+      color: #ccc;
+      word-break: break-all;
+    }
+    
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+    
     .console-log {
       background: rgba(0, 0, 0, 0.8);
       border: 1px solid rgba(102, 204, 255, 0.3);
@@ -160,9 +228,64 @@
     
     <div class="test-section">
       <h3>① Sandbox直リンク決済テスト</h3>
-      <p>Square Sandboxの固定Checkout URLに直接遷移して決済をテストします。このURLは後で実際のSandbox URLに差し替えてください。</p>
-      <button class="test-button" onclick="directPaymentTest()">
-        直リンクで決済
+      <p>ユーザー情報を入力して決済テストを行います。</p>
+      
+      <!-- 入力フォーム -->
+      <div class="form-group">
+        <label for="userName">名前:</label>
+        <input type="text" id="userName" placeholder="名前を入力してください">
+      </div>
+      
+      <div class="form-group">
+        <label for="userBirthday">生年月日:</label>
+        <input type="date" id="userBirthday">
+      </div>
+      
+      <div class="form-group">
+        <label for="userGuardian">守護神:</label>
+        <select id="userGuardian">
+          <option value="">守護神を選択してください</option>
+          <option value="不動明王">不動明王</option>
+          <option value="大日如来">大日如来</option>
+          <option value="薬師如来">薬師如来</option>
+          <option value="阿弥陀如来">阿弥陀如来</option>
+          <option value="観世音菩薩">観世音菩薩</option>
+          <option value="文殊菩薩">文殊菩薩</option>
+          <option value="普賢菩薩">普賢菩薩</option>
+          <option value="地蔵菩薩">地蔵菩薩</option>
+          <option value="虚空蔵菩薩">虚空蔵菩薩</option>
+          <option value="千手観音">千手観音</option>
+          <option value="勢至菩薩">勢至菩薩</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="userQuestion">相談内容:</label>
+        <textarea id="userQuestion" placeholder="相談内容を入力してください"></textarea>
+      </div>
+      
+      <button class="test-button" onclick="saveUserData()">
+        データを保存
+      </button>
+      
+      <!-- 保存結果表示 -->
+      <div id="savedDataDisplay" style="display: none;">
+        <h4 style="color: #66ccff; margin-top: 30px;">保存されたデータ</h4>
+        <table class="data-table" id="savedDataTable">
+          <thead>
+            <tr>
+              <th>項目</th>
+              <th>内容</th>
+            </tr>
+          </thead>
+          <tbody id="savedDataBody">
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- 決済テスト開始ボタン -->
+      <button class="test-button secondary" id="paymentTestBtn" onclick="startPaymentTest()" style="margin-top: 20px; display: none;">
+        決済テスト開始
       </button>
     </div>
     
@@ -205,7 +328,128 @@
       }
     }
     
-    // 直リンク決済テスト
+    // ユーザーデータ保存機能
+    function saveUserData() {
+      try {
+        addLog('ユーザーデータ保存開始');
+        
+        // フォームから値を取得
+        const name = document.getElementById('userName').value;
+        const birthday = document.getElementById('userBirthday').value;
+        const guardian = document.getElementById('userGuardian').value;
+        const question = document.getElementById('userQuestion').value;
+        
+        // 既存のUIDを取得、なければ新規生成
+        let uid = localStorage.getItem('uid');
+        if (!uid) {
+          uid = crypto.randomUUID();
+          localStorage.setItem('uid', uid);
+          addLog(`新しいUIDを生成: ${uid}`);
+        } else {
+          addLog(`既存のUIDを使用: ${uid}`);
+        }
+        
+        // ユーザーデータオブジェクトを作成
+        const userData = {
+          uid: uid,
+          name: name,
+          birthday: birthday,
+          guardian: guardian,
+          question: question
+        };
+        
+        // localStorageに保存
+        localStorage.setItem('userData', JSON.stringify(userData));
+        addLog('ユーザーデータをlocalStorageに保存しました');
+        
+        // 保存結果を表示
+        displaySavedData(userData);
+        
+        // 決済テスト開始ボタンを表示
+        document.getElementById('paymentTestBtn').style.display = 'inline-block';
+        
+        addLog('ユーザーデータ保存完了');
+      } catch (error) {
+        addLog(`ユーザーデータ保存エラー: ${error.message}`);
+      }
+    }
+    
+    // 保存されたデータを表示
+    function displaySavedData(userData) {
+      const displayDiv = document.getElementById('savedDataDisplay');
+      const tbody = document.getElementById('savedDataBody');
+      
+      // テーブルボディをクリア
+      tbody.innerHTML = '';
+      
+      // データをテーブルに追加
+      const dataRows = [
+        { label: 'ユーザーID', value: userData.uid },
+        { label: '名前', value: userData.name || '(未入力)' },
+        { label: '生年月日', value: userData.birthday || '(未入力)' },
+        { label: '守護神', value: userData.guardian || '(未選択)' },
+        { label: '相談内容', value: userData.question || '(未入力)' }
+      ];
+      
+      dataRows.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.label}</td>
+          <td>${row.value}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+      
+      // 表示エリアを表示
+      displayDiv.style.display = 'block';
+    }
+    
+    // 決済テスト開始
+    async function startPaymentTest() {
+      try {
+        addLog('決済テスト開始');
+        
+        // localStorageからUIDを取得
+        const uid = localStorage.getItem('uid');
+        if (!uid) {
+          addLog('エラー: UIDが見つかりません。先にデータを保存してください。');
+          return;
+        }
+        
+        addLog(`使用するUID: ${uid}`);
+        
+        const apiEndpoint = getPaymentApiEndpoint();
+        addLog(`API接続先: ${apiEndpoint}`);
+        
+        const response = await fetch(apiEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ uid: uid })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          addLog(`API応答成功: ${JSON.stringify(data)}`);
+          
+          if (data.checkoutUrl) {
+            addLog(`生成された決済URL: ${data.checkoutUrl}`);
+            addLog('決済ページに遷移します...');
+            window.location.href = data.checkoutUrl;
+          } else {
+            addLog('エラー: checkoutUrlが取得できませんでした');
+          }
+        } else {
+          const errorText = await response.text();
+          addLog(`API応答エラー (${response.status}): ${errorText}`);
+        }
+      } catch (error) {
+        addLog(`決済テストエラー: ${error.message}`);
+      }
+    }
+    
+    // 直リンク決済テスト（既存機能を保持）
     function directPaymentTest() {
       addLog('直リンク決済テスト開始');
       addLog('注意: このURLはダミーです。実際のSandbox URLに差し替えてください');
@@ -265,6 +509,29 @@
     document.addEventListener('DOMContentLoaded', function() {
       addLog('Square決済テストページ読み込み完了');
       addLog(`現在の環境: ${window.location.hostname}`);
+      
+      // 既存のデータがある場合は表示
+      const existingData = localStorage.getItem('userData');
+      if (existingData) {
+        try {
+          const userData = JSON.parse(existingData);
+          addLog('既存のユーザーデータが見つかりました');
+          
+          // フォームに値を設定
+          document.getElementById('userName').value = userData.name || '';
+          document.getElementById('userBirthday').value = userData.birthday || '';
+          document.getElementById('userGuardian').value = userData.guardian || '';
+          document.getElementById('userQuestion').value = userData.question || '';
+          
+          // 保存されたデータを表示
+          displaySavedData(userData);
+          
+          // 決済テスト開始ボタンを表示
+          document.getElementById('paymentTestBtn').style.display = 'inline-block';
+        } catch (error) {
+          addLog(`既存データの読み込みエラー: ${error.message}`);
+        }
+      }
       
       // API経由決済テストボタンのイベントリスナー
       document.getElementById('apiTestBtn').addEventListener('click', apiPaymentTest);
