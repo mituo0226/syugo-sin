@@ -16,7 +16,7 @@ export default {
       return new Response(null, { headers: corsHeaders });
     }
 
-    // 静的ファイルの配信
+    // 静的ファイルの配信（決済ページのみ）
     if (url.pathname === "/payment.html") {
       const paymentHtml = `<!DOCTYPE html>
 <html lang="ja">
