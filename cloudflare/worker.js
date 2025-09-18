@@ -101,12 +101,13 @@ export default {
           ask_for_shipping_address: false,
           merchant_support_email: "support@example.com",
           pre_populate_buyer_email: "test@example.com",
-          redirect_url: `${url.origin}/confirm.html?uid=${uid}`
+          redirect_url: `${url.origin}/confirm.html?uid=${uid}`,
+          note: `Test payment for UID: ${uid}`
         };
 
         console.log('Square API request data:', JSON.stringify(checkoutData, null, 2));
         
-        const squareResponse = await fetch('https://connect.squareupsandbox.com/v2/online-checkout/payment-links', {
+        const squareResponse = await fetch(`https://connect.squareupsandbox.com/v2/locations/${env.SQUARE_LOCATION_ID}/checkouts`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${env.SQUARE_ACCESS_TOKEN}`,
@@ -123,14 +124,14 @@ export default {
 
         const squareData = await squareResponse.json();
         
-        if (squareData.payment_link && squareData.payment_link.url) {
+        if (squareData.checkout && squareData.checkout.checkout_page_url) {
           return new Response(JSON.stringify({ 
-            checkoutUrl: squareData.payment_link.url 
+            checkoutUrl: squareData.checkout.checkout_page_url 
           }), {
             headers: { "Content-Type": "application/json", ...corsHeaders }
           });
         } else {
-          throw new Error("Failed to create payment link - invalid response");
+          throw new Error("Failed to create checkout - invalid response");
         }
 
       } catch (error) {
