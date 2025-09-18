@@ -744,17 +744,17 @@
       const centerLight = document.getElementById('centerLight');
       const ritualForm = document.getElementById('ritualForm');
       
-      // 1秒後に中央の光をフェードイン
+      // 3秒後に中央の光をフェードイン
       setTimeout(() => {
         centerLight.classList.add('fade-in');
         console.log('中央の光がフェードインしました');
-      }, 1000);
+      }, 3000);
       
-      // 4秒後（光がフェードインしてから3秒後）にフォームをフェードイン
+      // 7秒後（光がフェードインしてから4秒後）にフォームをフェードイン
       setTimeout(() => {
         ritualForm.classList.add('show');
         console.log('入力フォームがフェードインしました');
-      }, 4000);
+      }, 7000);
     }
   </script>
 </body>
