@@ -509,6 +509,22 @@
     let userData = null;
     let unlimitedMode = false;
     
+    // 守護神のキーから名前への変換関数
+    function getGuardianName(guardianKey) {
+      const guardianMap = {
+        'senju': '千手観音',
+        'yakushi': '薬師如来',
+        'amida': '阿弥陀如来',
+        'kokuzo': '虚空蔵菩薩',
+        'monju': '文殊菩薩',
+        'fugen': '普賢菩薩',
+        'seishi': '勢至菩薩',
+        'dainichi': '大日如来',
+        'fudo': '不動明王'
+      };
+      return guardianMap[guardianKey] || '守護神';
+    }
+    
     // API接続先を環境によって自動切り替え
     function getApiEndpoint() {
       const hostname = window.location.hostname;
@@ -1039,7 +1055,16 @@
       }
       
       // 守護神名を取得
-      const guardianName = userData.guardian ? userData.guardian.name : '不明';
+      let guardianName = '守護神';
+      if (userData.guardian) {
+        if (userData.guardian.name) {
+          guardianName = userData.guardian.name;
+        } else if (userData.guardian.key) {
+          guardianName = getGuardianName(userData.guardian.key);
+        }
+      } else if (userData.guardianKey) {
+        guardianName = getGuardianName(userData.guardianKey);
+      }
       
       // 鑑定中メッセージの候補
       const readingMessages = [
@@ -1083,10 +1108,13 @@
             month: userData.month,
             day: userData.day,
             category: "総合",
-            prompt: `ニックネーム: ${userData.nickname} / 守護神: ${guardianName} / 相談: ${userData.worry}`
+            guardian: guardianName
           };
           
           console.log('API呼び出し:', requestData);
+          console.log('guardianName:', guardianName);
+          console.log('userData.guardian:', userData.guardian);
+          console.log('userData.guardianKey:', userData.guardianKey);
           
           const response = await fetch(getApiEndpoint(), {
             method: 'POST',

@@ -41,10 +41,17 @@ export async function runConsult(payload, apiKey) {
 返答は適度に段落を分け、改行を入れて読みやすくしてください。`;
 
     // 守護神情報からニックネームを抽出
-    const guardianParts = guardian.split(' / ');
-    const nickname = guardianParts[0] || '相談者';
-    const guardianName = guardianParts[1] || '守護神';
-    const worry = guardianParts[2] || '';
+    // guardianが文字列の場合はそのまま使用、分割可能な場合は分割
+    let nickname = '相談者';
+    let guardianName = guardian || '守護神';
+    let worry = '';
+    
+    if (typeof guardian === 'string' && guardian.includes(' / ')) {
+      const guardianParts = guardian.split(' / ');
+      nickname = guardianParts[0] || '相談者';
+      guardianName = guardianParts[1] || '守護神';
+      worry = guardianParts[2] || '';
+    }
     
     const userPrompt = `相談内容: ${text}
 生年月日: ${year}-${month}-${day}

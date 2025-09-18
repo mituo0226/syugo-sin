@@ -341,7 +341,21 @@ export default {
       }
 
       try {
-        const payload = await request.json();
+        const requestText = await request.text();
+        console.log('Raw request body length:', requestText.length);
+        console.log('Raw request body:', requestText);
+        
+        let payload;
+        try {
+          payload = JSON.parse(requestText);
+        } catch (parseError) {
+          console.error('JSON parse error:', parseError);
+          console.error('Problematic JSON:', requestText);
+          throw new Error(`JSON parse error: ${parseError.message}`);
+        }
+        
+        console.log('Consult API payload:', payload);
+        
         const result = await runConsult(payload, env.OPENAI_API_KEY);
         
         // 結果を段落ごとに分割
@@ -357,7 +371,7 @@ export default {
       } catch (error) {
         console.error("API Error:", error);
         return new Response(
-          JSON.stringify({ ok: false, error: "Internal Server Error" }),
+          JSON.stringify({ ok: false, error: "Internal Server Error", details: error.message }),
           { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
         );
       }
