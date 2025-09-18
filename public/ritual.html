@@ -47,11 +47,15 @@
       height: 60vh;
       object-fit: contain;
       z-index: 1;
-      opacity: 1;
-      transition: all 2s ease;
+      opacity: 0;
+      transition: all 3s ease;
       filter: brightness(1);
       -webkit-transform: translate(-50%, -50%);
       transform: translate(-50%, -50%);
+    }
+    
+    .center-light.fade-in {
+      opacity: 1;
     }
     
     .center-light.intensify {
@@ -103,9 +107,14 @@
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), 0 0 20px rgba(102, 204, 255, 0.3);
       max-width: 500px;
       width: 100%;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 2s ease;
+    }
+    
+    .ritual-form.show {
       opacity: 1;
       transform: translateY(0);
-      transition: all 2s ease;
     }
     
     .ritual-form.fade-out {
@@ -725,7 +734,28 @@
           console.error('動画読み込みエラー:', e);
         });
       });
+      
+      // 初期アニメーション開始
+      startInitialAnimation();
     });
+    
+    // 初期アニメーション
+    function startInitialAnimation() {
+      const centerLight = document.getElementById('centerLight');
+      const ritualForm = document.getElementById('ritualForm');
+      
+      // 1秒後に中央の光をフェードイン
+      setTimeout(() => {
+        centerLight.classList.add('fade-in');
+        console.log('中央の光がフェードインしました');
+      }, 1000);
+      
+      // 4秒後（光がフェードインしてから3秒後）にフォームをフェードイン
+      setTimeout(() => {
+        ritualForm.classList.add('show');
+        console.log('入力フォームがフェードインしました');
+      }, 4000);
+    }
   </script>
 </body>
 </html>
