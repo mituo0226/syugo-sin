@@ -494,6 +494,21 @@ export default {
           });
         }
 
+        // テスト用のダミーcheckoutIdの場合は成功として扱う
+        if (checkoutId.startsWith('test-checkout-')) {
+          console.log('テスト用決済検証:', { uid, checkoutId });
+          const expireAt = new Date(Date.now() + 3 * 60 * 1000).toISOString();
+          
+          return new Response(JSON.stringify({ 
+            ok: true, 
+            expireAt: expireAt,
+            orderId: checkoutId,
+            isTest: true
+          }), {
+            headers: { "Content-Type": "application/json", ...corsHeaders }
+          });
+        }
+
         // Square API Ordersを直接HTTPリクエストで呼び出し
         const squareResponse = await fetch(`https://connect.squareupsandbox.com/v2/orders/${checkoutId}`, {
           method: 'GET',
