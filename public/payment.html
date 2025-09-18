@@ -113,14 +113,71 @@
       border: 1px solid rgba(255, 107, 107, 0.3);
     }
     
-    .success {
-      color: #66ff66;
-      margin-top: 10px;
-      padding: 10px;
-      background: rgba(102, 255, 102, 0.1);
-      border-radius: 8px;
-      border: 1px solid rgba(102, 255, 102, 0.3);
-    }
+            .success {
+              color: #66ff66;
+              margin-top: 10px;
+              padding: 10px;
+              background: rgba(102, 255, 102, 0.1);
+              border-radius: 8px;
+              border: 1px solid rgba(102, 255, 102, 0.3);
+            }
+            
+            .quick-payment {
+              background: rgba(102, 204, 255, 0.1);
+              padding: 20px;
+              border-radius: 10px;
+              margin-top: 20px;
+              border: 2px solid rgba(102, 204, 255, 0.3);
+            }
+            
+            .quick-payment h3 {
+              color: #66ccff;
+              margin-bottom: 10px;
+              text-align: center;
+            }
+            
+            .quick-payment p {
+              color: #ccc;
+              text-align: center;
+              margin-bottom: 20px;
+            }
+            
+            .quick-pay-button {
+              width: 100%;
+              padding: 15px;
+              font-size: 1.2em;
+              background: linear-gradient(90deg, #ffd700, #ffed4e);
+              border: none;
+              border-radius: 10px;
+              font-weight: bold;
+              cursor: pointer;
+              color: #000;
+              margin-bottom: 10px;
+              box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+              transition: all 0.3s ease;
+            }
+            
+            .quick-pay-button:hover {
+              background: linear-gradient(90deg, #ffed4e, #ffd700);
+              transform: translateY(-2px);
+              box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+            }
+            
+            .change-payment-button {
+              width: 100%;
+              padding: 10px;
+              font-size: 1em;
+              background: transparent;
+              border: 1px solid #66ccff;
+              border-radius: 8px;
+              color: #66ccff;
+              cursor: pointer;
+              transition: all 0.3s ease;
+            }
+            
+            .change-payment-button:hover {
+              background: rgba(102, 204, 255, 0.1);
+            }
     
     .test-info {
       background: rgba(255, 193, 7, 0.1);
@@ -158,58 +215,154 @@
       <p>郵便番号: 12345</p>
     </div>
     
-    <form id="payment-form" class="payment-form">
-      <div class="form-group">
-        <label for="card-number">カード番号</label>
-        <input type="text" id="card-number" placeholder="4111 1111 1111 1111" maxlength="19">
-      </div>
+            <form id="payment-form" class="payment-form">
+              <div class="form-group">
+                <label for="card-number">カード番号</label>
+                <input type="text" id="card-number" name="cc-number" autocomplete="cc-number" placeholder="4111 1111 1111 1111" maxlength="19">
+              </div>
+              
+              <div class="form-group">
+                <label for="expiry-date">有効期限</label>
+                <input type="text" id="expiry-date" name="cc-exp" autocomplete="cc-exp" placeholder="MM/YY" maxlength="5">
+              </div>
+              
+              <div class="form-group">
+                <label for="cvv">CVC</label>
+                <input type="text" id="cvv" name="cc-csc" autocomplete="cc-csc" placeholder="111" maxlength="4">
+              </div>
+              
+              <div class="form-group">
+                <label for="postal-code">郵便番号</label>
+                <input type="text" id="postal-code" name="postal-code" autocomplete="postal-code" placeholder="12345" maxlength="10">
+              </div>
       
-      <div class="form-group">
-        <label for="expiry-date">有効期限</label>
-        <input type="text" id="expiry-date" placeholder="MM/YY" maxlength="5">
-      </div>
-      
-      <div class="form-group">
-        <label for="cvv">CVC</label>
-        <input type="text" id="cvv" placeholder="111" maxlength="4">
-      </div>
-      
-      <div class="form-group">
-        <label for="postal-code">郵便番号</label>
-        <input type="text" id="postal-code" placeholder="12345" maxlength="10">
-      </div>
-      
-      <button type="submit" class="pay-button" id="pay-button">
-        決済する (¥10)
-      </button>
-    </form>
+              <button type="submit" class="pay-button" id="pay-button">
+                決済する (¥10)
+              </button>
+            </form>
+            
+            <!-- 再購入用クイック決済 -->
+            <div id="quick-payment" class="quick-payment" style="display: none;">
+              <h3>クイック決済</h3>
+              <p>前回の決済情報を使用して簡単に決済できます</p>
+              <button type="button" class="quick-pay-button" id="quick-pay-button">
+                前回の情報で決済する (¥10)
+              </button>
+              <button type="button" class="change-payment-button" id="change-payment-button">
+                決済情報を変更する
+              </button>
+            </div>
     
     <div id="error-message" class="error" style="display: none;"></div>
     <div id="success-message" class="success" style="display: none;"></div>
   </div>
 
   <script>
-    // ページ読み込み時の処理
-    window.addEventListener('load', function() {
-      console.log('決済ページ読み込み完了');
-      
-      // URLパラメータからUIDを取得
-      const urlParams = new URLSearchParams(window.location.search);
-      const uid = urlParams.get('uid');
-      
-      if (!uid) {
-        showError('ユーザーIDが取得できませんでした。');
-        return;
-      }
-      
-      console.log('UID:', uid);
-      
-      // フォームのイベントリスナーを設定
-      setupFormEventListeners();
-    });
+            // ページ読み込み時の処理
+            window.addEventListener('load', function() {
+              console.log('決済ページ読み込み完了');
+              
+              // URLパラメータからUIDを取得
+              const urlParams = new URLSearchParams(window.location.search);
+              const uid = urlParams.get('uid');
+              
+              if (!uid) {
+                showError('ユーザーIDが取得できませんでした。');
+                return;
+              }
+              
+              console.log('UID:', uid);
+              
+              // 前回の決済情報をチェック
+              checkPreviousPaymentInfo();
+              
+              // フォームのイベントリスナーを設定
+              setupFormEventListeners();
+            });
     
-    // フォームのイベントリスナーを設定
-    function setupFormEventListeners() {
+            // 前回の決済情報をチェック
+            function checkPreviousPaymentInfo() {
+              const previousPayment = localStorage.getItem('previousPaymentInfo');
+              if (previousPayment) {
+                try {
+                  const paymentInfo = JSON.parse(previousPayment);
+                  console.log('前回の決済情報が見つかりました:', paymentInfo);
+                  
+                  // クイック決済を表示
+                  showQuickPayment();
+                  
+                  // クイック決済ボタンのイベントリスナーを設定
+                  setupQuickPaymentListeners();
+                } catch (error) {
+                  console.error('前回の決済情報の解析エラー:', error);
+                }
+              }
+            }
+            
+            // クイック決済を表示
+            function showQuickPayment() {
+              const paymentForm = document.getElementById('payment-form');
+              const quickPayment = document.getElementById('quick-payment');
+              
+              paymentForm.style.display = 'none';
+              quickPayment.style.display = 'block';
+            }
+            
+            // 通常の決済フォームを表示
+            function showNormalPayment() {
+              const paymentForm = document.getElementById('payment-form');
+              const quickPayment = document.getElementById('quick-payment');
+              
+              paymentForm.style.display = 'block';
+              quickPayment.style.display = 'none';
+            }
+            
+            // クイック決済のイベントリスナーを設定
+            function setupQuickPaymentListeners() {
+              const quickPayButton = document.getElementById('quick-pay-button');
+              const changePaymentButton = document.getElementById('change-payment-button');
+              
+              quickPayButton.addEventListener('click', function() {
+                processQuickPayment();
+              });
+              
+              changePaymentButton.addEventListener('click', function() {
+                showNormalPayment();
+              });
+            }
+            
+            // クイック決済処理
+            async function processQuickPayment() {
+              const quickPayButton = document.getElementById('quick-pay-button');
+              
+              // ボタンを無効化
+              quickPayButton.disabled = true;
+              quickPayButton.textContent = '処理中...';
+              
+              try {
+                // URLパラメータからUIDを取得
+                const urlParams = new URLSearchParams(window.location.search);
+                const uid = urlParams.get('uid');
+                
+                // 前回の決済情報を取得
+                const previousPayment = localStorage.getItem('previousPaymentInfo');
+                const paymentInfo = JSON.parse(previousPayment);
+                
+                // 前回と同じカード情報で決済をシミュレート
+                await simulatePayment(uid, paymentInfo.cardNumber, paymentInfo.expiryDate, paymentInfo.cvv, paymentInfo.postalCode);
+                
+              } catch (error) {
+                console.error('クイック決済エラー:', error);
+                showError('クイック決済処理中にエラーが発生しました。');
+              } finally {
+                // ボタンを有効化
+                quickPayButton.disabled = false;
+                quickPayButton.textContent = '前回の情報で決済する (¥10)';
+              }
+            }
+            
+            // フォームのイベントリスナーを設定
+            function setupFormEventListeners() {
       const form = document.getElementById('payment-form');
       const cardNumber = document.getElementById('card-number');
       const expiryDate = document.getElementById('expiry-date');
@@ -290,21 +443,38 @@
       }
     }
     
-    // 決済処理をシミュレート
-    async function simulatePayment(uid, cardNumber, expiryDate, cvv, postalCode) {
-      // テストカード番号のチェック
-      if (cardNumber === '4111111111111111') {
-        // 成功をシミュレート
-        showSuccess('決済が完了しました！');
-        
-        // 3秒後にconfirm.htmlにリダイレクト
-        setTimeout(() => {
-          window.location.href = `./confirm.html?uid=${uid}&checkoutId=test-checkout-${Date.now()}`;
-        }, 3000);
-      } else {
-        showError('テストカード番号を使用してください: 4111 1111 1111 1111');
-      }
-    }
+            // 決済処理をシミュレート
+            async function simulatePayment(uid, cardNumber, expiryDate, cvv, postalCode) {
+              // テストカード番号のチェック
+              if (cardNumber === '4111111111111111') {
+                // 決済情報を保存（次回のクイック決済用）
+                savePaymentInfo(cardNumber, expiryDate, cvv, postalCode);
+                
+                // 成功をシミュレート
+                showSuccess('決済が完了しました！');
+                
+                // 3秒後にconfirm.htmlにリダイレクト
+                setTimeout(() => {
+                  window.location.href = `./confirm.html?uid=${uid}&checkoutId=test-checkout-${Date.now()}`;
+                }, 3000);
+              } else {
+                showError('テストカード番号を使用してください: 4111 1111 1111 1111');
+              }
+            }
+            
+            // 決済情報を保存
+            function savePaymentInfo(cardNumber, expiryDate, cvv, postalCode) {
+              const paymentInfo = {
+                cardNumber: cardNumber,
+                expiryDate: expiryDate,
+                cvv: cvv,
+                postalCode: postalCode,
+                savedAt: new Date().toISOString()
+              };
+              
+              localStorage.setItem('previousPaymentInfo', JSON.stringify(paymentInfo));
+              console.log('決済情報を保存しました:', paymentInfo);
+            }
     
     // エラーメッセージを表示
     function showError(message) {
