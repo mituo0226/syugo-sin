@@ -282,11 +282,23 @@
     
             // 前回の決済情報をチェック
             function checkPreviousPaymentInfo() {
-              const previousPayment = localStorage.getItem('previousPaymentInfo');
+              // URLパラメータからUIDを取得
+              const urlParams = new URLSearchParams(window.location.search);
+              const uid = urlParams.get('uid');
+              
+              if (!uid) {
+                console.log('UIDが取得できません');
+                return;
+              }
+              
+              // UID固有の決済情報を取得
+              const paymentKey = `paymentInfo_${uid}`;
+              const previousPayment = localStorage.getItem(paymentKey);
+              
               if (previousPayment) {
                 try {
                   const paymentInfo = JSON.parse(previousPayment);
-                  console.log('前回の決済情報が見つかりました:', paymentInfo);
+                  console.log(`UID ${uid} の前回の決済情報が見つかりました:`, paymentInfo);
                   
                   // クイック決済を表示
                   showQuickPayment();
@@ -296,6 +308,8 @@
                 } catch (error) {
                   console.error('前回の決済情報の解析エラー:', error);
                 }
+              } else {
+                console.log(`UID ${uid} の決済情報は見つかりませんでした`);
               }
             }
             
@@ -345,7 +359,8 @@
                 const uid = urlParams.get('uid');
                 
                 // 前回の決済情報を取得
-                const previousPayment = localStorage.getItem('previousPaymentInfo');
+                const paymentKey = `paymentInfo_${uid}`;
+                const previousPayment = localStorage.getItem(paymentKey);
                 const paymentInfo = JSON.parse(previousPayment);
                 
                 // 前回と同じカード情報で決済をシミュレート
@@ -464,16 +479,28 @@
             
             // 決済情報を保存
             function savePaymentInfo(cardNumber, expiryDate, cvv, postalCode) {
+              // URLパラメータからUIDを取得
+              const urlParams = new URLSearchParams(window.location.search);
+              const uid = urlParams.get('uid');
+              
+              if (!uid) {
+                console.error('UIDが取得できません');
+                return;
+              }
+              
               const paymentInfo = {
                 cardNumber: cardNumber,
                 expiryDate: expiryDate,
                 cvv: cvv,
                 postalCode: postalCode,
+                uid: uid,
                 savedAt: new Date().toISOString()
               };
               
-              localStorage.setItem('previousPaymentInfo', JSON.stringify(paymentInfo));
-              console.log('決済情報を保存しました:', paymentInfo);
+              // UID固有のキーで保存
+              const paymentKey = `paymentInfo_${uid}`;
+              localStorage.setItem(paymentKey, JSON.stringify(paymentInfo));
+              console.log(`UID ${uid} の決済情報を保存しました:`, paymentInfo);
             }
     
     // エラーメッセージを表示
