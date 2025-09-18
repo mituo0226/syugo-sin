@@ -312,6 +312,16 @@
   </div>
 
   <script>
+    // ユーザー情報のハッシュを生成
+    async function generateUserHash(userInfoString) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(userInfoString);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      return hashHex.substring(0, 16); // 16文字に短縮
+    }
+    
     // ログ表示関数
     function addLog(message) {
       const logElement = document.getElementById('consoleLog');
@@ -467,15 +477,29 @@
         const guardian = document.getElementById('userGuardian').value;
         const question = document.getElementById('userQuestion').value;
         
+        // ユーザー情報からUIDを生成または取得
+        const userInfo = {
+          name: name,
+          birthday: birthday,
+          guardian: guardian
+        };
+        
+        // ユーザー情報のハッシュからUIDを生成
+        const userInfoString = JSON.stringify(userInfo);
+        const userHash = await generateUserHash(userInfoString);
+        
         // 既存のUIDを取得、なければ新規生成
-        let uid = localStorage.getItem('uid');
+        let uid = localStorage.getItem(`uid_${userHash}`);
         if (!uid) {
           uid = crypto.randomUUID();
-          localStorage.setItem('uid', uid);
-          addLog(`新しいUIDを生成: ${uid}`);
+          localStorage.setItem(`uid_${userHash}`, uid);
+          addLog(`新しいUIDを生成: ${uid} (ユーザー: ${name})`);
         } else {
-          addLog(`既存のUIDを使用: ${uid}`);
+          addLog(`既存のUIDを使用: ${uid} (ユーザー: ${name})`);
         }
+        
+        // ユーザー情報も保存
+        localStorage.setItem('currentUserInfo', JSON.stringify(userInfo));
         
         // ユーザーデータオブジェクトを作成
         const userData = {
@@ -537,16 +561,25 @@
       try {
         addLog('決済テスト開始');
         
-        // localStorageからUIDを取得
-        let uid = localStorage.getItem('uid');
-        if (!uid) {
-          // UIDが存在しない場合は新規生成
-          uid = crypto.randomUUID();
-          localStorage.setItem('uid', uid);
-          addLog(`新しいUIDを生成: ${uid}`);
-        } else {
-          addLog(`既存のUIDを使用: ${uid}`);
+        // 現在のユーザー情報を取得
+        const currentUserInfo = localStorage.getItem('currentUserInfo');
+        if (!currentUserInfo) {
+          addLog('ユーザー情報が見つかりません。先にデータを保存してください。');
+          return;
         }
+        
+        const userInfo = JSON.parse(currentUserInfo);
+        const userInfoString = JSON.stringify(userInfo);
+        const userHash = await generateUserHash(userInfoString);
+        
+        // ユーザーハッシュからUIDを取得
+        let uid = localStorage.getItem(`uid_${userHash}`);
+        if (!uid) {
+          addLog('UIDが見つかりません。先にデータを保存してください。');
+          return;
+        }
+        
+        addLog(`既存のUIDを使用: ${uid} (ユーザー: ${userInfo.name})`);
         
         addLog(`使用するUID: ${uid}`);
         addLog('自前の決済ページに遷移します...');
