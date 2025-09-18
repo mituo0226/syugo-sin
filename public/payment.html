@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>決済 | AI鑑定師 龍</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d1a;
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: rgba(13, 13, 26, 0.9);
+      border-radius: 20px;
+      padding: 40px;
+      border: 2px solid rgba(102, 204, 255, 0.4);
+    }
+    
+    .title {
+      font-size: 2em;
+      color: #66ccff;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .product-info {
+      background: rgba(102, 204, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
+    
+    .product-name {
+      font-size: 1.5em;
+      color: #ffd700;
+      margin-bottom: 10px;
+    }
+    
+    .product-price {
+      font-size: 1.2em;
+      color: #66ccff;
+    }
+    
+    .payment-form {
+      margin-bottom: 30px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #ccc;
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #444;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 16px;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: #66ccff;
+      box-shadow: 0 0 10px rgba(102, 204, 255, 0.3);
+    }
+    
+    .pay-button {
+      width: 100%;
+      padding: 20px;
+      font-size: 1.3em;
+      background: linear-gradient(90deg, #66ccff, #3399ff);
+      border: none;
+      border-radius: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #000;
+      box-shadow: 0 6px 20px rgba(102,204,255,0.4);
+      transition: all 0.3s ease;
+    }
+    
+    .pay-button:hover {
+      background: linear-gradient(90deg, #99e0ff, #66ccff);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102,204,255,0.5);
+    }
+    
+    .pay-button:disabled {
+      background: #666;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .error {
+      color: #ff6b6b;
+      margin-top: 10px;
+      padding: 10px;
+      background: rgba(255, 107, 107, 0.1);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 107, 107, 0.3);
+    }
+    
+    .success {
+      color: #66ff66;
+      margin-top: 10px;
+      padding: 10px;
+      background: rgba(102, 255, 102, 0.1);
+      border-radius: 8px;
+      border: 1px solid rgba(102, 255, 102, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">決済</h1>
+    
+    <div class="product-info">
+      <div class="product-name">AI鑑定師 龍 - 鑑定チケット</div>
+      <div class="product-price">¥10</div>
+    </div>
+    
+    <form id="payment-form" class="payment-form">
+      <div class="form-group">
+        <label for="card-number">カード番号</label>
+        <input type="text" id="card-number" placeholder="4111 1111 1111 1111" maxlength="19">
+      </div>
+      
+      <div class="form-group">
+        <label for="expiry-date">有効期限</label>
+        <input type="text" id="expiry-date" placeholder="MM/YY" maxlength="5">
+      </div>
+      
+      <div class="form-group">
+        <label for="cvv">CVC</label>
+        <input type="text" id="cvv" placeholder="111" maxlength="4">
+      </div>
+      
+      <div class="form-group">
+        <label for="postal-code">郵便番号</label>
+        <input type="text" id="postal-code" placeholder="12345" maxlength="10">
+      </div>
+      
+      <button type="submit" class="pay-button" id="pay-button">
+        決済する (¥10)
+      </button>
+    </form>
+    
+    <div id="error-message" class="error" style="display: none;"></div>
+    <div id="success-message" class="success" style="display: none;"></div>
+  </div>
+
+  <script>
+    // ページ読み込み時の処理
+    window.addEventListener('load', function() {
+      console.log('決済ページ読み込み完了');
+      
+      // URLパラメータからUIDを取得
+      const urlParams = new URLSearchParams(window.location.search);
+      const uid = urlParams.get('uid');
+      
+      if (!uid) {
+        showError('ユーザーIDが取得できませんでした。');
+        return;
+      }
+      
+      console.log('UID:', uid);
+      
+      // フォームのイベントリスナーを設定
+      setupFormEventListeners();
+    });
+    
+    // フォームのイベントリスナーを設定
+    function setupFormEventListeners() {
+      const form = document.getElementById('payment-form');
+      const cardNumber = document.getElementById('card-number');
+      const expiryDate = document.getElementById('expiry-date');
+      const cvv = document.getElementById('cvv');
+      const postalCode = document.getElementById('postal-code');
+      
+      // カード番号のフォーマット
+      cardNumber.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+        e.target.value = value;
+      });
+      
+      // 有効期限のフォーマット
+      expiryDate.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+          value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        }
+        e.target.value = value;
+      });
+      
+      // フォーム送信
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        processPayment();
+      });
+    }
+    
+    // 決済処理
+    async function processPayment() {
+      const payButton = document.getElementById('pay-button');
+      const cardNumber = document.getElementById('card-number').value.replace(/\s/g, '');
+      const expiryDate = document.getElementById('expiry-date').value;
+      const cvv = document.getElementById('cvv').value;
+      const postalCode = document.getElementById('postal-code').value;
+      
+      // バリデーション
+      if (!cardNumber || !expiryDate || !cvv || !postalCode) {
+        showError('すべての項目を入力してください。');
+        return;
+      }
+      
+      if (cardNumber.length < 16) {
+        showError('カード番号を正しく入力してください。');
+        return;
+      }
+      
+      if (expiryDate.length < 5) {
+        showError('有効期限を正しく入力してください。');
+        return;
+      }
+      
+      if (cvv.length < 3) {
+        showError('CVCを正しく入力してください。');
+        return;
+      }
+      
+      // ボタンを無効化
+      payButton.disabled = true;
+      payButton.textContent = '処理中...';
+      
+      try {
+        // URLパラメータからUIDを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const uid = urlParams.get('uid');
+        
+        // 決済処理をシミュレート
+        await simulatePayment(uid, cardNumber, expiryDate, cvv, postalCode);
+        
+      } catch (error) {
+        console.error('決済エラー:', error);
+        showError('決済処理中にエラーが発生しました。');
+      } finally {
+        // ボタンを有効化
+        payButton.disabled = false;
+        payButton.textContent = '決済する (¥10)';
+      }
+    }
+    
+    // 決済処理をシミュレート
+    async function simulatePayment(uid, cardNumber, expiryDate, cvv, postalCode) {
+      // テストカード番号のチェック
+      if (cardNumber === '4111111111111111') {
+        // 成功をシミュレート
+        showSuccess('決済が完了しました！');
+        
+        // 3秒後にconfirm.htmlにリダイレクト
+        setTimeout(() => {
+          window.location.href = `./confirm.html?uid=${uid}&checkoutId=test-checkout-${Date.now()}`;
+        }, 3000);
+      } else {
+        showError('テストカード番号を使用してください: 4111 1111 1111 1111');
+      }
+    }
+    
+    // エラーメッセージを表示
+    function showError(message) {
+      const errorDiv = document.getElementById('error-message');
+      const successDiv = document.getElementById('success-message');
+      
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+      successDiv.style.display = 'none';
+    }
+    
+    // 成功メッセージを表示
+    function showSuccess(message) {
+      const errorDiv = document.getElementById('error-message');
+      const successDiv = document.getElementById('success-message');
+      
+      successDiv.textContent = message;
+      successDiv.style.display = 'block';
+      errorDiv.style.display = 'none';
+    }
+  </script>
+</body>
+</html>

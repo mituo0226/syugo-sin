@@ -549,33 +549,11 @@
         }
         
         addLog(`使用するUID: ${uid}`);
+        addLog('自前の決済ページに遷移します...');
         
-        const apiEndpoint = getPaymentApiEndpoint();
-        addLog(`API接続先: ${apiEndpoint}`);
+        // 自前の決済ページにリダイレクト
+        window.location.href = `../payment.html?uid=${uid}`;
         
-        const response = await fetch(apiEndpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ uid: uid })
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          addLog(`API応答成功: ${JSON.stringify(data)}`);
-          
-          if (data.checkoutUrl) {
-            addLog(`生成された決済URL: ${data.checkoutUrl}`);
-            addLog('決済ページに遷移します...');
-            window.location.href = data.checkoutUrl;
-          } else {
-            addLog('エラー: checkoutUrlが取得できませんでした');
-          }
-        } else {
-          const errorText = await response.text();
-          addLog(`API応答エラー (${response.status}): ${errorText}`);
-        }
       } catch (error) {
         addLog(`決済テストエラー: ${error.message}`);
       }
