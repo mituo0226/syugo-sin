@@ -672,9 +672,8 @@
   
     <!-- 完了メッセージ -->
     <div class="completion-message" id="completionMessage">
-      <h2 class="completion-title">情報は通達され守護神達は</h2>
       <div class="completion-text" id="completionText">
-        <p id="nicknameDisplay"></p>
+        <p id="messageDisplay"></p>
       </div>
       <div class="continue-button-container" id="continueButtonContainer" style="display: none;">
         <button type="button" class="continue-button" id="continueButton">
@@ -1105,19 +1104,19 @@
     // 完了メッセージをタイプライター効果で表示
     function showCompletionMessage(nickname = '') {
       const completionMessage = document.getElementById('completionMessage');
-      const nicknameDisplay = document.getElementById('nicknameDisplay');
+      const messageDisplay = document.getElementById('messageDisplay');
       const continueButtonContainer = document.getElementById('continueButtonContainer');
       const continueButton = document.getElementById('continueButton');
       
       completionMessage.classList.add('show');
       
-      // タイプライター効果でニックネームを表示
-      const fullText = `${nickname}の魂を受け取った！`;
+      // タイプライター効果でメッセージを表示
+      const fullText = `情報は通達され守護神達は${nickname}の魂を受け取った`;
       let currentIndex = 0;
       
       function typeWriter() {
         if (currentIndex < fullText.length) {
-          nicknameDisplay.textContent = fullText.substring(0, currentIndex + 1);
+          messageDisplay.textContent = fullText.substring(0, currentIndex + 1);
           currentIndex++;
           setTimeout(typeWriter, 100); // 100ms間隔でタイプライター効果
         } else {
