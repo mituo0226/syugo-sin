@@ -13,3 +13,9 @@ ALLOW_ORIGIN = "*"
 SQUARE_APPLICATION_ID = "sandbox-sq0idb-eSzFL1OkuVb004jahtDJNA"
 SQUARE_ACCESS_TOKEN = "EAAAl_UqOgNBMBjJ2JSz2o5Bu26NQKVMKqFm1yxsnHLZWFBFejQQN2ZkKEiLuoPT"
 SQUARE_LOCATION_ID = "LTNYEG1WCPG4X"
+
+# D1データベース設定
+[[d1_databases]]
+binding = "DB"
+database_name = "syugo-sin-db"
+database_id = "0eee225f-f4a4-41ea-a64b-1ae31cb92138"
