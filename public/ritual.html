@@ -864,25 +864,47 @@
       });
       
       // 初期アニメーション開始
-      startInitialAnimation();
+      const testMode = isTestMode();
+      startInitialAnimation(testMode);
     });
     
     // 初期アニメーション
-    function startInitialAnimation() {
+    function startInitialAnimation(isTestMode = false) {
       const centerLight = document.getElementById('centerLight');
       const ritualForm = document.getElementById('ritualForm');
       
-      // 3秒後に中央の光をフェードイン
-      setTimeout(() => {
-        centerLight.classList.add('fade-in');
-        console.log('中央の光がフェードインしました');
-      }, 3000);
-      
-      // 7秒後（光がフェードインしてから4秒後）にフォームをフェードイン
-      setTimeout(() => {
-        ritualForm.classList.add('show');
-        console.log('入力フォームがフェードインしました');
-      }, 7000);
+      if (isTestMode) {
+        // テストモード: 短縮版アニメーション
+        console.log('テストモード: 短縮版アニメーションを開始');
+        
+        // 1秒後に中央の光をフェードイン
+        setTimeout(() => {
+          centerLight.classList.add('fade-in');
+          console.log('中央の光がフェードインしました（テストモード）');
+        }, 1000);
+        
+        // 2秒後にフォームをフェードイン
+        setTimeout(() => {
+          ritualForm.classList.add('show');
+          console.log('入力フォームがフェードインしました（テストモード）');
+        }, 2000);
+        
+      } else {
+        // 本番モード: 通常のアニメーション
+        console.log('本番モード: 通常のアニメーションを開始');
+        
+        // 3秒後に中央の光をフェードイン
+        setTimeout(() => {
+          centerLight.classList.add('fade-in');
+          console.log('中央の光がフェードインしました');
+        }, 3000);
+        
+        // 7秒後（光がフェードインしてから4秒後）にフォームをフェードイン
+        setTimeout(() => {
+          ritualForm.classList.add('show');
+          console.log('入力フォームがフェードインしました');
+        }, 7000);
+      }
     }
     
     // 光点アニメーション
