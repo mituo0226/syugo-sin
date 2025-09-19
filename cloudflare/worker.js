@@ -582,7 +582,10 @@ export default {
 
     // 会員登録API エンドポイント
     if (url.pathname === "/api/register") {
+      console.log("Register API endpoint hit:", { method: request.method, pathname: url.pathname });
+      
       if (request.method !== "POST") {
+        console.log("Method not allowed:", request.method);
         return new Response(JSON.stringify({ error: "Method not allowed" }), {
           status: 405,
           headers: { "Content-Type": "application/json", ...corsHeaders }
@@ -612,6 +615,14 @@ export default {
             headers: { "Content-Type": "application/json", ...corsHeaders }
           });
         }
+
+        // D1データベースのバインド確認
+        if (!env.DB) {
+          console.error("D1 database not bound");
+          throw new Error("Database not available");
+        }
+
+        console.log("Attempting to insert user data:", { email, nickname, birthdate, guardian_id, theme });
 
         // D1データベースに保存
         const result = await env.DB.prepare(`
