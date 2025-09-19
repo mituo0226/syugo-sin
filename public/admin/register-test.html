@@ -357,6 +357,7 @@
             if (jsonData.birthday) {
               extractedData.birthdate = jsonData.birthday;
               info.push(`生年月日: ${extractedData.birthdate}`);
+              addLog(`生年月日を取得: ${extractedData.birthdate}`);
             } else if (jsonData.birthYear && jsonData.birthMonth && jsonData.birthDay) {
               const year = jsonData.birthYear;
               const month = jsonData.birthMonth;
@@ -364,6 +365,9 @@
               extractedData.birthdate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
               info.push(`生年月日: ${extractedData.birthdate}`);
               addLog(`生年月日を取得: ${extractedData.birthdate}`);
+            } else {
+              // デバッグ: 生年月日関連のフィールドをチェック
+              addLog(`生年月日デバッグ - birthYear: ${jsonData.birthYear}, birthMonth: ${jsonData.birthMonth}, birthDay: ${jsonData.birthDay}`);
             }
             
             // 守護神IDを取得（オブジェクトの場合はkeyを取得）
