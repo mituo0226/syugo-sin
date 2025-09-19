@@ -297,19 +297,30 @@
       const keys = Object.keys(localStorage);
       let foundData = false;
       
+      // デバッグ: 全localStorageの内容をログ出力
+      addLog('=== localStorage全内容 ===');
+      keys.forEach(key => {
+        const value = localStorage.getItem(key);
+        addLog(`キー: ${key} = ${value}`);
+      });
+      addLog('=== localStorage全内容終了 ===');
+      
       // 各キーをチェックしてデータを抽出
       keys.forEach(key => {
         const value = localStorage.getItem(key);
         
         // URLパラメータ形式のデータをチェック
         if (value && value.includes('=') && value.includes('&')) {
+          addLog(`URLパラメータ形式のデータを発見: キー=${key}, 値=${value}`);
           const params = new URLSearchParams(value);
           if (params.has('nickname') || params.has('birthYear') || params.has('guardianKey')) {
             foundData = true;
+            addLog('URLパラメータ形式のデータが有効です');
             
             if (params.has('nickname')) {
               extractedData.nickname = params.get('nickname');
               info.push(`ニックネーム: ${extractedData.nickname}`);
+              addLog(`ニックネームを取得: ${extractedData.nickname}`);
             }
             
             if (params.has('birthYear') && params.has('birthMonth') && params.has('birthDay')) {
@@ -318,17 +329,20 @@
               const day = params.get('birthDay');
               extractedData.birthdate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
               info.push(`生年月日: ${extractedData.birthdate}`);
+              addLog(`生年月日を取得: ${extractedData.birthdate}`);
             }
             
             if (params.has('guardianKey')) {
               extractedData.guardian_id = params.get('guardianKey');
               info.push(`守護神ID: ${extractedData.guardian_id}`);
+              addLog(`守護神IDを取得: ${extractedData.guardian_id}`);
             }
           }
         }
         
         // JSON形式のデータもチェック
         if (value && (key.includes('user') || key.includes('guardian') || key.includes('birth') || key.includes('theme'))) {
+          addLog(`JSON形式のデータをチェック: キー=${key}`);
           try {
             const jsonData = JSON.parse(value);
             if (jsonData.birthday) {
@@ -345,7 +359,7 @@
             }
             foundData = true;
           } catch (error) {
-            // JSONでない場合は無視
+            addLog(`JSON解析エラー: ${error.message}`);
           }
         }
       });
@@ -395,9 +409,10 @@
         // localStorageデータを取得
         const localStorageData = loadLocalStorageData();
         
-        // ニックネームの確認
+        // ニックネームの確認（取得できない場合はデフォルト値を使用）
         if (!localStorageData.nickname) {
-          throw new Error('localStorageからニックネームを取得できませんでした');
+          addLog('警告: localStorageからニックネームを取得できませんでした。デフォルト値を使用します。', 'error');
+          localStorageData.nickname = 'ゲストユーザー';
         }
         
         // 送信データを構築
