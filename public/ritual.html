@@ -205,6 +205,28 @@
       transform: none;
     }
     
+    /* テストモード専用ボタン */
+    .test-mode-button {
+      width: 100%;
+      padding: 20px;
+      font-size: 1.3em;
+      background: linear-gradient(90deg, #ffd700, #ffed4e);
+      border: none;
+      border-radius: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #000;
+      box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+      transition: all 0.3s ease;
+      margin-top: 15px;
+    }
+    
+    .test-mode-button:hover {
+      background: linear-gradient(90deg, #ffed4e, #ffd700);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+    }
+    
     /* 完了メッセージ */
     .completion-message {
       position: fixed;
@@ -601,6 +623,11 @@
       <button type="submit" class="submit-button" id="submitButton">
         儀式を開始する
       </button>
+      
+      <!-- テストモード専用ボタン -->
+      <button type="button" class="test-mode-button" id="testModeButton" style="display: none;">
+        完了画面に飛ぶ（テスト用）
+      </button>
     </form>
   </div>
   
@@ -726,6 +753,17 @@
       });
       return isTest;
     }
+    
+    // テストモード専用ボタンのクリックイベント
+    document.addEventListener('DOMContentLoaded', function() {
+      const testModeButton = document.getElementById('testModeButton');
+      if (testModeButton) {
+        testModeButton.addEventListener('click', function() {
+          console.log('テストモード専用ボタンがクリックされました');
+          startRitual('テストユーザー');
+        });
+      }
+    });
     
     // フォーム送信処理
     document.getElementById('ritualForm').addEventListener('submit', function(e) {
@@ -910,12 +948,17 @@
           setTimeout(() => {
             const emailInput = document.getElementById('email');
             const nicknameInput = document.getElementById('nickname');
+            const testModeButton = document.getElementById('testModeButton');
             if (emailInput && nicknameInput) {
               emailInput.disabled = false;
               nicknameInput.disabled = false;
               emailInput.readOnly = false;
               nicknameInput.readOnly = false;
               console.log('入力フィールドを有効化しました');
+            }
+            if (testModeButton) {
+              testModeButton.style.display = 'block';
+              console.log('テストモード専用ボタンを表示しました');
             }
           }, 100);
         }, 2000);
