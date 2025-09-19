@@ -28,7 +28,7 @@
       object-fit: cover;
       z-index: -2;
       opacity: 1;
-      transition: opacity 3s ease;
+      transition: opacity 1.8s ease-in-out;
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
     }
@@ -74,7 +74,7 @@
       object-fit: cover;
       z-index: -1;
       opacity: 0;
-      transition: opacity 3s ease;
+      transition: opacity 1.8s ease-in-out;
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
     }
@@ -251,6 +251,18 @@
       text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
     }
     
+    .completion-text p {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.8s ease;
+      margin: 0.5em 0;
+    }
+    
+    .completion-text p.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
     /* 光粒のキャンバス */
     .particles-canvas {
       position: fixed;
@@ -266,6 +278,33 @@
     
     .particles-canvas.show {
       opacity: 1;
+    }
+    
+    /* 光点のアニメーション */
+    .light-particle {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: floatUp 4s ease-out forwards;
+    }
+    
+    @keyframes floatUp {
+      0% {
+        opacity: 0;
+        transform: translateY(0) scale(0.5);
+      }
+      20% {
+        opacity: 1;
+        transform: translateY(-20px) scale(1);
+      }
+      80% {
+        opacity: 0.8;
+        transform: translateY(-200px) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-300px) scale(0.5);
+      }
     }
     
     /* タブレット向け調整 */
@@ -562,13 +601,17 @@
     </form>
   </div>
   
-  <!-- 完了メッセージ -->
-  <div class="completion-message" id="completionMessage">
-    <h2 class="completion-title">儀式完了</h2>
-    <div class="completion-text" id="completionText">
-      神秘なる力があなたの周りに満ちています。古代より伝わる叡智が、あなたの魂に宿りました。星々の導きにより、新たな道が開かれ、光の扉があなたの前に現れました。この瞬間から、あなたは宇宙の調和と共に歩み、無限の可能性を手にすることでしょう。龍の加護が永遠にあなたを守り、幸運の風があなたの背中を押し続けます。
+    <!-- 完了メッセージ -->
+    <div class="completion-message" id="completionMessage">
+      <h2 class="completion-title">儀式完了</h2>
+      <div class="completion-text" id="completionText">
+        <p>神秘なる力があなたの周りに満ちています。</p>
+        <p>古代より伝わる叡智が、あなたの魂に宿りました。</p>
+        <p>星々の導きにより、新たな道が開かれ、光の扉があなたの前に現れました。</p>
+        <p>この瞬間から、あなたは宇宙の調和と共に歩み、無限の可能性を手にすることでしょう。</p>
+        <p>龍の加護が永遠にあなたを守り、幸運の風があなたの背中を押し続けます。</p>
+      </div>
     </div>
-  </div>
 
   <script>
     // 光粒のクラス
@@ -691,31 +734,28 @@
       const centerLight = document.getElementById('centerLight');
       centerLight.classList.add('intensify');
       
-      // 2. 神殿動画をフェードアウト
-      setTimeout(() => {
-        const backgroundVideo = document.getElementById('backgroundVideo');
-        backgroundVideo.classList.add('fade-out');
-      }, 1000);
-      
-      // 3. 宇宙動画をフェードイン
-      setTimeout(() => {
-        const cosmosVideo = document.getElementById('cosmosVideo');
-        cosmosVideo.classList.add('fade-in');
-      }, 2000);
-      
-      // 4. フォームをフェードアウト
+      // 2. フォームをフェードアウト
       setTimeout(() => {
         const ritualForm = document.getElementById('ritualForm');
         ritualForm.classList.add('fade-out');
+      }, 1000);
+      
+      // 3. 神殿動画をフェードアウト、宇宙動画をフェードイン（1.8秒かけて）
+      setTimeout(() => {
+        const backgroundVideo = document.getElementById('backgroundVideo');
+        const cosmosVideo = document.getElementById('cosmosVideo');
+        backgroundVideo.classList.add('fade-out');
+        cosmosVideo.classList.add('fade-in');
+      }, 2000);
+      
+      // 4. 光点アニメーションを開始
+      setTimeout(() => {
+        startLightParticles();
       }, 3000);
       
       // 5. 完了メッセージを表示
       setTimeout(() => {
-        const completionMessage = document.getElementById('completionMessage');
-        completionMessage.classList.add('show');
-        
-        // 6. 光粒の演出を開始
-        particleSystem.start();
+        showCompletionMessage();
       }, 4000);
     }
     
@@ -755,6 +795,70 @@
         ritualForm.classList.add('show');
         console.log('入力フォームがフェードインしました');
       }, 7000);
+    }
+    
+    // 光点アニメーション
+    function startLightParticles() {
+      const container = document.querySelector('.container');
+      let particleCount = 0;
+      const maxParticles = 25;
+      
+      function createParticle() {
+        if (particleCount >= maxParticles) return;
+        
+        const particle = document.createElement('div');
+        particle.className = 'light-particle';
+        
+        // ランダムな位置（画面下部）
+        const x = Math.random() * window.innerWidth;
+        const y = window.innerHeight + Math.random() * 100;
+        
+        // ランダムなサイズ
+        const size = Math.random() * 8 + 4;
+        
+        // ランダムな色（白または金）
+        const colors = ['#ffffff', '#ffd700', '#ffed4e'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        
+        particle.style.left = x + 'px';
+        particle.style.top = y + 'px';
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.backgroundColor = color;
+        particle.style.boxShadow = `0 0 ${size * 2}px ${color}`;
+        
+        container.appendChild(particle);
+        particleCount++;
+        
+        // アニメーション完了後に削除
+        setTimeout(() => {
+          particle.remove();
+          particleCount--;
+        }, 4000);
+      }
+      
+      // 定期的に光点を生成
+      const interval = setInterval(createParticle, 200);
+      
+      // 10秒後に停止（必要に応じて調整）
+      setTimeout(() => {
+        clearInterval(interval);
+      }, 10000);
+    }
+    
+    // 完了メッセージを段落ごとに表示
+    function showCompletionMessage() {
+      const completionMessage = document.getElementById('completionMessage');
+      const paragraphs = completionMessage.querySelectorAll('.completion-text p');
+      
+      completionMessage.classList.add('show');
+      
+      // 各段落を順番にフェードイン
+      paragraphs.forEach((paragraph, index) => {
+        setTimeout(() => {
+          paragraph.classList.add('show');
+        }, index * 800); // 0.8秒間隔
+      });
     }
   </script>
 </body>
