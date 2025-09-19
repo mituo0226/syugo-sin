@@ -234,6 +234,38 @@
       box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
     }
     
+    /* 鑑定を続けるボタン */
+    .continue-button-container {
+      margin-top: 30px;
+      text-align: center;
+    }
+    
+    .continue-button {
+      padding: 15px 30px;
+      font-size: 1.2em;
+      background: linear-gradient(90deg, #66ccff, #3399ff);
+      border: none;
+      border-radius: 25px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #000;
+      box-shadow: 0 6px 20px rgba(102, 204, 255, 0.4);
+      transition: all 0.3s ease;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    
+    .continue-button.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .continue-button:hover {
+      background: linear-gradient(90deg, #99e0ff, #66ccff);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 204, 255, 0.5);
+    }
+    
     /* 完了メッセージ */
     .completion-message {
       position: fixed;
@@ -615,7 +647,7 @@
   <div class="container">
     <!-- 入力フォーム -->
     <form class="ritual-form" id="ritualForm">
-      <h1 class="form-title">神秘の儀式</h1>
+      <h1 class="form-title">守護神への通達</h1>
       
       <div class="form-group">
         <label for="email">メールアドレス</label>
@@ -628,7 +660,7 @@
       </div>
       
       <button type="submit" class="submit-button" id="submitButton">
-        儀式を開始する
+        送信
       </button>
       
       <!-- テストモード専用ボタン -->
@@ -640,13 +672,14 @@
   
     <!-- 完了メッセージ -->
     <div class="completion-message" id="completionMessage">
-      <h2 class="completion-title">儀式完了</h2>
+      <h2 class="completion-title">情報は通達され守護神達は</h2>
       <div class="completion-text" id="completionText">
-        <p>神秘なる力があなたの周りに満ちています。</p>
-        <p>古代より伝わる叡智が、あなたの魂に宿りました。</p>
-        <p>星々の導きにより、新たな道が開かれ、光の扉があなたの前に現れました。</p>
-        <p>この瞬間から、あなたは宇宙の調和と共に歩み、無限の可能性を手にすることでしょう。</p>
-        <p>龍の加護が永遠にあなたを守り、幸運の風があなたの背中を押し続けます。</p>
+        <p id="nicknameDisplay"></p>
+      </div>
+      <div class="continue-button-container" id="continueButtonContainer" style="display: none;">
+        <button type="button" class="continue-button" id="continueButton">
+          鑑定を続ける
+        </button>
       </div>
     </div>
 
@@ -1069,31 +1102,45 @@
       }, 10000);
     }
     
-    // 完了メッセージを段落ごとに表示
+    // 完了メッセージをタイプライター効果で表示
     function showCompletionMessage(nickname = '') {
       const completionMessage = document.getElementById('completionMessage');
-      const completionText = document.getElementById('completionText');
-      
-      // ニックネームを含むメッセージに更新
-      if (nickname) {
-        completionText.innerHTML = `
-          <p><strong>${nickname}さん、</strong></p>
-          <p>神秘なる力があなたの周りに満ちています。</p>
-          <p>古代より伝わる叡智が、あなたの魂に宿りました。</p>
-          <p>星々の導きにより、新たな道が開かれ、光の扉があなたの前に現れました。</p>
-          <p>この瞬間から、あなたは宇宙の調和と共に歩み、無限の可能性を手にすることでしょう。</p>
-          <p>龍の加護が永遠にあなたを守り、幸運の風があなたの背中を押し続けます。</p>
-        `;
-      }
+      const nicknameDisplay = document.getElementById('nicknameDisplay');
+      const continueButtonContainer = document.getElementById('continueButtonContainer');
+      const continueButton = document.getElementById('continueButton');
       
       completionMessage.classList.add('show');
       
-      // 各段落を順番にフェードイン
-      const paragraphs = completionMessage.querySelectorAll('.completion-text p');
-      paragraphs.forEach((paragraph, index) => {
-        setTimeout(() => {
-          paragraph.classList.add('show');
-        }, index * 800); // 0.8秒間隔
+      // タイプライター効果でニックネームを表示
+      const fullText = `${nickname}の魂を受け取った！`;
+      let currentIndex = 0;
+      
+      function typeWriter() {
+        if (currentIndex < fullText.length) {
+          nicknameDisplay.textContent = fullText.substring(0, currentIndex + 1);
+          currentIndex++;
+          setTimeout(typeWriter, 100); // 100ms間隔でタイプライター効果
+        } else {
+          // タイプライター完了後、「鑑定を続ける」ボタンを表示
+          setTimeout(() => {
+            continueButtonContainer.style.display = 'block';
+            setTimeout(() => {
+              continueButton.classList.add('show');
+            }, 100);
+          }, 500);
+        }
+      }
+      
+      // タイプライター効果開始
+      setTimeout(() => {
+        typeWriter();
+      }, 500);
+      
+      // 「鑑定を続ける」ボタンのクリックイベント
+      continueButton.addEventListener('click', function() {
+        console.log('鑑定を続けるボタンがクリックされました');
+        // ここで鑑定ページに遷移する処理を追加
+        window.location.href = './consult/chat.html';
       });
     }
   </script>
