@@ -160,6 +160,9 @@
       font-size: 1.1em;
       box-sizing: border-box;
       transition: all 0.3s ease;
+      pointer-events: auto;
+      -webkit-user-select: text;
+      user-select: text;
     }
     
     .form-group input:focus {
@@ -902,6 +905,19 @@
         setTimeout(() => {
           ritualForm.classList.add('show');
           console.log('入力フォームがフェードインしました（テストモード）');
+          
+          // フォームが表示された後に入力フィールドを有効化
+          setTimeout(() => {
+            const emailInput = document.getElementById('email');
+            const nicknameInput = document.getElementById('nickname');
+            if (emailInput && nicknameInput) {
+              emailInput.disabled = false;
+              nicknameInput.disabled = false;
+              emailInput.readOnly = false;
+              nicknameInput.readOnly = false;
+              console.log('入力フィールドを有効化しました');
+            }
+          }, 100);
         }, 2000);
         
       } else {
@@ -918,6 +934,19 @@
         setTimeout(() => {
           ritualForm.classList.add('show');
           console.log('入力フォームがフェードインしました');
+          
+          // フォームが表示された後に入力フィールドを有効化
+          setTimeout(() => {
+            const emailInput = document.getElementById('email');
+            const nicknameInput = document.getElementById('nickname');
+            if (emailInput && nicknameInput) {
+              emailInput.disabled = false;
+              nicknameInput.disabled = false;
+              emailInput.readOnly = false;
+              nicknameInput.readOnly = false;
+              console.log('入力フィールドを有効化しました');
+            }
+          }, 100);
         }, 7000);
       }
     }
