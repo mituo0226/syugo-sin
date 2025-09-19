@@ -305,6 +305,20 @@
       });
       addLog('=== localStorage全内容終了 ===');
       
+      // 特にuserDataキーを詳しくチェック
+      const userDataValue = localStorage.getItem('userData');
+      if (userDataValue) {
+        addLog(`userDataキーの値: ${userDataValue}`);
+        try {
+          const userDataParsed = JSON.parse(userDataValue);
+          addLog(`userData解析結果: ${JSON.stringify(userDataParsed, null, 2)}`);
+        } catch (error) {
+          addLog(`userData解析エラー: ${error.message}`);
+        }
+      } else {
+        addLog('userDataキーが見つかりません');
+      }
+      
       // 各キーをチェックしてデータを抽出
       keys.forEach(key => {
         const value = localStorage.getItem(key);
