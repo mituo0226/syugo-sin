@@ -714,7 +714,14 @@
     // テストモード判定
     function isTestMode() {
       const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get('test') === '1' || urlParams.get('test') === 'true';
+      const testParam = urlParams.get('test');
+      const isTest = testParam === '1' || testParam === 'true';
+      console.log('テストモード判定:', { 
+        search: window.location.search, 
+        testParam: testParam, 
+        isTest: isTest 
+      });
+      return isTest;
     }
     
     // フォーム送信処理
@@ -828,9 +835,11 @@
       
       // テストモードの状態を表示
       const testMode = isTestMode();
+      console.log('ページ読み込み時のテストモード状態:', testMode);
+      
       if (testMode) {
         console.log('🧪 テストモードが有効です - Square APIを呼ばずに完了画面を表示します');
-        // テストモードの視覚的表示（オプション）
+        // テストモードの視覚的表示
         const testIndicator = document.createElement('div');
         testIndicator.style.cssText = `
           position: fixed;
@@ -870,8 +879,15 @@
     
     // 初期アニメーション
     function startInitialAnimation(isTestMode = false) {
+      console.log('初期アニメーション開始:', { isTestMode });
+      
       const centerLight = document.getElementById('centerLight');
       const ritualForm = document.getElementById('ritualForm');
+      
+      console.log('要素の取得:', { 
+        centerLight: !!centerLight, 
+        ritualForm: !!ritualForm 
+      });
       
       if (isTestMode) {
         // テストモード: 短縮版アニメーション
