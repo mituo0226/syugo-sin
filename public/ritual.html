@@ -711,6 +711,12 @@
     // 初期化
     const particleSystem = new ParticleSystem();
     
+    // テストモード判定
+    function isTestMode() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('test') === '1' || urlParams.get('test') === 'true';
+    }
+    
     // フォーム送信処理
     document.getElementById('ritualForm').addEventListener('submit', function(e) {
       e.preventDefault(); // デフォルトの送信を防ぐ
@@ -736,14 +742,56 @@
         return;
       }
       
-      console.log('フォーム送信（実際には送信せず、画面切り替えのみ）:', { email, nickname });
+      const testMode = isTestMode();
+      console.log('フォーム送信:', { email, nickname, testMode });
       
-      // 儀式開始（入力内容は送信せず、画面を完了画面に切り替える）
-      startRitual(nickname);
+      if (testMode) {
+        // テストモード: 強制的に完了画面を表示
+        console.log('テストモード: Square APIを呼ばずに完了画面を表示');
+        startRitual(nickname);
+      } else {
+        // 本番モード: Square APIを呼び出して決済処理
+        console.log('本番モード: Square APIを呼び出して決済処理を開始');
+        startPaymentProcess(email, nickname);
+      }
     });
     
+    // 本番モード: Square API決済処理
+    async function startPaymentProcess(email, nickname) {
+      try {
+        console.log('Square API決済処理開始:', { email, nickname });
+        
+        // ユニークなUIDを生成
+        const uid = crypto.randomUUID();
+        
+        // Square APIに決済リンク作成をリクエスト
+        const response = await fetch('/api/create-payment-link', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ uid })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`決済リンク作成エラー: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('決済リンク作成成功:', data);
+        
+        // 決済ページにリダイレクト
+        window.location.href = data.checkoutUrl;
+        
+      } catch (error) {
+        console.error('決済処理エラー:', error);
+        alert('決済処理中にエラーが発生しました。しばらく時間をおいて再度お試しください。');
+      }
+    }
+    
+    // テストモード: 強制的に完了画面を表示
     function startRitual(nickname = '') {
-      console.log('儀式開始', nickname ? `- ${nickname}さん` : '');
+      console.log('儀式開始（テストモード）', nickname ? `- ${nickname}さん` : '');
       
       // 1. 中央の光を強調発光
       const centerLight = document.getElementById('centerLight');
@@ -777,6 +825,31 @@
     // ページ読み込み時の処理
     window.addEventListener('load', function() {
       console.log('神秘の儀式ページ読み込み完了');
+      
+      // テストモードの状態を表示
+      const testMode = isTestMode();
+      if (testMode) {
+        console.log('🧪 テストモードが有効です - Square APIを呼ばずに完了画面を表示します');
+        // テストモードの視覚的表示（オプション）
+        const testIndicator = document.createElement('div');
+        testIndicator.style.cssText = `
+          position: fixed;
+          top: 10px;
+          right: 10px;
+          background: rgba(255, 215, 0, 0.9);
+          color: #000;
+          padding: 5px 10px;
+          border-radius: 5px;
+          font-size: 12px;
+          font-weight: bold;
+          z-index: 1000;
+          pointer-events: none;
+        `;
+        testIndicator.textContent = 'TEST MODE';
+        document.body.appendChild(testIndicator);
+      } else {
+        console.log('🚀 本番モード - Square API決済処理を実行します');
+      }
       
       // 動画の読み込み確認
       const videos = document.querySelectorAll('video');
