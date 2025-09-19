@@ -221,8 +221,10 @@
       </div>
       
       <div class="form-group">
-        <label for="nickname">ニックネーム *</label>
-        <input type="text" id="nickname" name="nickname" placeholder="あなたの名前" required>
+        <label>ニックネーム（自動取得）</label>
+        <div id="nicknameDisplay" style="padding: 12px; background: rgba(102, 204, 255, 0.1); border: 1px solid rgba(102, 204, 255, 0.3); border-radius: 8px; color: #66ccff;">
+          読み込み中...
+        </div>
       </div>
       
       <button type="submit" class="submit-button" id="submitButton">
@@ -282,59 +284,87 @@
       addLog('localStorageから情報を読み込み中...');
       
       const localStorageInfo = document.getElementById('localStorageInfo');
+      const nicknameDisplay = document.getElementById('nicknameDisplay');
       let info = [];
+      let extractedData = {
+        nickname: null,
+        birthdate: null,
+        guardian_id: null,
+        theme: null
+      };
       
-      // 生年月日情報を取得
-      const currentUserInfo = localStorage.getItem('currentUserInfo');
-      if (currentUserInfo) {
-        try {
-          const userInfo = JSON.parse(currentUserInfo);
-          if (userInfo.birthday) {
-            info.push(`生年月日: ${userInfo.birthday}`);
-          }
-          if (userInfo.guardian) {
-            info.push(`守護神: ${userInfo.guardian}`);
-          }
-        } catch (error) {
-          addLog('currentUserInfoの解析エラー: ' + error.message, 'error');
-        }
-      }
-      
-      // 占いたいテーマ情報を取得
-      const worryData = localStorage.getItem('worryData');
-      if (worryData) {
-        try {
-          const worry = JSON.parse(worryData);
-          if (worry.theme) {
-            info.push(`占いたいテーマ: ${worry.theme}`);
-          }
-        } catch (error) {
-          addLog('worryDataの解析エラー: ' + error.message, 'error');
-        }
-      }
-      
-      // その他のlocalStorage情報を確認
+      // 新しい形式のlocalStorageデータを確認
       const keys = Object.keys(localStorage);
-      const relevantKeys = keys.filter(key => 
-        key.includes('user') || key.includes('guardian') || key.includes('birth') || key.includes('theme')
-      );
+      let foundData = false;
       
-      if (relevantKeys.length > 0) {
-        info.push(`その他の関連データ: ${relevantKeys.join(', ')}`);
-      }
+      // 各キーをチェックしてデータを抽出
+      keys.forEach(key => {
+        const value = localStorage.getItem(key);
+        
+        // URLパラメータ形式のデータをチェック
+        if (value && value.includes('=') && value.includes('&')) {
+          const params = new URLSearchParams(value);
+          if (params.has('nickname') || params.has('birthYear') || params.has('guardianKey')) {
+            foundData = true;
+            
+            if (params.has('nickname')) {
+              extractedData.nickname = params.get('nickname');
+              info.push(`ニックネーム: ${extractedData.nickname}`);
+            }
+            
+            if (params.has('birthYear') && params.has('birthMonth') && params.has('birthDay')) {
+              const year = params.get('birthYear');
+              const month = params.get('birthMonth');
+              const day = params.get('birthDay');
+              extractedData.birthdate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+              info.push(`生年月日: ${extractedData.birthdate}`);
+            }
+            
+            if (params.has('guardianKey')) {
+              extractedData.guardian_id = params.get('guardianKey');
+              info.push(`守護神ID: ${extractedData.guardian_id}`);
+            }
+          }
+        }
+        
+        // JSON形式のデータもチェック
+        if (value && (key.includes('user') || key.includes('guardian') || key.includes('birth') || key.includes('theme'))) {
+          try {
+            const jsonData = JSON.parse(value);
+            if (jsonData.birthday) {
+              extractedData.birthdate = jsonData.birthday;
+              info.push(`生年月日: ${extractedData.birthdate}`);
+            }
+            if (jsonData.guardian) {
+              extractedData.guardian_id = jsonData.guardian;
+              info.push(`守護神: ${extractedData.guardian_id}`);
+            }
+            if (jsonData.theme) {
+              extractedData.theme = jsonData.theme;
+              info.push(`テーマ: ${extractedData.theme}`);
+            }
+            foundData = true;
+          } catch (error) {
+            // JSONでない場合は無視
+          }
+        }
+      });
       
-      if (info.length === 0) {
+      if (!foundData) {
         info.push('localStorageに保存された関連情報が見つかりません');
+        nicknameDisplay.textContent = 'ニックネームが見つかりません';
+      } else {
+        if (extractedData.nickname) {
+          nicknameDisplay.textContent = extractedData.nickname;
+        } else {
+          nicknameDisplay.textContent = 'ニックネームが見つかりません';
+        }
       }
       
       localStorageInfo.innerHTML = info.join('<br>');
       addLog(`localStorage情報読み込み完了: ${info.length}件の情報を発見`);
       
-      return {
-        currentUserInfo: currentUserInfo,
-        worryData: worryData,
-        relevantKeys: relevantKeys
-      };
+      return extractedData;
     }
     
     // フォーム送信処理
@@ -356,60 +386,28 @@
       try {
         // フォームデータを取得
         const email = document.getElementById('email').value.trim();
-        const nickname = document.getElementById('nickname').value.trim();
         
         // バリデーション
-        if (!email || !nickname) {
-          throw new Error('メールアドレスとニックネームは必須です');
+        if (!email) {
+          throw new Error('メールアドレスは必須です');
         }
         
         // localStorageデータを取得
         const localStorageData = loadLocalStorageData();
         
+        // ニックネームの確認
+        if (!localStorageData.nickname) {
+          throw new Error('localStorageからニックネームを取得できませんでした');
+        }
+        
         // 送信データを構築
         const requestData = {
           email: email,
-          nickname: nickname,
-          birthdate: null,
-          guardian_id: null,
-          theme: null
+          nickname: localStorageData.nickname,
+          birthdate: localStorageData.birthdate,
+          guardian_id: localStorageData.guardian_id,
+          theme: localStorageData.theme
         };
-        
-        // localStorageから生年月日を取得
-        if (localStorageData.currentUserInfo) {
-          try {
-            const userInfo = JSON.parse(localStorageData.currentUserInfo);
-            if (userInfo.birthday) {
-              requestData.birthdate = userInfo.birthday;
-            }
-          } catch (error) {
-            addLog('生年月日データの解析エラー: ' + error.message, 'error');
-          }
-        }
-        
-        // localStorageから守護神IDを取得
-        if (localStorageData.currentUserInfo) {
-          try {
-            const userInfo = JSON.parse(localStorageData.currentUserInfo);
-            if (userInfo.guardian) {
-              requestData.guardian_id = userInfo.guardian;
-            }
-          } catch (error) {
-            addLog('守護神データの解析エラー: ' + error.message, 'error');
-          }
-        }
-        
-        // localStorageからテーマを取得
-        if (localStorageData.worryData) {
-          try {
-            const worry = JSON.parse(localStorageData.worryData);
-            if (worry.theme) {
-              requestData.theme = worry.theme;
-            }
-          } catch (error) {
-            addLog('テーマデータの解析エラー: ' + error.message, 'error');
-          }
-        }
         
         addLog('送信データ: ' + JSON.stringify(requestData, null, 2));
         
