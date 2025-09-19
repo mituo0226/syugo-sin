@@ -627,17 +627,17 @@
 </head>
 <body>
   <!-- 背景動画 - 神殿 -->
-  <video class="background-video" id="backgroundVideo" autoplay muted loop>
+  <video class="background-video" id="backgroundVideo" autoplay muted loop playsinline preload="metadata">
     <source src="photo/sinden.mp4" type="video/mp4">
   </video>
   
   <!-- 中央の光の動画 -->
-  <video class="center-light" id="centerLight" autoplay muted loop>
+  <video class="center-light" id="centerLight" autoplay muted loop playsinline preload="metadata">
     <source src="photo/hikari.mp4" type="video/mp4">
   </video>
   
   <!-- 宇宙動画 -->
-  <video class="cosmos-video" id="cosmosVideo" autoplay muted loop>
+  <video class="cosmos-video" id="cosmosVideo" autoplay muted loop playsinline preload="metadata">
     <source src="photo/cosmo.mp4" type="video/mp4">
   </video>
   
@@ -959,20 +959,59 @@
         console.log('🚀 本番モード - Square API決済処理を実行します');
       }
       
-      // 動画の読み込み確認
+      // 動画の読み込み確認と最適化
       const videos = document.querySelectorAll('video');
-      videos.forEach(video => {
+      let loadedVideos = 0;
+      const totalVideos = videos.length;
+      
+      videos.forEach((video, index) => {
+        // 動画読み込み完了時の処理
         video.addEventListener('loadeddata', () => {
-          console.log('動画読み込み完了:', video.src);
+          loadedVideos++;
+          console.log(`動画読み込み完了 (${loadedVideos}/${totalVideos}):`, video.src);
+          
+          // 全ての動画が読み込まれたらアニメーション開始
+          if (loadedVideos === totalVideos) {
+            console.log('全ての動画読み込み完了、アニメーション開始');
+            startInitialAnimation(testMode);
+          }
         });
         
+        // 動画読み込みエラー時の処理
         video.addEventListener('error', (e) => {
           console.error('動画読み込みエラー:', e);
+          loadedVideos++;
+          
+          // エラーでもカウントして、タイムアウト処理を実行
+          if (loadedVideos === totalVideos) {
+            console.log('動画読み込み完了（エラー含む）、アニメーション開始');
+            startInitialAnimation(testMode);
+          }
         });
+        
+        // 動画読み込みタイムアウト処理（10秒）
+        setTimeout(() => {
+          if (loadedVideos < totalVideos) {
+            console.log('動画読み込みタイムアウト、強制的にアニメーション開始');
+            loadedVideos = totalVideos;
+            startInitialAnimation(testMode);
+          }
+        }, 10000);
+        
+        // スマートフォンでの動画読み込み最適化
+        if (window.innerWidth <= 768) {
+          video.preload = 'none';
+          video.load();
+        }
       });
       
-      // 初期アニメーション開始
-      startInitialAnimation(testMode);
+      // フォールバック: 5秒後に強制的にアニメーション開始
+      setTimeout(() => {
+        if (loadedVideos < totalVideos) {
+          console.log('フォールバック: アニメーション開始');
+          startInitialAnimation(testMode);
+        }
+      }, 5000);
     });
     
     // 初期アニメーション
@@ -987,69 +1026,38 @@
         ritualForm: !!ritualForm 
       });
       
-      if (isTestMode) {
-        // テストモード: 短縮版アニメーション
-        console.log('テストモード: 短縮版アニメーションを開始');
+      // テストモードと本番モードで統一されたアニメーション
+      console.log(isTestMode ? 'テストモード: アニメーションを開始' : '本番モード: アニメーションを開始');
+      
+      // 3秒後に中央の光をフェードイン
+      setTimeout(() => {
+        centerLight.classList.add('fade-in');
+        console.log('中央の光がフェードインしました');
+      }, 3000);
+      
+      // 7秒後（光がフェードインしてから4秒後）にフォームをフェードイン
+      setTimeout(() => {
+        ritualForm.classList.add('show');
+        console.log('入力フォームがフェードインしました');
         
-        // 1秒後に中央の光をフェードイン
+        // フォームが表示された後に入力フィールドを有効化
         setTimeout(() => {
-          centerLight.classList.add('fade-in');
-          console.log('中央の光がフェードインしました（テストモード）');
-        }, 1000);
-        
-        // 2秒後にフォームをフェードイン
-        setTimeout(() => {
-          ritualForm.classList.add('show');
-          console.log('入力フォームがフェードインしました（テストモード）');
-          
-          // フォームが表示された後に入力フィールドを有効化
-          setTimeout(() => {
-            const emailInput = document.getElementById('email');
-            const nicknameInput = document.getElementById('nickname');
-            const testModeButton = document.getElementById('testModeButton');
-            if (emailInput && nicknameInput) {
-              emailInput.disabled = false;
-              nicknameInput.disabled = false;
-              emailInput.readOnly = false;
-              nicknameInput.readOnly = false;
-              console.log('入力フィールドを有効化しました');
-            }
-            if (testModeButton) {
-              testModeButton.style.display = 'block';
-              console.log('テストモード専用ボタンを表示しました');
-            }
-          }, 100);
-        }, 2000);
-        
-      } else {
-        // 本番モード: 通常のアニメーション
-        console.log('本番モード: 通常のアニメーションを開始');
-        
-        // 3秒後に中央の光をフェードイン
-        setTimeout(() => {
-          centerLight.classList.add('fade-in');
-          console.log('中央の光がフェードインしました');
-        }, 3000);
-        
-        // 7秒後（光がフェードインしてから4秒後）にフォームをフェードイン
-        setTimeout(() => {
-          ritualForm.classList.add('show');
-          console.log('入力フォームがフェードインしました');
-          
-          // フォームが表示された後に入力フィールドを有効化
-          setTimeout(() => {
-            const emailInput = document.getElementById('email');
-            const nicknameInput = document.getElementById('nickname');
-            if (emailInput && nicknameInput) {
-              emailInput.disabled = false;
-              nicknameInput.disabled = false;
-              emailInput.readOnly = false;
-              nicknameInput.readOnly = false;
-              console.log('入力フィールドを有効化しました');
-            }
-          }, 100);
-        }, 7000);
-      }
+          const emailInput = document.getElementById('email');
+          const nicknameInput = document.getElementById('nickname');
+          const testModeButton = document.getElementById('testModeButton');
+          if (emailInput && nicknameInput) {
+            emailInput.disabled = false;
+            nicknameInput.disabled = false;
+            emailInput.readOnly = false;
+            nicknameInput.readOnly = false;
+            console.log('入力フィールドを有効化しました');
+          }
+          if (testModeButton && isTestMode) {
+            testModeButton.style.display = 'block';
+            console.log('テストモード専用ボタンを表示しました');
+          }
+        }, 100);
+      }, 7000);
     }
     
     // 光点アニメーション
