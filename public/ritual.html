@@ -64,6 +64,13 @@
       -webkit-transform: translate(-50%, -50%) scale(1.1);
     }
     
+    .center-light.fade-out {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(1.2);
+      -webkit-transform: translate(-50%, -50%) scale(1.2);
+      transition: all 2s ease-out;
+    }
+    
     /* 宇宙動画 */
     .cosmos-video {
       position: fixed;
@@ -841,33 +848,52 @@
     function startRitual(nickname = '') {
       console.log('儀式開始（テストモード）', nickname ? `- ${nickname}さん` : '');
       
-      // 1. 中央の光を強調発光
       const centerLight = document.getElementById('centerLight');
+      const backgroundVideo = document.getElementById('backgroundVideo');
+      const cosmosVideo = document.getElementById('cosmosVideo');
+      const ritualForm = document.getElementById('ritualForm');
+      
+      // 1. 中央の光を強調発光（より強く、より大きく）
       centerLight.classList.add('intensify');
+      console.log('中央の光が強調発光しました');
       
       // 2. フォームをフェードアウト
       setTimeout(() => {
-        const ritualForm = document.getElementById('ritualForm');
         ritualForm.classList.add('fade-out');
+        console.log('フォームがフェードアウトしました');
       }, 1000);
       
-      // 3. 神殿動画をフェードアウト、宇宙動画をフェードイン（1.8秒かけて）
+      // 3. 神殿動画をフェードアウト、宇宙動画をフェードイン
       setTimeout(() => {
-        const backgroundVideo = document.getElementById('backgroundVideo');
-        const cosmosVideo = document.getElementById('cosmosVideo');
         backgroundVideo.classList.add('fade-out');
         cosmosVideo.classList.add('fade-in');
+        console.log('神殿動画から宇宙動画に切り替わりました');
       }, 2000);
       
-      // 4. 光点アニメーションを開始
+      // 4. 中央の光をさらにアップしてからフェードアウト
       setTimeout(() => {
-        startLightParticles();
+        centerLight.style.transform = 'translate(-50%, -50%) scale(1.3)';
+        centerLight.style.filter = 'brightness(3) drop-shadow(0 0 80px #ffd700)';
+        console.log('中央の光がさらにアップしました');
+        
+        // 1秒後にフェードアウト
+        setTimeout(() => {
+          centerLight.classList.add('fade-out');
+          console.log('中央の光がフェードアウトしました');
+        }, 1000);
       }, 3000);
       
-      // 5. 完了メッセージを表示
+      // 5. 光点アニメーションを開始
+      setTimeout(() => {
+        startLightParticles();
+        console.log('光点アニメーションを開始しました');
+      }, 5000);
+      
+      // 6. 完了メッセージを表示
       setTimeout(() => {
         showCompletionMessage(nickname);
-      }, 4000);
+        console.log('完了メッセージを表示しました');
+      }, 6000);
     }
     
     // ページ読み込み時の処理
