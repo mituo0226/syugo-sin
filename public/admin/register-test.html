@@ -368,6 +368,7 @@
             } else {
               // デバッグ: 生年月日関連のフィールドをチェック
               addLog(`生年月日デバッグ - birthYear: ${jsonData.birthYear}, birthMonth: ${jsonData.birthMonth}, birthDay: ${jsonData.birthDay}`);
+              addLog(`JSONデータ全体: ${JSON.stringify(jsonData, null, 2)}`);
             }
             
             // 守護神IDを取得（オブジェクトの場合はkeyを取得）
