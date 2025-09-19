@@ -345,18 +345,52 @@
           addLog(`JSON形式のデータをチェック: キー=${key}`);
           try {
             const jsonData = JSON.parse(value);
+            
+            // ニックネームを取得
+            if (jsonData.nickname) {
+              extractedData.nickname = jsonData.nickname;
+              info.push(`ニックネーム: ${extractedData.nickname}`);
+              addLog(`ニックネームを取得: ${extractedData.nickname}`);
+            }
+            
+            // 生年月日を取得（複数の形式に対応）
             if (jsonData.birthday) {
               extractedData.birthdate = jsonData.birthday;
               info.push(`生年月日: ${extractedData.birthdate}`);
+            } else if (jsonData.birthYear && jsonData.birthMonth && jsonData.birthDay) {
+              const year = jsonData.birthYear;
+              const month = jsonData.birthMonth;
+              const day = jsonData.birthDay;
+              extractedData.birthdate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+              info.push(`生年月日: ${extractedData.birthdate}`);
+              addLog(`生年月日を取得: ${extractedData.birthdate}`);
             }
+            
+            // 守護神IDを取得（オブジェクトの場合はkeyを取得）
             if (jsonData.guardian) {
-              extractedData.guardian_id = jsonData.guardian;
-              info.push(`守護神: ${extractedData.guardian_id}`);
+              if (typeof jsonData.guardian === 'string') {
+                extractedData.guardian_id = jsonData.guardian;
+              } else if (jsonData.guardian.key) {
+                extractedData.guardian_id = jsonData.guardian.key;
+              }
+              info.push(`守護神ID: ${extractedData.guardian_id}`);
+              addLog(`守護神IDを取得: ${extractedData.guardian_id}`);
+            } else if (jsonData.guardianKey) {
+              extractedData.guardian_id = jsonData.guardianKey;
+              info.push(`守護神ID: ${extractedData.guardian_id}`);
+              addLog(`守護神IDを取得: ${extractedData.guardian_id}`);
             }
+            
+            // テーマを取得
             if (jsonData.theme) {
               extractedData.theme = jsonData.theme;
               info.push(`テーマ: ${extractedData.theme}`);
+            } else if (jsonData.worry) {
+              extractedData.theme = jsonData.worry;
+              info.push(`テーマ: ${extractedData.theme}`);
+              addLog(`テーマを取得: ${extractedData.theme}`);
             }
+            
             foundData = true;
           } catch (error) {
             addLog(`JSON解析エラー: ${error.message}`);
@@ -427,7 +461,7 @@
         addLog('送信データ: ' + JSON.stringify(requestData, null, 2));
         
         // APIに送信
-        const response = await fetch('/api/register', {
+        const response = await fetch('https://syugo-sin-worker.mituo0226.workers.dev/api/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
