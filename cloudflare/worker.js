@@ -580,6 +580,87 @@ export default {
       }
     }
 
+    // 会員登録API エンドポイント
+    if (url.pathname === "/api/register") {
+      if (request.method !== "POST") {
+        return new Response(JSON.stringify({ error: "Method not allowed" }), {
+          status: 405,
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+      }
+
+      try {
+        let requestBody;
+        try {
+          requestBody = await request.json();
+        } catch (jsonError) {
+          console.error("JSON parse error:", jsonError);
+          return new Response(JSON.stringify({ 
+            error: "Invalid JSON format",
+            details: jsonError.message 
+          }), {
+            status: 400,
+            headers: { "Content-Type": "application/json", ...corsHeaders }
+          });
+        }
+        
+        const { email, nickname, birthdate, guardian_id, theme } = requestBody;
+        
+        if (!email || !nickname) {
+          return new Response(JSON.stringify({ error: "Email and nickname are required" }), {
+            status: 400,
+            headers: { "Content-Type": "application/json", ...corsHeaders }
+          });
+        }
+
+        // D1データベースに保存
+        const result = await env.DB.prepare(`
+          INSERT INTO users (email, nickname, birthdate, guardian_id, theme)
+          VALUES (?, ?, ?, ?, ?)
+        `).bind(
+          email,
+          nickname,
+          birthdate || null,
+          guardian_id || null,
+          theme || null
+        ).run();
+
+        console.log('User registration result:', result);
+
+        if (result.success) {
+          // 保存されたデータを取得
+          const savedUser = await env.DB.prepare(`
+            SELECT * FROM users WHERE id = ?
+          `).bind(result.meta.last_row_id).first();
+
+          return new Response(JSON.stringify({ 
+            success: true,
+            id: result.meta.last_row_id,
+            email: savedUser.email,
+            nickname: savedUser.nickname,
+            birthdate: savedUser.birthdate,
+            guardian_id: savedUser.guardian_id,
+            theme: savedUser.theme,
+            created_at: savedUser.created_at
+          }), {
+            headers: { "Content-Type": "application/json", ...corsHeaders }
+          });
+        } else {
+          throw new Error("Failed to insert user data");
+        }
+
+      } catch (error) {
+        console.error("User registration error:", error);
+        return new Response(JSON.stringify({ 
+          error: "Failed to register user",
+          details: error.message 
+        }), {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+      }
+    }
+
     // 管理API エンドポイント
     if (url.pathname === "/admin/session" && request.method === "POST") {
       try {

@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>会員登録テスト | AI鑑定師 龍</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d1a;
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: rgba(13, 13, 26, 0.9);
+      border-radius: 20px;
+      padding: 40px;
+      border: 2px solid rgba(102, 204, 255, 0.4);
+    }
+    
+    .title {
+      font-size: 2em;
+      color: #66ccff;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #ccc;
+      font-weight: bold;
+    }
+    
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #444;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: #66ccff;
+      box-shadow: 0 0 10px rgba(102, 204, 255, 0.3);
+    }
+    
+    .form-group input::placeholder, .form-group textarea::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .submit-button {
+      width: 100%;
+      padding: 20px;
+      font-size: 1.3em;
+      background: linear-gradient(90deg, #66ccff, #3399ff);
+      border: none;
+      border-radius: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #000;
+      box-shadow: 0 6px 20px rgba(102,204,255,0.4);
+      transition: all 0.3s ease;
+      margin-top: 20px;
+    }
+    
+    .submit-button:hover {
+      background: linear-gradient(90deg, #99e0ff, #66ccff);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102,204,255,0.5);
+    }
+    
+    .submit-button:disabled {
+      background: #666;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .localStorage-info {
+      background: rgba(102, 204, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      border: 2px solid rgba(102, 204, 255, 0.3);
+    }
+    
+    .localStorage-info h3 {
+      color: #66ccff;
+      margin-bottom: 15px;
+    }
+    
+    .localStorage-info p {
+      color: #ccc;
+      margin: 5px 0;
+    }
+    
+    .result-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+      background: rgba(13, 13, 26, 0.8);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    
+    .result-table th, .result-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(102, 204, 255, 0.2);
+    }
+    
+    .result-table th {
+      background: rgba(102, 204, 255, 0.2);
+      color: #66ccff;
+      font-weight: bold;
+    }
+    
+    .result-table td {
+      color: #fff;
+    }
+    
+    .success-message {
+      color: #66ff66;
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(102, 255, 102, 0.1);
+      border-radius: 8px;
+      border: 1px solid rgba(102, 255, 102, 0.3);
+      text-align: center;
+      font-weight: bold;
+    }
+    
+    .error-message {
+      color: #ff6b6b;
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(255, 107, 107, 0.1);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      text-align: center;
+    }
+    
+    .back-link {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 10px 20px;
+      background: rgba(102, 204, 255, 0.2);
+      color: #66ccff;
+      text-decoration: none;
+      border-radius: 8px;
+      border: 1px solid rgba(102, 204, 255, 0.4);
+      transition: all 0.3s ease;
+    }
+    
+    .back-link:hover {
+      background: rgba(102, 204, 255, 0.3);
+      transform: translateY(-2px);
+    }
+    
+    .log-area {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-family: monospace;
+      font-size: 14px;
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid rgba(102, 204, 255, 0.2);
+    }
+    
+    .log-entry {
+      margin: 5px 0;
+      padding: 5px;
+      border-radius: 4px;
+    }
+    
+    .log-success {
+      background: rgba(102, 255, 102, 0.1);
+      color: #66ff66;
+    }
+    
+    .log-error {
+      background: rgba(255, 107, 107, 0.1);
+      color: #ff6b6b;
+    }
+    
+    .log-info {
+      background: rgba(102, 204, 255, 0.1);
+      color: #66ccff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">会員登録テスト</h1>
+    
+    <!-- localStorage情報表示 -->
+    <div class="localStorage-info">
+      <h3>localStorage から読み込まれた情報</h3>
+      <p id="localStorageInfo">読み込み中...</p>
+    </div>
+    
+    <!-- 入力フォーム -->
+    <form id="registerForm">
+      <div class="form-group">
+        <label for="email">メールアドレス *</label>
+        <input type="email" id="email" name="email" placeholder="your@email.com" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="nickname">ニックネーム *</label>
+        <input type="text" id="nickname" name="nickname" placeholder="あなたの名前" required>
+      </div>
+      
+      <button type="submit" class="submit-button" id="submitButton">
+        会員登録情報を保存
+      </button>
+    </form>
+    
+    <!-- 結果表示エリア -->
+    <div id="resultArea" style="display: none;">
+      <h3 style="color: #66ccff; margin-top: 30px;">保存結果</h3>
+      <table class="result-table" id="resultTable">
+        <thead>
+          <tr>
+            <th>項目</th>
+            <th>値</th>
+          </tr>
+        </thead>
+        <tbody id="resultTableBody">
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- メッセージ表示エリア -->
+    <div id="messageArea"></div>
+    
+    <!-- ログ表示エリア -->
+    <div class="log-area" id="logArea">
+      <div class="log-entry log-info">ログがここに表示されます...</div>
+    </div>
+    
+    <!-- 管理画面に戻るリンク -->
+    <a href="admin.html" class="back-link">管理画面に戻る</a>
+  </div>
+
+  <script>
+    // ログ表示関数
+    function addLog(message, type = 'info') {
+      const logArea = document.getElementById('logArea');
+      const logEntry = document.createElement('div');
+      logEntry.className = `log-entry log-${type}`;
+      logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logArea.appendChild(logEntry);
+      logArea.scrollTop = logArea.scrollHeight;
+      
+      // コンソールにも出力
+      if (type === 'error') {
+        console.error(message);
+      } else if (type === 'success') {
+        console.log(message);
+      } else {
+        console.log(message);
+      }
+    }
+    
+    // localStorageから情報を読み込み
+    function loadLocalStorageData() {
+      addLog('localStorageから情報を読み込み中...');
+      
+      const localStorageInfo = document.getElementById('localStorageInfo');
+      let info = [];
+      
+      // 生年月日情報を取得
+      const currentUserInfo = localStorage.getItem('currentUserInfo');
+      if (currentUserInfo) {
+        try {
+          const userInfo = JSON.parse(currentUserInfo);
+          if (userInfo.birthday) {
+            info.push(`生年月日: ${userInfo.birthday}`);
+          }
+          if (userInfo.guardian) {
+            info.push(`守護神: ${userInfo.guardian}`);
+          }
+        } catch (error) {
+          addLog('currentUserInfoの解析エラー: ' + error.message, 'error');
+        }
+      }
+      
+      // 占いたいテーマ情報を取得
+      const worryData = localStorage.getItem('worryData');
+      if (worryData) {
+        try {
+          const worry = JSON.parse(worryData);
+          if (worry.theme) {
+            info.push(`占いたいテーマ: ${worry.theme}`);
+          }
+        } catch (error) {
+          addLog('worryDataの解析エラー: ' + error.message, 'error');
+        }
+      }
+      
+      // その他のlocalStorage情報を確認
+      const keys = Object.keys(localStorage);
+      const relevantKeys = keys.filter(key => 
+        key.includes('user') || key.includes('guardian') || key.includes('birth') || key.includes('theme')
+      );
+      
+      if (relevantKeys.length > 0) {
+        info.push(`その他の関連データ: ${relevantKeys.join(', ')}`);
+      }
+      
+      if (info.length === 0) {
+        info.push('localStorageに保存された関連情報が見つかりません');
+      }
+      
+      localStorageInfo.innerHTML = info.join('<br>');
+      addLog(`localStorage情報読み込み完了: ${info.length}件の情報を発見`);
+      
+      return {
+        currentUserInfo: currentUserInfo,
+        worryData: worryData,
+        relevantKeys: relevantKeys
+      };
+    }
+    
+    // フォーム送信処理
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const submitButton = document.getElementById('submitButton');
+      const messageArea = document.getElementById('messageArea');
+      const resultArea = document.getElementById('resultArea');
+      
+      // ボタンを無効化
+      submitButton.disabled = true;
+      submitButton.textContent = '保存中...';
+      
+      // メッセージエリアをクリア
+      messageArea.innerHTML = '';
+      resultArea.style.display = 'none';
+      
+      try {
+        // フォームデータを取得
+        const email = document.getElementById('email').value.trim();
+        const nickname = document.getElementById('nickname').value.trim();
+        
+        // バリデーション
+        if (!email || !nickname) {
+          throw new Error('メールアドレスとニックネームは必須です');
+        }
+        
+        // localStorageデータを取得
+        const localStorageData = loadLocalStorageData();
+        
+        // 送信データを構築
+        const requestData = {
+          email: email,
+          nickname: nickname,
+          birthdate: null,
+          guardian_id: null,
+          theme: null
+        };
+        
+        // localStorageから生年月日を取得
+        if (localStorageData.currentUserInfo) {
+          try {
+            const userInfo = JSON.parse(localStorageData.currentUserInfo);
+            if (userInfo.birthday) {
+              requestData.birthdate = userInfo.birthday;
+            }
+          } catch (error) {
+            addLog('生年月日データの解析エラー: ' + error.message, 'error');
+          }
+        }
+        
+        // localStorageから守護神IDを取得
+        if (localStorageData.currentUserInfo) {
+          try {
+            const userInfo = JSON.parse(localStorageData.currentUserInfo);
+            if (userInfo.guardian) {
+              requestData.guardian_id = userInfo.guardian;
+            }
+          } catch (error) {
+            addLog('守護神データの解析エラー: ' + error.message, 'error');
+          }
+        }
+        
+        // localStorageからテーマを取得
+        if (localStorageData.worryData) {
+          try {
+            const worry = JSON.parse(localStorageData.worryData);
+            if (worry.theme) {
+              requestData.theme = worry.theme;
+            }
+          } catch (error) {
+            addLog('テーマデータの解析エラー: ' + error.message, 'error');
+          }
+        }
+        
+        addLog('送信データ: ' + JSON.stringify(requestData, null, 2));
+        
+        // APIに送信
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestData)
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`API エラー: ${response.status} - ${errorData.error || 'Unknown error'}`);
+        }
+        
+        const result = await response.json();
+        addLog('保存成功: ' + JSON.stringify(result, null, 2), 'success');
+        
+        // 成功メッセージを表示
+        messageArea.innerHTML = '<div class="success-message">保存しました！</div>';
+        
+        // 保存結果を表形式で表示
+        const resultTableBody = document.getElementById('resultTableBody');
+        resultTableBody.innerHTML = '';
+        
+        const resultData = [
+          { label: 'ID', value: result.id || 'N/A' },
+          { label: 'メールアドレス', value: result.email },
+          { label: 'ニックネーム', value: result.nickname },
+          { label: '生年月日', value: result.birthdate || '未設定' },
+          { label: '守護神ID', value: result.guardian_id || '未設定' },
+          { label: 'テーマ', value: result.theme || '未設定' },
+          { label: '作成日時', value: result.created_at || 'N/A' }
+        ];
+        
+        resultData.forEach(item => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${item.label}</td>
+            <td>${item.value}</td>
+          `;
+          resultTableBody.appendChild(row);
+        });
+        
+        resultArea.style.display = 'block';
+        
+      } catch (error) {
+        addLog('保存エラー: ' + error.message, 'error');
+        messageArea.innerHTML = `<div class="error-message">保存に失敗しました: ${error.message}</div>`;
+      } finally {
+        // ボタンを有効化
+        submitButton.disabled = false;
+        submitButton.textContent = '会員登録情報を保存';
+      }
+    });
+    
+    // ページ読み込み時の処理
+    window.addEventListener('load', function() {
+      addLog('会員登録テストページ読み込み完了');
+      loadLocalStorageData();
+    });
+  </script>
+</body>
+</html>
