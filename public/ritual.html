@@ -713,22 +713,37 @@
     
     // フォーム送信処理
     document.getElementById('ritualForm').addEventListener('submit', function(e) {
-      e.preventDefault();
+      e.preventDefault(); // デフォルトの送信を防ぐ
       
-      const email = document.getElementById('email').value;
-      const nickname = document.getElementById('nickname').value;
+      const email = document.getElementById('email').value.trim();
+      const nickname = document.getElementById('nickname').value.trim();
       
+      // 入力内容の検証
       if (!email || !nickname) {
         alert('すべての項目を入力してください。');
         return;
       }
       
-      // 儀式開始
-      startRitual();
+      // メールアドレスの簡単な検証
+      if (!email.includes('@') || !email.includes('.')) {
+        alert('正しいメールアドレスを入力してください。');
+        return;
+      }
+      
+      // ニックネームの長さチェック
+      if (nickname.length < 2 || nickname.length > 20) {
+        alert('ニックネームは2文字以上20文字以下で入力してください。');
+        return;
+      }
+      
+      console.log('フォーム送信（実際には送信せず、画面切り替えのみ）:', { email, nickname });
+      
+      // 儀式開始（入力内容は送信せず、画面を完了画面に切り替える）
+      startRitual(nickname);
     });
     
-    function startRitual() {
-      console.log('儀式開始');
+    function startRitual(nickname = '') {
+      console.log('儀式開始', nickname ? `- ${nickname}さん` : '');
       
       // 1. 中央の光を強調発光
       const centerLight = document.getElementById('centerLight');
@@ -755,7 +770,7 @@
       
       // 5. 完了メッセージを表示
       setTimeout(() => {
-        showCompletionMessage();
+        showCompletionMessage(nickname);
       }, 4000);
     }
     
@@ -847,13 +862,26 @@
     }
     
     // 完了メッセージを段落ごとに表示
-    function showCompletionMessage() {
+    function showCompletionMessage(nickname = '') {
       const completionMessage = document.getElementById('completionMessage');
-      const paragraphs = completionMessage.querySelectorAll('.completion-text p');
+      const completionText = document.getElementById('completionText');
+      
+      // ニックネームを含むメッセージに更新
+      if (nickname) {
+        completionText.innerHTML = `
+          <p><strong>${nickname}さん、</strong></p>
+          <p>神秘なる力があなたの周りに満ちています。</p>
+          <p>古代より伝わる叡智が、あなたの魂に宿りました。</p>
+          <p>星々の導きにより、新たな道が開かれ、光の扉があなたの前に現れました。</p>
+          <p>この瞬間から、あなたは宇宙の調和と共に歩み、無限の可能性を手にすることでしょう。</p>
+          <p>龍の加護が永遠にあなたを守り、幸運の風があなたの背中を押し続けます。</p>
+        `;
+      }
       
       completionMessage.classList.add('show');
       
       // 各段落を順番にフェードイン
+      const paragraphs = completionMessage.querySelectorAll('.completion-text p');
       paragraphs.forEach((paragraph, index) => {
         setTimeout(() => {
           paragraph.classList.add('show');
