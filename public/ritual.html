@@ -250,9 +250,9 @@
       cursor: pointer;
       color: #000;
       box-shadow: 0 6px 20px rgba(102, 204, 255, 0.4);
-      transition: all 0.3s ease;
+      transition: all 1s ease;
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(30px);
     }
     
     .continue-button.show {
@@ -1121,13 +1121,16 @@
           currentIndex++;
           setTimeout(typeWriter, 100); // 100ms間隔でタイプライター効果
         } else {
-          // タイプライター完了後、「鑑定を続ける」ボタンを表示
+          // タイプライター完了後、少し待ってから「鑑定を続ける」ボタンをフェードイン
           setTimeout(() => {
+            console.log('タイプライター効果完了、ボタンをフェードイン開始');
             continueButtonContainer.style.display = 'block';
+            // 少し遅延を入れてフェードイン効果を確実にする
             setTimeout(() => {
               continueButton.classList.add('show');
-            }, 100);
-          }, 500);
+              console.log('鑑定を続けるボタンがフェードインしました');
+            }, 200);
+          }, 1000); // 1秒待機
         }
       }
       
