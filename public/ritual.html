@@ -1103,15 +1103,28 @@
     
     // 完了メッセージをタイプライター効果で表示
     function showCompletionMessage(nickname = '') {
+      console.log('showCompletionMessage開始:', nickname);
+      
       const completionMessage = document.getElementById('completionMessage');
       const messageDisplay = document.getElementById('messageDisplay');
       const continueButtonContainer = document.getElementById('continueButtonContainer');
       const continueButton = document.getElementById('continueButton');
       
+      console.log('要素の取得:', {
+        completionMessage: !!completionMessage,
+        messageDisplay: !!messageDisplay,
+        continueButtonContainer: !!continueButtonContainer,
+        continueButton: !!continueButton
+      });
+      
       completionMessage.classList.add('show');
+      
+      // メッセージ表示要素を表示状態にする
+      messageDisplay.classList.add('show');
       
       // タイプライター効果でメッセージを表示
       const fullText = `情報は通達され守護神達は${nickname}の魂を受け取った`;
+      console.log('表示するテキスト:', fullText);
       let currentIndex = 0;
       
       function typeWriter() {
