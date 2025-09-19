@@ -375,7 +375,10 @@
               }
               info.push(`守護神ID: ${extractedData.guardian_id}`);
               addLog(`守護神IDを取得: ${extractedData.guardian_id}`);
-            } else if (jsonData.guardianKey) {
+            }
+            
+            // guardianKeyを直接チェック
+            if (jsonData.guardianKey) {
               extractedData.guardian_id = jsonData.guardianKey;
               info.push(`守護神ID: ${extractedData.guardian_id}`);
               addLog(`守護神IDを取得: ${extractedData.guardian_id}`);
