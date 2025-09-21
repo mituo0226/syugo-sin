@@ -16,18 +16,17 @@ export default {
     const corsHeaders = {
       "Access-Control-Allow-Origin": allowedOrigins.includes(origin) ? origin : "https://syugo-sin.com",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
       "Access-Control-Allow-Credentials": "true",
+      "Access-Control-Max-Age": "86400",
     };
 
     // OPTIONS リクエストの処理（プリフライトリクエスト）
     if (request.method === "OPTIONS") {
+      console.log("OPTIONS request received from origin:", origin);
       return new Response(null, { 
         status: 200,
-        headers: {
-          ...corsHeaders,
-          "Access-Control-Max-Age": "86400", // 24時間キャッシュ
-        }
+        headers: corsHeaders
       });
     }
 
@@ -788,6 +787,8 @@ export default {
 
     // マジックリンク送信API エンドポイント
     if (url.pathname === "/api/send-magic-link") {
+      console.log("Magic link API called:", request.method, "from origin:", origin);
+      
       if (request.method !== "POST") {
         return new Response(JSON.stringify({ error: "Method not allowed" }), {
           status: 405,
