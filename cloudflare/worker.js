@@ -695,6 +695,64 @@ export default {
       }
     }
 
+    // ユーザー検索API エンドポイント
+    if (url.pathname === "/api/search-user") {
+      if (request.method !== "POST") {
+        return new Response(JSON.stringify({ error: "Method not allowed" }), {
+          status: 405,
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+      }
+
+      try {
+        const { email } = await request.json();
+        
+        if (!email) {
+          return new Response(JSON.stringify({ error: "Email is required" }), {
+            status: 400,
+            headers: { "Content-Type": "application/json", ...corsHeaders }
+          });
+        }
+
+        // メールアドレスでユーザーを検索
+        const user = await env.DB.prepare(`
+          SELECT * FROM users WHERE email = ?
+        `).bind(email).first();
+
+        if (!user) {
+          return new Response(JSON.stringify({ error: "ユーザーが見つかりません" }), {
+            status: 404,
+            headers: { "Content-Type": "application/json", ...corsHeaders }
+          });
+        }
+
+        return new Response(JSON.stringify({
+          success: true,
+          user: {
+            id: user.id,
+            email: user.email,
+            nickname: user.nickname,
+            birthdate: user.birthdate,
+            guardian_id: user.guardian_id,
+            theme: user.theme,
+            created_at: user.created_at
+          }
+        }), {
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+
+      } catch (error) {
+        console.error("User search error:", error);
+        return new Response(JSON.stringify({ 
+          error: "ユーザー検索中にエラーが発生しました",
+          details: error.message 
+        }), {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+      }
+    }
+
     // 退会API エンドポイント
     if (url.pathname === "/api/withdraw") {
       if (request.method !== "POST") {
