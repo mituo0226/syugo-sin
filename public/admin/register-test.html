@@ -243,16 +243,15 @@
         <label for="guardianId">守護神ID</label>
         <select id="guardianId" name="guardianId">
           <option value="">守護神を選択してください</option>
-          <option value="阿弥陀如来">阿弥陀如来</option>
-          <option value="薬師如来">薬師如来</option>
-          <option value="大日如来">大日如来</option>
-          <option value="不動明王">不動明王</option>
+          <option value="千手観音">千手観音</option>
+          <option value="虚空蔵菩薩">虚空蔵菩薩</option>
           <option value="文殊菩薩">文殊菩薩</option>
           <option value="普賢菩薩">普賢菩薩</option>
-          <option value="観世音菩薩">観世音菩薩</option>
           <option value="勢至菩薩">勢至菩薩</option>
-          <option value="虚空蔵菩薩">虚空蔵菩薩</option>
-          <option value="地蔵菩薩">地蔵菩薩</option>
+          <option value="大日如来">大日如来</option>
+          <option value="不動明王">不動明王</option>
+          <option value="阿弥陀如来">阿弥陀如来</option>
+          <option value="薬師如来">薬師如来</option>
         </select>
       </div>
       
@@ -316,38 +315,47 @@
     // ページ読み込み時に取得したデータを保持する変数
     let cachedLocalStorageData = null;
     
-    // 守護神選択ロジック
+    // 十二支を計算する関数（本番環境と同じ）
+    function calculateZodiac(year, month, day) {
+      const zodiacSigns = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+      const zodiacYear = year - 4;
+      const zodiacIndex = zodiacYear % 12;
+      const zodiac = zodiacSigns[zodiacIndex];
+      
+      console.log(`十二支計算: ${year}年 → ${zodiacYear} → ${zodiacIndex} → ${zodiac}`);
+      
+      return zodiac;
+    }
+    
+    // 守護神選択ロジック（本番環境と同じ）
     function getGuardianByBirthdate(birthdate) {
       if (!birthdate) return null;
       
       const date = new Date(birthdate);
-      const month = date.getMonth() + 1; // 0-11 -> 1-12
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
       const day = date.getDate();
       
-      // 月と日による守護神判定
-      if ((month === 1 && day >= 1) || (month === 2 && day <= 3)) {
-        return "薬師如来";
-      } else if ((month === 2 && day >= 4) || (month === 3 && day <= 5)) {
-        return "阿弥陀如来";
-      } else if ((month === 3 && day >= 6) || (month === 4 && day <= 4)) {
-        return "大日如来";
-      } else if ((month === 4 && day >= 5) || (month === 5 && day <= 5)) {
-        return "不動明王";
-      } else if ((month === 5 && day >= 6) || (month === 6 && day <= 5)) {
-        return "文殊菩薩";
-      } else if ((month === 6 && day >= 6) || (month === 7 && day <= 6)) {
-        return "普賢菩薩";
-      } else if ((month === 7 && day >= 7) || (month === 8 && day <= 7)) {
-        return "観世音菩薩";
-      } else if ((month === 8 && day >= 8) || (month === 9 && day <= 7)) {
-        return "勢至菩薩";
-      } else if ((month === 9 && day >= 8) || (month === 10 && day <= 8)) {
-        return "虚空蔵菩薩";
-      } else if ((month === 10 && day >= 9) || (month === 11 && day <= 7)) {
-        return "地蔵菩薩";
-      } else {
-        return "阿弥陀如来"; // デフォルト
-      }
+      // 十二支を計算
+      const zodiac = calculateZodiac(year, month, day);
+      
+      // 守護神キーマップ（本番環境と同じ）
+      const guardianKeyMap = {
+        '子': '千手観音',
+        '丑': '虚空蔵菩薩',
+        '寅': '虚空蔵菩薩',
+        '卯': '文殊菩薩',
+        '辰': '普賢菩薩',
+        '巳': '普賢菩薩',
+        '午': '勢至菩薩',
+        '未': '大日如来',
+        '申': '大日如来',
+        '酉': '不動明王',
+        '戌': '阿弥陀如来',
+        '亥': '薬師如来'
+      };
+      
+      return guardianKeyMap[zodiac];
     }
     
     // localStorageから情報を読み込み
@@ -503,10 +511,7 @@
       if (!foundData) {
         info.push('localStorageに保存された関連情報が見つかりません');
       } else {
-        // 手動入力フィールドにlocalStorageの値を自動入力
-        if (extractedData.nickname) {
-          document.getElementById('manualNickname').value = extractedData.nickname;
-        }
+        // 手動入力フィールドにlocalStorageの値を自動入力（ニックネームは除く）
         if (extractedData.birthdate) {
           document.getElementById('birthdate').value = extractedData.birthdate;
           // 生年月日が設定された場合、守護神も自動選択

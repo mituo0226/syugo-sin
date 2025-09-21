@@ -4,11 +4,20 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    // CORS ヘッダー
+    // CORS ヘッダー（動的にOriginを設定）
+    const origin = request.headers.get("Origin");
+    const allowedOrigins = [
+      "https://syugo-sin.com",
+      "https://syugo-sin-worker.mituo0226.workers.dev",
+      "http://localhost:3000",
+      "http://localhost:8080"
+    ];
+    
     const corsHeaders = {
-      "Access-Control-Allow-Origin": env.ALLOW_ORIGIN || "*",
+      "Access-Control-Allow-Origin": allowedOrigins.includes(origin) ? origin : "https://syugo-sin.com",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Credentials": "true",
     };
 
     // OPTIONS リクエストの処理
