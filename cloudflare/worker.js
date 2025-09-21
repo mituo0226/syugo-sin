@@ -705,38 +705,71 @@ export default {
       }
 
       try {
-        const { email } = await request.json();
+        const { email, nickname, birthdate, searchType } = await request.json();
         
-        if (!email) {
-          return new Response(JSON.stringify({ error: "Email is required" }), {
+        if (!email && !nickname && !birthdate) {
+          return new Response(JSON.stringify({ error: "検索条件を少なくとも1つ入力してください" }), {
             status: 400,
             headers: { "Content-Type": "application/json", ...corsHeaders }
           });
         }
 
-        // メールアドレスでユーザーを検索
-        const user = await env.DB.prepare(`
-          SELECT * FROM users WHERE email = ?
-        `).bind(email).first();
+        let users;
+        let query;
+        let bindParams = [];
 
-        if (!user) {
+        // 検索タイプに応じてクエリを構築
+        if (searchType === "email" && email) {
+          query = "SELECT * FROM users WHERE email = ?";
+          bindParams = [email];
+        } else if (searchType === "nickname" && nickname) {
+          query = "SELECT * FROM users WHERE nickname LIKE ?";
+          bindParams = [`%${nickname}%`];
+        } else if (searchType === "birthdate" && birthdate) {
+          query = "SELECT * FROM users WHERE birthdate = ?";
+          bindParams = [birthdate];
+        } else {
+          // 複数条件検索
+          let conditions = [];
+          if (email) {
+            conditions.push("email = ?");
+            bindParams.push(email);
+          }
+          if (nickname) {
+            conditions.push("nickname LIKE ?");
+            bindParams.push(`%${nickname}%`);
+          }
+          if (birthdate) {
+            conditions.push("birthdate = ?");
+            bindParams.push(birthdate);
+          }
+          query = `SELECT * FROM users WHERE ${conditions.join(" AND ")}`;
+        }
+
+        users = await env.DB.prepare(query).bind(...bindParams).all();
+
+        if (!users.results || users.results.length === 0) {
           return new Response(JSON.stringify({ error: "ユーザーが見つかりません" }), {
             status: 404,
             headers: { "Content-Type": "application/json", ...corsHeaders }
           });
         }
 
+        // ユーザーデータを整形
+        const formattedUsers = users.results.map(user => ({
+          id: user.id,
+          email: user.email,
+          nickname: user.nickname,
+          birthdate: user.birthdate,
+          guardian_id: user.guardian_id,
+          theme: user.theme,
+          created_at: user.created_at
+        }));
+
         return new Response(JSON.stringify({
           success: true,
-          user: {
-            id: user.id,
-            email: user.email,
-            nickname: user.nickname,
-            birthdate: user.birthdate,
-            guardian_id: user.guardian_id,
-            theme: user.theme,
-            created_at: user.created_at
-          }
+          users: formattedUsers,
+          count: formattedUsers.length
         }), {
           headers: { "Content-Type": "application/json", ...corsHeaders }
         });

@@ -53,7 +53,7 @@
       font-weight: bold;
     }
     
-    .form-group input {
+    .form-group input, .form-group select {
       width: 100%;
       padding: 12px;
       border: 1px solid #444;
@@ -64,10 +64,15 @@
       box-sizing: border-box;
     }
     
-    .form-group input:focus {
+    .form-group input:focus, .form-group select:focus {
       outline: none;
       border-color: #66ccff;
       box-shadow: 0 0 10px rgba(102, 204, 255, 0.3);
+    }
+    
+    .form-group select option {
+      background: #0d0d1a;
+      color: #fff;
     }
     
     .form-group input::placeholder {
@@ -234,6 +239,69 @@
       background: rgba(102, 204, 255, 0.1);
       color: #66ccff;
     }
+    
+    .user-card {
+      background: rgba(13, 13, 26, 0.8);
+      border: 2px solid rgba(102, 204, 255, 0.3);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .user-card h4 {
+      color: #66ccff;
+      margin-top: 0;
+      margin-bottom: 15px;
+      border-bottom: 1px solid rgba(102, 204, 255, 0.3);
+      padding-bottom: 10px;
+    }
+    
+    .user-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .user-info-item {
+      background: rgba(102, 204, 255, 0.1);
+      padding: 8px 12px;
+      border-radius: 5px;
+      border: 1px solid rgba(102, 204, 255, 0.2);
+    }
+    
+    .user-info-label {
+      font-weight: bold;
+      color: #66ccff;
+      font-size: 0.9em;
+    }
+    
+    .user-info-value {
+      color: #fff;
+      margin-top: 2px;
+    }
+    
+    .user-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .user-withdraw-button {
+      padding: 8px 16px;
+      background: linear-gradient(90deg, #ff6b6b, #ff8e8e);
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9em;
+      transition: all 0.3s ease;
+    }
+    
+    .user-withdraw-button:hover {
+      background: linear-gradient(90deg, #ff5252, #ff6b6b);
+      transform: translateY(-1px);
+    }
   </style>
 </head>
 <body>
@@ -242,11 +310,32 @@
     
     <!-- 検索セクション -->
     <div class="search-section">
-      <h3>メールアドレスで検索</h3>
+      <h3>ユーザー検索</h3>
       <form id="searchForm">
         <div class="form-group">
+          <label for="searchType">検索タイプ</label>
+          <select id="searchType" name="searchType" required>
+            <option value="">検索タイプを選択してください</option>
+            <option value="email">メールアドレス</option>
+            <option value="nickname">ニックネーム</option>
+            <option value="birthdate">生年月日</option>
+            <option value="multiple">複数条件</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
           <label for="email">メールアドレス</label>
-          <input type="email" id="email" name="email" placeholder="user@example.com" required>
+          <input type="email" id="email" name="email" placeholder="user@example.com">
+        </div>
+        
+        <div class="form-group">
+          <label for="nickname">ニックネーム</label>
+          <input type="text" id="nickname" name="nickname" placeholder="ニックネーム">
+        </div>
+        
+        <div class="form-group">
+          <label for="birthdate">生年月日</label>
+          <input type="date" id="birthdate" name="birthdate">
         </div>
         
         <button type="submit" class="search-button" id="searchButton">
@@ -258,22 +347,9 @@
     <!-- 結果表示セクション -->
     <div id="resultSection" class="result-section">
       <h3 style="color: #66ccff;">検索結果</h3>
-      <table class="result-table" id="resultTable">
-        <thead>
-          <tr>
-            <th>項目</th>
-            <th>値</th>
-          </tr>
-        </thead>
-        <tbody id="resultTableBody">
-        </tbody>
-      </table>
-      
-      <!-- アクションボタン -->
-      <div class="action-buttons" id="actionButtons">
-        <button class="action-button withdraw-button" id="withdrawButton">
-          退会処理
-        </button>
+      <div id="resultCount" style="color: #66ccff; margin-bottom: 15px;"></div>
+      <div id="usersContainer">
+        <!-- ユーザー一覧がここに動的に生成されます -->
       </div>
     </div>
     
@@ -309,7 +385,39 @@
       }
     }
     
-    let currentUser = null;
+    let currentUsers = [];
+    
+    // 検索タイプ変更時の処理
+    document.getElementById('searchType').addEventListener('change', function() {
+      const searchType = this.value;
+      const emailField = document.getElementById('email');
+      const nicknameField = document.getElementById('nickname');
+      const birthdateField = document.getElementById('birthdate');
+      
+      // すべてのフィールドをリセット
+      emailField.value = '';
+      nicknameField.value = '';
+      birthdateField.value = '';
+      
+      // 検索タイプに応じてフィールドを有効/無効化
+      if (searchType === 'email') {
+        emailField.required = true;
+        nicknameField.required = false;
+        birthdateField.required = false;
+      } else if (searchType === 'nickname') {
+        emailField.required = false;
+        nicknameField.required = true;
+        birthdateField.required = false;
+      } else if (searchType === 'birthdate') {
+        emailField.required = false;
+        nicknameField.required = false;
+        birthdateField.required = true;
+      } else if (searchType === 'multiple') {
+        emailField.required = false;
+        nicknameField.required = false;
+        birthdateField.required = false;
+      }
+    });
     
     // フォーム送信処理
     document.getElementById('searchForm').addEventListener('submit', async function(e) {
@@ -318,7 +426,6 @@
       const searchButton = document.getElementById('searchButton');
       const messageArea = document.getElementById('messageArea');
       const resultSection = document.getElementById('resultSection');
-      const actionButtons = document.getElementById('actionButtons');
       
       // ボタンを無効化
       searchButton.disabled = true;
@@ -327,18 +434,33 @@
       // メッセージエリアと結果セクションをクリア
       messageArea.innerHTML = '';
       resultSection.style.display = 'none';
-      actionButtons.style.display = 'none';
       
       try {
         // フォームデータを取得
+        const searchType = document.getElementById('searchType').value;
         const email = document.getElementById('email').value.trim();
+        const nickname = document.getElementById('nickname').value.trim();
+        const birthdate = document.getElementById('birthdate').value;
         
         // バリデーション
-        if (!email) {
-          throw new Error('メールアドレスを入力してください');
+        if (!searchType) {
+          throw new Error('検索タイプを選択してください');
         }
         
-        addLog(`ユーザー検索開始: ${email}`);
+        if (searchType === 'email' && !email) {
+          throw new Error('メールアドレスを入力してください');
+        }
+        if (searchType === 'nickname' && !nickname) {
+          throw new Error('ニックネームを入力してください');
+        }
+        if (searchType === 'birthdate' && !birthdate) {
+          throw new Error('生年月日を入力してください');
+        }
+        if (searchType === 'multiple' && !email && !nickname && !birthdate) {
+          throw new Error('少なくとも1つの検索条件を入力してください');
+        }
+        
+        addLog(`ユーザー検索開始: タイプ=${searchType}, email=${email}, nickname=${nickname}, birthdate=${birthdate}`);
         
         // APIに送信
         const response = await fetch('https://syugo-sin-worker.mituo0226.workers.dev/api/search-user', {
@@ -348,7 +470,12 @@
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ email: email })
+          body: JSON.stringify({ 
+            email: email,
+            nickname: nickname,
+            birthdate: birthdate,
+            searchType: searchType
+          })
         });
         
         if (!response.ok) {
@@ -360,40 +487,19 @@
         }
         
         const result = await response.json();
-        currentUser = result.user;
+        currentUsers = result.users;
         
         addLog('ユーザー検索完了', 'success');
-        addLog(`検索結果: ${JSON.stringify(result.user, null, 2)}`);
+        addLog(`検索結果: ${result.count}件のユーザーが見つかりました`);
         
         // 成功メッセージを表示
-        messageArea.innerHTML = '<div class="success-message">ユーザーが見つかりました！</div>';
+        messageArea.innerHTML = `<div class="success-message">${result.count}件のユーザーが見つかりました！</div>`;
         
-        // 検索結果を表形式で表示
-        const resultTableBody = document.getElementById('resultTableBody');
-        resultTableBody.innerHTML = '';
+        // 検索結果を表示
+        displayUsers(currentUsers);
         
-        const resultData = [
-          { label: 'ID', value: result.user.id },
-          { label: 'メールアドレス', value: result.user.email },
-          { label: 'ニックネーム', value: result.user.nickname },
-          { label: '生年月日', value: result.user.birthdate || '未設定' },
-          { label: '守護神ID', value: result.user.guardian_id || '未設定' },
-          { label: 'テーマ', value: result.user.theme || '未設定' },
-          { label: '登録日時', value: result.user.created_at }
-        ];
-        
-        resultData.forEach(item => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${item.label}</td>
-            <td>${item.value}</td>
-          `;
-          resultTableBody.appendChild(row);
-        });
-        
-        // 結果セクションとアクションボタンを表示
+        // 結果セクションを表示
         resultSection.style.display = 'block';
-        actionButtons.style.display = 'flex';
         
       } catch (error) {
         addLog('検索エラー: ' + error.message, 'error');
@@ -405,26 +511,63 @@
       }
     });
     
-    // 退会ボタンのイベントリスナー
-    document.getElementById('withdrawButton').addEventListener('click', async function() {
-      if (!currentUser) {
-        addLog('ユーザー情報が見つかりません', 'error');
+    // ユーザー一覧を表示する関数
+    function displayUsers(users) {
+      const resultCount = document.getElementById('resultCount');
+      const usersContainer = document.getElementById('usersContainer');
+      
+      resultCount.textContent = `検索結果: ${users.length}件のユーザーが見つかりました`;
+      usersContainer.innerHTML = '';
+      
+      users.forEach((user, index) => {
+        const userCard = document.createElement('div');
+        userCard.className = 'user-card';
+        userCard.innerHTML = `
+          <h4>ユーザー ${index + 1} (ID: ${user.id})</h4>
+          <div class="user-info">
+            <div class="user-info-item">
+              <div class="user-info-label">メールアドレス</div>
+              <div class="user-info-value">${user.email}</div>
+            </div>
+            <div class="user-info-item">
+              <div class="user-info-label">ニックネーム</div>
+              <div class="user-info-value">${user.nickname}</div>
+            </div>
+            <div class="user-info-item">
+              <div class="user-info-label">生年月日</div>
+              <div class="user-info-value">${user.birthdate || '未設定'}</div>
+            </div>
+            <div class="user-info-item">
+              <div class="user-info-label">守護神ID</div>
+              <div class="user-info-value">${user.guardian_id || '未設定'}</div>
+            </div>
+            <div class="user-info-item">
+              <div class="user-info-label">テーマ</div>
+              <div class="user-info-value">${user.theme || '未設定'}</div>
+            </div>
+            <div class="user-info-item">
+              <div class="user-info-label">登録日時</div>
+              <div class="user-info-value">${user.created_at}</div>
+            </div>
+          </div>
+          <div class="user-actions">
+            <button class="user-withdraw-button" onclick="withdrawUser('${user.email}', ${user.id})">
+              このユーザーを退会
+            </button>
+          </div>
+        `;
+        usersContainer.appendChild(userCard);
+      });
+    }
+    
+    // 個別ユーザーの退会処理
+    async function withdrawUser(email, userId) {
+      if (!confirm(`メールアドレス ${email} (ID: ${userId}) で退会処理を行いますか？\nこの操作は取り消せません。`)) {
         return;
       }
-      
-      if (!confirm(`メールアドレス ${currentUser.email} で退会処理を行いますか？\nこの操作は取り消せません。`)) {
-        return;
-      }
-      
-      const withdrawButton = document.getElementById('withdrawButton');
-      const messageArea = document.getElementById('messageArea');
-      
-      // ボタンを無効化
-      withdrawButton.disabled = true;
-      withdrawButton.textContent = '退会処理中...';
       
       try {
-        addLog(`退会処理開始: ${currentUser.email}`);
+        addLog(`退会処理開始: ${email} (ID: ${userId})`);
         
         const response = await fetch('https://syugo-sin-worker.mituo0226.workers.dev/api/withdraw', {
           method: 'POST',
@@ -433,7 +576,7 @@
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ email: currentUser.email })
+          body: JSON.stringify({ email: email })
         });
         
         if (!response.ok) {
@@ -446,6 +589,7 @@
         addLog(`退会結果: ${JSON.stringify(result, null, 2)}`);
         
         // 退会完了メッセージを表示
+        const messageArea = document.getElementById('messageArea');
         messageArea.innerHTML = `
           <div class="success-message">
             退会処理が完了しました！<br>
@@ -455,23 +599,39 @@
           </div>
         `;
         
-        // 結果セクションとアクションボタンを非表示
-        document.getElementById('resultSection').style.display = 'none';
-        document.getElementById('actionButtons').style.display = 'none';
-        currentUser = null;
+        // 検索結果から該当ユーザーを削除
+        currentUsers = currentUsers.filter(user => user.id !== userId);
         
-        // フォームをクリア
-        document.getElementById('email').value = '';
+        if (currentUsers.length === 0) {
+          // 全ユーザーが退会した場合
+          document.getElementById('resultSection').style.display = 'none';
+          messageArea.innerHTML = `
+            <div class="success-message">
+              退会処理が完了しました！<br>
+              メールアドレス: ${result.email}<br>
+              ニックネーム: ${result.deleted_user.nickname}<br>
+              検索結果に該当するユーザーはすべて退会しました。
+            </div>
+          `;
+        } else {
+          // まだ他のユーザーがいる場合、一覧を更新
+          displayUsers(currentUsers);
+          messageArea.innerHTML = `
+            <div class="success-message">
+              退会処理が完了しました！<br>
+              メールアドレス: ${result.email}<br>
+              ニックネーム: ${result.deleted_user.nickname}<br>
+              残りのユーザー: ${currentUsers.length}件
+            </div>
+          `;
+        }
         
       } catch (error) {
         addLog('退会エラー: ' + error.message, 'error');
+        const messageArea = document.getElementById('messageArea');
         messageArea.innerHTML = `<div class="error-message">退会処理に失敗しました: ${error.message}</div>`;
-      } finally {
-        // ボタンを有効化
-        withdrawButton.disabled = false;
-        withdrawButton.textContent = '退会処理';
       }
-    });
+    }
     
     // ページ読み込み時の処理
     window.addEventListener('load', function() {
