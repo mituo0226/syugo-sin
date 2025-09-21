@@ -674,6 +674,26 @@
         verifyButton.onclick = () => verifyUserData(result.id);
         resultArea.appendChild(verifyButton);
         
+        // 削除ボタンを追加
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'このユーザーデータを削除';
+        deleteButton.className = 'submit-button';
+        deleteButton.style.marginTop = '10px';
+        deleteButton.style.backgroundColor = 'linear-gradient(90deg, #ff6b6b, #ff8e8e)';
+        deleteButton.style.color = '#fff';
+        deleteButton.onclick = () => deleteUserData(result.id);
+        resultArea.appendChild(deleteButton);
+        
+        // 全テストデータ削除ボタンを追加
+        const deleteAllButton = document.createElement('button');
+        deleteAllButton.textContent = 'テストデータを全削除';
+        deleteAllButton.className = 'submit-button';
+        deleteAllButton.style.marginTop = '10px';
+        deleteAllButton.style.backgroundColor = 'linear-gradient(90deg, #dc3545, #e74c3c)';
+        deleteAllButton.style.color = '#fff';
+        deleteAllButton.onclick = () => deleteAllTestData();
+        resultArea.appendChild(deleteAllButton);
+        
       } catch (error) {
         addLog('保存エラー: ' + error.message, 'error');
         messageArea.innerHTML = `<div class="error-message">保存に失敗しました: ${error.message}</div>`;
@@ -741,6 +761,81 @@
         
       } catch (error) {
         addLog('確認エラー: ' + error.message, 'error');
+      }
+    }
+    
+    // ユーザーデータ削除機能
+    async function deleteUserData(userId) {
+      if (!confirm(`ユーザーID ${userId} のデータを削除しますか？この操作は取り消せません。`)) {
+        return;
+      }
+      
+      try {
+        addLog(`ユーザーID ${userId} のデータを削除中...`);
+        
+        const response = await fetch('https://syugo-sin-worker.mituo0226.workers.dev/api/delete-user', {
+          method: 'POST',
+          mode: 'cors',
+          credentials: 'omit',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId: userId })
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`削除エラー: ${response.status} - ${errorData.error || 'Unknown error'}`);
+        }
+        
+        const result = await response.json();
+        addLog('ユーザーデータ削除完了', 'success');
+        addLog(`削除結果: ${JSON.stringify(result, null, 2)}`);
+        
+        // ページをリロードして最新状態を表示
+        setTimeout(() => {
+          location.reload();
+        }, 2000);
+        
+      } catch (error) {
+        addLog('削除エラー: ' + error.message, 'error');
+      }
+    }
+    
+    // 全テストデータ削除機能
+    async function deleteAllTestData() {
+      if (!confirm('テストデータ（mituo0226@gmail.com）を全て削除しますか？この操作は取り消せません。')) {
+        return;
+      }
+      
+      try {
+        addLog('テストデータを全削除中...');
+        
+        const response = await fetch('https://syugo-sin-worker.mituo0226.workers.dev/api/delete-all-test-data', {
+          method: 'POST',
+          mode: 'cors',
+          credentials: 'omit',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`削除エラー: ${response.status} - ${errorData.error || 'Unknown error'}`);
+        }
+        
+        const result = await response.json();
+        addLog('テストデータ全削除完了', 'success');
+        addLog(`削除結果: ${JSON.stringify(result, null, 2)}`);
+        
+        // ページをリロードして最新状態を表示
+        setTimeout(() => {
+          location.reload();
+        }, 2000);
+        
+      } catch (error) {
+        addLog('削除エラー: ' + error.message, 'error');
       }
     }
     

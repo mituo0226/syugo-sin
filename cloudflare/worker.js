@@ -644,6 +644,92 @@ export default {
       }
     }
 
+    // テストデータ削除API エンドポイント
+    if (url.pathname === "/api/delete-user") {
+      if (request.method !== "POST") {
+        return new Response(JSON.stringify({ error: "Method not allowed" }), {
+          status: 405,
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+      }
+
+      try {
+        const { userId } = await request.json();
+        
+        if (!userId) {
+          return new Response(JSON.stringify({ error: "User ID is required" }), {
+            status: 400,
+            headers: { "Content-Type": "application/json", ...corsHeaders }
+          });
+        }
+
+        // ユーザーを削除
+        const result = await env.DB.prepare(`
+          DELETE FROM users WHERE id = ?
+        `).bind(userId).run();
+
+        if (result.changes === 0) {
+          return new Response(JSON.stringify({ error: "User not found" }), {
+            status: 404,
+            headers: { "Content-Type": "application/json", ...corsHeaders }
+          });
+        }
+
+        return new Response(JSON.stringify({ 
+          success: true,
+          message: "ユーザーデータを削除しました",
+          deleted_id: userId
+        }), {
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+
+      } catch (error) {
+        console.error("User deletion error:", error);
+        return new Response(JSON.stringify({ 
+          error: "Failed to delete user",
+          details: error.message 
+        }), {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+      }
+    }
+
+    // 全テストデータ削除API エンドポイント
+    if (url.pathname === "/api/delete-all-test-data") {
+      if (request.method !== "POST") {
+        return new Response(JSON.stringify({ error: "Method not allowed" }), {
+          status: 405,
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+      }
+
+      try {
+        // テスト用メールアドレスのデータを全削除
+        const result = await env.DB.prepare(`
+          DELETE FROM users WHERE email = 'mituo0226@gmail.com'
+        `).run();
+
+        return new Response(JSON.stringify({ 
+          success: true,
+          message: "テストデータを全削除しました",
+          deleted_count: result.changes
+        }), {
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+
+      } catch (error) {
+        console.error("Test data deletion error:", error);
+        return new Response(JSON.stringify({ 
+          error: "Failed to delete test data",
+          details: error.message 
+        }), {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+      }
+    }
+
     // 会員登録API エンドポイント
     if (url.pathname === "/api/register") {
       console.log("Register API endpoint hit:", { method: request.method, pathname: url.pathname });
@@ -687,6 +773,22 @@ export default {
         }
 
         console.log("Attempting to insert user data:", { email, nickname, birthdate, guardian_id, theme });
+
+        // 重複チェック：同じメールアドレスが既に存在するか確認
+        const existingUser = await env.DB.prepare(`
+          SELECT id FROM users WHERE email = ?
+        `).bind(email).first();
+
+        if (existingUser) {
+          console.log("Duplicate email found:", email);
+          return new Response(JSON.stringify({ 
+            error: "このメールアドレスは既に登録されています",
+            existing_id: existingUser.id 
+          }), {
+            status: 409, // Conflict
+            headers: { "Content-Type": "application/json", ...corsHeaders }
+          });
+        }
 
         // D1データベースに保存
         const result = await env.DB.prepare(`
