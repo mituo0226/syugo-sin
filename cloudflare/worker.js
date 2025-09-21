@@ -786,6 +786,195 @@ export default {
       }
     }
 
+    // マジックリンク送信API エンドポイント
+    if (url.pathname === "/api/send-magic-link") {
+      if (request.method !== "POST") {
+        return new Response(JSON.stringify({ error: "Method not allowed" }), {
+          status: 405,
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+      }
+
+      try {
+        const { email, nickname, birthdate, guardian_id, theme } = await request.json();
+        
+        if (!email || !nickname) {
+          return new Response(JSON.stringify({ error: "メールアドレスとニックネームは必須です" }), {
+            status: 400,
+            headers: { "Content-Type": "application/json", ...corsHeaders }
+          });
+        }
+
+        // 重複チェック
+        const existingUser = await env.DB.prepare(`
+          SELECT id FROM users WHERE email = ?
+        `).bind(email).first();
+        
+        if (existingUser) {
+          return new Response(JSON.stringify({
+            error: "このメールアドレスは既に登録されています",
+            existing_id: existingUser.id
+          }), {
+            status: 409,
+            headers: { "Content-Type": "application/json", ...corsHeaders }
+          });
+        }
+
+        // マジックリンク用のトークンを生成
+        const token = crypto.randomUUID();
+        const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30分後
+        
+        // マジックリンクデータを一時保存（実際の実装では別テーブルまたはRedisを使用）
+        const magicLinkData = {
+          email,
+          nickname,
+          birthdate,
+          guardian_id,
+          theme,
+          token,
+          expires_at: expiresAt.toISOString(),
+          created_at: new Date().toISOString()
+        };
+
+        // マジックリンクURLを生成
+        const magicLinkUrl = `https://syugo-sin-worker.mituo0226.workers.dev/api/verify-magic-link?token=${token}`;
+        
+        // 実際の実装では、ここでメール送信サービス（SendGrid、Mailgun等）を使用
+        // 今回はテスト用にログ出力のみ
+        console.log("Magic Link Data:", magicLinkData);
+        console.log("Magic Link URL:", magicLinkUrl);
+
+        return new Response(JSON.stringify({
+          success: true,
+          message: "マジックリンクを送信しました",
+          magic_link_url: magicLinkUrl, // テスト用にURLを返す
+          email: email,
+          expires_at: expiresAt.toISOString()
+        }), {
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+
+      } catch (error) {
+        console.error("Magic link send error:", error);
+        return new Response(JSON.stringify({ 
+          error: "マジックリンク送信中にエラーが発生しました",
+          details: error.message 
+        }), {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+      }
+    }
+
+    // マジックリンク検証・会員登録API エンドポイント
+    if (url.pathname === "/api/verify-magic-link") {
+      if (request.method !== "GET") {
+        return new Response(JSON.stringify({ error: "Method not allowed" }), {
+          status: 405,
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+      }
+
+      try {
+        const urlObj = new URL(request.url);
+        const token = urlObj.searchParams.get('token');
+        
+        if (!token) {
+          return new Response(JSON.stringify({ error: "トークンが指定されていません" }), {
+            status: 400,
+            headers: { "Content-Type": "application/json", ...corsHeaders }
+          });
+        }
+
+        // 実際の実装では、ここでトークンからマジックリンクデータを取得
+        // 今回はテスト用に固定データを使用（実際はデータベースまたはRedisから取得）
+        // トークンの検証と有効期限チェックを行う
+        
+        // テスト用の固定データ（実際の実装では動的に取得）
+        const magicLinkData = {
+          email: "test@example.com",
+          nickname: "テストユーザー",
+          birthdate: "1990-01-01",
+          guardian_id: "千手観音",
+          theme: "テスト用の相談内容"
+        };
+
+        // トークンの有効期限チェック（実際の実装ではデータベースから取得）
+        const isExpired = false; // テスト用
+        
+        if (isExpired) {
+          return new Response(JSON.stringify({ error: "マジックリンクの有効期限が切れています" }), {
+            status: 410,
+            headers: { "Content-Type": "application/json", ...corsHeaders }
+          });
+        }
+
+        // 重複チェック
+        const existingUser = await env.DB.prepare(`
+          SELECT id FROM users WHERE email = ?
+        `).bind(magicLinkData.email).first();
+        
+        if (existingUser) {
+          return new Response(JSON.stringify({
+            error: "このメールアドレスは既に登録されています",
+            existing_id: existingUser.id
+          }), {
+            status: 409,
+            headers: { "Content-Type": "application/json", ...corsHeaders }
+          });
+        }
+
+        // ユーザーをデータベースに登録
+        const insertResult = await env.DB.prepare(`
+          INSERT INTO users (email, nickname, birthdate, guardian_id, theme, created_at)
+          VALUES (?, ?, ?, ?, ?, ?)
+        `).bind(
+          magicLinkData.email,
+          magicLinkData.nickname,
+          magicLinkData.birthdate,
+          magicLinkData.guardian_id,
+          magicLinkData.theme,
+          new Date().toISOString()
+        ).run();
+
+        if (!insertResult.success) {
+          throw new Error("ユーザー登録に失敗しました");
+        }
+
+        // 実際の実装では、ここでマジックリンクデータを削除または無効化
+        console.log("Magic link verified and user registered:", {
+          user_id: insertResult.meta.last_row_id,
+          email: magicLinkData.email
+        });
+
+        return new Response(JSON.stringify({
+          success: true,
+          message: "会員登録が完了しました",
+          user: {
+            id: insertResult.meta.last_row_id,
+            email: magicLinkData.email,
+            nickname: magicLinkData.nickname,
+            birthdate: magicLinkData.birthdate,
+            guardian_id: magicLinkData.guardian_id,
+            theme: magicLinkData.theme,
+            created_at: new Date().toISOString()
+          }
+        }), {
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+
+      } catch (error) {
+        console.error("Magic link verification error:", error);
+        return new Response(JSON.stringify({ 
+          error: "マジックリンク検証中にエラーが発生しました",
+          details: error.message 
+        }), {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+      }
+    }
+
     // 退会API エンドポイント
     if (url.pathname === "/api/withdraw") {
       if (request.method !== "POST") {
