@@ -580,6 +580,55 @@ export default {
       }
     }
 
+    // ユーザーデータ確認API エンドポイント
+    if (url.pathname.startsWith("/api/verify-user/")) {
+      const userId = url.pathname.split("/api/verify-user/")[1];
+      
+      if (!userId) {
+        return new Response(JSON.stringify({ error: "User ID is required" }), {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+      }
+
+      try {
+        // D1データベースからユーザーデータを取得
+        const userData = await env.DB.prepare(`
+          SELECT * FROM users WHERE id = ?
+        `).bind(userId).first();
+
+        if (!userData) {
+          return new Response(JSON.stringify({ error: "User not found" }), {
+            status: 404,
+            headers: { "Content-Type": "application/json", ...corsHeaders }
+          });
+        }
+
+        return new Response(JSON.stringify({
+          success: true,
+          id: userData.id,
+          email: userData.email,
+          nickname: userData.nickname,
+          birthdate: userData.birthdate,
+          guardian_id: userData.guardian_id,
+          theme: userData.theme,
+          created_at: userData.created_at
+        }), {
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+
+      } catch (error) {
+        console.error("User verification error:", error);
+        return new Response(JSON.stringify({ 
+          error: "Failed to verify user",
+          details: error.message 
+        }), {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+      }
+    }
+
     // 会員登録API エンドポイント
     if (url.pathname === "/api/register") {
       console.log("Register API endpoint hit:", { method: request.method, pathname: url.pathname });
