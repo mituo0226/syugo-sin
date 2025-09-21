@@ -207,19 +207,14 @@
   <div class="container">
     <h1 class="title">会員登録テスト</h1>
     
-    <!-- localStorage情報表示 -->
-    <div class="localStorage-info">
-      <h3>localStorage から読み込まれた情報</h3>
-      <p id="localStorageInfo">読み込み中...</p>
-    </div>
     
     <!-- 入力フォーム -->
     <div style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 204, 255, 0.3);">
       <h3 style="color: #66ccff; margin-top: 0; margin-bottom: 10px;">入力方法</h3>
       <p style="color: #ccc; margin: 5px 0; font-size: 14px;">
-        • 手動入力フィールドに値を入力すると、その値が優先されます<br>
-        • 手動入力がない場合は、localStorageから自動取得された値が使用されます<br>
-        • メールアドレスは必須項目です
+        • すべての項目を手動で入力してください<br>
+        • メールアドレスとニックネームは必須項目です<br>
+        • 生年月日を入力すると、守護神が自動選択されます
       </p>
     </div>
     
@@ -312,8 +307,6 @@
       }
     }
     
-    // ページ読み込み時に取得したデータを保持する変数
-    let cachedLocalStorageData = null;
     
     // 十二支を計算する関数（本番環境と同じ）
     function calculateZodiac(year, month, day) {
@@ -358,185 +351,6 @@
       return guardianKeyMap[zodiac];
     }
     
-    // localStorageから情報を読み込み
-    function loadLocalStorageData() {
-      addLog('localStorageから情報を読み込み中...');
-      
-      const localStorageInfo = document.getElementById('localStorageInfo');
-      const nicknameDisplay = document.getElementById('nicknameDisplay');
-      let info = [];
-      let extractedData = {
-        nickname: null,
-        birthdate: null,
-        guardian_id: null,
-        theme: null
-      };
-      
-      // 新しい形式のlocalStorageデータを確認
-      const keys = Object.keys(localStorage);
-      let foundData = false;
-      
-      // デバッグ: 全localStorageの内容をログ出力
-      addLog('=== localStorage全内容 ===');
-      keys.forEach(key => {
-        const value = localStorage.getItem(key);
-        addLog(`キー: ${key} = ${value}`);
-      });
-      addLog('=== localStorage全内容終了 ===');
-      
-      // 特にuserDataキーを詳しくチェック
-      const userDataValue = localStorage.getItem('userData');
-      if (userDataValue) {
-        addLog(`userDataキーの値: ${userDataValue}`);
-        try {
-          const userDataParsed = JSON.parse(userDataValue);
-          addLog(`userData解析結果: ${JSON.stringify(userDataParsed, null, 2)}`);
-        } catch (error) {
-          addLog(`userData解析エラー: ${error.message}`);
-        }
-      } else {
-        addLog('userDataキーが見つかりません');
-      }
-      
-      // 各キーをチェックしてデータを抽出
-      keys.forEach(key => {
-        const value = localStorage.getItem(key);
-        
-        // URLパラメータ形式のデータをチェック
-        if (value && value.includes('=') && value.includes('&')) {
-          addLog(`URLパラメータ形式のデータを発見: キー=${key}, 値=${value}`);
-          const params = new URLSearchParams(value);
-          if (params.has('nickname') || params.has('birthYear') || params.has('guardianKey')) {
-            foundData = true;
-            addLog('URLパラメータ形式のデータが有効です');
-            
-            if (params.has('nickname')) {
-              extractedData.nickname = params.get('nickname');
-              info.push(`ニックネーム: ${extractedData.nickname}`);
-              addLog(`ニックネームを取得: ${extractedData.nickname}`);
-            }
-            
-            if (params.has('birthYear') && params.has('birthMonth') && params.has('birthDay')) {
-              const year = params.get('birthYear');
-              const month = params.get('birthMonth');
-              const day = params.get('birthDay');
-              extractedData.birthdate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-              info.push(`生年月日: ${extractedData.birthdate}`);
-              addLog(`生年月日を取得: ${extractedData.birthdate}`);
-            }
-            
-            if (params.has('guardianKey')) {
-              extractedData.guardian_id = params.get('guardianKey');
-              info.push(`守護神ID: ${extractedData.guardian_id}`);
-              addLog(`守護神IDを取得: ${extractedData.guardian_id}`);
-            }
-          }
-        }
-        
-        // JSON形式のデータもチェック
-        if (value && (key.includes('user') || key.includes('guardian') || key.includes('birth') || key.includes('theme'))) {
-          addLog(`JSON形式のデータをチェック: キー=${key}`);
-          try {
-            const jsonData = JSON.parse(value);
-            
-            // ニックネームを取得
-            if (jsonData.nickname) {
-              extractedData.nickname = jsonData.nickname;
-              info.push(`ニックネーム: ${extractedData.nickname}`);
-              addLog(`ニックネームを取得: ${extractedData.nickname}`);
-            }
-            
-            // 生年月日を取得（複数の形式に対応）
-            if (jsonData.birthday) {
-              extractedData.birthdate = jsonData.birthday;
-              info.push(`生年月日: ${extractedData.birthdate}`);
-              addLog(`生年月日を取得: ${extractedData.birthdate}`);
-            } else if (jsonData.birthYear && jsonData.birthMonth && jsonData.birthDay) {
-              const year = jsonData.birthYear;
-              const month = jsonData.birthMonth;
-              const day = jsonData.birthDay;
-              extractedData.birthdate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-              info.push(`生年月日: ${extractedData.birthdate}`);
-              addLog(`生年月日を取得: ${extractedData.birthdate}`);
-            } else if (jsonData.year && jsonData.month && jsonData.day) {
-              // 新しい形式（year, month, day）に対応
-              const year = jsonData.year;
-              const month = jsonData.month;
-              const day = jsonData.day;
-              extractedData.birthdate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-              info.push(`生年月日: ${extractedData.birthdate}`);
-              addLog(`生年月日を取得: ${extractedData.birthdate}`);
-            } else {
-              // デバッグ: 生年月日関連のフィールドをチェック
-              addLog(`生年月日デバッグ - birthYear: ${jsonData.birthYear}, birthMonth: ${jsonData.birthMonth}, birthDay: ${jsonData.birthDay}`);
-              addLog(`生年月日デバッグ - year: ${jsonData.year}, month: ${jsonData.month}, day: ${jsonData.day}`);
-              addLog(`JSONデータ全体: ${JSON.stringify(jsonData, null, 2)}`);
-            }
-            
-            // 守護神IDを取得（オブジェクトの場合はkeyを取得）
-            if (jsonData.guardian) {
-              if (typeof jsonData.guardian === 'string') {
-                extractedData.guardian_id = jsonData.guardian;
-              } else if (jsonData.guardian.key) {
-                extractedData.guardian_id = jsonData.guardian.key;
-              }
-              info.push(`守護神ID: ${extractedData.guardian_id}`);
-              addLog(`守護神IDを取得: ${extractedData.guardian_id}`);
-            }
-            
-            // guardianKeyを直接チェック
-            if (jsonData.guardianKey) {
-              extractedData.guardian_id = jsonData.guardianKey;
-              info.push(`守護神ID: ${extractedData.guardian_id}`);
-              addLog(`守護神IDを取得: ${extractedData.guardian_id}`);
-            }
-            
-            // テーマを取得
-            if (jsonData.theme) {
-              extractedData.theme = jsonData.theme;
-              info.push(`テーマ: ${extractedData.theme}`);
-            } else if (jsonData.worry) {
-              extractedData.theme = jsonData.worry;
-              info.push(`テーマ: ${extractedData.theme}`);
-              addLog(`テーマを取得: ${extractedData.theme}`);
-            }
-            
-            foundData = true;
-          } catch (error) {
-            addLog(`JSON解析エラー: ${error.message}`);
-          }
-        }
-      });
-      
-      if (!foundData) {
-        info.push('localStorageに保存された関連情報が見つかりません');
-      } else {
-        // 手動入力フィールドにlocalStorageの値を自動入力（ニックネームは除く）
-        if (extractedData.birthdate) {
-          document.getElementById('birthdate').value = extractedData.birthdate;
-          // 生年月日が設定された場合、守護神も自動選択
-          const selectedGuardian = getGuardianByBirthdate(extractedData.birthdate);
-          if (selectedGuardian) {
-            document.getElementById('guardianId').value = selectedGuardian;
-            addLog(`localStorageから読み込んだ生年月日 ${extractedData.birthdate} に基づいて守護神を自動選択: ${selectedGuardian}`);
-          }
-        }
-        if (extractedData.guardian_id) {
-          document.getElementById('guardianId').value = extractedData.guardian_id;
-        }
-        if (extractedData.theme) {
-          document.getElementById('theme').value = extractedData.theme;
-        }
-      }
-      
-      localStorageInfo.innerHTML = info.join('<br>');
-      addLog(`localStorage情報読み込み完了: ${info.length}件の情報を発見`);
-      
-      // 取得したデータをキャッシュに保存
-      cachedLocalStorageData = extractedData;
-      
-      return extractedData;
-    }
     
     // フォーム送信処理
     document.getElementById('registerForm').addEventListener('submit', async function(e) {
@@ -570,43 +384,16 @@
           throw new Error('ニックネームは必須です');
         }
         
-        // 手動入力データを優先し、なければlocalStorageデータを使用
+        // 手動入力データを使用
         let finalNickname = manualNickname;
         let finalBirthdate = birthdate;
         let finalGuardianId = guardianId;
         let finalTheme = theme;
         
         addLog(`手動入力のニックネームを使用: ${finalNickname}`);
-        
-        if (!finalBirthdate) {
-          const localStorageData = cachedLocalStorageData || loadLocalStorageData();
-          finalBirthdate = localStorageData.birthdate;
-          if (finalBirthdate) {
-            addLog(`localStorageから生年月日を取得: ${finalBirthdate}`);
-          }
-        } else {
-          addLog(`手動入力の生年月日を使用: ${finalBirthdate}`);
-        }
-        
-        if (!finalGuardianId) {
-          const localStorageData = cachedLocalStorageData || loadLocalStorageData();
-          finalGuardianId = localStorageData.guardian_id;
-          if (finalGuardianId) {
-            addLog(`localStorageから守護神IDを取得: ${finalGuardianId}`);
-          }
-        } else {
-          addLog(`手動入力の守護神IDを使用: ${finalGuardianId}`);
-        }
-        
-        if (!finalTheme) {
-          const localStorageData = cachedLocalStorageData || loadLocalStorageData();
-          finalTheme = localStorageData.theme;
-          if (finalTheme) {
-            addLog(`localStorageからテーマを取得: ${finalTheme}`);
-          }
-        } else {
-          addLog(`手動入力のテーマを使用: ${finalTheme}`);
-        }
+        addLog(`手動入力の生年月日を使用: ${finalBirthdate || '未入力'}`);
+        addLog(`手動入力の守護神IDを使用: ${finalGuardianId || '未選択'}`);
+        addLog(`手動入力のテーマを使用: ${finalTheme || '未入力'}`);
         
         // 送信データを構築
         const requestData = {
@@ -930,7 +717,6 @@
     // ページ読み込み時の処理
     window.addEventListener('load', function() {
       addLog('会員登録テストページ読み込み完了');
-      loadLocalStorageData();
     });
   </script>
 </body>
