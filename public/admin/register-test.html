@@ -279,6 +279,9 @@
       }
     }
     
+    // ページ読み込み時に取得したデータを保持する変数
+    let cachedLocalStorageData = null;
+    
     // localStorageから情報を読み込み
     function loadLocalStorageData() {
       addLog('localStorageから情報を読み込み中...');
@@ -379,9 +382,18 @@
               extractedData.birthdate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
               info.push(`生年月日: ${extractedData.birthdate}`);
               addLog(`生年月日を取得: ${extractedData.birthdate}`);
+            } else if (jsonData.year && jsonData.month && jsonData.day) {
+              // 新しい形式（year, month, day）に対応
+              const year = jsonData.year;
+              const month = jsonData.month;
+              const day = jsonData.day;
+              extractedData.birthdate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+              info.push(`生年月日: ${extractedData.birthdate}`);
+              addLog(`生年月日を取得: ${extractedData.birthdate}`);
             } else {
               // デバッグ: 生年月日関連のフィールドをチェック
               addLog(`生年月日デバッグ - birthYear: ${jsonData.birthYear}, birthMonth: ${jsonData.birthMonth}, birthDay: ${jsonData.birthDay}`);
+              addLog(`生年月日デバッグ - year: ${jsonData.year}, month: ${jsonData.month}, day: ${jsonData.day}`);
               addLog(`JSONデータ全体: ${JSON.stringify(jsonData, null, 2)}`);
             }
             
@@ -434,6 +446,9 @@
       localStorageInfo.innerHTML = info.join('<br>');
       addLog(`localStorage情報読み込み完了: ${info.length}件の情報を発見`);
       
+      // 取得したデータをキャッシュに保存
+      cachedLocalStorageData = extractedData;
+      
       return extractedData;
     }
     
@@ -462,8 +477,8 @@
           throw new Error('メールアドレスは必須です');
         }
         
-        // localStorageデータを取得
-        const localStorageData = loadLocalStorageData();
+        // localStorageデータを取得（キャッシュされたデータを使用）
+        const localStorageData = cachedLocalStorageData || loadLocalStorageData();
         
         // ニックネームの確認（取得できない場合はデフォルト値を使用）
         if (!localStorageData.nickname) {
