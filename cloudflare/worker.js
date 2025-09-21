@@ -20,9 +20,15 @@ export default {
       "Access-Control-Allow-Credentials": "true",
     };
 
-    // OPTIONS リクエストの処理
+    // OPTIONS リクエストの処理（プリフライトリクエスト）
     if (request.method === "OPTIONS") {
-      return new Response(null, { headers: corsHeaders });
+      return new Response(null, { 
+        status: 200,
+        headers: {
+          ...corsHeaders,
+          "Access-Control-Max-Age": "86400", // 24時間キャッシュ
+        }
+      });
     }
 
     // 静的ファイルの配信（決済ページのみ）

@@ -689,15 +689,25 @@
       try {
         addLog(`ユーザーID ${userId} の保存状況を確認中...`);
         
-        const response = await fetch(`https://syugo-sin-worker.mituo0226.workers.dev/api/verify-user/${userId}`, {
+        const apiUrl = `https://syugo-sin-worker.mituo0226.workers.dev/api/verify-user/${userId}`;
+        addLog(`API URL: ${apiUrl}`);
+        
+        // CORSエラーを回避するため、modeを明示的に設定
+        const response = await fetch(apiUrl, {
           method: 'GET',
+          mode: 'cors',
+          credentials: 'omit',
           headers: {
             'Content-Type': 'application/json',
           }
         });
         
+        addLog(`レスポンス受信: ${response.status} ${response.statusText}`);
+        
         if (!response.ok) {
-          throw new Error(`確認エラー: ${response.status}`);
+          const errorText = await response.text();
+          addLog(`HTTPエラー: ${response.status} - ${errorText}`, 'error');
+          throw new Error(`確認エラー: ${response.status} - ${errorText}`);
         }
         
         const userData = await response.json();
