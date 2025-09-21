@@ -695,6 +695,74 @@ export default {
       }
     }
 
+    // 退会API エンドポイント
+    if (url.pathname === "/api/withdraw") {
+      if (request.method !== "POST") {
+        return new Response(JSON.stringify({ error: "Method not allowed" }), {
+          status: 405,
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+      }
+
+      try {
+        const { email } = await request.json();
+        
+        if (!email) {
+          return new Response(JSON.stringify({ error: "Email is required" }), {
+            status: 400,
+            headers: { "Content-Type": "application/json", ...corsHeaders }
+          });
+        }
+
+        // メールアドレスでユーザーを検索
+        const user = await env.DB.prepare(`
+          SELECT * FROM users WHERE email = ?
+        `).bind(email).first();
+
+        if (!user) {
+          return new Response(JSON.stringify({ error: "ユーザーが見つかりません" }), {
+            status: 404,
+            headers: { "Content-Type": "application/json", ...corsHeaders }
+          });
+        }
+
+        // ユーザーを削除（退会処理）
+        const result = await env.DB.prepare(`
+          DELETE FROM users WHERE email = ?
+        `).bind(email).run();
+
+        if (result.changes === 0) {
+          return new Response(JSON.stringify({ error: "退会処理に失敗しました" }), {
+            status: 500,
+            headers: { "Content-Type": "application/json", ...corsHeaders }
+          });
+        }
+
+        return new Response(JSON.stringify({ 
+          success: true,
+          message: "退会処理が完了しました",
+          email: email,
+          deleted_user: {
+            id: user.id,
+            nickname: user.nickname,
+            email: user.email
+          }
+        }), {
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+
+      } catch (error) {
+        console.error("Withdrawal error:", error);
+        return new Response(JSON.stringify({ 
+          error: "退会処理中にエラーが発生しました",
+          details: error.message 
+        }), {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+      }
+    }
+
     // 全テストデータ削除API エンドポイント
     if (url.pathname === "/api/delete-all-test-data") {
       if (request.method !== "POST") {
