@@ -837,6 +837,45 @@ export default {
           created_at: new Date().toISOString()
         };
 
+        // マジックリンクデータをD1データベースのmagic_linksテーブルに保存
+        // まずテーブルが存在するかチェックし、存在しなければ作成
+        try {
+          await env.DB.prepare(`
+            CREATE TABLE IF NOT EXISTS magic_links (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              token TEXT UNIQUE NOT NULL,
+              email TEXT NOT NULL,
+              nickname TEXT NOT NULL,
+              birthdate TEXT,
+              guardian_id TEXT,
+              theme TEXT,
+              expires_at TEXT NOT NULL,
+              created_at TEXT NOT NULL,
+              used BOOLEAN DEFAULT FALSE
+            )
+          `).run();
+
+          // マジックリンクデータを保存
+          await env.DB.prepare(`
+            INSERT INTO magic_links (token, email, nickname, birthdate, guardian_id, theme, expires_at, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          `).bind(
+            token,
+            email,
+            nickname,
+            birthdate,
+            guardian_id,
+            theme,
+            expiresAt.toISOString(),
+            new Date().toISOString()
+          ).run();
+
+          console.log("Magic link data saved to database:", { token, email, nickname });
+        } catch (dbError) {
+          console.error("Failed to save magic link data:", dbError);
+          // データベースエラーでも処理を続行（テスト用）
+        }
+
         // マジックリンクURLを生成
         const magicLinkUrl = `https://syugo-sin-worker.mituo0226.workers.dev/api/verify-magic-link?token=${token}`;
         
@@ -887,28 +926,43 @@ export default {
           });
         }
 
-        // 実際の実装では、ここでトークンからマジックリンクデータを取得
-        // 今回はテスト用に固定データを使用（実際はデータベースまたはRedisから取得）
-        // トークンの検証と有効期限チェックを行う
-        
-        // テスト用の固定データ（実際の実装では動的に取得）
-        const magicLinkData = {
-          email: "test@example.com",
-          nickname: "テストユーザー",
-          birthdate: "1990-01-01",
-          guardian_id: "千手観音",
-          theme: "テスト用の相談内容"
-        };
+        // トークンからマジックリンクデータを取得
+        const magicLinkRecord = await env.DB.prepare(`
+          SELECT * FROM magic_links WHERE token = ? AND used = FALSE
+        `).bind(token).first();
 
-        // トークンの有効期限チェック（実際の実装ではデータベースから取得）
-        const isExpired = false; // テスト用
+        if (!magicLinkRecord) {
+          return new Response(JSON.stringify({ error: "無効なマジックリンクまたは既に使用済みです" }), {
+            status: 404,
+            headers: { "Content-Type": "application/json", ...corsHeaders }
+          });
+        }
+
+        // 有効期限チェック
+        const expiresAt = new Date(magicLinkRecord.expires_at);
+        const now = new Date();
         
-        if (isExpired) {
+        if (now > expiresAt) {
+          // 期限切れのマジックリンクを削除
+          await env.DB.prepare(`
+            DELETE FROM magic_links WHERE token = ?
+          `).bind(token).run();
+          
           return new Response(JSON.stringify({ error: "マジックリンクの有効期限が切れています" }), {
             status: 410,
             headers: { "Content-Type": "application/json", ...corsHeaders }
           });
         }
+
+        const magicLinkData = {
+          email: magicLinkRecord.email,
+          nickname: magicLinkRecord.nickname,
+          birthdate: magicLinkRecord.birthdate,
+          guardian_id: magicLinkRecord.guardian_id,
+          theme: magicLinkRecord.theme
+        };
+
+        console.log("Magic link data retrieved:", magicLinkData);
 
         // 重複チェック
         const existingUser = await env.DB.prepare(`
@@ -942,10 +996,15 @@ export default {
           throw new Error("ユーザー登録に失敗しました");
         }
 
-        // 実際の実装では、ここでマジックリンクデータを削除または無効化
+        // マジックリンクを使用済みにマーク
+        await env.DB.prepare(`
+          UPDATE magic_links SET used = TRUE WHERE token = ?
+        `).bind(token).run();
+
         console.log("Magic link verified and user registered:", {
           user_id: insertResult.meta.last_row_id,
-          email: magicLinkData.email
+          email: magicLinkData.email,
+          token: token
         });
 
         return new Response(JSON.stringify({
