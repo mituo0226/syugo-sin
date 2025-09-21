@@ -214,6 +214,15 @@
     </div>
     
     <!-- 入力フォーム -->
+    <div style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 204, 255, 0.3);">
+      <h3 style="color: #66ccff; margin-top: 0; margin-bottom: 10px;">入力方法</h3>
+      <p style="color: #ccc; margin: 5px 0; font-size: 14px;">
+        • 手動入力フィールドに値を入力すると、その値が優先されます<br>
+        • 手動入力がない場合は、localStorageから自動取得された値が使用されます<br>
+        • メールアドレスは必須項目です
+      </p>
+    </div>
+    
     <form id="registerForm">
       <div class="form-group">
         <label for="email">メールアドレス *</label>
@@ -225,6 +234,38 @@
         <div id="nicknameDisplay" style="padding: 12px; background: rgba(102, 204, 255, 0.1); border: 1px solid rgba(102, 204, 255, 0.3); border-radius: 8px; color: #66ccff;">
           読み込み中...
         </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="manualNickname">ニックネーム（手動入力）</label>
+        <input type="text" id="manualNickname" name="manualNickname" placeholder="ニックネームを入力してください">
+      </div>
+      
+      <div class="form-group">
+        <label for="birthdate">生年月日</label>
+        <input type="date" id="birthdate" name="birthdate">
+      </div>
+      
+      <div class="form-group">
+        <label for="guardianId">守護神ID</label>
+        <select id="guardianId" name="guardianId">
+          <option value="">守護神を選択してください</option>
+          <option value="阿弥陀如来">阿弥陀如来</option>
+          <option value="薬師如来">薬師如来</option>
+          <option value="大日如来">大日如来</option>
+          <option value="不動明王">不動明王</option>
+          <option value="文殊菩薩">文殊菩薩</option>
+          <option value="普賢菩薩">普賢菩薩</option>
+          <option value="観世音菩薩">観世音菩薩</option>
+          <option value="勢至菩薩">勢至菩薩</option>
+          <option value="虚空蔵菩薩">虚空蔵菩薩</option>
+          <option value="地蔵菩薩">地蔵菩薩</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="theme">テーマ・悩み</label>
+        <textarea id="theme" name="theme" placeholder="相談したいテーマや悩みを入力してください" rows="3"></textarea>
       </div>
       
       <button type="submit" class="submit-button" id="submitButton">
@@ -441,6 +482,20 @@
         } else {
           nicknameDisplay.textContent = 'ニックネームが見つかりません';
         }
+        
+        // 手動入力フィールドにlocalStorageの値を自動入力
+        if (extractedData.nickname) {
+          document.getElementById('manualNickname').value = extractedData.nickname;
+        }
+        if (extractedData.birthdate) {
+          document.getElementById('birthdate').value = extractedData.birthdate;
+        }
+        if (extractedData.guardian_id) {
+          document.getElementById('guardianId').value = extractedData.guardian_id;
+        }
+        if (extractedData.theme) {
+          document.getElementById('theme').value = extractedData.theme;
+        }
       }
       
       localStorageInfo.innerHTML = info.join('<br>');
@@ -471,28 +526,68 @@
       try {
         // フォームデータを取得
         const email = document.getElementById('email').value.trim();
+        const manualNickname = document.getElementById('manualNickname').value.trim();
+        const birthdate = document.getElementById('birthdate').value;
+        const guardianId = document.getElementById('guardianId').value;
+        const theme = document.getElementById('theme').value.trim();
         
         // バリデーション
         if (!email) {
           throw new Error('メールアドレスは必須です');
         }
         
-        // localStorageデータを取得（キャッシュされたデータを使用）
-        const localStorageData = cachedLocalStorageData || loadLocalStorageData();
+        // 手動入力データを優先し、なければlocalStorageデータを使用
+        let finalNickname = manualNickname;
+        let finalBirthdate = birthdate;
+        let finalGuardianId = guardianId;
+        let finalTheme = theme;
         
-        // ニックネームの確認（取得できない場合はデフォルト値を使用）
-        if (!localStorageData.nickname) {
-          addLog('警告: localStorageからニックネームを取得できませんでした。デフォルト値を使用します。', 'error');
-          localStorageData.nickname = 'ゲストユーザー';
+        // 手動入力がない場合はlocalStorageデータを使用
+        if (!finalNickname) {
+          const localStorageData = cachedLocalStorageData || loadLocalStorageData();
+          finalNickname = localStorageData.nickname || 'ゲストユーザー';
+          addLog(`localStorageからニックネームを取得: ${finalNickname}`);
+        } else {
+          addLog(`手動入力のニックネームを使用: ${finalNickname}`);
+        }
+        
+        if (!finalBirthdate) {
+          const localStorageData = cachedLocalStorageData || loadLocalStorageData();
+          finalBirthdate = localStorageData.birthdate;
+          if (finalBirthdate) {
+            addLog(`localStorageから生年月日を取得: ${finalBirthdate}`);
+          }
+        } else {
+          addLog(`手動入力の生年月日を使用: ${finalBirthdate}`);
+        }
+        
+        if (!finalGuardianId) {
+          const localStorageData = cachedLocalStorageData || loadLocalStorageData();
+          finalGuardianId = localStorageData.guardian_id;
+          if (finalGuardianId) {
+            addLog(`localStorageから守護神IDを取得: ${finalGuardianId}`);
+          }
+        } else {
+          addLog(`手動入力の守護神IDを使用: ${finalGuardianId}`);
+        }
+        
+        if (!finalTheme) {
+          const localStorageData = cachedLocalStorageData || loadLocalStorageData();
+          finalTheme = localStorageData.theme;
+          if (finalTheme) {
+            addLog(`localStorageからテーマを取得: ${finalTheme}`);
+          }
+        } else {
+          addLog(`手動入力のテーマを使用: ${finalTheme}`);
         }
         
         // 送信データを構築
         const requestData = {
           email: email,
-          nickname: localStorageData.nickname,
-          birthdate: localStorageData.birthdate,
-          guardian_id: localStorageData.guardian_id,
-          theme: localStorageData.theme
+          nickname: finalNickname,
+          birthdate: finalBirthdate || null,
+          guardian_id: finalGuardianId || null,
+          theme: finalTheme || null
         };
         
         addLog('送信データ: ' + JSON.stringify(requestData, null, 2));
