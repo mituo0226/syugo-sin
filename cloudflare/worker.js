@@ -1035,6 +1035,51 @@ export default {
       }
     }
 
+    // デバッグ用：ユーザー確認API エンドポイント
+    if (url.pathname === "/api/debug-user") {
+      if (request.method !== "POST") {
+        return new Response(JSON.stringify({ error: "Method not allowed" }), {
+          status: 405,
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+      }
+
+      try {
+        const { email } = await request.json();
+        
+        // ユーザーテーブルから検索
+        const user = await env.DB.prepare(`
+          SELECT * FROM users WHERE email = ?
+        `).bind(email).first();
+
+        // マジックリンクテーブルから検索
+        const magicLinks = await env.DB.prepare(`
+          SELECT * FROM magic_links WHERE email = ? ORDER BY created_at DESC
+        `).bind(email).all();
+
+        return new Response(JSON.stringify({
+          success: true,
+          email: email,
+          user_exists: !!user,
+          user_data: user,
+          magic_links_count: magicLinks.results ? magicLinks.results.length : 0,
+          magic_links: magicLinks.results || []
+        }), {
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+
+      } catch (error) {
+        console.error("Debug user error:", error);
+        return new Response(JSON.stringify({ 
+          error: "デバッグ中にエラーが発生しました",
+          details: error.message 
+        }), {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+      }
+    }
+
     // 退会API エンドポイント
     if (url.pathname === "/api/withdraw") {
       if (request.method !== "POST") {
