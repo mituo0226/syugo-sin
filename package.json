@@ -9,11 +9,18 @@
     "build:functions": "echo 'Functions are ready'"
   },
   "dependencies": {
+    "nodemailer": "^7.0.6"
   },
   "devDependencies": {
     "wrangler": "^3.0.0"
   },
-  "keywords": ["ai", "divination", "guardian", "square", "payment"],
+  "keywords": [
+    "ai",
+    "divination",
+    "guardian",
+    "square",
+    "payment"
+  ],
   "author": "mituo0226",
   "license": "MIT"
 }

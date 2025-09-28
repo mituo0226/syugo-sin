@@ -1,51 +1,42 @@
 import { runConsult } from "../public/consult/consult.js";
+import nodemailer from "nodemailer";
 
-// メール送信関数
+// Google Workspace SMTPを使用したメール送信関数
 async function sendMagicLinkEmail(toEmail, nickname, magicLinkUrl, expiresAt, env) {
-  // SendGridのAPIキーが設定されているかチェック
-  if (!env.SENDGRID_API_KEY || env.SENDGRID_API_KEY === "your_sendgrid_api_key_here") {
-    throw new Error("SendGrid API key is not configured");
+  // Google Workspace SMTP設定の確認
+  if (!env.GOOGLE_APP_PASSWORD || env.GOOGLE_APP_PASSWORD === "your_google_app_password_here") {
+    throw new Error("Google App Password is not configured");
   }
 
-  const emailData = {
-    personalizations: [
-      {
-        to: [
-          {
-            email: toEmail,
-            name: nickname
-          }
-        ],
-        subject: "【AI鑑定師 龍】会員登録のご案内"
-      }
-    ],
-    from: {
-      email: env.SENDGRID_FROM_EMAIL || "noreply@syugo-sin.com",
-      name: env.SENDGRID_FROM_NAME || "AI鑑定師 龍"
-    },
-    content: [
-      {
-        type: "text/html",
-        value: generateEmailTemplate(nickname, magicLinkUrl, expiresAt)
-      }
-    ]
+  // SMTP設定
+  const smtpConfig = {
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    auth: {
+      user: env.GOOGLE_SMTP_USER || 'info@syugo-sin.com',
+      pass: env.GOOGLE_APP_PASSWORD
+    }
   };
 
-  const response = await fetch("https://api.sendgrid.com/v3/mail/send", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${env.SENDGRID_API_KEY}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(emailData)
-  });
+  // メールオプション
+  const mailOptions = {
+    from: `"${env.GOOGLE_SMTP_FROM_NAME || 'AI鑑定師 龍'}" <${env.GOOGLE_SMTP_USER || 'info@syugo-sin.com'}>`,
+    to: toEmail,
+    subject: '【AI鑑定師 龍】会員登録のご案内',
+    html: generateEmailTemplate(nickname, magicLinkUrl, expiresAt)
+  };
 
-  if (!response.ok) {
-    const errorData = await response.text();
-    throw new Error(`SendGrid API error: ${response.status} - ${errorData}`);
+  try {
+    // SMTP送信
+    const transporter = nodemailer.createTransporter(smtpConfig);
+    await transporter.sendMail(mailOptions);
+    console.log('Magic link email sent successfully via Google Workspace SMTP');
+    return true;
+  } catch (error) {
+    console.error('Google Workspace SMTP error:', error);
+    throw new Error(`Google Workspace SMTP error: ${error.message}`);
   }
-
-  return true;
 }
 
 // メールテンプレート生成関数
