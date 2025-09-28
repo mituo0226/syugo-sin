@@ -441,10 +441,15 @@
         addLog(`送信結果: ${JSON.stringify(result, null, 2)}`);
         
         // 成功メッセージを表示
+        const emailStatus = result.email_sent ? 
+          '<span style="color: #4caf50;">✓ メール送信成功</span>' : 
+          `<span style="color: #f44336;">✗ メール送信失敗: ${result.email_error || '不明なエラー'}</span>`;
+        
         messageArea.innerHTML = `
           <div class="success-message">
-            マジックリンクを送信しました！<br>
+            ${result.email_sent ? 'マジックリンクをメールで送信しました！' : 'マジックリンクを生成しました！'}<br>
             メールアドレス: ${result.email}<br>
+            メール送信状況: ${emailStatus}<br>
             有効期限: ${new Date(result.expires_at).toLocaleString()}
           </div>
         `;

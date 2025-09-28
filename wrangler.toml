@@ -14,6 +14,12 @@ SQUARE_APPLICATION_ID = "sandbox-sq0idb-eSzFL1OkuVb004jahtDJNA"
 SQUARE_ACCESS_TOKEN = "EAAAl_UqOgNBMBjJ2JSz2o5Bu26NQKVMKqFm1yxsnHLZWFBFejQQN2ZkKEiLuoPT"
 SQUARE_LOCATION_ID = "LTNYEG1WCPG4X"
 
+# SendGrid API設定（メール送信用）
+# 実際のデプロイ時は Cloudflare Dashboard で環境変数を設定してください
+SENDGRID_API_KEY = "your_sendgrid_api_key_here"
+SENDGRID_FROM_EMAIL = "noreply@syugo-sin.com"
+SENDGRID_FROM_NAME = "AI鑑定師 龍"
+
 # D1データベース設定
 [[d1_databases]]
 binding = "DB"
