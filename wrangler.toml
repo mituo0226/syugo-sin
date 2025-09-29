@@ -1,26 +1,9 @@
-name = "syugo-sin-worker"
-main = "cloudflare/worker.js"
-compatibility_date = "2025-09-12"
+name = "syugo-sin-new"
+# main = "worker.js"
+compatibility_date = "2024-09-29"
+compatibility_flags = ["nodejs_compat"]
 
-# 静的ファイルは完全にCloudflare Pagesに委譲
-# WorkerはAPIエンドポイントのみを処理
-
-[vars]
-ALLOW_ORIGIN = "*"
-
-# Square API設定（本番環境用）
-# 実際のデプロイ時は Cloudflare Dashboard で環境変数を設定してください
-SQUARE_APPLICATION_ID = "sandbox-sq0idb-eSzFL1OkuVb004jahtDJNA"
-SQUARE_ACCESS_TOKEN = "EAAAl_UqOgNBMBjJ2JSz2o5Bu26NQKVMKqFm1yxsnHLZWFBFejQQN2ZkKEiLuoPT"
-SQUARE_LOCATION_ID = "LTNYEG1WCPG4X"
-
-# Gmail API設定（メール送信用）
-# 実際のデプロイ時は Cloudflare Dashboard で環境変数を設定してください
-GOOGLE_ACCESS_TOKEN = "YOUR_ACCESS_TOKEN_HERE"
-GOOGLE_SMTP_USER = "info@syugo-sin.com"
-GOOGLE_SMTP_FROM_NAME = "AI鑑定師 龍"
-
-# D1データベース設定
+# データベース設定
 [[d1_databases]]
 binding = "DB"
 database_name = "syugo-sin-db"
