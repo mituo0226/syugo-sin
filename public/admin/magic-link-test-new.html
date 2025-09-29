@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マジックリンク会員登録テスト - 新プロジェクト</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #007acc;
+            padding-bottom: 10px;
+        }
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #007acc;
+            outline: none;
+        }
+        button {
+            background: #007acc;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background: #005a9e;
+        }
+        .debug-button {
+            background: #ff9800;
+        }
+        .debug-button:hover {
+            background: #e68900;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #007acc;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .project-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>マジックリンク会員登録テスト</h1>
+        
+        <div class="project-info">
+            🆕 新プロジェクト「syugo-sin-new」用テスト画面
+        </div>
+
+        <div class="info-box">
+            <h3>マジックリンク会員登録について</h3>
+            <ul>
+                <li>メールアドレスとニックネームは必須項目です</li>
+                <li>生年月日を入力すると、守護神が自動選択されます</li>
+                <li>マジックリンクが生成され、そのリンクをクリックすることで会員登録が完了します</li>
+                <li>マジックリンクの有効期限は30分間です</li>
+            </ul>
+        </div>
+
+        <form id="magicLinkForm">
+            <div class="form-group">
+                <label for="email">メールアドレス *</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="nickname">ニックネーム *</label>
+                <input type="text" id="nickname" name="nickname" required>
+            </div>
+
+            <div class="form-group">
+                <label for="birthdate">生年月日</label>
+                <input type="date" id="birthdate" name="birthdate">
+            </div>
+
+            <div class="form-group">
+                <label for="guardian_id">守護神ID</label>
+                <select id="guardian_id" name="guardian_id">
+                    <option value="">守護神を選択してください</option>
+                    <option value="千手観音">千手観音</option>
+                    <option value="薬師如来">薬師如来</option>
+                    <option value="阿弥陀如来">阿弥陀如来</option>
+                    <option value="大日如来">大日如来</option>
+                    <option value="文殊菩薩">文殊菩薩</option>
+                    <option value="普賢菩薩">普賢菩薩</option>
+                    <option value="勢至菩薩">勢至菩薩</option>
+                    <option value="虚空蔵菩薩">虚空蔵菩薩</option>
+                    <option value="不動明王">不動明王</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="theme">テーマ・悩み</label>
+                <textarea id="theme" name="theme" rows="3" placeholder="例：彼女ができない、仕事の悩みなど"></textarea>
+            </div>
+
+            <button type="submit">マジックリンクを送信</button>
+            <button type="button" class="debug-button" onclick="debugUserStatus()">ユーザー状況をデバッグ</button>
+        </form>
+
+        <div id="result"></div>
+        
+        <a href="/admin/admin.html" class="back-link">← 管理画面に戻る</a>
+    </div>
+
+    <script>
+        // 新しいプロジェクトのAPIエンドポイント
+        const API_BASE_URL = 'https://syugo-sin-new.mituo0226.workers.dev';
+
+        document.getElementById('magicLinkForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            
+            // 空の値を削除
+            Object.keys(data).forEach(key => {
+                if (data[key] === '') {
+                    delete data[key];
+                }
+            });
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div class="info">送信中...</div>';
+            
+            try {
+                console.log('送信データ:', data);
+                console.log('API URL:', `${API_BASE_URL}/api/send-magic-link`);
+                
+                const response = await fetch(`${API_BASE_URL}/api/send-magic-link`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                console.log('送信結果:', result);
+                
+                if (result.success) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h3>✅ マジックリンクが生成されました</h3>
+                            <p><strong>メールアドレス:</strong> ${result.email}</p>
+                            <p><strong>ニックネーム:</strong> ${result.nickname}</p>
+                            <p><strong>有効期限:</strong> ${new Date(result.expires_at).toLocaleString('ja-JP')}</p>
+                            <p><strong>メール送信:</strong> ${result.email_sent ? '✅ 成功' : '❌ 失敗'}</p>
+                            ${result.email_error ? `<p><strong>エラー:</strong> ${result.email_error}</p>` : ''}
+                            <p><strong>マジックリンクURL:</strong></p>
+                            <a href="${result.magic_link_url}" target="_blank" style="word-break: break-all; color: #007acc;">${result.magic_link_url}</a>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h3>❌ エラーが発生しました</h3>
+                            <p>${result.message || '不明なエラーが発生しました'}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('送信エラー:', error);
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ 送信エラー</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        });
+
+        async function debugUserStatus() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div class="info">ユーザー状況を確認中...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/debug-users`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const result = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <div class="info">
+                        <h3>🔍 ユーザー状況デバッグ</h3>
+                        <pre>${JSON.stringify(result, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('デバッグエラー:', error);
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ デバッグエラー</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // 生年月日入力時の守護神自動選択
+        document.getElementById('birthdate').addEventListener('change', function() {
+            const birthdate = this.value;
+            if (birthdate) {
+                const guardianSelect = document.getElementById('guardian_id');
+                const guardians = [
+                    '千手観音', '薬師如来', '阿弥陀如来', '大日如来',
+                    '文殊菩薩', '普賢菩薩', '勢至菩薩', '虚空蔵菩薩', '不動明王'
+                ];
+                
+                // 生年月日の日付に基づいて守護神を選択（簡単なロジック）
+                const date = new Date(birthdate);
+                const day = date.getDate();
+                const guardianIndex = day % guardians.length;
+                
+                guardianSelect.value = guardians[guardianIndex];
+            }
+        });
+    </script>
+</body>
+</html>
