@@ -1,23 +1,16 @@
 {
-  "name": "syugo-sin",
+  "name": "syugo-sin-new",
   "version": "1.0.0",
-  "description": "AI鑑定師 龍 - 守護神鑑定サービス",
-  "main": "index.js",
+  "description": "AI鑑定師 龍 - 新しい独立プロジェクト",
+  "main": "worker.js",
   "scripts": {
-    "dev": "wrangler pages dev public",
-    "deploy": "wrangler pages deploy public",
-    "build:functions": "echo 'Functions are ready'"
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
   },
+  "keywords": ["cloudflare", "workers", "ai", "divination"],
+  "author": "mituo0226",
+  "license": "MIT",
   "devDependencies": {
     "wrangler": "^3.0.0"
-  },
-  "keywords": [
-    "ai",
-    "divination",
-    "guardian",
-    "square",
-    "payment"
-  ],
-  "author": "mituo0226",
-  "license": "MIT"
+  }
 }

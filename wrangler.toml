@@ -1,10 +1,15 @@
 name = "syugo-sin-new"
-# main = "worker.js"
+main = "worker.js"
 compatibility_date = "2024-09-29"
 compatibility_flags = ["nodejs_compat"]
 
 # データベース設定
 [[d1_databases]]
 binding = "DB"
-database_name = "syugo-sin-db"
-database_id = "0eee225f-f4a4-41ea-a64b-1ae31cb92138"
+database_name = "syugo-sin-new-db"
+database_id = ""
+
+# 環境変数（機密情報はCloudflare Dashboardで設定）
+[vars]
+GOOGLE_SMTP_USER = "info@syugo-sin.com"
+GOOGLE_SMTP_FROM_NAME = "AI鑑定師 龍"

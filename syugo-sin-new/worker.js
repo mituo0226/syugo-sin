@@ -30,9 +30,7 @@ async function sendMagicLinkEmail(toEmail, nickname, magicLinkUrl, expiresAt, en
   ].join('\r\n');
 
   const message = {
-    message: {
-      raw: btoa(unescape(encodeURIComponent(emailContent)))
-    }
+    raw: btoa(unescape(encodeURIComponent(emailContent)))
   };
 
   try {
@@ -40,7 +38,7 @@ async function sendMagicLinkEmail(toEmail, nickname, magicLinkUrl, expiresAt, en
     console.log('送信先:', toEmail);
     console.log('送信者:', env.GOOGLE_SMTP_USER);
     console.log('アクセストークン長:', env.GOOGLE_ACCESS_TOKEN.length);
-    console.log('エンコード済みメールサイズ:', message.message.raw.length);
+    console.log('エンコード済みメールサイズ:', message.raw.length);
     
     // Gmail APIを使用してメール送信
     const response = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
