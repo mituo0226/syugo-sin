@@ -1,0 +1,27 @@
+name = "syugo-sin-worker"
+main = "cloudflare/worker.js"
+compatibility_date = "2025-09-12"
+
+# 静的ファイルは完全にCloudflare Pagesに委譲
+# WorkerはAPIエンドポイントのみを処理
+
+[vars]
+ALLOW_ORIGIN = "*"
+
+# Square API設定（本番環境用）
+# 実際のデプロイ時は Cloudflare Dashboard で環境変数を設定してください
+SQUARE_APPLICATION_ID = "sandbox-sq0idb-eSzFL1OkuVb004jahtDJNA"
+SQUARE_ACCESS_TOKEN = "EAAAl_UqOgNBMBjJ2JSz2o5Bu26NQKVMKqFm1yxsnHLZWFBFejQQN2ZkKEiLuoPT"
+SQUARE_LOCATION_ID = "LTNYEG1WCPG4X"
+
+# Gmail API設定（メール送信用）
+# 実際のデプロイ時は Cloudflare Dashboard で環境変数を設定してください
+GOOGLE_ACCESS_TOKEN = "ya29.a0AQQ_BDTIBNwfjvM2idXD0ZQQW_24_qFc9xIcShPyvabRd1H1i1pD3j6Gdb74HqZ_w87o-sxIDYUsr_sZRUX9iew5BkiBiN2fXOkjNhseQHxTqKvWSydiCjY39DDa8ug-B387v2tgyiKjPjb8q0LDKc74C-iB2zv7K-X5YrmgdGK28psvdu73LYfv5tY_Ld0I-Vp47NYaCgYKAQASARESFQHGX2MiGiTcZIeDscJVzgW1IDgM-A0206"
+GOOGLE_SMTP_USER = "info@syugo-sin.com"
+GOOGLE_SMTP_FROM_NAME = "AI鑑定師 龍"
+
+# D1データベース設定
+[[d1_databases]]
+binding = "DB"
+database_name = "syugo-sin-db"
+database_id = "0eee225f-f4a4-41ea-a64b-1ae31cb92138"
