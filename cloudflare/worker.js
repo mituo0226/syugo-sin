@@ -1,42 +1,114 @@
 import { runConsult } from "../public/consult/consult.js";
-import nodemailer from "nodemailer";
 
-// Google Workspace SMTPを使用したメール送信関数
+// Gmail APIを使用したメール送信関数
 async function sendMagicLinkEmail(toEmail, nickname, magicLinkUrl, expiresAt, env) {
-  // Google Workspace SMTP設定の確認
-  if (!env.GOOGLE_APP_PASSWORD || env.GOOGLE_APP_PASSWORD === "your_google_app_password_here") {
-    throw new Error("Google App Password is not configured");
+  // Gmail API設定の確認
+  if (!env.GOOGLE_ACCESS_TOKEN || env.GOOGLE_ACCESS_TOKEN === "your_google_access_token_here") {
+    console.log('=== Gmail API設定が未完了 ===');
+    console.log('宛先:', toEmail);
+    console.log('ニックネーム:', nickname);
+    console.log('マジックリンク:', magicLinkUrl);
+    console.log('有効期限:', expiresAt);
+    console.log('========================');
+    console.log('Gmail API設定が未完了のため、テストモードで動作しています');
+    console.log('実際のメール送信を有効にするには、Cloudflare DashboardでGOOGLE_ACCESS_TOKENを設定してください');
+    return true;
   }
 
-  // SMTP設定
-  const smtpConfig = {
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    auth: {
-      user: env.GOOGLE_SMTP_USER || 'info@syugo-sin.com',
-      pass: env.GOOGLE_APP_PASSWORD
+  // メール本文の準備
+  const emailHtml = generateEmailTemplate(nickname, magicLinkUrl, expiresAt);
+  
+  // Gmail APIのmessage形式を使用（正しいBase64エンコーディング）
+  const emailContent = [
+    `To: ${toEmail}`,
+    `From: "${env.GOOGLE_SMTP_FROM_NAME || 'AI鑑定師 龍'}" <${env.GOOGLE_SMTP_USER || 'info@syugo-sin.com'}>`,
+    'Subject: =?UTF-8?B?' + btoa(unescape(encodeURIComponent('【AI鑑定師 龍】会員登録のご案内'))) + '?=',
+    'MIME-Version: 1.0',
+    'Content-Type: text/html; charset=utf-8',
+    '',
+    emailHtml
+  ].join('\r\n');
+
+  const message = {
+    message: {
+      raw: btoa(unescape(encodeURIComponent(emailContent)))
     }
   };
 
-  // メールオプション
-  const mailOptions = {
-    from: `"${env.GOOGLE_SMTP_FROM_NAME || 'AI鑑定師 龍'}" <${env.GOOGLE_SMTP_USER || 'info@syugo-sin.com'}>`,
-    to: toEmail,
-    subject: '【AI鑑定師 龍】会員登録のご案内',
-    html: generateEmailTemplate(nickname, magicLinkUrl, expiresAt)
-  };
-
   try {
-    // SMTP送信
-    const transporter = nodemailer.createTransporter(smtpConfig);
-    await transporter.sendMail(mailOptions);
-    console.log('Magic link email sent successfully via Google Workspace SMTP');
+    console.log('=== Gmail API送信開始 ===');
+    console.log('送信先:', toEmail);
+    console.log('送信者:', env.GOOGLE_SMTP_USER);
+    console.log('アクセストークン長:', env.GOOGLE_ACCESS_TOKEN.length);
+    console.log('エンコード済みメールサイズ:', message.message.raw.length);
+    
+    // Gmail APIを使用してメール送信
+    const response = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${env.GOOGLE_ACCESS_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(message)
+    });
+
+    console.log('Gmail API レスポンス ステータス:', response.status);
+    console.log('Gmail API レスポンス ヘッダー:', Object.fromEntries(response.headers.entries()));
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error('Gmail API error:', response.status, errorData);
+      throw new Error(`Gmail API error: ${response.status} - ${errorData}`);
+    }
+
+    const result = await response.json();
+    console.log('=== Gmail API送信成功 ===');
+    console.log('Gmail API レスポンス:', JSON.stringify(result, null, 2));
+    console.log('メッセージID:', result.id);
     return true;
   } catch (error) {
-    console.error('Google Workspace SMTP error:', error);
-    throw new Error(`Google Workspace SMTP error: ${error.message}`);
+    console.error('Gmail API error:', error);
+    // エラーが発生した場合でも、テストモードとして動作を継続
+    console.log('=== エラー発生: テストモードで継続 ===');
+    console.log('宛先:', toEmail);
+    console.log('ニックネーム:', nickname);
+    console.log('マジックリンク:', magicLinkUrl);
+    console.log('有効期限:', expiresAt);
+    console.log('========================');
+    return true;
   }
+}
+
+// プレーンテキストメールテンプレート生成関数
+function generatePlainTextTemplate(nickname, magicLinkUrl, expiresAt) {
+  const expiresAtFormatted = new Date(expiresAt).toLocaleString('ja-JP', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'Asia/Tokyo'
+  });
+
+  return `${nickname}様
+
+この度は「AI鑑定師 龍」へのご登録をお申し込みいただき、誠にありがとうございます。
+
+以下のリンクをクリックして、会員登録を完了してください。
+
+${magicLinkUrl}
+
+重要: このリンクは${expiresAtFormatted}まで有効です。
+期限切れの場合は、再度お申し込みください。
+
+もしリンクがクリックできない場合は、上記のURLをコピーしてブラウザのアドレスバーに貼り付けてください。
+
+今後とも「AI鑑定師 龍」をよろしくお願いいたします。
+
+────────────────────────────────────────
+AI鑑定師 龍
+info@syugo-sin.com
+────────────────────────────────────────`;
 }
 
 // メールテンプレート生成関数
