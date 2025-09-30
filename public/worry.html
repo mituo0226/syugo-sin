@@ -279,6 +279,37 @@
       color: rgba(255, 255, 255, 0.6);
     }
     
+    /* 相談選択オプション */
+    .worry-option {
+      display: flex;
+      align-items: center;
+      padding: 15px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(102, 204, 255, 0.3);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1.1em;
+      color: #fff;
+    }
+    
+    .worry-option:hover {
+      background: rgba(102, 204, 255, 0.1);
+      border-color: rgba(102, 204, 255, 0.6);
+      transform: translateY(-2px);
+    }
+    
+    .worry-option input[type="radio"] {
+      width: 20px;
+      height: 20px;
+      accent-color: #66ccff;
+    }
+    
+    .worry-option input[type="radio"]:checked + span {
+      color: #66ccff;
+      font-weight: bold;
+    }
+    
     /* ボタン */
     .action-button {
       padding: 15px 40px;
@@ -398,9 +429,37 @@
       <!-- 龍の言葉 -->
       <div id="dragonMessage"></div>
 
-      <!-- 相談入力フォーム -->
+      <!-- 相談選択フォーム -->
       <div id="consultationForm" class="consultation-form">
-        <textarea id="worryInput" placeholder="あなたの悩みや相談したいことを自由にお書きください..." maxlength="1000"></textarea>
+        <div style="margin-bottom: 20px;">
+          <p style="margin-bottom: 15px; font-size: 1.1em; color: #66ccff;">今、知りたい内容を以下から1つだけ選んでくれ</p>
+          <div id="worryOptions" style="display: grid; gap: 10px;">
+            <label class="worry-option" data-value="恋愛">
+              <input type="radio" name="worryType" value="恋愛" style="margin-right: 10px;">
+              恋愛
+            </label>
+            <label class="worry-option" data-value="お金">
+              <input type="radio" name="worryType" value="お金" style="margin-right: 10px;">
+              お金
+            </label>
+            <label class="worry-option" data-value="健康">
+              <input type="radio" name="worryType" value="健康" style="margin-right: 10px;">
+              健康
+            </label>
+            <label class="worry-option" data-value="仕事">
+              <input type="radio" name="worryType" value="仕事" style="margin-right: 10px;">
+              仕事
+            </label>
+            <label class="worry-option" data-value="未来の運命">
+              <input type="radio" name="worryType" value="未来の運命" style="margin-right: 10px;">
+              未来の運命
+            </label>
+            <label class="worry-option" data-value="わからない">
+              <input type="radio" name="worryType" value="わからない" style="margin-right: 10px;">
+              わからない
+            </label>
+          </div>
+        </div>
         <button class="action-button" id="startConsultationButton">鑑定開始</button>
       </div>
     </div>
@@ -523,15 +582,15 @@
 
     // 鑑定開始ボタンのクリックイベント
     document.getElementById("startConsultationButton").addEventListener("click", function() {
-      const worryText = document.getElementById("worryInput").value.trim();
+      const selectedWorry = document.querySelector('input[name="worryType"]:checked');
       
-      if (worryText === "") {
-        alert("相談内容を入力してください。");
+      if (!selectedWorry) {
+        alert("相談内容を選択してください。");
         return;
       }
       
       // 相談内容を保存
-      window.userData.worry = worryText;
+      window.userData.worry = selectedWorry.value;
       
       // localStorageにuserDataを保存
       localStorage.setItem("userData", JSON.stringify(window.userData));
