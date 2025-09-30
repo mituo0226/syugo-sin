@@ -1,4 +1,4 @@
-import { sendMail } from "../../lib/gmail.js";
+import { sendMail } from "../lib/gmail.js";
 
 export async function onRequestPost(context) {
   const { request, env } = context;
