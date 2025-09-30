@@ -464,7 +464,13 @@
         console.log('マジックリンク送信完了:', result);
         
         // 成功メッセージを表示
-        messageArea.innerHTML = '<div class="success-message">✅ メールを送信しました。受信ボックスをご確認ください</div>';
+        messageArea.innerHTML = `
+          <div class="success-message">
+            ✅ 会員登録用のマジックリンクを送信しました！<br>
+            メールアドレス: ${result.email}<br>
+            有効期限: ${new Date(result.expiresAt).toLocaleString('ja-JP')}
+          </div>
+        `;
         
         // マジックリンクを表示（管理者向け）
         document.getElementById('magicLinkDisplay').textContent = result.magicLink;

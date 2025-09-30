@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>会員登録 | AI鑑定師 龍</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%);
+      color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      background: rgba(13, 13, 26, 0.8);
+      border-radius: 15px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border: 2px solid rgba(102, 204, 255, 0.3);
+    }
+    
+    .title {
+      text-align: center;
+      color: #66ccff;
+      margin-bottom: 30px;
+      font-size: 2em;
+      text-shadow: 0 0 20px rgba(102, 204, 255, 0.5);
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #ccc;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #444;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: #66ccff;
+      box-shadow: 0 0 10px rgba(102, 204, 255, 0.3);
+    }
+    
+    .form-group input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .submit-button {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(90deg, #66ccff, #4dd0e1);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+    
+    .submit-button:hover {
+      background: linear-gradient(90deg, #4dd0e1, #26c6da);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 204, 255, 0.4);
+    }
+    
+    .submit-button:disabled {
+      background: #666;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .message-area {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 16px;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid;
+    }
+    
+    .success-message {
+      background: rgba(76, 175, 80, 0.15);
+      color: #2e7d32;
+      border-color: #4caf50;
+      box-shadow: 0 0 15px rgba(76, 175, 80, 0.3);
+    }
+    
+    .error-message {
+      background: rgba(244, 67, 54, 0.15);
+      color: #c62828;
+      border-color: #f44336;
+      box-shadow: 0 0 15px rgba(244, 67, 54, 0.3);
+    }
+    
+    .info-message {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57c00;
+      border-color: #ffc107;
+      box-shadow: 0 0 15px rgba(255, 193, 7, 0.3);
+    }
+    
+    .back-link {
+      display: inline-block;
+      margin-top: 30px;
+      color: #66ccff;
+      text-decoration: none;
+      padding: 10px 20px;
+      border: 1px solid #66ccff;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
+    
+    .back-link:hover {
+      background: rgba(102, 204, 255, 0.1);
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">会員登録</h1>
+    
+    <form id="registerForm">
+      <div class="form-group">
+        <label for="email">メールアドレス *</label>
+        <input type="email" id="email" name="email" placeholder="user@example.com" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="nickname">ニックネーム</label>
+        <input type="text" id="nickname" name="nickname" placeholder="ニックネーム（任意）">
+      </div>
+      
+      <button type="submit" class="submit-button" id="submitButton">
+        会員登録
+      </button>
+    </form>
+    
+    <div id="messageArea"></div>
+    
+    <a href="/" class="back-link">← トップページに戻る</a>
+  </div>
+
+  <script>
+    // フォーム送信処理
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const submitButton = document.getElementById('submitButton');
+      const messageArea = document.getElementById('messageArea');
+      
+      // ボタンを無効化して送信中表示
+      submitButton.disabled = true;
+      submitButton.textContent = '⏳ 送信中...';
+      
+      // 送信中メッセージを表示
+      messageArea.innerHTML = '<div class="info-message">⏳ マジックリンクを送信中...</div>';
+      
+      try {
+        // フォームデータを取得
+        const email = document.getElementById('email').value.trim();
+        const nickname = document.getElementById('nickname').value.trim();
+        
+        // バリデーション
+        if (!email) {
+          throw new Error('メールアドレスを入力してください');
+        }
+        
+        // APIに送信
+        const response = await fetch('/api/send-magic-link', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            nickname: nickname
+          })
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || '送信に失敗しました');
+        }
+        
+        const result = await response.json();
+        
+        // 成功メッセージを表示
+        messageArea.innerHTML = `
+          <div class="success-message">
+            ✅ 会員登録用のマジックリンクをメールで送信しました！<br>
+            メールアドレス: ${result.email}<br>
+            受信ボックスをご確認ください。<br>
+            <small style="font-size: 12px; opacity: 0.8;">
+              有効期限: ${new Date(result.expiresAt).toLocaleString('ja-JP')}
+            </small>
+          </div>
+        `;
+        
+      } catch (error) {
+        console.error('送信エラー:', error);
+        
+        // エラーメッセージを表示
+        messageArea.innerHTML = `<div class="error-message">❌ ${error.message}</div>`;
+      } finally {
+        // ボタンを有効化
+        submitButton.disabled = false;
+        submitButton.textContent = '会員登録';
+      }
+    });
+  </script>
+</body>
+</html>

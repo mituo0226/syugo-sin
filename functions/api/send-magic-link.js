@@ -21,24 +21,71 @@ export async function onRequestPost(context) {
       });
     }
 
+    // D1データベースの存在確認
+    if (!env.DB) {
+      console.error("D1 database not bound");
+      return new Response(JSON.stringify({ error: "Database not available" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // 既存ユーザーの確認
+    const existingUser = await env.DB.prepare(`
+      SELECT id FROM users WHERE email = ?
+    `).bind(email).first();
+
+    if (existingUser) {
+      return new Response(JSON.stringify({ 
+        error: "このメールアドレスは既に登録されています" 
+      }), {
+        status: 409,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     // マジックリンク生成
     const token = crypto.randomUUID();
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30分後
     const origin = new URL(request.url).origin;
     const magicLink = `${origin}/api/verify-magic-link?token=${token}`;
+
+    // magic_linksテーブルに保存
+    try {
+      await env.DB.prepare(`
+        INSERT INTO magic_links (token, email, nickname, expires_at)
+        VALUES (?, ?, ?, ?)
+      `).bind(
+        token,
+        email,
+        nickname || null,
+        expiresAt.toISOString()
+      ).run();
+      
+      console.log("Magic link data saved:", { token, email, nickname, expiresAt });
+    } catch (dbError) {
+      console.error("Failed to save magic link data:", dbError);
+      return new Response(JSON.stringify({ 
+        error: "Failed to create magic link" 
+      }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     // メール本文のHTML
     const htmlContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2>【守護神占い】ログインリンク</h2>
-        <p>${nickname} 様</p>
-        <p>以下のリンクをクリックしてログインを完了してください：</p>
+        <h2>【守護神占い】会員登録完了</h2>
+        <p>${nickname || 'ユーザー'} 様</p>
+        <p>以下のリンクをクリックして会員登録を完了してください：</p>
         <div style="text-align: center; margin: 30px 0;">
           <a href="${magicLink}" style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
-            ログインリンクをクリック
+            会員登録を完了
           </a>
         </div>
         <p style="color: #666; font-size: 14px;">
-          このリンクは一度だけ有効です。<br>
+          このリンクは30分間有効です。<br>
           もしボタンがクリックできない場合は、以下のURLをコピーしてブラウザに貼り付けてください：<br>
           <a href="${magicLink}">${magicLink}</a>
         </p>
@@ -74,6 +121,7 @@ export async function onRequestPost(context) {
         email, 
         nickname, 
         magicLink,
+        expiresAt: expiresAt.toISOString(),
         messageId: resendData.id 
       }),
       { status: 200, headers: { "Content-Type": "application/json" } }
