@@ -1,6 +1,6 @@
 // Pages Functions ルーティング設定
 export const onRequest = async (context) => {
-  const { request } = context;
+  const { request, env, next } = context;
   const url = new URL(request.url);
   
   // API エンドポイント以外は静的ファイルとして処理
@@ -8,6 +8,7 @@ export const onRequest = async (context) => {
     return fetch(request);
   }
   
-  // API エンドポイントは対応する関数にルーティング
-  return fetch(request);
+  // D1データベースをPages Functionsにバインド
+  // env.DB は Cloudflare Pages の設定で D1 データベースにバインドされている必要があります
+  return next();
 };

@@ -18,10 +18,27 @@ export async function onRequest(context) {
   }
 
   try {
-    const { email, nickname, birthdate, searchType } = await request.json();
+    // JSON パース
+    let payload;
+    try {
+      payload = await request.json();
+    } catch (jsonError) {
+      console.error("JSON parse error:", jsonError);
+      return createErrorResponse("Invalid JSON body", 400, corsHeaders);
+    }
+
+    const { email, nickname, birthdate, searchType } = payload;
+    
+    console.log("Search request:", { email, nickname, birthdate, searchType });
     
     if (!email && !nickname && !birthdate) {
       return createErrorResponse("検索条件を少なくとも1つ入力してください", 400, corsHeaders);
+    }
+
+    // D1データベースの存在確認
+    if (!env.DB) {
+      console.error("D1 database not bound");
+      return createErrorResponse("データベースが利用できません", 500, corsHeaders);
     }
 
     let users;
@@ -56,7 +73,15 @@ export async function onRequest(context) {
       query = `SELECT * FROM users WHERE ${conditions.join(" AND ")}`;
     }
 
-    users = await env.DB.prepare(query).bind(...bindParams).all();
+    console.log("Executing query:", query, "with params:", bindParams);
+
+    try {
+      users = await env.DB.prepare(query).bind(...bindParams).all();
+      console.log("Query result:", users);
+    } catch (dbError) {
+      console.error("Database query error:", dbError);
+      return createErrorResponse(`データベースクエリエラー: ${dbError.message}`, 500, corsHeaders);
+    }
 
     if (!users.results || users.results.length === 0) {
       return createErrorResponse("ユーザーが見つかりません", 404, corsHeaders);
@@ -73,6 +98,8 @@ export async function onRequest(context) {
       created_at: user.created_at
     }));
 
+    console.log("Formatted users:", formattedUsers);
+
     return createSuccessResponse({
       success: true,
       users: formattedUsers,
@@ -81,6 +108,6 @@ export async function onRequest(context) {
 
   } catch (error) {
     console.error("User search error:", error);
-    return createErrorResponse("ユーザー検索中にエラーが発生しました", 500, corsHeaders);
+    return createErrorResponse(`ユーザー検索中にエラーが発生しました: ${error.message}`, 500, corsHeaders);
   }
 }
