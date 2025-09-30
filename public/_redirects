@@ -1,1 +1,5 @@
+# APIルートはFunctionsに優先的に渡す
+/api/*   /api/:splat   200!
+
+# 通常のSPAフォールバック
 /*   /index.html   200
