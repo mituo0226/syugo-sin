@@ -46,7 +46,7 @@ export async function onRequestPost(context) {
     `;
 
     // Resend APIでメール送信
-    const resendResponse = await fetch("https://api.resend.com/emails", {
+    const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${env.RESEND_API_KEY}`,
@@ -60,12 +60,12 @@ export async function onRequestPost(context) {
       }),
     });
 
-    if (!resendResponse.ok) {
-      const errorText = await resendResponse.text();
-      throw new Error(`Resend API error: ${resendResponse.status} ${errorText}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Resend API error: ${response.status} ${errorText}`);
     }
 
-    const resendData = await resendResponse.json();
+    const resendData = await response.json();
     console.log("Email sent successfully via Resend:", resendData);
 
     return new Response(
