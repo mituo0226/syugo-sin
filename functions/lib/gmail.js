@@ -1,13 +1,11 @@
-// functions/lib/gmail.js
-
 async function getAccessToken(env) {
   const res = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
-      client_id: env.GMAIL_CLIENT_ID,
-      client_secret: env.GMAIL_CLIENT_SECRET,
-      refresh_token: env.GMAIL_REFRESH_TOKEN,
+      client_id: env.GOOGLE_CLIENT_ID,
+      client_secret: env.GOOGLE_CLIENT_SECRET,
+      refresh_token: env.GOOGLE_REFRESH_TOKEN,
       grant_type: "refresh_token",
     }),
   });
@@ -21,7 +19,7 @@ export async function sendMail(env, to, subject, body) {
   const accessToken = await getAccessToken(env);
 
   const raw = btoa(
-    `From: ${env.GMAIL_SENDER}\r\n` +
+    `From: ${env.GOOGLE_SMTP_USER}\r\n` +
     `To: ${to}\r\n` +
     `Subject: ${subject}\r\n\r\n` +
     `${body}`
