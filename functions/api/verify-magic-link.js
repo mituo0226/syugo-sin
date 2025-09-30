@@ -72,35 +72,19 @@ export async function onRequestGet(context) {
       
       const userId = userResult.meta.last_row_id;
       
+      // マジックリンクデータから追加情報を抽出
+      const additionalInfo = {
+        birthYear: magicLinkData.birth_year || null,
+        birthMonth: magicLinkData.birth_month || null,
+        birthDay: magicLinkData.birth_day || null,
+        guardianKey: magicLinkData.guardian_key || null,
+        guardianName: magicLinkData.guardian_name || null,
+        worryType: magicLinkData.worry_type || null,
+        registrationInfo: magicLinkData.registration_info || null
+      };
+      
       // user_profilesテーブルに詳細情報を保存（存在する場合）
       try {
-        await env.DB.prepare(`
-          CREATE TABLE IF NOT EXISTS user_profiles (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER NOT NULL,
-            birth_year TEXT,
-            birth_month TEXT,
-            birth_day TEXT,
-            guardian_key TEXT,
-            guardian_name TEXT,
-            worry_type TEXT,
-            registration_info TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users (id)
-          )
-        `).run();
-        
-        // マジックリンクデータから追加情報を抽出
-        const additionalInfo = {
-          birthYear: magicLinkData.birth_year || null,
-          birthMonth: magicLinkData.birth_month || null,
-          birthDay: magicLinkData.birth_day || null,
-          guardianKey: magicLinkData.guardian_key || null,
-          guardianName: magicLinkData.guardian_name || null,
-          worryType: magicLinkData.worry_type || null,
-          registrationInfo: magicLinkData.registration_info || null
-        };
-        
         await env.DB.prepare(`
           INSERT INTO user_profiles (
             user_id, birth_year, birth_month, birth_day, 
