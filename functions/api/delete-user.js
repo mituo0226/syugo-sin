@@ -1,6 +1,6 @@
 import { getCorsHeaders, createErrorResponse, createSuccessResponse } from '../utils.js';
 
-export async function onRequest(context) {
+export async function onRequestPost(context) {
   const { request, env } = context;
   const origin = request.headers.get("Origin");
   const corsHeaders = getCorsHeaders(origin);

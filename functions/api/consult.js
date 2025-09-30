@@ -1,21 +1,9 @@
 import { getCorsHeaders, createErrorResponse, createSuccessResponse } from '../utils.js';
 
-export async function onRequest(context) {
+export async function onRequestPost(context) {
   const { request, env } = context;
   const origin = request.headers.get("Origin");
   const corsHeaders = getCorsHeaders(origin);
-
-  // OPTIONS リクエストの処理（プリフライトリクエスト）
-  if (request.method === "OPTIONS") {
-    return new Response(null, { 
-      status: 200,
-      headers: corsHeaders
-    });
-  }
-
-  if (request.method !== "POST") {
-    return createErrorResponse("Method not allowed", 405, corsHeaders);
-  }
 
   try {
     const requestText = await request.text();
