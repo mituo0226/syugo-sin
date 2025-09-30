@@ -18,25 +18,47 @@ export async function onRequestPost(context) {
   }
 
   try {
-    const { email } = await request.json();
+    const payload = await request.json();
+    const { userId, email } = payload;
     
-    if (!email) {
-      return createErrorResponse("Email is required", 400, corsHeaders);
+    // userId または email のどちらかが必要
+    if (!userId && !email) {
+      return createErrorResponse("userId or email is required", 400, corsHeaders);
     }
 
-    // メールアドレスでユーザーを検索
-    const user = await env.DB.prepare(`
-      SELECT * FROM users WHERE email = ?
-    `).bind(email).first();
+    let user;
+    let deleteQuery;
+    let bindParams;
 
-    if (!user) {
-      return createErrorResponse("ユーザーが見つかりません", 404, corsHeaders);
+    if (userId) {
+      // ユーザーIDでユーザーを検索
+      user = await env.DB.prepare(`
+        SELECT * FROM users WHERE id = ?
+      `).bind(userId).first();
+      
+      if (!user) {
+        return createErrorResponse("ユーザーが見つかりません", 404, corsHeaders);
+      }
+
+      // ユーザーを削除（退会処理）
+      deleteQuery = `DELETE FROM users WHERE id = ?`;
+      bindParams = [userId];
+    } else {
+      // メールアドレスでユーザーを検索
+      user = await env.DB.prepare(`
+        SELECT * FROM users WHERE email = ?
+      `).bind(email).first();
+      
+      if (!user) {
+        return createErrorResponse("ユーザーが見つかりません", 404, corsHeaders);
+      }
+
+      // ユーザーを削除（退会処理）
+      deleteQuery = `DELETE FROM users WHERE email = ?`;
+      bindParams = [email];
     }
 
-    // ユーザーを削除（退会処理）
-    const result = await env.DB.prepare(`
-      DELETE FROM users WHERE email = ?
-    `).bind(email).run();
+    const result = await env.DB.prepare(deleteQuery).bind(...bindParams).run();
 
     if (result.changes === 0) {
       return createErrorResponse("退会処理に失敗しました", 500, corsHeaders);
@@ -45,7 +67,7 @@ export async function onRequestPost(context) {
     return createSuccessResponse({ 
       success: true,
       message: "退会処理が完了しました",
-      email: email,
+      email: user.email,
       deleted_user: {
         id: user.id,
         nickname: user.nickname,

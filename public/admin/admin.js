@@ -144,6 +144,20 @@ function setupMemberSearch() {
                                         <p class="font-medium">${user.id}</p>
                                     </div>
                                 </div>
+                                <div class="mt-6 pt-4 border-t border-gray-200">
+                                    <div class="flex flex-col sm:flex-row gap-3">
+                                        <button onclick="withdrawUser(${user.id}, '${user.email}')" 
+                                                class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center">
+                                            <i class="fas fa-user-times mr-2"></i>
+                                            退会処理
+                                        </button>
+                                        <button onclick="refreshSearchResult('${user.email}')" 
+                                                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center">
+                                            <i class="fas fa-refresh mr-2"></i>
+                                            情報更新
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         `;
                     } else {
@@ -224,6 +238,7 @@ async function loadMemberList() {
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">メールアドレス</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ニックネーム</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">登録日</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
@@ -233,6 +248,12 @@ async function loadMemberList() {
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${user.email}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${user.nickname || '-'}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${new Date(user.created_at).toLocaleString('ja-JP')}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <button onclick="withdrawUserFromList(${user.id}, '${user.email}')" 
+                                                class="text-red-600 hover:text-red-900">
+                                            <i class="fas fa-user-times"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -260,6 +281,13 @@ async function loadMemberList() {
                             <div class="mt-1">
                                 <p class="text-xs text-gray-500">ニックネーム</p>
                                 <p class="text-sm font-medium">${user.nickname || '-'}</p>
+                            </div>
+                            <div class="mt-3 pt-3 border-t border-gray-300">
+                                <button onclick="withdrawUserFromList(${user.id}, '${user.email}')" 
+                                        class="w-full bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center">
+                                    <i class="fas fa-user-times mr-2"></i>
+                                    退会処理
+                                </button>
                             </div>
                         </div>
                     `).join('')}
@@ -383,6 +411,175 @@ async function checkDatabaseStatus() {
         }
     } catch (error) {
         resultDiv.innerHTML = showMessage(`⚠️ 通信エラー: ${error.message}`, 'warning');
+    }
+}
+
+// 会員退会処理
+async function withdrawUser(userId, userEmail) {
+    // 確認ダイアログを表示
+    const confirmed = confirm(
+        `以下の会員を退会させますか？\n\n` +
+        `ID: ${userId}\n` +
+        `メールアドレス: ${userEmail}\n\n` +
+        `この操作は取り消せません。`
+    );
+    
+    if (!confirmed) {
+        return;
+    }
+    
+    const contentDiv = document.getElementById('searchResultContent');
+    if (!contentDiv) return;
+    
+    // 退会処理中の表示
+    contentDiv.innerHTML = `
+        <div class="bg-white border border-gray-200 rounded-lg p-4">
+            <div class="flex items-center justify-center py-8">
+                <i class="fas fa-spinner fa-spin text-blue-600 mr-2"></i>
+                <span class="text-gray-600">退会処理中...</span>
+            </div>
+        </div>
+    `;
+    
+    try {
+        const response = await fetch('/api/withdraw', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userId: userId })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            contentDiv.innerHTML = showMessage(
+                `✅ 退会処理が完了しました<br>
+                ID: ${userId}<br>
+                メールアドレス: ${userEmail}`, 
+                'success'
+            );
+            
+            // 検索フォームをクリア
+            document.getElementById('searchEmail').value = '';
+        } else {
+            contentDiv.innerHTML = showMessage(`❌ 退会処理エラー: ${data.error}`, 'error');
+        }
+    } catch (error) {
+        contentDiv.innerHTML = showMessage(`⚠️ 通信エラー: ${error.message}`, 'warning');
+    }
+}
+
+// 会員一覧からの退会処理
+async function withdrawUserFromList(userId, userEmail) {
+    // 確認ダイアログを表示
+    const confirmed = confirm(
+        `以下の会員を退会させますか？\n\n` +
+        `ID: ${userId}\n` +
+        `メールアドレス: ${userEmail}\n\n` +
+        `この操作は取り消せません。`
+    );
+    
+    if (!confirmed) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/withdraw', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userId: userId })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            alert(`✅ 退会処理が完了しました\nID: ${userId}\nメールアドレス: ${userEmail}`);
+            
+            // 会員一覧を再読み込み
+            loadMemberList();
+            
+            // ダッシュボードの統計も更新
+            loadDashboardStats();
+        } else {
+            alert(`❌ 退会処理エラー: ${data.error}`);
+        }
+    } catch (error) {
+        alert(`⚠️ 通信エラー: ${error.message}`);
+    }
+}
+
+// 検索結果の情報更新
+async function refreshSearchResult(email) {
+    const contentDiv = document.getElementById('searchResultContent');
+    if (!contentDiv) return;
+    
+    contentDiv.innerHTML = showLoading();
+    
+    try {
+        const response = await fetch('/api/search-user', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                email: email,
+                searchType: 'email'
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            if (data.users && data.users.length > 0) {
+                const user = data.users[0];
+                contentDiv.innerHTML = `
+                    <div class="bg-white border border-gray-200 rounded-lg p-4">
+                        <h4 class="font-semibold text-gray-900 mb-2">会員情報</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-600">メールアドレス</p>
+                                <p class="font-medium">${user.email}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">ニックネーム</p>
+                                <p class="font-medium">${user.nickname || '未設定'}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">登録日</p>
+                                <p class="font-medium">${new Date(user.created_at).toLocaleString('ja-JP')}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">ID</p>
+                                <p class="font-medium">${user.id}</p>
+                            </div>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-gray-200">
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <button onclick="withdrawUser(${user.id}, '${user.email}')" 
+                                        class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center">
+                                    <i class="fas fa-user-times mr-2"></i>
+                                    退会処理
+                                </button>
+                                <button onclick="refreshSearchResult('${user.email}')" 
+                                        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center">
+                                    <i class="fas fa-refresh mr-2"></i>
+                                    情報更新
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                contentDiv.innerHTML = showMessage('該当する会員が見つかりませんでした', 'warning');
+            }
+        } else {
+            contentDiv.innerHTML = showMessage(`エラー: ${data.error}`, 'error');
+        }
+    } catch (error) {
+        contentDiv.innerHTML = showMessage(`通信エラー: ${error.message}`, 'error');
     }
 }
 
