@@ -1,6 +1,7 @@
-// POST 専用エンドポイント
+import { sendMail } from "../../lib/gmail.js";
+
 export async function onRequestPost(context) {
-  const { request } = context;
+  const { request, env } = context;
 
   try {
     // JSON パース（不正JSONを明示的に 400 に）
@@ -27,7 +28,12 @@ export async function onRequestPost(context) {
     const origin = new URL(request.url).origin;
     const magicLink = `${origin}/api/verify-magic-link?token=${token}`;
 
-    // TODO: DB保存や Gmail 送信は後で段階的に復活
+    // メール本文
+    const subject = "【守護神占い】マジックリンクでログインしてください";
+    const body = `${nickname} 様\n\n以下のリンクをクリックしてログインを完了してください:\n${magicLink}\n\nこのリンクは一度だけ有効です。`;
+
+    // Gmail APIで送信
+    await sendMail(env, email, subject, body);
 
     return new Response(
       JSON.stringify({ status: "ok", email, nickname, magicLink }),
