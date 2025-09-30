@@ -25,7 +25,7 @@ export async function onRequestPost(context) {
     // マジックリンク生成
     const token = crypto.randomUUID();
     const origin = new URL(request.url).origin;
-    const magicLink = `${origin}/verify-magic-link?token=${token}`;
+    const magicLink = `${origin}/api/verify-magic-link?token=${token}`;
 
     // TODO: DB保存や Gmail 送信は後で段階的に復活
 
