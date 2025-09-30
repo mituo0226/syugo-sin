@@ -496,14 +496,15 @@
         // 守護神を安全に取得
         const guardian = guardians[guardianKey] || { name: "守護神", image: "photo/ryu.png" };
         
-        // データを保存
+        // データを保存（デフォルト値を設定）
         window.userData = {
-          nickname: nickname,
-          birthYear: birthYear,
-          birthMonth: birthMonth,
-          birthDay: birthDay,
-          guardianKey: guardianKey,
-          guardian: guardian
+          nickname: nickname || "ゲスト",
+          birthYear: birthYear || "",
+          birthMonth: birthMonth || "",
+          birthDay: birthDay || "",
+          guardianKey: guardianKey || "",
+          guardian: guardian || { name: "守護神", image: "photo/ryu.png" },
+          worry: "" // 相談内容（後で設定）
         };
         
         // 初期表示開始
@@ -511,7 +512,17 @@
         
       } catch (error) {
         console.error("ページ読み込みエラー:", error);
-        // エラーが発生した場合のデフォルト表示
+        // エラーが発生した場合のデフォルトuserDataを設定
+        window.userData = {
+          nickname: "ゲスト",
+          birthYear: "",
+          birthMonth: "",
+          birthDay: "",
+          guardianKey: "",
+          guardian: { name: "守護神", image: "photo/ryu.png" },
+          worry: ""
+        };
+        // デフォルト表示開始
         startInitialDisplay();
       }
     });
@@ -589,6 +600,13 @@
         return;
       }
       
+      // userDataが初期化されているかチェック
+      if (!window.userData) {
+        console.error("userDataが初期化されていません");
+        alert("エラーが発生しました。ページを再読み込みしてください。");
+        return;
+      }
+      
       // 相談内容を保存
       window.userData.worry = selectedWorry.value;
       
@@ -596,7 +614,7 @@
       localStorage.setItem("userData", JSON.stringify(window.userData));
       
       console.log("鑑定開始ボタンがクリックされました");
-      console.log("相談内容:", worryText);
+      console.log("相談内容:", selectedWorry.value);
       console.log("userDataをlocalStorageに保存:", window.userData);
       
       // explain.htmlに遷移
