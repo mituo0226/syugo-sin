@@ -481,7 +481,7 @@
         if (!response.ok) {
           const errorData = await response.json();
           if (response.status === 404) {
-            throw new Error('ユーザーが見つかりませんでした');
+            throw new Error('検索されたユーザーは登録されていません');
           }
           throw new Error(`検索エラー: ${response.status} - ${errorData.error || 'Unknown error'}`);
         }

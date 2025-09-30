@@ -73,7 +73,7 @@ export async function onRequestPost(context) {
     }
 
     if (!users.results || users.results.length === 0) {
-      return createErrorResponse("ユーザーが見つかりません", 404, corsHeaders);
+      return createErrorResponse("検索されたユーザーは登録されていません", 404, corsHeaders);
     }
 
     // ユーザーデータを整形

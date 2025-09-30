@@ -564,7 +564,7 @@
         // 現在のユーザー情報を取得
         const currentUserInfo = localStorage.getItem('currentUserInfo');
         if (!currentUserInfo) {
-          addLog('ユーザー情報が見つかりません。先にデータを保存してください。');
+          addLog('ユーザー情報が登録されていません。先にデータを保存してください。');
           return;
         }
         
@@ -575,7 +575,7 @@
         // ユーザーハッシュからUIDを取得
         let uid = localStorage.getItem(`uid_${userHash}`);
         if (!uid) {
-          addLog('UIDが見つかりません。先にデータを保存してください。');
+          addLog('UIDが登録されていません。先にデータを保存してください。');
           return;
         }
         
