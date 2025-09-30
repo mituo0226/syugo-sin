@@ -18,6 +18,7 @@ export async function onRequestPost(context) {
     const { email, nickname, birthdate, searchType } = payload;
     
     console.log("Search request:", { email, nickname, birthdate, searchType });
+    console.log("D1 database binding check:", !!env.DB);
     
     if (!email && !nickname && !birthdate) {
       return createErrorResponse("検索条件を少なくとも1つ入力してください", 400, corsHeaders);
