@@ -1,4 +1,4 @@
-import { getCorsHeaders, createErrorResponse, createSuccessResponse, sendMagicLinkEmail } from '../utils.js';
+import { getCorsHeaders, createErrorResponse, createSuccessResponse } from '../utils.js';
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -89,36 +89,22 @@ export async function onRequest(context) {
       // データベースエラーでも処理を続行（テスト用）
     }
 
-    // マジックリンクURLを生成
-    const magicLinkUrl = `/api/verify-magic-link?token=${token}`;
-    
-    // メール送信
-    let emailSent = false;
-    let emailError = null;
-    
-    try {
-      emailSent = await sendMagicLinkEmail(email, nickname, magicLinkUrl, expiresAt, env);
-      console.log("Magic link email sent successfully to:", email);
-    } catch (error) {
-      console.error("Failed to send magic link email:", error);
-      emailError = error.message;
-    }
+    // マジックリンクURLを生成（フルURL）
+    const baseUrl = origin || "https://syugo-sin.com";
+    const magicLink = `${baseUrl}/api/verify-magic-link?token=${token}`;
     
     console.log("Magic Link Data:", magicLinkData);
-    console.log("Magic Link URL:", magicLinkUrl);
+    console.log("Magic Link URL:", magicLink);
 
     return createSuccessResponse({
       success: true,
-      message: emailSent ? "マジックリンクをメールで送信しました" : "マジックリンクを生成しました（メール送信に失敗）",
-      magic_link_url: magicLinkUrl, // テスト用にURLを返す
-      email: email,
-      email_sent: emailSent,
-      email_error: emailError,
+      magicLink: magicLink,
+      token: token,
       expires_at: expiresAt.toISOString()
     }, corsHeaders);
 
   } catch (error) {
     console.error("Magic link send error:", error);
-    return createErrorResponse("マジックリンク送信中にエラーが発生しました", 500, corsHeaders);
+    return createErrorResponse("マジックリンク生成中にエラーが発生しました", 500, corsHeaders);
   }
 }
