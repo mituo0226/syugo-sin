@@ -823,8 +823,9 @@
         return;
       }
       
-      // ニックネームの長さチェック
-      if (nickname.length < 2 || nickname.length > 20) {
+      // ニックネームの長さチェック（自動入力済みでない場合のみ）
+      const nicknameInput = document.getElementById('nickname');
+      if (!nicknameInput.readOnly && (nickname.length < 2 || nickname.length > 20)) {
         alert('ニックネームは2文字以上20文字以下で入力してください。');
         return;
       }
@@ -988,6 +989,24 @@
     window.addEventListener('load', function() {
       console.log('神秘の儀式ページ読み込み完了');
       
+      // ローカルストレージからニックネームを自動取得
+      try {
+        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        if (userData.nickname) {
+          const nicknameInput = document.getElementById('nickname');
+          if (nicknameInput) {
+            nicknameInput.value = userData.nickname;
+            nicknameInput.readOnly = true;
+            nicknameInput.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            nicknameInput.style.color = 'rgba(255, 255, 255, 0.7)';
+            nicknameInput.placeholder = '自動入力済み';
+            console.log('ニックネームを自動入力しました:', userData.nickname);
+          }
+        }
+      } catch (error) {
+        console.error('ローカルストレージからのニックネーム取得エラー:', error);
+      }
+      
       // テストモードの状態を表示
       const testMode = isTestMode();
       console.log('ページ読み込み時のテストモード状態:', testMode);
@@ -1103,9 +1122,13 @@
           const testModeButton = document.getElementById('testModeButton');
           if (emailInput && nicknameInput) {
             emailInput.disabled = false;
-            nicknameInput.disabled = false;
             emailInput.readOnly = false;
-            nicknameInput.readOnly = false;
+            
+            // ニックネームが自動入力済みでない場合のみ有効化
+            if (!nicknameInput.readOnly) {
+              nicknameInput.disabled = false;
+              nicknameInput.readOnly = false;
+            }
             console.log('入力フィールドを有効化しました');
           }
           if (testModeButton && isTestMode) {
