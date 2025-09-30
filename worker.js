@@ -391,7 +391,7 @@ export default {
         }
 
         // マジックリンクURLを生成
-        const magicLinkUrl = `https://syugo-sin-new.mituo0226.workers.dev/api/verify-magic-link?token=${token}`;
+        const magicLinkUrl = `/api/verify-magic-link?token=${token}`;
         
         // メール送信
         let emailSent = false;

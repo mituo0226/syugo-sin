@@ -531,7 +531,7 @@
       if (hostname === 'localhost' || hostname === '127.0.0.1') {
         return 'http://127.0.0.1:8787/api/consult';
       } else if (hostname.includes('syugo-sin.com') || hostname.includes('workers.dev')) {
-        return 'https://syugo-sin-worker.mituo0226.workers.dev/api/consult';
+        return '/api/consult';
       } else {
         // フォールバック
         return '/api/consult';
@@ -1249,7 +1249,7 @@
     // 管理画面を開く
     function openAdminPanel() {
       // 新しいタブで管理画面を開く
-      window.open('https://syugo-sin-worker.mituo0226.workers.dev/admin.html', '_blank');
+      window.open('/admin/admin.html', '_blank');
     }
     
     // 管理画面からの通知を受信

@@ -406,10 +406,10 @@
         }
         
         addLog(`マジックリンク送信開始: email=${email}, nickname=${nickname}`);
-        addLog(`API URL: https://syugo-sin-worker.mituo0226.workers.dev/api/send-magic-link`);
+        addLog(`API URL: /api/send-magic-link`);
         
         // APIに送信
-        const response = await fetch('https://syugo-sin-worker.mituo0226.workers.dev/api/send-magic-link', {
+        const response = await fetch('/api/send-magic-link', {
           method: 'POST',
           mode: 'cors',
           credentials: 'omit',
@@ -486,7 +486,7 @@
       try {
         addLog(`ユーザー状況デバッグ開始: ${email}`);
         
-        const response = await fetch('https://syugo-sin-worker.mituo0226.workers.dev/api/debug-user', {
+        const response = await fetch('/api/debug-user', {
           method: 'POST',
           mode: 'cors',
           credentials: 'omit',

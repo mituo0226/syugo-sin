@@ -279,7 +279,7 @@ export default {
     const origin = request.headers.get("Origin");
     const allowedOrigins = [
       "https://syugo-sin.com",
-      "https://syugo-sin-worker.mituo0226.workers.dev",
+      "https://syugo-sin.pages.dev",
       "http://localhost:3000",
       "http://localhost:8080"
     ];
@@ -1148,7 +1148,7 @@ export default {
         }
 
         // マジックリンクURLを生成
-        const magicLinkUrl = `https://syugo-sin-worker.mituo0226.workers.dev/api/verify-magic-link?token=${token}`;
+        const magicLinkUrl = `/api/verify-magic-link?token=${token}`;
         
         // メール送信
         let emailSent = false;
