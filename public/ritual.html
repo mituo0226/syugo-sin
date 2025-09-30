@@ -921,10 +921,10 @@
         console.log('光点アニメーションを開始しました');
       }, 5000);
       
-      // 6. 完了メッセージを表示
+      // 6. complete.htmlにリダイレクト
       setTimeout(() => {
-        showCompletionMessage(nickname);
-        console.log('完了メッセージを表示しました');
+        console.log('complete.htmlにリダイレクトします');
+        window.location.href = 'complete.html';
       }, 6000);
     }
     
