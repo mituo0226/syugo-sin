@@ -37,25 +37,27 @@
     }
     
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 25px;
     }
     
     .form-group label {
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
       color: #ccc;
       font-weight: bold;
+      font-size: 14px;
     }
     
     .form-group input, .form-group select, .form-group textarea {
       width: 100%;
-      padding: 12px;
-      border: 1px solid #444;
-      border-radius: 8px;
+      padding: 14px 16px;
+      border: 2px solid #444;
+      border-radius: 10px;
       background: rgba(255, 255, 255, 0.1);
       color: #fff;
       font-size: 16px;
       box-sizing: border-box;
+      transition: all 0.3s ease;
     }
     
     .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
@@ -102,28 +104,44 @@
     
     .message-area {
       margin-top: 20px;
-      padding: 15px;
-      border-radius: 10px;
+      padding: 20px;
+      border-radius: 12px;
       text-align: center;
       font-weight: bold;
+      font-size: 16px;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid;
     }
     
     .success-message {
-      background: rgba(76, 175, 80, 0.2);
-      color: #4caf50;
-      border: 1px solid rgba(76, 175, 80, 0.3);
+      background: rgba(76, 175, 80, 0.15);
+      color: #2e7d32;
+      border-color: #4caf50;
+      box-shadow: 0 0 15px rgba(76, 175, 80, 0.3);
     }
     
     .error-message {
-      background: rgba(244, 67, 54, 0.2);
-      color: #f44336;
-      border: 1px solid rgba(244, 67, 54, 0.3);
+      background: rgba(244, 67, 54, 0.15);
+      color: #c62828;
+      border-color: #f44336;
+      box-shadow: 0 0 15px rgba(244, 67, 54, 0.3);
     }
     
     .info-message {
-      background: rgba(33, 150, 243, 0.2);
-      color: #2196f3;
-      border: 1px solid rgba(33, 150, 243, 0.3);
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57c00;
+      border-color: #ffc107;
+      box-shadow: 0 0 15px rgba(255, 193, 7, 0.3);
+    }
+    
+    .warning-message {
+      background: rgba(255, 152, 0, 0.15);
+      color: #ef6c00;
+      border-color: #ff9800;
+      box-shadow: 0 0 15px rgba(255, 152, 0, 0.3);
     }
     
     .log-area {
@@ -384,12 +402,12 @@
       const messageArea = document.getElementById('messageArea');
       const magicLinkArea = document.getElementById('magicLinkArea');
       
-      // ボタンを無効化
+      // ボタンを無効化して送信中表示
       submitButton.disabled = true;
-      submitButton.textContent = 'マジックリンク送信中...';
+      submitButton.textContent = '⏳ 送信中...';
       
-      // メッセージエリアとマジックリンクエリアをクリア
-      messageArea.innerHTML = '';
+      // 送信中メッセージを表示
+      messageArea.innerHTML = '<div class="info-message">⏳ 送信中...</div>';
       magicLinkArea.style.display = 'none';
       
       try {
@@ -405,8 +423,9 @@
           throw new Error('メールアドレスとニックネームは必須です');
         }
         
-        addLog(`マジックリンク送信開始: email=${email}, nickname=${nickname}`);
-        addLog(`API URL: /api/send-magic-link`);
+        // コンソールログ（管理者向け詳細情報）
+        console.log('マジックリンク送信開始:', { email, nickname, birthdate, guardianId, theme });
+        console.log('API URL: /api/send-magic-link');
         
         // APIに送信
         const response = await fetch('/api/send-magic-link', {
@@ -426,46 +445,47 @@
           })
         });
         
-        addLog(`レスポンス受信: ${response.status} ${response.statusText}`);
+        console.log(`レスポンス受信: ${response.status} ${response.statusText}`);
         
         if (!response.ok) {
           const errorData = await response.json();
+          console.error('API送信エラー:', errorData);
+          
+          // 具体的なエラーメッセージを表示
+          let errorMessage = errorData.error || '送信に失敗しました。もう一度お試しください';
           if (response.status === 409 && errorData.error === "このメールアドレスは既に登録されています") {
-            throw new Error(`${errorData.error}（既存のユーザーID: ${errorData.existing_id}）`);
+            errorMessage = 'このメールアドレスは既に登録されています';
           }
-          throw new Error(`送信エラー: ${response.status} - ${errorData.error || 'Unknown error'}`);
+          
+          throw new Error(errorMessage);
         }
         
         const result = await response.json();
-        addLog('マジックリンク送信完了', 'success');
-        addLog(`送信結果: ${JSON.stringify(result, null, 2)}`);
+        console.log('マジックリンク送信完了:', result);
         
         // 成功メッセージを表示
-        const emailStatus = result.email_sent ? 
-          '<span style="color: #4caf50;">✓ メール送信成功</span>' : 
-          `<span style="color: #f44336;">✗ メール送信失敗: ${result.email_error || '不明なエラー'}</span>`;
+        messageArea.innerHTML = '<div class="success-message">✅ メールを送信しました。受信ボックスをご確認ください</div>';
         
-        messageArea.innerHTML = `
-          <div class="success-message">
-            ${result.email_sent ? 'マジックリンクをメールで送信しました！' : 'マジックリンクを生成しました！'}<br>
-            メールアドレス: ${result.email}<br>
-            メール送信状況: ${emailStatus}<br>
-            有効期限: ${new Date(result.expires_at).toLocaleString()}
-          </div>
-        `;
-        
-        // マジックリンクを表示
-        document.getElementById('magicLinkDisplay').textContent = result.magic_link_url;
+        // マジックリンクを表示（管理者向け）
+        document.getElementById('magicLinkDisplay').textContent = result.magicLink;
         magicLinkArea.style.display = 'block';
         
         // リンクを開くボタンのイベントリスナー
         document.getElementById('openLinkButton').onclick = function() {
-          window.open(result.magic_link_url, '_blank');
+          window.open(result.magicLink, '_blank');
         };
         
       } catch (error) {
-        addLog('送信エラー: ' + error.message, 'error');
-        messageArea.innerHTML = `<div class="error-message">マジックリンク送信に失敗しました: ${error.message}</div>`;
+        console.error('送信エラー:', error);
+        
+        // エラーメッセージを表示
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+          // 通信エラーの場合
+          messageArea.innerHTML = `<div class="warning-message">⚠️ 通信エラー: ${error.message}</div>`;
+        } else {
+          // APIエラーの場合
+          messageArea.innerHTML = `<div class="error-message">❌ ${error.message}</div>`;
+        }
       } finally {
         // ボタンを有効化
         submitButton.disabled = false;

@@ -75,26 +75,40 @@
         }
         .result {
             margin-top: 20px;
-            padding: 15px;
-            border-radius: 5px;
-            white-space: pre-wrap;
-            font-family: monospace;
-            font-size: 14px;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid;
         }
         .success {
-            background: #d4edda;
-            border: 1px solid #c3e6cb;
-            color: #155724;
+            background: rgba(76, 175, 80, 0.15);
+            color: #2e7d32;
+            border-color: #4caf50;
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.3);
         }
         .error {
-            background: #f8d7da;
-            border: 1px solid #f5c6cb;
-            color: #721c24;
+            background: rgba(244, 67, 54, 0.15);
+            color: #c62828;
+            border-color: #f44336;
+            box-shadow: 0 0 15px rgba(244, 67, 54, 0.3);
         }
         .info {
-            background: #d1ecf1;
-            border: 1px solid #bee5eb;
-            color: #0c5460;
+            background: rgba(255, 193, 7, 0.15);
+            color: #f57c00;
+            border-color: #ffc107;
+            box-shadow: 0 0 15px rgba(255, 193, 7, 0.3);
+        }
+        .warning {
+            background: rgba(255, 152, 0, 0.15);
+            color: #ef6c00;
+            border-color: #ff9800;
+            box-shadow: 0 0 15px rgba(255, 152, 0, 0.3);
         }
         .back-link {
             display: inline-block;
@@ -188,20 +202,28 @@
         document.getElementById('magicLinkForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData.entries());
-            
-            // 空の値を削除
-            Object.keys(data).forEach(key => {
-                if (data[key] === '') {
-                    delete data[key];
-                }
-            });
-            
+            const submitButton = this.querySelector('button[type="submit"]');
             const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = '<div class="info">送信中...</div>';
+            
+            // ボタンを無効化して送信中表示
+            submitButton.disabled = true;
+            submitButton.textContent = '⏳ 送信中...';
+            
+            // 送信中メッセージを表示
+            resultDiv.innerHTML = '<div class="info">⏳ 送信中...</div>';
             
             try {
+                const formData = new FormData(this);
+                const data = Object.fromEntries(formData.entries());
+                
+                // 空の値を削除
+                Object.keys(data).forEach(key => {
+                    if (data[key] === '') {
+                        delete data[key];
+                    }
+                });
+                
+                // コンソールログ（管理者向け詳細情報）
                 console.log('送信データ:', data);
                 console.log('API URL:', `${API_BASE_URL}/api/send-magic-link`);
                 
@@ -213,39 +235,42 @@
                     body: JSON.stringify(data)
                 });
                 
-                const result = await response.json();
+                console.log('送信結果:', response.status, response.statusText);
                 
-                console.log('送信結果:', result);
-                
-                if (result.success) {
-                    resultDiv.innerHTML = `
-                        <div class="success">
-                            <h3>✅ マジックリンクが生成されました</h3>
-                            <p><strong>メールアドレス:</strong> ${result.email}</p>
-                            <p><strong>ニックネーム:</strong> ${result.nickname}</p>
-                            <p><strong>有効期限:</strong> ${new Date(result.expires_at).toLocaleString('ja-JP')}</p>
-                            <p><strong>メール送信:</strong> ${result.email_sent ? '✅ 成功' : '❌ 失敗'}</p>
-                            ${result.email_error ? `<p><strong>エラー:</strong> ${result.email_error}</p>` : ''}
-                            <p><strong>マジックリンクURL:</strong></p>
-                            <a href="${result.magic_link_url}" target="_blank" style="word-break: break-all; color: #007acc;">${result.magic_link_url}</a>
-                        </div>
-                    `;
-                } else {
-                    resultDiv.innerHTML = `
-                        <div class="error">
-                            <h3>❌ エラーが発生しました</h3>
-                            <p>${result.message || '不明なエラーが発生しました'}</p>
-                        </div>
-                    `;
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('API送信エラー:', errorData);
+                    
+                    // 具体的なエラーメッセージを表示
+                    let errorMessage = errorData.error || '送信に失敗しました。もう一度お試しください';
+                    if (response.status === 409 && errorData.error === "このメールアドレスは既に登録されています") {
+                        errorMessage = 'このメールアドレスは既に登録されています';
+                    }
+                    
+                    throw new Error(errorMessage);
                 }
+                
+                const result = await response.json();
+                console.log('マジックリンク送信完了:', result);
+                
+                // 成功メッセージを表示
+                resultDiv.innerHTML = '<div class="success">✅ メールを送信しました。受信ボックスをご確認ください</div>';
+                
             } catch (error) {
                 console.error('送信エラー:', error);
-                resultDiv.innerHTML = `
-                    <div class="error">
-                        <h3>❌ 送信エラー</h3>
-                        <p>${error.message}</p>
-                    </div>
-                `;
+                
+                // エラーメッセージを表示
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    // 通信エラーの場合
+                    resultDiv.innerHTML = `<div class="warning">⚠️ 通信エラー: ${error.message}</div>`;
+                } else {
+                    // APIエラーの場合
+                    resultDiv.innerHTML = `<div class="error">❌ ${error.message}</div>`;
+                }
+            } finally {
+                // ボタンを有効化
+                submitButton.disabled = false;
+                submitButton.textContent = 'マジックリンクを送信';
             }
         });
 
