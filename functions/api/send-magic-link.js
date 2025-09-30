@@ -1,5 +1,3 @@
-import { sendMail } from "../lib/gmail.js";
-
 export async function onRequestPost(context) {
   const { request, env } = context;
 
@@ -28,18 +26,60 @@ export async function onRequestPost(context) {
     const origin = new URL(request.url).origin;
     const magicLink = `${origin}/api/verify-magic-link?token=${token}`;
 
-    // メール本文
-    const subject = "【守護神占い】マジックリンクでログインしてください";
-    const body = `${nickname} 様\n\n以下のリンクをクリックしてログインを完了してください:\n${magicLink}\n\nこのリンクは一度だけ有効です。`;
+    // メール本文のHTML
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2>【守護神占い】ログインリンク</h2>
+        <p>${nickname} 様</p>
+        <p>以下のリンクをクリックしてログインを完了してください：</p>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${magicLink}" style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
+            ログインリンクをクリック
+          </a>
+        </div>
+        <p style="color: #666; font-size: 14px;">
+          このリンクは一度だけ有効です。<br>
+          もしボタンがクリックできない場合は、以下のURLをコピーしてブラウザに貼り付けてください：<br>
+          <a href="${magicLink}">${magicLink}</a>
+        </p>
+      </div>
+    `;
 
-    // Gmail APIで送信
-    await sendMail(env, email, subject, body);
+    // Resend APIでメール送信
+    const resendResponse = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "noreply@syugo-sin.com",
+        to: email,
+        subject: "ログイン用マジックリンク",
+        html: htmlContent,
+      }),
+    });
+
+    if (!resendResponse.ok) {
+      const errorText = await resendResponse.text();
+      throw new Error(`Resend API error: ${resendResponse.status} ${errorText}`);
+    }
+
+    const resendData = await resendResponse.json();
+    console.log("Email sent successfully via Resend:", resendData);
 
     return new Response(
-      JSON.stringify({ status: "ok", email, nickname, magicLink }),
+      JSON.stringify({ 
+        status: "ok", 
+        email, 
+        nickname, 
+        magicLink,
+        messageId: resendData.id 
+      }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
   } catch (err) {
+    console.error("Send magic link error:", err);
     return new Response(JSON.stringify({ error: String(err?.message || err) }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
