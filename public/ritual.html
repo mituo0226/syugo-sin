@@ -877,7 +877,7 @@
           localStorage.setItem('userData', JSON.stringify(userData));
           
           // 成功メッセージを表示
-          alert(`会員登録用のマジックリンクを送信しました！\n\nメールアドレス: ${email}\n有効期限: ${new Date(data.expiresAt).toLocaleString('ja-JP')}\n\nメールをご確認いただき、リンクをクリックして登録を完了してください。`);
+          alert(`あなたのメールアドレスに登録完了画面が表示されます\nすぐに確認してください`);
           
           // マジックリンクを新しいタブで開く（テスト用）
           if (confirm('マジックリンクを新しいタブで開きますか？（テスト用）')) {
