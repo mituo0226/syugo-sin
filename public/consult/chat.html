@@ -530,7 +530,7 @@
       const hostname = window.location.hostname;
       if (hostname === 'localhost' || hostname === '127.0.0.1') {
         return 'http://127.0.0.1:8787/api/consult';
-      } else if (hostname.includes('syugo-sin.com') || hostname.includes('workers.dev')) {
+      } else if (hostname.includes('syugo-sin.com') || hostname.includes('pages.dev')) {
         return '/api/consult';
       } else {
         // フォールバック
