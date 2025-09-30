@@ -13,7 +13,7 @@ export async function onRequestPost(context) {
       });
     }
 
-    const { email, nickname } = payload || {};
+    const { email, nickname, userData } = payload || {};
     if (!email) {
       return new Response(JSON.stringify({ error: "email is required" }), {
         status: 400,
@@ -50,15 +50,44 @@ export async function onRequestPost(context) {
     const origin = new URL(request.url).origin;
     const magicLink = `${origin}/api/verify-magic-link?token=${token}`;
 
-    // magic_linksテーブルに保存
+    // magic_linksテーブルに保存（ローカルストレージ情報も含めて）
     try {
+      // magic_linksテーブルのスキーマを拡張
       await env.DB.prepare(`
-        INSERT INTO magic_links (token, email, nickname, expires_at)
-        VALUES (?, ?, ?, ?)
+        CREATE TABLE IF NOT EXISTS magic_links (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          token TEXT UNIQUE NOT NULL,
+          email TEXT NOT NULL,
+          nickname TEXT,
+          birth_year TEXT,
+          birth_month TEXT,
+          birth_day TEXT,
+          guardian_key TEXT,
+          guardian_name TEXT,
+          worry_type TEXT,
+          registration_info TEXT,
+          expires_at TEXT NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          used BOOLEAN DEFAULT FALSE
+        )
+      `).run();
+      
+      await env.DB.prepare(`
+        INSERT INTO magic_links (
+          token, email, nickname, birth_year, birth_month, birth_day,
+          guardian_key, guardian_name, worry_type, registration_info, expires_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).bind(
         token,
         email,
         nickname || null,
+        userData?.birthYear || null,
+        userData?.birthMonth || null,
+        userData?.birthDay || null,
+        userData?.guardianKey || null,
+        userData?.guardian?.name || null,
+        userData?.worry || null,
+        JSON.stringify(userData || {}),
         expiresAt.toISOString()
       ).run();
       

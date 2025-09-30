@@ -232,6 +232,70 @@
       }
     }
     
+    /* 登録情報確認 */
+    .registration-info {
+      background: rgba(13, 13, 26, 0.9);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 25px;
+      border: 2px solid rgba(102, 204, 255, 0.4);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(102, 204, 255, 0.2);
+      margin-bottom: 30px;
+      max-width: 95%;
+      opacity: 0;
+      transition: all 1s ease;
+      transform: translateY(30px);
+    }
+    
+    .registration-info.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .user-info-display {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      text-align: left;
+    }
+    
+    .user-info-display .info-item {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(102, 204, 255, 0.3);
+    }
+    
+    .user-info-display .info-label {
+      font-size: 0.9em;
+      color: #66ccff;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    
+    .user-info-display .info-value {
+      font-size: 1.0em;
+      color: #fff;
+      word-break: break-all;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    /* モバイル向け調整 */
+    @media (max-width: 768px) {
+      .user-info-display {
+        grid-template-columns: 1fr;
+      }
+      
+      .registration-info {
+        max-width: 98%;
+        padding: 20px;
+      }
+    }
+    
     /* 次へ進むボタン */
     .next-button {
       opacity: 0;
@@ -338,6 +402,12 @@
       <!-- 龍の言葉 -->
       <div id="dragonMessage"></div>
 
+      <!-- 登録情報確認 -->
+      <div id="registrationInfo" class="registration-info hidden">
+        <h3 style="color: #66ccff; margin-bottom: 20px; font-size: 1.2em;">登録情報の確認</h3>
+        <div id="userInfoDisplay" class="user-info-display"></div>
+      </div>
+
       <!-- 次へ進むボタン -->
       <div id="nextButton" class="next-button">
         <button class="action-button" id="proceedButton">次へ進む</button>
@@ -426,13 +496,67 @@
         if (j > message.length) {
           clearInterval(interval);
           
-          // メッセージ完了後、次へ進むボタンを表示
+          // メッセージ完了後、登録情報と次へ進むボタンを表示
           setTimeout(() => {
+            showRegistrationInfo();
             const nextButton = document.getElementById('nextButton');
             nextButton.classList.add('show');
           }, 1000);
         }
       }, 50);
+    }
+
+    // 登録情報表示関数
+    function showRegistrationInfo() {
+      try {
+        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        const registrationInfo = userData.registrationInfo || {};
+        
+        const infoDisplay = document.getElementById('userInfoDisplay');
+        const registrationInfoDiv = document.getElementById('registrationInfo');
+        
+        if (!userData || Object.keys(userData).length === 0) {
+          console.log('ローカルストレージにuserDataが見つかりません');
+          return;
+        }
+        
+        // 登録情報を表示
+        const infoHTML = `
+          <div class="info-item">
+            <div class="info-label">メールアドレス</div>
+            <div class="info-value">${registrationInfo.email || userData.email || '未設定'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">ニックネーム</div>
+            <div class="info-value">${registrationInfo.nickname || userData.nickname || '未設定'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">生年月日</div>
+            <div class="info-value">${userData.birthYear || '未設定'}年${userData.birthMonth || ''}月${userData.birthDay || ''}日</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">守護神</div>
+            <div class="info-value">${userData.guardian?.name || '未設定'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">相談内容</div>
+            <div class="info-value">${userData.worry || '未設定'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">登録日時</div>
+            <div class="info-value">${registrationInfo.registeredAt ? new Date(registrationInfo.registeredAt).toLocaleString('ja-JP') : new Date().toLocaleString('ja-JP')}</div>
+          </div>
+        `;
+        
+        infoDisplay.innerHTML = infoHTML;
+        registrationInfoDiv.classList.remove('hidden');
+        registrationInfoDiv.classList.add('show');
+        
+        console.log('登録情報を表示:', userData);
+        
+      } catch (error) {
+        console.error('登録情報表示エラー:', error);
+      }
     }
 
     // 次へ進むボタンのクリックイベント

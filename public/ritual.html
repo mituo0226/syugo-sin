@@ -829,19 +829,75 @@
         return;
       }
       
-      const testMode = isTestMode();
-      console.log('フォーム送信:', { email, nickname, testMode });
+      console.log('フォーム送信:', { email, nickname });
       
-      if (testMode) {
-        // テストモード: 強制的に完了画面を表示
-        console.log('テストモード: Square APIを呼ばずに完了画面を表示');
-        startRitual(nickname);
-      } else {
-        // 本番モード: Square APIを呼び出して決済処理
-        console.log('本番モード: Square APIを呼び出して決済処理を開始');
-        startPaymentProcess(email, nickname);
-      }
+      // マジックリンクシステムで会員登録を開始
+      startMagicLinkRegistration(email, nickname);
     });
+    
+    // マジックリンクシステムで会員登録
+    async function startMagicLinkRegistration(email, nickname) {
+      try {
+        console.log('マジックリンク会員登録開始:', { email, nickname });
+        
+        // フォームを無効化
+        const form = document.getElementById('ritualForm');
+        const submitButton = document.querySelector('#ritualForm button[type="submit"]');
+        submitButton.disabled = true;
+        submitButton.textContent = '送信中...';
+        
+        // ローカルストレージからuserDataを取得
+        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        
+        // マジックリンク送信APIを呼び出し
+        const response = await fetch('/api/send-magic-link', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, nickname, userData })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          console.log('マジックリンク送信成功:', data);
+          
+          // ローカルストレージに登録情報を保存
+          const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+          userData.registrationInfo = {
+            email: email,
+            nickname: nickname,
+            magicLink: data.magicLink,
+            expiresAt: data.expiresAt,
+            messageId: data.messageId,
+            registeredAt: new Date().toISOString()
+          };
+          localStorage.setItem('userData', JSON.stringify(userData));
+          
+          // 成功メッセージを表示
+          alert(`会員登録用のマジックリンクを送信しました！\n\nメールアドレス: ${email}\n有効期限: ${new Date(data.expiresAt).toLocaleString('ja-JP')}\n\nメールをご確認いただき、リンクをクリックして登録を完了してください。`);
+          
+          // マジックリンクを新しいタブで開く（テスト用）
+          if (confirm('マジックリンクを新しいタブで開きますか？（テスト用）')) {
+            window.open(data.magicLink, '_blank');
+          }
+          
+        } else {
+          console.error('マジックリンク送信エラー:', data);
+          alert(`エラー: ${data.error || 'マジックリンクの送信に失敗しました。'}`);
+        }
+        
+      } catch (error) {
+        console.error('マジックリンク送信エラー:', error);
+        alert(`通信エラー: ${error.message}`);
+      } finally {
+        // フォームを再有効化
+        const submitButton = document.querySelector('#ritualForm button[type="submit"]');
+        submitButton.disabled = false;
+        submitButton.textContent = '会員登録';
+      }
+    }
     
     // 本番モード: Square API決済処理
     async function startPaymentProcess(email, nickname) {
