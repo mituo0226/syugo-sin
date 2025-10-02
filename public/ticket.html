@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>鑑定チケット購入 - 守護神占い</title>
+  <meta name="description" content="初回100円で5分体験。守護神や龍とつながる鑑定チケットを購入できます。">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="ticket.css">
+</head>
+<body>
+  <!-- 神秘的な背景 -->
+  <div class="mystical-bg"></div>
+  
+  <!-- 浮遊する粒子 -->
+  <div class="floating-particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <div class="container">
+    <div class="main-content" id="mainContent">
+      <!-- タイトル -->
+      <h1 class="title">鑑定チケット購入</h1>
+      
+      <!-- 初回限定チケット -->
+      <div class="first-time-ticket">
+        <div class="ticket-badge">初回限定</div>
+        <div class="ticket-card featured">
+          <div class="ticket-header">
+            <h2 class="ticket-title">体験チケット</h2>
+            <div class="ticket-price">
+              <span class="price-amount">100円</span>
+              <span class="price-period">5分間</span>
+            </div>
+          </div>
+          <div class="ticket-description">
+            <p>まずは体験から。100円で5分間、守護神や龍とつながれます</p>
+            <p class="highlight">神秘的な鑑定体験を気軽にお試しください</p>
+          </div>
+          <button class="purchase-button featured" onclick="purchaseTicket('first-time', 100, 5)">
+            購入する
+          </button>
+        </div>
+      </div>
+      
+      <!-- 通常チケット -->
+      <div class="regular-tickets">
+        <h2 class="section-title">追加チケット</h2>
+        <div class="tickets-grid">
+          <!-- 5分チケット -->
+          <div class="ticket-card">
+            <div class="ticket-header">
+              <h3 class="ticket-title">スタンダード</h3>
+              <div class="ticket-price">
+                <span class="price-amount">500円</span>
+                <span class="price-period">5分間</span>
+              </div>
+            </div>
+            <div class="ticket-description">
+              <p>基本的な鑑定時間</p>
+              <p>短時間で効率的に相談できます</p>
+            </div>
+            <button class="purchase-button" onclick="purchaseTicket('standard', 500, 5)">
+              購入する
+            </button>
+          </div>
+          
+          <!-- 10分チケット -->
+          <div class="ticket-card">
+            <div class="ticket-header">
+              <h3 class="ticket-title">プラス</h3>
+              <div class="ticket-price">
+                <span class="price-amount">700円</span>
+                <span class="price-period">10分間</span>
+              </div>
+            </div>
+            <div class="ticket-description">
+              <p>じっくり相談できる時間</p>
+              <p>より詳しい鑑定が可能です</p>
+            </div>
+            <button class="purchase-button" onclick="purchaseTicket('plus', 700, 10)">
+              購入する
+            </button>
+          </div>
+          
+          <!-- 30分チケット -->
+          <div class="ticket-card popular">
+            <div class="popular-badge">お得</div>
+            <div class="ticket-header">
+              <h3 class="ticket-title">プレミアム</h3>
+              <div class="ticket-price">
+                <span class="price-amount">2,000円</span>
+                <span class="price-period">30分間</span>
+              </div>
+            </div>
+            <div class="ticket-description">
+              <p>たっぷり相談できる時間</p>
+              <p class="highlight">1分あたり約67円！時間が長いほどお得</p>
+            </div>
+            <button class="purchase-button" onclick="purchaseTicket('premium', 2000, 30)">
+              購入する
+            </button>
+          </div>
+          
+          <!-- 60分チケット -->
+          <div class="ticket-card best-value">
+            <div class="best-value-badge">最お得</div>
+            <div class="ticket-header">
+              <h3 class="ticket-title">デラックス</h3>
+              <div class="ticket-price">
+                <span class="price-amount">3,000円</span>
+                <span class="price-period">60分間</span>
+              </div>
+            </div>
+            <div class="ticket-description">
+              <p>たっぷり時間をかけて相談</p>
+              <p class="highlight">1分あたり50円！最もお得なプラン</p>
+            </div>
+            <button class="purchase-button" onclick="purchaseTicket('deluxe', 3000, 60)">
+              購入する
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 注意事項 -->
+      <div class="notice">
+        <h3>ご利用上の注意</h3>
+        <ul>
+          <li>チケットは購入後、即座にご利用いただけます</li>
+          <li>未使用分のチケット時間は保存され、次回ご利用時に引き継がれます</li>
+          <li>決済は安全なSquare決済システムを使用しています</li>
+        </ul>
+      </div>
+      
+      <!-- 戻るボタン -->
+      <div class="back-section">
+        <a href="./index.html" class="back-button">トップページに戻る</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="ticket.js"></script>
+</body>
+</html>

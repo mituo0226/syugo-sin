@@ -404,8 +404,22 @@
             localStorage.setItem('expireAt', data.expireAt);
             console.log('有効期限を保存:', data.expireAt);
             
-            // 画面表示を更新
-            updateDisplay('AI鑑定師 龍 - 鑑定チケット', 3);
+            // 画面表示を更新（購入したチケットの時間を取得）
+            const selectedTicket = localStorage.getItem('selectedTicket');
+            let ticketMinutes = 5; // デフォルト値
+            let ticketName = 'AI鑑定師 龍 - 鑑定チケット';
+            
+            if (selectedTicket) {
+              try {
+                const ticketData = JSON.parse(selectedTicket);
+                ticketMinutes = ticketData.minutes;
+                ticketName = ticketData.name;
+              } catch (error) {
+                console.error('チケットデータの解析エラー:', error);
+              }
+            }
+            
+            updateDisplay(ticketName, ticketMinutes);
             
             // チャット開始ボタンのリンクを生成
             generateChatLinkFromUID(uid);

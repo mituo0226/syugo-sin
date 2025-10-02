@@ -1,0 +1,525 @@
+/* 基本スタイル */
+body {
+  margin: 0;
+  background: #0d0d1a;
+  font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+  color: #fff;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  position: relative;
+  min-height: 100vh;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 神秘的な背景効果 */
+.mystical-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(102, 204, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(199, 125, 255, 0.05) 0%, transparent 50%);
+  z-index: -1;
+  animation: bgPulse 8s ease-in-out infinite;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+@keyframes bgPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+/* 浮遊する粒子 */
+.floating-particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: -1;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #66ccff;
+  border-radius: 50%;
+  animation: float 6s linear infinite;
+}
+
+.particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+.particle:nth-child(2) { left: 20%; animation-delay: 1s; }
+.particle:nth-child(3) { left: 30%; animation-delay: 2s; }
+.particle:nth-child(4) { left: 40%; animation-delay: 3s; }
+.particle:nth-child(5) { left: 50%; animation-delay: 4s; }
+.particle:nth-child(6) { left: 60%; animation-delay: 5s; }
+.particle:nth-child(7) { left: 70%; animation-delay: 0s; }
+.particle:nth-child(8) { left: 80%; animation-delay: 1s; }
+.particle:nth-child(9) { left: 90%; animation-delay: 2s; }
+
+@keyframes float {
+  0% {
+    top: 100%;
+    opacity: 0;
+    transform: translateY(0) scale(0);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(-10px) scale(1);
+  }
+  90% {
+    opacity: 1;
+    transform: translateY(-90vh) scale(1);
+  }
+  100% {
+    top: 0;
+    opacity: 0;
+    transform: translateY(-100vh) scale(0);
+  }
+}
+
+/* メインコンテナ */
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  padding: 20px;
+  position: relative;
+  z-index: 1;
+  overflow-x: hidden;
+}
+
+.main-content {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 2s ease;
+  width: 100%;
+  max-width: 1200px;
+  min-height: auto;
+}
+
+.main-content.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* タイトル */
+.title {
+  font-size: 2.5em;
+  color: #66ccff;
+  text-shadow: 0 0 20px rgba(102, 204, 255, 0.5);
+  margin-bottom: 40px;
+  animation: titleGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes titleGlow {
+  0% { text-shadow: 0 0 20px rgba(102, 204, 255, 0.5); }
+  100% { text-shadow: 0 0 30px rgba(102, 204, 255, 0.8); }
+}
+
+/* 初回限定チケット */
+.first-time-ticket {
+  margin-bottom: 50px;
+  position: relative;
+}
+
+.ticket-badge {
+  display: inline-block;
+  background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+  color: #fff;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.9em;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+  animation: badgePulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes badgePulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.05); }
+}
+
+.first-time-ticket .ticket-card {
+  max-width: 600px;
+  margin: 0 auto;
+  border: 3px solid rgba(255, 107, 107, 0.6);
+  box-shadow: 0 0 30px rgba(255, 107, 107, 0.3);
+  animation: featuredGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes featuredGlow {
+  0% {
+    border-color: rgba(255, 107, 107, 0.6);
+    box-shadow: 0 0 30px rgba(255, 107, 107, 0.3);
+  }
+  100% {
+    border-color: rgba(255, 107, 107, 0.9);
+    box-shadow: 0 0 40px rgba(255, 107, 107, 0.5);
+  }
+}
+
+/* 通常チケットセクション */
+.regular-tickets {
+  margin-bottom: 40px;
+}
+
+.section-title {
+  font-size: 1.8em;
+  color: #66ccff;
+  margin-bottom: 30px;
+  text-shadow: 0 0 10px rgba(102, 204, 255, 0.5);
+}
+
+.tickets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* チケットカード */
+.ticket-card {
+  background: rgba(13, 13, 26, 0.9);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 30px 25px;
+  border: 2px solid rgba(102, 204, 255, 0.4);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(102, 204, 255, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.ticket-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(102, 204, 255, 0.8);
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(102, 204, 255, 0.4);
+}
+
+.ticket-card.popular {
+  border-color: rgba(157, 78, 221, 0.6);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(157, 78, 221, 0.3);
+}
+
+.ticket-card.best-value {
+  border-color: rgba(255, 215, 0, 0.6);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.ticket-card.featured {
+  border-color: rgba(255, 107, 107, 0.6);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 107, 107, 0.3);
+}
+
+/* バッジ */
+.popular-badge, .best-value-badge {
+  position: absolute;
+  top: -10px;
+  right: 20px;
+  background: linear-gradient(45deg, #9d4edd, #7b2cbf);
+  color: #fff;
+  padding: 6px 15px;
+  border-radius: 15px;
+  font-size: 0.8em;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
+}
+
+.best-value-badge {
+  background: linear-gradient(45deg, #ffd700, #ffed4e);
+  color: #000;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+}
+
+/* チケットヘッダー */
+.ticket-header {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.ticket-title {
+  font-size: 1.5em;
+  color: #66ccff;
+  margin: 0 0 15px 0;
+  text-shadow: 0 0 10px rgba(102, 204, 255, 0.5);
+}
+
+.ticket-price {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.price-amount {
+  font-size: 2.2em;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+}
+
+.price-period {
+  font-size: 1.1em;
+  color: #ccc;
+  opacity: 0.9;
+}
+
+/* チケット説明 */
+.ticket-description {
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.ticket-description p {
+  margin: 8px 0;
+  color: #ccc;
+  line-height: 1.6;
+}
+
+.ticket-description .highlight {
+  color: #ffd700;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+/* 購入ボタン */
+.purchase-button {
+  width: 100%;
+  padding: 15px 25px;
+  font-size: 1.2em;
+  background: linear-gradient(90deg, #66ccff, #3399ff);
+  border: none;
+  border-radius: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #000;
+  box-shadow: 0 6px 20px rgba(102, 204, 255, 0.4);
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.purchase-button:hover {
+  background: linear-gradient(90deg, #99e0ff, #66ccff);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 204, 255, 0.5);
+}
+
+.purchase-button:active {
+  transform: translateY(0);
+}
+
+.purchase-button.featured {
+  background: linear-gradient(90deg, #ff6b6b, #ee5a52);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+  color: #fff;
+}
+
+.purchase-button.featured:hover {
+  background: linear-gradient(90deg, #ff8e8e, #ff6b6b);
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.5);
+}
+
+/* 注意事項 */
+.notice {
+  background: rgba(13, 13, 26, 0.9);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 25px;
+  border: 2px solid rgba(102, 204, 255, 0.3);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.notice h3 {
+  color: #66ccff;
+  margin: 0 0 15px 0;
+  text-align: center;
+  font-size: 1.3em;
+}
+
+.notice ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.notice li {
+  color: #ccc;
+  margin: 10px 0;
+  padding-left: 20px;
+  position: relative;
+  line-height: 1.6;
+}
+
+.notice li:before {
+  content: "•";
+  color: #66ccff;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+/* 戻るボタン */
+.back-section {
+  margin-top: 30px;
+}
+
+.back-button {
+  display: inline-block;
+  padding: 15px 30px;
+  font-size: 1.1em;
+  background: linear-gradient(90deg, #9d4edd, #7b2cbf);
+  border: none;
+  border-radius: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 6px 20px rgba(157, 78, 221, 0.4);
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  background: linear-gradient(90deg, #b565f0, #9d4edd);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(157, 78, 221, 0.5);
+}
+
+/* モバイル向け調整 */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+  
+  .title {
+    font-size: 2.0em;
+    margin-bottom: 30px;
+  }
+  
+  .tickets-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .ticket-card {
+    padding: 25px 20px;
+  }
+  
+  .ticket-title {
+    font-size: 1.3em;
+  }
+  
+  .price-amount {
+    font-size: 1.8em;
+  }
+  
+  .purchase-button {
+    font-size: 1.1em;
+    padding: 12px 20px;
+  }
+  
+  .section-title {
+    font-size: 1.5em;
+  }
+  
+  .notice {
+    padding: 20px;
+  }
+  
+  .first-time-ticket .ticket-card {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 10px;
+  }
+  
+  .title {
+    font-size: 1.8em;
+  }
+  
+  .ticket-card {
+    padding: 20px 15px;
+  }
+  
+  .price-amount {
+    font-size: 1.6em;
+  }
+  
+  .purchase-button {
+    font-size: 1.0em;
+    padding: 10px 15px;
+  }
+  
+  .ticket-badge {
+    font-size: 0.8em;
+    padding: 6px 15px;
+  }
+  
+  .popular-badge, .best-value-badge {
+    font-size: 0.7em;
+    padding: 4px 10px;
+    right: 15px;
+  }
+}
+
+/* iPhone X以降のノッチ対応 */
+@supports (padding: max(0px)) {
+  .container {
+    padding-top: max(20px, env(safe-area-inset-top));
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
+}
+
+/* ローディング表示 */
+.loading {
+  display: none;
+  color: #66ccff;
+  margin-top: 20px;
+  font-size: 1.1em;
+}
+
+.loading.show {
+  display: block;
+}
+
+/* エラー表示 */
+.error {
+  display: none;
+  color: #ff6b6b;
+  margin-top: 20px;
+  font-size: 1.1em;
+  background: rgba(255, 107, 107, 0.1);
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  text-align: center;
+}
+
+.error.show {
+  display: block;
+}

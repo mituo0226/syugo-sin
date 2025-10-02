@@ -26,7 +26,7 @@ export async function onRequestPost(context) {
       return createErrorResponse("Invalid JSON format", 400, corsHeaders);
     }
     
-    const { uid } = requestBody;
+    const { uid, ticketType, price, minutes } = requestBody;
     
     if (!uid) {
       return createErrorResponse("UID is required", 400, corsHeaders);
@@ -39,10 +39,10 @@ export async function onRequestPost(context) {
         location_id: env.SQUARE_LOCATION_ID,
         line_items: [
           {
-            name: "AI鑑定師 龍 - 鑑定チケット",
+            name: ticketType ? `AI鑑定師 龍 - ${ticketType}チケット` : "AI鑑定師 龍 - 鑑定チケット",
             quantity: "1",
             base_price_money: {
-              amount: 10, // 10円（テスト用）
+              amount: price || 10, // 指定された価格、デフォルト10円（テスト用）
               currency: "JPY"
             }
           }
@@ -52,7 +52,7 @@ export async function onRequestPost(context) {
       merchant_support_email: "support@example.com",
       pre_populate_buyer_email: "test@example.com",
       redirect_url: `${new URL(request.url).origin}/confirm.html?uid=${uid}`,
-      note: `Test payment for UID: ${uid}`
+      note: `Ticket purchase for UID: ${uid}, Type: ${ticketType || 'default'}, Price: ${price || 10}円, Minutes: ${minutes || 5}`
     };
 
     console.log('Square API request data:', JSON.stringify(checkoutData, null, 2));
