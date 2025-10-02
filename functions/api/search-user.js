@@ -10,8 +10,10 @@ export async function onRequestPost(context) {
     let payload;
     try {
       payload = await request.json();
+      console.log("Search user request payload:", payload);
     } catch (jsonError) {
       console.error("JSON parse error:", jsonError);
+      console.error("Request body:", await request.text());
       return createErrorResponse("Invalid JSON body", 400, corsHeaders);
     }
 

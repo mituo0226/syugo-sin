@@ -341,6 +341,9 @@
         <button type="submit" class="search-button" id="searchButton">
           ユーザーを検索
         </button>
+        <button type="button" onclick="debugDatabase()" class="search-button" style="margin-left: 10px; background: linear-gradient(90deg, #6c757d, #495057);">
+          🔧 DB状態確認
+        </button>
       </form>
     </div>
     
@@ -630,6 +633,52 @@
         addLog('退会エラー: ' + error.message, 'error');
         const messageArea = document.getElementById('messageArea');
         messageArea.innerHTML = `<div class="error-message">退会処理に失敗しました: ${error.message}</div>`;
+      }
+    }
+    
+    // データベースデバッグ機能
+    async function debugDatabase() {
+      try {
+        addLog('データベース状態確認中...');
+        
+        const response = await fetch('/api/debug-db', {
+          method: 'POST',
+          mode: 'cors',
+          credentials: 'omit',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({})
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`デバッグエラー: ${response.status} - ${errorData.error || 'Unknown error'}`);
+        }
+        
+        const result = await response.json();
+        addLog('データベース状態確認完了', 'success');
+        
+        // デバッグ情報を表示
+        const messageArea = document.getElementById('messageArea');
+        messageArea.innerHTML = `
+          <div class="success-message">
+            <h4>データベース状態</h4>
+            <p><strong>データベースバインド:</strong> ${result.database_bound ? 'OK' : 'NG'}</p>
+            <p><strong>テーブル数:</strong> ${result.tables.length}個</p>
+            <p><strong>ユーザー数:</strong> ${result.user_count}件</p>
+            <p><strong>テストユーザー:</strong> ${result.test_user ? '存在' : '不存在'}</p>
+            <details style="margin-top: 10px;">
+              <summary>詳細情報</summary>
+              <pre style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; overflow-x: auto; font-size: 12px;">${JSON.stringify(result, null, 2)}</pre>
+            </details>
+          </div>
+        `;
+        
+      } catch (error) {
+        addLog('デバッグエラー: ' + error.message, 'error');
+        const messageArea = document.getElementById('messageArea');
+        messageArea.innerHTML = `<div class="error-message">デバッグ処理に失敗しました: ${error.message}</div>`;
       }
     }
     
