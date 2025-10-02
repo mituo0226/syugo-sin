@@ -237,6 +237,31 @@
       border: 1px solid rgba(255, 107, 107, 0.3);
     }
     
+    /* 自動遷移通知 */
+    .auto-redirect-notice {
+      background: rgba(102, 204, 255, 0.1);
+      border: 1px solid rgba(102, 204, 255, 0.3);
+      color: #66ccff;
+      padding: 12px;
+      border-radius: 8px;
+      margin: 15px 0;
+      text-align: center;
+      font-size: 14px;
+      animation: pulse 2s infinite;
+    }
+    
+    .countdown {
+      font-weight: bold;
+      font-size: 16px;
+      color: #ffd700;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 1; }
+    }
+    
     .error.show {
       display: block;
     }
@@ -313,6 +338,9 @@
       <div>
         <a href="#" class="action-button" id="startButton">鑑定を開始する</a>
         <a href="./index.html" class="action-button secondary">トップページに戻る</a>
+        <p class="auto-redirect-notice" id="autoRedirectNotice" style="display: none;">
+          <span class="countdown" id="countdown">5</span>秒後に自動的に鑑定画面に移動します
+        </p>
       </div>
       
       <!-- ローディング表示 -->
@@ -426,6 +454,9 @@
             
             // 成功メッセージを表示
             showSuccess();
+            
+            // 自動遷移のカウントダウンを開始
+            startAutoRedirect();
           } else {
             showError('決済の検証に失敗しました。');
           }
@@ -456,32 +487,116 @@
     function generateChatLinkFromUID(uid) {
       const startButton = document.getElementById('startButton');
       
+      console.log('チャットリンク生成開始');
+      console.log('UID:', uid);
+      
       // 既存のユーザーデータを取得
       const existingData = localStorage.getItem('userData');
+      console.log('既存のユーザーデータ:', existingData);
+      
       if (existingData) {
         try {
           const userData = JSON.parse(existingData);
-          // URLパラメータを生成
-          const params = new URLSearchParams({
-            nickname: userData.name || '',
-            year: userData.birthday ? new Date(userData.birthday).getFullYear() : '',
-            month: userData.birthday ? new Date(userData.birthday).getMonth() + 1 : '',
-            day: userData.birthday ? new Date(userData.birthday).getDate() : '',
-            guardian: userData.guardian || '',
-            worry: userData.question || ''
-          });
+          console.log('解析されたユーザーデータ:', userData);
+          
+          // ユーザーデータの構造に応じてパラメータを生成
+          let params = new URLSearchParams();
+          
+          // ニックネーム
+          if (userData.nickname) {
+            params.set('nickname', userData.nickname);
+          } else if (userData.name) {
+            params.set('nickname', userData.name);
+          }
+          
+          // 生年月日
+          if (userData.birthday) {
+            const birthday = new Date(userData.birthday);
+            params.set('year', birthday.getFullYear().toString());
+            params.set('month', (birthday.getMonth() + 1).toString());
+            params.set('day', birthday.getDate().toString());
+          } else if (userData.year && userData.month && userData.day) {
+            params.set('year', userData.year.toString());
+            params.set('month', userData.month.toString());
+            params.set('day', userData.day.toString());
+          } else if (userData.birthYear && userData.birthMonth && userData.birthDay) {
+            params.set('year', userData.birthYear.toString());
+            params.set('month', userData.birthMonth.toString());
+            params.set('day', userData.birthDay.toString());
+          }
+          
+          // 守護神
+          if (userData.guardian) {
+            if (typeof userData.guardian === 'object' && userData.guardian.key) {
+              params.set('guardian', userData.guardian.key);
+            } else if (typeof userData.guardian === 'string') {
+              params.set('guardian', userData.guardian);
+            }
+          } else if (userData.guardianKey) {
+            params.set('guardian', userData.guardianKey);
+          }
+          
+          // 悩み
+          if (userData.worry) {
+            params.set('worry', userData.worry);
+          } else if (userData.question) {
+            params.set('worry', userData.question);
+          }
           
           const chatUrl = `./consult/chat.html?${params.toString()}`;
           startButton.href = chatUrl;
-          console.log('チャットリンク生成:', chatUrl);
+          console.log('チャットリンク生成完了:', chatUrl);
+          
+          // ボタンのテキストを更新
+          startButton.textContent = '鑑定を開始する';
+          
         } catch (error) {
           console.error('ユーザーデータの解析エラー:', error);
           startButton.href = './consult/chat.html';
+          startButton.textContent = '鑑定を開始する';
         }
       } else {
+        // ユーザーデータがない場合は、デフォルトでチャットページに遷移
         startButton.href = './consult/chat.html';
-        console.log('ユーザーデータが見つからないため、通常のリンクを使用');
+        startButton.textContent = '鑑定を開始する';
+        console.log('ユーザーデータが見つからないため、通常のチャットリンクを使用');
       }
+    }
+    
+    // 自動遷移のカウントダウン機能
+    function startAutoRedirect() {
+      const autoRedirectNotice = document.getElementById('autoRedirectNotice');
+      const countdownElement = document.getElementById('countdown');
+      const startButton = document.getElementById('startButton');
+      
+      // チャットリンクが生成されていない場合は自動遷移しない
+      if (!startButton || !startButton.href || startButton.href === '#') {
+        console.log('チャットリンクが生成されていないため、自動遷移をスキップします');
+        return;
+      }
+      
+      // 自動遷移通知を表示
+      autoRedirectNotice.style.display = 'block';
+      
+      let countdown = 5;
+      countdownElement.textContent = countdown;
+      
+      const countdownInterval = setInterval(() => {
+        countdown--;
+        countdownElement.textContent = countdown;
+        
+        if (countdown <= 0) {
+          clearInterval(countdownInterval);
+          console.log('自動的にチャットページに遷移します');
+          window.location.href = startButton.href;
+        }
+      }, 1000);
+      
+      // ボタンクリック時はカウントダウンを停止
+      startButton.addEventListener('click', () => {
+        clearInterval(countdownInterval);
+        autoRedirectNotice.style.display = 'none';
+      });
     }
     
     // ユーザー情報をlocalStorageに保存

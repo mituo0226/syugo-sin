@@ -858,9 +858,47 @@
         clearInterval(timerInterval);
       }
       
+      // 決済完了後のチケット時間を確認
+      const selectedTicket = localStorage.getItem('selectedTicket');
+      if (selectedTicket) {
+        try {
+          const ticketData = JSON.parse(selectedTicket);
+          console.log('購入したチケット情報:', ticketData);
+          
+          // チケットの時間を分から秒に変換
+          const ticketSeconds = (ticketData.minutes || 5) * 60;
+          
+          // 現在時刻からチケット時間分後の有効期限を設定
+          const expireTime = new Date().getTime() + (ticketSeconds * 1000);
+          const expireAtString = new Date(expireTime).toISOString();
+          
+          // localStorageに保存
+          localStorage.setItem('expireAt', expireAtString);
+          
+          // 残り時間を設定
+          remainingSeconds = ticketSeconds;
+          
+          console.log('チケット時間を設定:', {
+            ticketMinutes: ticketData.minutes,
+            ticketSeconds: ticketSeconds,
+            expireAt: expireAtString,
+            remainingSeconds: remainingSeconds
+          });
+          
+          // チケット購入完了メッセージを表示
+          addSystemMessage(`✨ ${ticketData.name}（${ticketData.minutes}分）を購入しました！鑑定を開始できます。`);
+          
+          // チケット情報をクリア（重複購入を防ぐ）
+          localStorage.removeItem('selectedTicket');
+          
+        } catch (error) {
+          console.error('チケット情報の解析エラー:', error);
+        }
+      }
+      
       // expireAtから残り時間を計算
       const expireAt = localStorage.getItem('expireAt');
-      if (expireAt) {
+      if (expireAt && remainingSeconds === 0) {
         const expireTime = new Date(expireAt).getTime();
         const currentTime = new Date().getTime();
         const remainingTime = Math.max(0, Math.floor((expireTime - currentTime) / 1000));
