@@ -60,6 +60,51 @@ export async function onRequestPost(context) {
       return createErrorResponse(`テストユーザー検索エラー: ${error.message}`, 500, corsHeaders);
     }
 
+    // 外部キー制約の状態を確認
+    let foreignKeysEnabled;
+    try {
+      const fkResult = await env.DB.prepare(`
+        PRAGMA foreign_keys
+      `).first();
+      foreignKeysEnabled = fkResult.foreign_keys;
+      console.log("Foreign keys enabled:", foreignKeysEnabled);
+    } catch (error) {
+      console.error("Foreign keys check error:", error);
+      foreignKeysEnabled = null;
+    }
+
+    // 他のテーブルでusersテーブルを参照している可能性をチェック
+    let foreignKeyInfo;
+    try {
+      foreignKeyInfo = await env.DB.prepare(`
+        PRAGMA foreign_key_list(users)
+      `).all();
+      console.log("Foreign key info for users table:", foreignKeyInfo);
+    } catch (error) {
+      console.error("Foreign key info error:", error);
+      foreignKeyInfo = null;
+    }
+
+    // すべてのテーブルで外部キー制約をチェック
+    let allForeignKeys = [];
+    if (tables.results) {
+      for (const table of tables.results) {
+        try {
+          const fkList = await env.DB.prepare(`
+            PRAGMA foreign_key_list(${table.name})
+          `).all();
+          if (fkList.results && fkList.results.length > 0) {
+            allForeignKeys.push({
+              table: table.name,
+              foreign_keys: fkList.results
+            });
+          }
+        } catch (error) {
+          console.error(`Foreign key check error for table ${table.name}:`, error);
+        }
+      }
+    }
+
     return createSuccessResponse({
       success: true,
       database_bound: !!env.DB,
@@ -67,6 +112,9 @@ export async function onRequestPost(context) {
       users_table_info: tableInfo.results || [],
       user_count: userCount,
       test_user: testUser,
+      foreign_keys_enabled: foreignKeysEnabled,
+      users_foreign_keys: foreignKeyInfo?.results || [],
+      all_foreign_keys: allForeignKeys,
       debug_info: {
         timestamp: new Date().toISOString(),
         environment: context.env ? Object.keys(context.env) : []

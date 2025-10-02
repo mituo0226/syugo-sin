@@ -78,14 +78,31 @@ export async function onRequestPost(context) {
     console.log("Executing delete query:", deleteQuery, "with params:", bindParams);
     
     try {
+      // 外部キー制約を一時的に無効化してから削除を実行
+      console.log("Disabling foreign key constraints temporarily...");
+      await env.DB.prepare(`PRAGMA foreign_keys = OFF`).run();
+      
       const result = await env.DB.prepare(deleteQuery).bind(...bindParams).run();
       console.log("Delete result:", result);
+      
+      // 外部キー制約を再有効化
+      await env.DB.prepare(`PRAGMA foreign_keys = ON`).run();
+      console.log("Foreign key constraints re-enabled");
       
       if (result.changes === 0) {
         return createErrorResponse("退会処理に失敗しました", 500, corsHeaders);
       }
     } catch (deleteError) {
       console.error("Database delete error:", deleteError);
+      
+      // エラーが発生した場合でも外部キー制約を再有効化
+      try {
+        await env.DB.prepare(`PRAGMA foreign_keys = ON`).run();
+        console.log("Foreign key constraints re-enabled after error");
+      } catch (fkError) {
+        console.error("Failed to re-enable foreign keys:", fkError);
+      }
+      
       return createErrorResponse(`削除処理エラー: ${deleteError.message}`, 500, corsHeaders);
     }
 

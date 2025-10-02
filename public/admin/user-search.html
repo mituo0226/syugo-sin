@@ -668,6 +668,26 @@
             <p><strong>テーブル数:</strong> ${result.tables.length}個</p>
             <p><strong>ユーザー数:</strong> ${result.user_count}件</p>
             <p><strong>テストユーザー:</strong> ${result.test_user ? '存在' : '不存在'}</p>
+            <p><strong>外部キー制約:</strong> ${result.foreign_keys_enabled ? '有効' : '無効'}</p>
+            ${result.all_foreign_keys.length > 0 ? `<p><strong>外部キー制約:</strong> ${result.all_foreign_keys.length}個のテーブルで制約あり</p>` : ''}
+            <details style="margin-top: 10px;">
+              <summary>テーブル一覧</summary>
+              <ul style="margin: 5px 0;">
+                ${result.tables.map(table => `<li>${table.name}</li>`).join('')}
+              </ul>
+            </details>
+            ${result.all_foreign_keys.length > 0 ? `
+            <details style="margin-top: 10px;">
+              <summary>外部キー制約</summary>
+              <ul style="margin: 5px 0;">
+                ${result.all_foreign_keys.map(fk => 
+                  `<li><strong>${fk.table}:</strong> ${fk.foreign_keys.map(key => 
+                    `${key.from} → ${key.table}.${key.to}`
+                  ).join(', ')}</li>`
+                ).join('')}
+              </ul>
+            </details>
+            ` : ''}
             <details style="margin-top: 10px;">
               <summary>詳細情報</summary>
               <pre style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; overflow-x: auto; font-size: 12px;">${JSON.stringify(result, null, 2)}</pre>
