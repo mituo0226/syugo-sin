@@ -28,8 +28,24 @@ export async function onRequestPost(context) {
     
     const { uid, ticketType, price, minutes } = requestBody;
     
+    console.log("Payment request body:", requestBody);
+    console.log("Environment variables check:");
+    console.log("- SQUARE_LOCATION_ID:", env.SQUARE_LOCATION_ID ? "SET" : "NOT SET");
+    console.log("- SQUARE_ACCESS_TOKEN:", env.SQUARE_ACCESS_TOKEN ? "SET" : "NOT SET");
+    
     if (!uid) {
       return createErrorResponse("UID is required", 400, corsHeaders);
+    }
+    
+    // 環境変数の確認
+    if (!env.SQUARE_LOCATION_ID) {
+      console.error("SQUARE_LOCATION_ID is not set");
+      return createErrorResponse("Square configuration error: Location ID not set", 500, corsHeaders);
+    }
+    
+    if (!env.SQUARE_ACCESS_TOKEN) {
+      console.error("SQUARE_ACCESS_TOKEN is not set");
+      return createErrorResponse("Square configuration error: Access token not set", 500, corsHeaders);
     }
 
     // Square API Checkoutを直接HTTPリクエストで呼び出し
@@ -57,29 +73,41 @@ export async function onRequestPost(context) {
 
     console.log('Square API request data:', JSON.stringify(checkoutData, null, 2));
     
-    const squareResponse = await fetch(`https://connect.squareupsandbox.com/v2/locations/${env.SQUARE_LOCATION_ID}/checkouts`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${env.SQUARE_ACCESS_TOKEN}`,
-        'Content-Type': 'application/json',
-        'Square-Version': '2024-04-17'
-      },
-      body: JSON.stringify(checkoutData)
-    });
+    try {
+      const squareResponse = await fetch(`https://connect.squareupsandbox.com/v2/locations/${env.SQUARE_LOCATION_ID}/checkouts`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${env.SQUARE_ACCESS_TOKEN}`,
+          'Content-Type': 'application/json',
+          'Square-Version': '2024-04-17'
+        },
+        body: JSON.stringify(checkoutData)
+      });
 
-    if (!squareResponse.ok) {
-      const errorText = await squareResponse.text();
-      throw new Error(`Square API error: ${squareResponse.status} - ${errorText}`);
-    }
+      console.log('Square API response status:', squareResponse.status);
+      console.log('Square API response headers:', Object.fromEntries(squareResponse.headers.entries()));
 
-    const squareData = await squareResponse.json();
-    
-    if (squareData.checkout && squareData.checkout.checkout_page_url) {
-      return createSuccessResponse({ 
-        checkoutUrl: squareData.checkout.checkout_page_url 
-      }, corsHeaders);
-    } else {
-      throw new Error("Failed to create checkout - invalid response");
+      if (!squareResponse.ok) {
+        const errorText = await squareResponse.text();
+        console.error('Square API error response:', errorText);
+        throw new Error(`Square API error: ${squareResponse.status} - ${errorText}`);
+      }
+      
+      const squareData = await squareResponse.json();
+      console.log('Square API success response:', JSON.stringify(squareData, null, 2));
+      
+      if (squareData.checkout && squareData.checkout.checkout_page_url) {
+        return createSuccessResponse({ 
+          checkoutUrl: squareData.checkout.checkout_page_url 
+        }, corsHeaders);
+      } else {
+        console.error('Invalid Square response structure:', squareData);
+        throw new Error("Failed to create checkout - invalid response structure");
+      }
+      
+    } catch (fetchError) {
+      console.error('Square API fetch error:', fetchError);
+      throw new Error(`Square API request failed: ${fetchError.message}`);
     }
 
   } catch (error) {

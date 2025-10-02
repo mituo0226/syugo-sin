@@ -157,8 +157,9 @@ function validatePaymentForm(cardNumber, expiryDate, cvv, postalCode) {
 // Square決済ページへの遷移
 async function redirectToSquarePayment(uid, ticketData) {
   try {
-    // Square決済リンクを作成するAPIを呼び出し
-    const response = await fetch('/api/create-payment-link', {
+    // まずテスト用APIを試す
+    console.log('テスト決済APIを呼び出し中...');
+    const response = await fetch('/api/test-payment-link', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -173,30 +174,31 @@ async function redirectToSquarePayment(uid, ticketData) {
     
     if (response.ok) {
       const data = await response.json();
-      console.log('Square決済リンク作成成功:', data);
+      console.log('決済リンク作成結果:', data);
       
       if (data.checkoutUrl) {
-        // Square決済ページに遷移
+        if (data.fallback) {
+          console.log('フォールバック決済ページに遷移:', data.checkoutUrl);
+        } else {
+          console.log('Square決済ページに遷移:', data.checkoutUrl);
+        }
         window.location.href = data.checkoutUrl;
-      } else {
-        throw new Error('決済URLが取得できませんでした');
+        return;
       }
-    } else {
-      const errorData = await response.json();
-      console.error('Square決済リンク作成エラー:', errorData);
-      throw new Error(errorData.error || '決済リンクの作成に失敗しました');
     }
+    
+    // フォールバック: 直接payment.htmlに遷移
+    console.log('フォールバック: payment.htmlに遷移');
+    const fallbackUrl = `./payment.html?uid=${uid}&ticketType=${ticketData.type}&price=${ticketData.price}&minutes=${ticketData.minutes}`;
+    window.location.href = fallbackUrl;
     
   } catch (error) {
-    console.error('Square決済遷移エラー:', error);
+    console.error('決済遷移エラー:', error);
     
-    // フォールバック: 直接payment.htmlに遷移（テスト用）
-    if (error.message.includes('決済リンク')) {
-      console.log('フォールバック: payment.htmlに遷移');
-      window.location.href = `./payment.html?uid=${uid}&ticketType=${ticketData.type}&price=${ticketData.price}&minutes=${ticketData.minutes}`;
-    } else {
-      throw error;
-    }
+    // 最終フォールバック
+    console.log('最終フォールバック: payment.htmlに遷移');
+    const fallbackUrl = `./payment.html?uid=${uid}&ticketType=${ticketData.type}&price=${ticketData.price}&minutes=${ticketData.minutes}`;
+    window.location.href = fallbackUrl;
   }
 }
 
