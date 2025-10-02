@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>体験チケット購入 - 守護神占い</title>
+  <meta name="description" content="初回限定100円で5分間の体験チケット。守護神や龍とつながる神秘的な鑑定体験を始めましょう。">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="payment-ticket.css">
+</head>
+<body>
+  <!-- 神秘的な背景 -->
+  <div class="mystical-bg"></div>
+  
+  <!-- 浮遊する粒子 -->
+  <div class="floating-particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <div class="container">
+    <div class="main-content" id="mainContent">
+      <!-- タイトル -->
+      <h1 class="title">体験チケット購入</h1>
+      
+      <!-- 初回限定バッジ -->
+      <div class="first-time-badge">
+        <div class="badge-content">
+          <span class="badge-icon">✨</span>
+          <span class="badge-text">初回限定</span>
+        </div>
+      </div>
+      
+      <!-- チケットカード -->
+      <div class="ticket-card">
+        <div class="ticket-header">
+          <h2 class="ticket-title">体験チケット</h2>
+          <div class="ticket-price">
+            <span class="price-amount">100円</span>
+            <span class="price-period">5分間</span>
+          </div>
+        </div>
+        
+        <div class="ticket-description">
+          <p class="main-description">まずは体験から。100円で5分間、守護神や龍とつながれます</p>
+          <p class="sub-description">神秘的な鑑定体験を気軽にお試しください</p>
+        </div>
+        
+        <div class="ticket-features">
+          <div class="feature-item">
+            <span class="feature-icon">🔮</span>
+            <span class="feature-text">守護神との対話</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">🐉</span>
+            <span class="feature-text">龍の導き</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">✨</span>
+            <span class="feature-text">神秘的な鑑定</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 決済フォーム -->
+      <div class="payment-form-container">
+        <h3 class="form-title">決済情報</h3>
+        
+        <form id="paymentForm" class="payment-form">
+          <div class="form-group">
+            <label for="cardNumber">カード番号</label>
+            <div class="input-wrapper">
+              <input type="text" id="cardNumber" name="cardNumber" placeholder="4111 1111 1111 1111" maxlength="19" required>
+              <span class="input-icon">💳</span>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="expiryDate">有効期限</label>
+              <div class="input-wrapper">
+                <input type="text" id="expiryDate" name="expiryDate" placeholder="MM/YY" maxlength="5" required>
+                <span class="input-icon">📅</span>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="cvv">CVC</label>
+              <div class="input-wrapper">
+                <input type="text" id="cvv" name="cvv" placeholder="111" maxlength="4" required>
+                <span class="input-icon">🔒</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="postalCode">郵便番号</label>
+            <div class="input-wrapper">
+              <input type="text" id="postalCode" name="postalCode" placeholder="12345" maxlength="10" required>
+              <span class="input-icon">🏠</span>
+            </div>
+          </div>
+          
+          <!-- テスト情報 -->
+          <div class="test-info">
+            <h4>テスト用カード情報</h4>
+            <div class="test-info-grid">
+              <div class="test-item">
+                <span class="test-label">カード番号:</span>
+                <span class="test-value">4111 1111 1111 1111</span>
+              </div>
+              <div class="test-item">
+                <span class="test-label">有効期限:</span>
+                <span class="test-value">12/25</span>
+              </div>
+              <div class="test-item">
+                <span class="test-label">CVC:</span>
+                <span class="test-value">111</span>
+              </div>
+              <div class="test-item">
+                <span class="test-label">郵便番号:</span>
+                <span class="test-value">12345</span>
+              </div>
+            </div>
+          </div>
+          
+          <button type="submit" class="payment-button" id="paymentButton">
+            <span class="button-icon">✨</span>
+            <span class="button-text">100円で体験を開始</span>
+            <span class="button-subtext">5分間の神秘的な鑑定</span>
+          </button>
+        </form>
+      </div>
+      
+      <!-- 注意事項 -->
+      <div class="notice">
+        <h4>ご利用上の注意</h4>
+        <ul>
+          <li>決済は安全なSquare決済システムを使用しています</li>
+          <li>体験チケットは購入後、即座にご利用いただけます</li>
+          <li>5分間の鑑定時間が付与されます</li>
+          <li>追加チケットは鑑定画面からご購入いただけます</li>
+        </ul>
+      </div>
+      
+      <!-- 戻るボタン -->
+      <div class="back-section">
+        <a href="./index.html" class="back-button">トップページに戻る</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ローディングオーバーレイ -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <h3>決済処理中...</h3>
+      <p>龍があなたの運命を照らしています</p>
+    </div>
+  </div>
+
+  <!-- エラーメッセージ -->
+  <div class="error-message" id="errorMessage">
+    <div class="error-content">
+      <span class="error-icon">⚠️</span>
+      <span class="error-text" id="errorText"></span>
+      <button class="error-close" onclick="hideError()">×</button>
+    </div>
+  </div>
+
+  <script src="payment-ticket.js"></script>
+</body>
+</html>
