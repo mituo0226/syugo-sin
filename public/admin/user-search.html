@@ -344,6 +344,9 @@
         <button type="button" onclick="debugDatabase()" class="search-button" style="margin-left: 10px; background: linear-gradient(90deg, #6c757d, #495057);">
           🔧 DB状態確認
         </button>
+        <button type="button" onclick="inspectDatabase()" class="search-button" style="margin-left: 10px; background: linear-gradient(90deg, #9d4edd, #7b2cbf);">
+          🔍 DB詳細調査
+        </button>
       </form>
     </div>
     
@@ -699,6 +702,96 @@
         addLog('デバッグエラー: ' + error.message, 'error');
         const messageArea = document.getElementById('messageArea');
         messageArea.innerHTML = `<div class="error-message">デバッグ処理に失敗しました: ${error.message}</div>`;
+      }
+    }
+    
+    // データベース詳細調査機能
+    async function inspectDatabase() {
+      try {
+        addLog('データベース詳細調査中...');
+        
+        const response = await fetch('/api/inspect-db', {
+          method: 'POST',
+          mode: 'cors',
+          credentials: 'omit',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({})
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`調査エラー: ${response.status} - ${errorData.error || 'Unknown error'}`);
+        }
+        
+        const result = await response.json();
+        addLog('データベース詳細調査完了', 'success');
+        
+        // 調査結果を表示
+        const messageArea = document.getElementById('messageArea');
+        messageArea.innerHTML = `
+          <div class="success-message">
+            <h4>データベース詳細調査結果</h4>
+            <p><strong>テーブル数:</strong> ${result.tables.length}個</p>
+            <p><strong>外部キー制約:</strong> ${result.foreignKeysEnabled ? '有効' : '無効'}</p>
+            <p><strong>usersテーブルへの参照:</strong> ${result.referencesToUsers.length}個</p>
+            
+            <details style="margin-top: 10px;">
+              <summary>テーブル一覧とレコード数</summary>
+              <ul style="margin: 5px 0;">
+                ${Object.keys(result.tableSchemas).map(tableName => {
+                  const schema = result.tableSchemas[tableName];
+                  const count = schema.recordCount !== undefined ? schema.recordCount : '?';
+                  const fkCount = schema.foreignKeys ? schema.foreignKeys.length : 0;
+                  return `<li><strong>${tableName}:</strong> ${count}件 ${fkCount > 0 ? `(${fkCount}個の外部キー)` : ''}</li>`;
+                }).join('')}
+              </ul>
+            </details>
+            
+            ${result.referencesToUsers.length > 0 ? `
+            <details style="margin-top: 10px;">
+              <summary>usersテーブルへの外部キー参照</summary>
+              <ul style="margin: 5px 0;">
+                ${result.referencesToUsers.map(ref => 
+                  `<li><strong>${ref.referencingTable}:</strong> ${ref.referencingColumn} → users.${ref.referencedColumn}</li>`
+                ).join('')}
+              </ul>
+            </details>
+            ` : ''}
+            
+            ${result.userRelatedData && result.userRelatedData.user ? `
+            <details style="margin-top: 10px;">
+              <summary>テストユーザー関連データ</summary>
+              <p><strong>ユーザーID:</strong> ${result.userRelatedData.user.id}</p>
+              <p><strong>メール:</strong> ${result.userRelatedData.user.email}</p>
+              <p><strong>ニックネーム:</strong> ${result.userRelatedData.user.nickname}</p>
+              ${Object.keys(result.userRelatedData).filter(key => key !== 'user' && result.userRelatedData[key].length > 0).length > 0 ? `
+                <h5>関連データ:</h5>
+                <ul>
+                  ${Object.keys(result.userRelatedData).filter(key => key !== 'user').map(tableName => {
+                    const relatedData = result.userRelatedData[tableName];
+                    if (relatedData && relatedData.length > 0) {
+                      return `<li><strong>${tableName}:</strong> ${relatedData.map(item => `${item.column}に${item.data.length}件`).join(', ')}</li>`;
+                    }
+                    return '';
+                  }).filter(item => item).join('')}
+                </ul>
+              ` : '<p>関連データは見つかりませんでした</p>'}
+            </details>
+            ` : '<p>テストユーザーが見つかりませんでした</p>'}
+            
+            <details style="margin-top: 10px;">
+              <summary>完全な調査結果</summary>
+              <pre style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; overflow-x: auto; font-size: 12px;">${JSON.stringify(result, null, 2)}</pre>
+            </details>
+          </div>
+        `;
+        
+      } catch (error) {
+        addLog('調査エラー: ' + error.message, 'error');
+        const messageArea = document.getElementById('messageArea');
+        messageArea.innerHTML = `<div class="error-message">データベース調査に失敗しました: ${error.message}</div>`;
       }
     }
     

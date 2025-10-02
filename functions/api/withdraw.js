@@ -1,5 +1,84 @@
 import { getCorsHeaders, createErrorResponse, createSuccessResponse } from '../utils.js';
 
+// 関連データを段階的に削除する関数
+async function deleteRelatedData(user, db) {
+  console.log("Starting to delete related data for user:", user);
+  
+  try {
+    // すべてのテーブル一覧を取得
+    const tables = await db.prepare(`
+      SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'
+    `).all();
+    
+    console.log("Found tables:", tables.results?.map(t => t.name));
+    
+    // 各テーブルで関連データを削除
+    for (const table of tables.results || []) {
+      const tableName = table.name;
+      
+      // usersテーブル自体は最後に削除するのでスキップ
+      if (tableName === 'users') {
+        continue;
+      }
+      
+      try {
+        // テーブル構造を取得
+        const schema = await db.prepare(`PRAGMA table_info(${tableName})`).all();
+        const columns = schema.results || [];
+        
+        // ユーザーに関連する可能性のあるカラムを特定
+        const userRelatedColumns = columns.filter(col => 
+          col.name.toLowerCase().includes('user') || 
+          col.name.toLowerCase().includes('email') ||
+          (col.name.toLowerCase() === 'id' && columns.some(c => c.name.toLowerCase().includes('user')))
+        );
+        
+        console.log(`Checking table ${tableName} for user-related columns:`, 
+          userRelatedColumns.map(c => c.name));
+        
+        // 各関連カラムでデータを削除
+        for (const col of userRelatedColumns) {
+          let deleteQuery;
+          let bindValue;
+          
+          if (col.name.toLowerCase().includes('email')) {
+            deleteQuery = `DELETE FROM ${tableName} WHERE ${col.name} = ?`;
+            bindValue = user.email;
+          } else if (col.name.toLowerCase().includes('user') && col.name.toLowerCase().includes('id')) {
+            deleteQuery = `DELETE FROM ${tableName} WHERE ${col.name} = ?`;
+            bindValue = user.id;
+          }
+          
+          if (deleteQuery && bindValue !== undefined) {
+            try {
+              console.log(`Attempting to delete from ${tableName} where ${col.name} = ${bindValue}`);
+              const deleteResult = await db.prepare(deleteQuery).bind(bindValue).run();
+              console.log(`Deleted ${deleteResult.changes} rows from ${tableName}`);
+              
+              if (deleteResult.changes > 0) {
+                console.log(`Successfully deleted related data from ${tableName}`);
+              }
+            } catch (deleteError) {
+              console.error(`Error deleting from ${tableName}:`, deleteError);
+              // 個別のテーブル削除エラーは続行
+            }
+          }
+        }
+        
+      } catch (tableError) {
+        console.error(`Error processing table ${tableName}:`, tableError);
+        // 個別のテーブルエラーは続行
+      }
+    }
+    
+    console.log("Finished deleting related data");
+    
+  } catch (error) {
+    console.error("Error in deleteRelatedData:", error);
+    throw error;
+  }
+}
+
 export async function onRequestPost(context) {
   const { request, env } = context;
   const origin = request.headers.get("Origin");
@@ -78,31 +157,18 @@ export async function onRequestPost(context) {
     console.log("Executing delete query:", deleteQuery, "with params:", bindParams);
     
     try {
-      // 外部キー制約を一時的に無効化してから削除を実行
-      console.log("Disabling foreign key constraints temporarily...");
-      await env.DB.prepare(`PRAGMA foreign_keys = OFF`).run();
+      // まず関連データを段階的に削除
+      await deleteRelatedData(user, env.DB);
       
+      // 最後にユーザーを削除
       const result = await env.DB.prepare(deleteQuery).bind(...bindParams).run();
       console.log("Delete result:", result);
-      
-      // 外部キー制約を再有効化
-      await env.DB.prepare(`PRAGMA foreign_keys = ON`).run();
-      console.log("Foreign key constraints re-enabled");
       
       if (result.changes === 0) {
         return createErrorResponse("退会処理に失敗しました", 500, corsHeaders);
       }
     } catch (deleteError) {
       console.error("Database delete error:", deleteError);
-      
-      // エラーが発生した場合でも外部キー制約を再有効化
-      try {
-        await env.DB.prepare(`PRAGMA foreign_keys = ON`).run();
-        console.log("Foreign key constraints re-enabled after error");
-      } catch (fkError) {
-        console.error("Failed to re-enable foreign keys:", fkError);
-      }
-      
       return createErrorResponse(`削除処理エラー: ${deleteError.message}`, 500, corsHeaders);
     }
 
