@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>チャットテスト - 守護神占い</title>
+  <meta name="description" content="チャット機能のテスト用ページ（制限時間なし）">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="./consult/chat.css">
+  <style>
+    /* テスト用の追加スタイル */
+    .test-header {
+      background: linear-gradient(135deg, #66ccff, #3399ff);
+      color: #000;
+      padding: 15px;
+      text-align: center;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(102, 204, 255, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    
+    .test-info {
+      background: rgba(255, 193, 7, 0.1);
+      border: 2px solid rgba(255, 193, 7, 0.3);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      color: #ffc107;
+    }
+    
+    .test-info h3 {
+      margin: 0 0 10px 0;
+      color: #ffc107;
+    }
+    
+    .test-info p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+    
+    .localstorage-status {
+      background: rgba(102, 204, 255, 0.1);
+      border: 1px solid rgba(102, 204, 255, 0.3);
+      border-radius: 8px;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 12px;
+      color: #66ccff;
+    }
+    
+    .setup-buttons {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    
+    .setup-button {
+      padding: 10px 15px;
+      background: linear-gradient(90deg, #9d4edd, #7b2cbf);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+    
+    .setup-button:hover {
+      background: linear-gradient(90deg, #b565f0, #9d4edd);
+      transform: translateY(-2px);
+    }
+    
+    .setup-button.secondary {
+      background: linear-gradient(90deg, #66ccff, #3399ff);
+    }
+    
+    .setup-button.secondary:hover {
+      background: linear-gradient(90deg, #99e0ff, #66ccff);
+    }
+    
+    .setup-button.warning {
+      background: linear-gradient(90deg, #ff6b6b, #ee5a52);
+    }
+    
+    .setup-button.warning:hover {
+      background: linear-gradient(90deg, #ff8787, #ff6b6b);
+    }
+    
+    /* チャットコンテナの調整 */
+    .chat-container {
+      margin-top: 20px;
+    }
+    
+    /* タイマー部分をテスト用に調整 */
+    .timer-section {
+      background: rgba(255, 193, 7, 0.1) !important;
+      border: 2px solid rgba(255, 193, 7, 0.3) !important;
+    }
+    
+    .timer-text {
+      color: #ffc107 !important;
+      font-weight: bold;
+    }
+    
+    /* テスト用のデバッグ情報 */
+    .debug-panel {
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-family: monospace;
+      font-size: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    
+    .debug-panel h4 {
+      color: #66ccff;
+      margin: 0 0 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- テスト用ヘッダー -->
+    <div class="test-header">
+      <h1>🧪 チャットテストページ</h1>
+      <p>制限時間なしでチャット機能をテストします（龍との会話）</p>
+    </div>
+    
+    <!-- テスト情報 -->
+    <div class="test-info">
+      <h3>📋 テスト設定情報</h3>
+      <p><strong>生年月日:</strong> 1962年2月26日</p>
+      <p><strong>守護神:</strong> 虚空蔵菩薩</p>
+      <p><strong>ニックネーム:</strong> みつお</p>
+      <p><strong>興味ある相談:</strong> 恋愛</p>
+      <p><strong>制限時間:</strong> なし（無制限モード）</p>
+    </div>
+    
+    <!-- ローカルストレージ状態 -->
+    <div class="localstorage-status" id="localStorageStatus">
+      <strong>ローカルストレージ状態:</strong> 確認中...
+    </div>
+    
+    <!-- セットアップボタン -->
+    <div class="setup-buttons">
+      <button class="setup-button" onclick="setupTestData()">🧪 テストデータを設定</button>
+      <button class="setup-button secondary" onclick="clearAllData()">🗑️ データをクリア</button>
+      <button class="setup-button secondary" onclick="checkLocalStorage()">🔍 状態確認</button>
+      <button class="setup-button warning" onclick="toggleUnlimitedMode()">⏰ 無制限モード切り替え</button>
+    </div>
+    
+    <!-- デバッグパネル -->
+    <div class="debug-panel" id="debugPanel">
+      <h4>🔧 デバッグ情報</h4>
+      <div id="debugContent">デバッグ情報を表示中...</div>
+    </div>
+    
+    <!-- チャットコンテナ -->
+    <div class="chat-container">
+      <!-- タイマー表示 -->
+      <div class="timer-section">
+        <div class="timer-text" id="timerText">制限時間: 無制限モード</div>
+      </div>
+      
+      <!-- メッセージ表示エリア -->
+      <div class="messages" id="messages">
+        <!-- メッセージがここに動的に追加されます -->
+      </div>
+      
+      <!-- 入力エリア -->
+      <div class="input-area">
+        <div class="input-container">
+          <textarea 
+            id="messageInput" 
+            placeholder="メッセージを入力してください..." 
+            rows="1"
+            maxlength="1000"
+          ></textarea>
+          <button id="sendButton" class="send-button">送信</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 戻るボタン -->
+    <div style="text-align: center; margin: 20px 0;">
+      <a href="./index.html" class="setup-button">トップページに戻る</a>
+      <a href="./test-payment.html" class="setup-button secondary" style="margin-left: 10px;">決済テストページへ</a>
+    </div>
+  </div>
+
+  <script>
+    // テスト用のユーザーデータ
+    const testUserData = {
+      nickname: 'みつお',
+      year: 1962,
+      month: 2,
+      day: 26,
+      guardian: '虚空蔵菩薩',
+      guardianKey: 'kokuzou',
+      worry: '恋愛',
+      question: '恋愛'
+    };
+    
+    // チャット関連の変数
+    let unlimitedMode = true; // テスト用なので無制限モードをデフォルトにする
+    let messages = [];
+    let isTyping = false;
+    
+    // ページ読み込み時の処理
+    window.addEventListener('load', function() {
+      console.log('チャットテストページ読み込み完了');
+      
+      // テストデータを設定
+      setupTestData();
+      
+      // ローカルストレージ状態を確認
+      checkLocalStorage();
+      
+      // チャット機能を初期化
+      initializeChat();
+      
+      // 初期メッセージを表示
+      setTimeout(() => {
+        addSystemMessage('🧪 チャットテストモードが開始されました');
+        addSystemMessage('制限時間はありません。自由に龍と会話してください。');
+        addSystemMessage('ニックネーム: みつお | 守護神: 虚空蔵菩薩 | 相談内容: 恋愛');
+      }, 1000);
+    });
+    
+    // テストデータを設定
+    function setupTestData() {
+      try {
+        // ユーザーデータを設定
+        localStorage.setItem('userData', JSON.stringify(testUserData));
+        
+        // 無制限モードを有効化
+        localStorage.setItem('unlimitedMode', 'true');
+        
+        console.log('テストデータを設定しました:', testUserData);
+        updateDebugInfo('✅ テストデータを設定しました');
+        
+      } catch (error) {
+        console.error('テストデータ設定エラー:', error);
+        updateDebugInfo('❌ テストデータの設定に失敗しました');
+      }
+    }
+    
+    // 全データをクリア
+    function clearAllData() {
+      try {
+        localStorage.clear();
+        messages = [];
+        document.getElementById('messages').innerHTML = '';
+        console.log('全データをクリアしました');
+        updateDebugInfo('🗑️ 全データをクリアしました');
+        
+        // テストデータを再設定
+        setTimeout(() => {
+          setupTestData();
+        }, 500);
+        
+      } catch (error) {
+        console.error('データクリアエラー:', error);
+        updateDebugInfo('❌ データのクリアに失敗しました');
+      }
+    }
+    
+    // ローカルストレージ状態を確認
+    function checkLocalStorage() {
+      const statusDiv = document.getElementById('localStorageStatus');
+      
+      try {
+        const userData = localStorage.getItem('userData');
+        const unlimitedMode = localStorage.getItem('unlimitedMode');
+        
+        let status = '<strong>ローカルストレージ状態:</strong><br>';
+        
+        if (userData) {
+          const parsed = JSON.parse(userData);
+          status += `✅ ユーザーデータ: ${parsed.nickname} (${parsed.year}/${parsed.month}/${parsed.day})<br>`;
+        } else {
+          status += '❌ ユーザーデータ: 未設定<br>';
+        }
+        
+        if (unlimitedMode === 'true') {
+          status += '✅ 無制限モード: 有効<br>';
+        } else {
+          status += '❌ 無制限モード: 無効<br>';
+        }
+        
+        statusDiv.innerHTML = status;
+        
+      } catch (error) {
+        statusDiv.innerHTML = '<strong>ローカルストレージ状態:</strong> ❌ エラーが発生しました';
+        console.error('ローカルストレージ確認エラー:', error);
+      }
+    }
+    
+    // 無制限モードの切り替え
+    function toggleUnlimitedMode() {
+      unlimitedMode = !unlimitedMode;
+      localStorage.setItem('unlimitedMode', unlimitedMode.toString());
+      
+      const timerText = document.getElementById('timerText');
+      if (unlimitedMode) {
+        timerText.textContent = '制限時間: 無制限モード';
+        timerText.style.color = '#ffc107';
+        updateDebugInfo('⏰ 無制限モードに切り替えました');
+      } else {
+        timerText.textContent = '制限時間: 制限あり';
+        timerText.style.color = '#66ccff';
+        updateDebugInfo('⏰ 制限時間モードに切り替えました');
+      }
+    }
+    
+    // デバッグ情報を更新
+    function updateDebugInfo(message) {
+      const debugContent = document.getElementById('debugContent');
+      const timestamp = new Date().toLocaleTimeString();
+      debugContent.innerHTML += `[${timestamp}] ${message}<br>`;
+      debugContent.scrollTop = debugContent.scrollHeight;
+    }
+    
+    // チャット機能の初期化
+    function initializeChat() {
+      const messageInput = document.getElementById('messageInput');
+      const sendButton = document.getElementById('sendButton');
+      
+      // 送信ボタンのイベント
+      sendButton.addEventListener('click', sendMessage);
+      
+      // Enterキーでの送信
+      messageInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+      
+      // テキストエリアの自動リサイズ
+      messageInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+      });
+    }
+    
+    // メッセージ送信
+    async function sendMessage() {
+      const messageInput = document.getElementById('messageInput');
+      const message = messageInput.value.trim();
+      
+      if (!message || isTyping) return;
+      
+      // ユーザーメッセージを追加
+      addMessage(message, 'user');
+      messageInput.value = '';
+      messageInput.style.height = 'auto';
+      
+      // 入力フィールドを無効化
+      setInputEnabled(false);
+      
+      // 龍の返信を生成
+      await generateDragonResponse(message);
+      
+      // 入力フィールドを有効化
+      setInputEnabled(true);
+    }
+    
+    // 龍の返信を生成
+    async function generateDragonResponse(userMessage) {
+      isTyping = true;
+      addSystemMessage('🐉 龍が考えています...');
+      
+      try {
+        // ユーザーデータを取得
+        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        
+        // 龍の返信を生成（テスト用の簡易版）
+        const response = await generateTestResponse(userMessage, userData);
+        
+        // システムメッセージを削除
+        removeLastSystemMessage();
+        
+        // 龍の返信を追加
+        addMessage(response, 'assistant');
+        
+        updateDebugInfo(`🐉 龍の返信を生成: ${response.substring(0, 50)}...`);
+        
+      } catch (error) {
+        console.error('龍の返信生成エラー:', error);
+        removeLastSystemMessage();
+        addMessage('申し訳ございません。一時的に返信できません。', 'assistant');
+        updateDebugInfo(`❌ 龍の返信生成エラー: ${error.message}`);
+      } finally {
+        isTyping = false;
+      }
+    }
+    
+    // テスト用の返信生成
+    async function generateTestResponse(userMessage, userData) {
+      // 2-4秒のランダムな待機時間をシミュレート
+      await new Promise(resolve => setTimeout(resolve, Math.random() * 2000 + 2000));
+      
+      const responses = [
+        `みつお様、虚空蔵菩薩の導きにより、あなたの恋愛についてお答えいたします。${userMessage}についてですが、心の奥にある真実を見つめることが大切です。`,
+        `龍の目から見ると、みつお様の恋愛運は上昇傾向にあります。${userMessage}に関して、相手の心を理解することから始めてください。`,
+        `1962年生まれのみつお様、虚空蔵菩薩があなたの恋愛を守護しております。${userMessage}について、直感を信じて行動することをお勧めします。`,
+        `みつお様の恋愛について、龍がお答えいたします。${userMessage}に関して、まず自分自身の心を整えることが重要です。`,
+        `虚空蔵菩薩の加護のもと、みつお様の恋愛運勢を見通しております。${userMessage}について、誠実な気持ちで接することが成功の鍵となります。`
+      ];
+      
+      return responses[Math.floor(Math.random() * responses.length)];
+    }
+    
+    // メッセージを追加
+    function addMessage(content, sender) {
+      const messagesContainer = document.getElementById('messages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${sender}`;
+      
+      const time = new Date().toLocaleTimeString();
+      
+      messageDiv.innerHTML = `
+        <div class="message-content">${content}</div>
+        <div class="message-time">${time}</div>
+      `;
+      
+      messagesContainer.appendChild(messageDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      
+      messages.push({
+        content: content,
+        sender: sender,
+        timestamp: new Date().toISOString()
+      });
+      
+      updateDebugInfo(`💬 メッセージ追加: ${sender} - ${content.substring(0, 30)}...`);
+    }
+    
+    // システムメッセージを追加
+    function addSystemMessage(content) {
+      const messagesContainer = document.getElementById('messages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message system';
+      messageDiv.innerHTML = `<div class="message-content">${content}</div>`;
+      
+      messagesContainer.appendChild(messageDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      
+      updateDebugInfo(`🔔 システムメッセージ: ${content}`);
+    }
+    
+    // 最後のシステムメッセージを削除
+    function removeLastSystemMessage() {
+      const messagesContainer = document.getElementById('messages');
+      const systemMessages = messagesContainer.querySelectorAll('.message.system');
+      if (systemMessages.length > 0) {
+        const lastSystemMessage = systemMessages[systemMessages.length - 1];
+        lastSystemMessage.remove();
+      }
+    }
+    
+    // 入力フィールドの有効/無効を切り替え
+    function setInputEnabled(enabled) {
+      const messageInput = document.getElementById('messageInput');
+      const sendButton = document.getElementById('sendButton');
+      
+      messageInput.disabled = !enabled;
+      sendButton.disabled = !enabled;
+      
+      if (enabled) {
+        messageInput.focus();
+      }
+    }
+    
+    // エラーハンドリング
+    window.addEventListener('error', function(event) {
+      console.error('JavaScript エラー:', event.error);
+      updateDebugInfo(`❌ JavaScript エラー: ${event.error.message}`);
+    });
+    
+    // 未処理のPromise rejectionをキャッチ
+    window.addEventListener('unhandledrejection', function(event) {
+      console.error('未処理のPromise rejection:', event.reason);
+      updateDebugInfo(`❌ Promise rejection: ${event.reason}`);
+      event.preventDefault();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>決済テスト - 守護神占い</title>
+  <meta name="description" content="決済フローのテスト用ページ">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="payment-ticket.css">
+  <style>
+    /* テスト用の追加スタイル */
+    .test-header {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    }
+    
+    .test-info {
+      background: rgba(255, 193, 7, 0.1);
+      border: 2px solid rgba(255, 193, 7, 0.3);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      color: #ffc107;
+    }
+    
+    .test-info h3 {
+      margin: 0 0 10px 0;
+      color: #ffc107;
+    }
+    
+    .test-info p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+    
+    .localstorage-status {
+      background: rgba(102, 204, 255, 0.1);
+      border: 1px solid rgba(102, 204, 255, 0.3);
+      border-radius: 8px;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 12px;
+      color: #66ccff;
+    }
+    
+    .setup-buttons {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    
+    .setup-button {
+      padding: 10px 15px;
+      background: linear-gradient(90deg, #9d4edd, #7b2cbf);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+    
+    .setup-button:hover {
+      background: linear-gradient(90deg, #b565f0, #9d4edd);
+      transform: translateY(-2px);
+    }
+    
+    .setup-button.secondary {
+      background: linear-gradient(90deg, #66ccff, #3399ff);
+    }
+    
+    .setup-button.secondary:hover {
+      background: linear-gradient(90deg, #99e0ff, #66ccff);
+    }
+  </style>
+</head>
+<body>
+  <!-- 神秘的な背景 -->
+  <div class="mystical-bg"></div>
+  
+  <!-- 浮遊する粒子 -->
+  <div class="floating-particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <div class="container">
+    <div class="main-content show">
+      <!-- テスト用ヘッダー -->
+      <div class="test-header">
+        <h1>🧪 決済テストページ</h1>
+        <p>決済フローからチャットページへの遷移をテストします</p>
+      </div>
+      
+      <!-- テスト情報 -->
+      <div class="test-info">
+        <h3>📋 テスト設定情報</h3>
+        <p><strong>生年月日:</strong> 1962年2月26日</p>
+        <p><strong>守護神:</strong> 虚空蔵菩薩</p>
+        <p><strong>ニックネーム:</strong> みつお</p>
+        <p><strong>興味ある相談:</strong> 恋愛</p>
+      </div>
+      
+      <!-- ローカルストレージ状態 -->
+      <div class="localstorage-status" id="localStorageStatus">
+        <strong>ローカルストレージ状態:</strong> 確認中...
+      </div>
+      
+      <!-- セットアップボタン -->
+      <div class="setup-buttons">
+        <button class="setup-button" onclick="setupTestData()">🧪 テストデータを設定</button>
+        <button class="setup-button secondary" onclick="clearAllData()">🗑️ データをクリア</button>
+        <button class="setup-button secondary" onclick="checkLocalStorage()">🔍 状態確認</button>
+      </div>
+      
+      <!-- タイトル -->
+      <h1 class="title">体験チケット購入</h1>
+      
+      <!-- 初回限定バッジ -->
+      <div class="first-time-badge">
+        <div class="badge-content">
+          <span class="badge-icon">✨</span>
+          <span class="badge-text">初回限定</span>
+        </div>
+      </div>
+      
+      <!-- チケットカード -->
+      <div class="ticket-card">
+        <div class="ticket-header">
+          <h2 class="ticket-title">体験チケット</h2>
+          <div class="ticket-price">
+            <span class="price-amount">100円</span>
+            <span class="price-period">5分間</span>
+          </div>
+        </div>
+        
+        <div class="ticket-description">
+          <p class="main-description">まずは体験から。100円で5分間、守護神や龍とつながれます</p>
+          <p class="sub-description">神秘的な鑑定体験を気軽にお試しください</p>
+        </div>
+        
+        <div class="ticket-features">
+          <div class="feature-item">
+            <span class="feature-icon">🔮</span>
+            <span class="feature-text">守護神との対話</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">🐉</span>
+            <span class="feature-text">龍の導き</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">✨</span>
+            <span class="feature-text">神秘的な鑑定</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 決済フォーム -->
+      <div class="payment-form-container">
+        <h3 class="form-title">決済情報</h3>
+        
+        <form id="paymentForm" class="payment-form">
+          <div class="form-group">
+            <label for="cardNumber">カード番号</label>
+            <div class="input-wrapper">
+              <input type="text" id="cardNumber" name="cardNumber" placeholder="4111 1111 1111 1111" maxlength="19" required>
+              <span class="input-icon">💳</span>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="expiryDate">有効期限</label>
+              <div class="input-wrapper">
+                <input type="text" id="expiryDate" name="expiryDate" placeholder="MM/YY" maxlength="5" required>
+                <span class="input-icon">📅</span>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="cvv">CVC</label>
+              <div class="input-wrapper">
+                <input type="text" id="cvv" name="cvv" placeholder="111" maxlength="4" required>
+                <span class="input-icon">🔒</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="postalCode">郵便番号</label>
+            <div class="input-wrapper">
+              <input type="text" id="postalCode" name="postalCode" placeholder="12345" maxlength="10" required>
+              <span class="input-icon">🏠</span>
+            </div>
+          </div>
+          
+          <!-- テスト情報 -->
+          <div class="test-info">
+            <h4>テスト用カード情報</h4>
+            <div class="test-info-grid">
+              <div class="test-item">
+                <span class="test-label">カード番号:</span>
+                <span class="test-value">4111 1111 1111 1111</span>
+              </div>
+              <div class="test-item">
+                <span class="test-label">有効期限:</span>
+                <span class="test-value">12/25</span>
+              </div>
+              <div class="test-item">
+                <span class="test-label">CVC:</span>
+                <span class="test-value">111</span>
+              </div>
+              <div class="test-item">
+                <span class="test-label">郵便番号:</span>
+                <span class="test-value">12345</span>
+              </div>
+            </div>
+          </div>
+          
+          <button type="submit" class="payment-button" id="paymentButton">
+            <span class="button-icon">✨</span>
+            <span class="button-text">100円で体験を開始</span>
+            <span class="button-subtext">5分間の神秘的な鑑定</span>
+          </button>
+        </form>
+      </div>
+      
+      <!-- 注意事項 -->
+      <div class="notice">
+        <h4>ご利用上の注意</h4>
+        <ul>
+          <li>決済は安全なSquare決済システムを使用しています</li>
+          <li>体験チケットは購入後、即座にご利用いただけます</li>
+          <li>5分間の鑑定時間が付与されます</li>
+          <li>決済完了後、自動的にチャットページに遷移します</li>
+        </ul>
+      </div>
+      
+      <!-- 戻るボタン -->
+      <div class="back-section">
+        <a href="./index.html" class="back-button">トップページに戻る</a>
+        <a href="./test-chat.html" class="back-button" style="margin-left: 10px;">チャットテストページへ</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ローディングオーバーレイ -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <h3>決済処理中...</h3>
+      <p>龍があなたの運命を照らしています</p>
+    </div>
+  </div>
+
+  <!-- エラーメッセージ -->
+  <div class="error-message" id="errorMessage">
+    <div class="error-content">
+      <span class="error-icon">⚠️</span>
+      <span class="error-text" id="errorText"></span>
+      <button class="error-close" onclick="hideError()">×</button>
+    </div>
+  </div>
+
+  <script>
+    // テスト用のユーザーデータ
+    const testUserData = {
+      nickname: 'みつお',
+      year: 1962,
+      month: 2,
+      day: 26,
+      guardian: '虚空蔵菩薩',
+      guardianKey: 'kokuzou',
+      worry: '恋愛',
+      question: '恋愛'
+    };
+    
+    // ページ読み込み時の処理
+    window.addEventListener('load', function() {
+      console.log('決済テストページ読み込み完了');
+      
+      // メインコンテンツを表示
+      setTimeout(() => {
+        const mainContent = document.getElementById('mainContent');
+        mainContent.classList.add('show');
+      }, 500);
+      
+      // フォームのイベントリスナーを設定
+      setupFormEventListeners();
+      
+      // ローカルストレージ状態を確認
+      checkLocalStorage();
+      
+      // UIDを生成
+      const uid = generateUID();
+      localStorage.setItem('currentUID', uid);
+      console.log('テスト用UIDを生成:', uid);
+    });
+    
+    // テストデータを設定
+    function setupTestData() {
+      try {
+        // ユーザーデータを設定
+        localStorage.setItem('userData', JSON.stringify(testUserData));
+        
+        // 既存のチケット情報をクリア
+        localStorage.removeItem('selectedTicket');
+        localStorage.removeItem('expireAt');
+        
+        console.log('テストデータを設定しました:', testUserData);
+        showMessage('✅ テストデータを設定しました', 'success');
+        checkLocalStorage();
+        
+      } catch (error) {
+        console.error('テストデータ設定エラー:', error);
+        showMessage('❌ テストデータの設定に失敗しました', 'error');
+      }
+    }
+    
+    // 全データをクリア
+    function clearAllData() {
+      try {
+        localStorage.clear();
+        console.log('全データをクリアしました');
+        showMessage('🗑️ 全データをクリアしました', 'info');
+        checkLocalStorage();
+        
+      } catch (error) {
+        console.error('データクリアエラー:', error);
+        showMessage('❌ データのクリアに失敗しました', 'error');
+      }
+    }
+    
+    // ローカルストレージ状態を確認
+    function checkLocalStorage() {
+      const statusDiv = document.getElementById('localStorageStatus');
+      
+      try {
+        const userData = localStorage.getItem('userData');
+        const selectedTicket = localStorage.getItem('selectedTicket');
+        const expireAt = localStorage.getItem('expireAt');
+        const currentUID = localStorage.getItem('currentUID');
+        
+        let status = '<strong>ローカルストレージ状態:</strong><br>';
+        
+        if (userData) {
+          const parsed = JSON.parse(userData);
+          status += `✅ ユーザーデータ: ${parsed.nickname} (${parsed.year}/${parsed.month}/${parsed.day})<br>`;
+        } else {
+          status += '❌ ユーザーデータ: 未設定<br>';
+        }
+        
+        if (selectedTicket) {
+          const parsed = JSON.parse(selectedTicket);
+          status += `✅ 選択チケット: ${parsed.name} (${parsed.minutes}分)<br>`;
+        } else {
+          status += '❌ 選択チケット: 未設定<br>';
+        }
+        
+        if (expireAt) {
+          status += `✅ 有効期限: ${expireAt}<br>`;
+        } else {
+          status += '❌ 有効期限: 未設定<br>';
+        }
+        
+        if (currentUID) {
+          status += `✅ UID: ${currentUID}<br>`;
+        } else {
+          status += '❌ UID: 未設定<br>';
+        }
+        
+        statusDiv.innerHTML = status;
+        
+      } catch (error) {
+        statusDiv.innerHTML = '<strong>ローカルストレージ状態:</strong> ❌ エラーが発生しました';
+        console.error('ローカルストレージ確認エラー:', error);
+      }
+    }
+    
+    // メッセージ表示
+    function showMessage(message, type = 'info') {
+      const errorDiv = document.getElementById('errorMessage');
+      const errorText = document.getElementById('errorText');
+      
+      errorText.textContent = message;
+      errorDiv.classList.add('show');
+      
+      // 3秒後に自動で非表示
+      setTimeout(() => {
+        hideError();
+      }, 3000);
+    }
+    
+    // エラー非表示
+    function hideError() {
+      const errorMessage = document.getElementById('errorMessage');
+      errorMessage.classList.remove('show');
+    }
+    
+    // フォームのイベントリスナー設定
+    function setupFormEventListeners() {
+      const form = document.getElementById('paymentForm');
+      const cardNumber = document.getElementById('cardNumber');
+      const expiryDate = document.getElementById('expiryDate');
+      const cvv = document.getElementById('cvv');
+      const postalCode = document.getElementById('postalCode');
+      
+      // カード番号のフォーマット
+      cardNumber.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+        e.target.value = value;
+      });
+      
+      // 有効期限のフォーマット
+      expiryDate.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+          value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        }
+        e.target.value = value;
+      });
+      
+      // フォーム送信
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        processPayment();
+      });
+      
+      // Enterキーでの送信
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          const activeElement = document.activeElement;
+          if (activeElement && activeElement.tagName === 'INPUT') {
+            e.preventDefault();
+            processPayment();
+          }
+        }
+      });
+    }
+    
+    // 決済処理
+    async function processPayment() {
+      const paymentButton = document.getElementById('paymentButton');
+      const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+      const expiryDate = document.getElementById('expiryDate').value;
+      const cvv = document.getElementById('cvv').value;
+      const postalCode = document.getElementById('postalCode').value;
+      
+      // バリデーション
+      if (!validatePaymentForm(cardNumber, expiryDate, cvv, postalCode)) {
+        return;
+      }
+      
+      // ボタンを無効化
+      paymentButton.disabled = true;
+      paymentButton.innerHTML = `
+        <span class="button-icon">⏳</span>
+        <span class="button-text">決済処理中...</span>
+        <span class="button-subtext">しばらくお待ちください</span>
+      `;
+      
+      // ローディング表示
+      showLoading();
+      
+      try {
+        // UIDを取得
+        let uid = localStorage.getItem('currentUID');
+        if (!uid) {
+          uid = generateUID();
+          localStorage.setItem('currentUID', uid);
+        }
+        
+        // チケット情報を保存
+        const ticketData = {
+          type: 'first-time',
+          name: '体験チケット',
+          price: 100,
+          minutes: 5,
+          uid: uid,
+          timestamp: new Date().toISOString()
+        };
+        
+        localStorage.setItem('selectedTicket', JSON.stringify(ticketData));
+        console.log('チケット情報を保存:', ticketData);
+        
+        // 決済処理（テスト用）
+        await simulatePaymentProcess(ticketData);
+        
+      } catch (error) {
+        console.error('決済処理エラー:', error);
+        hideLoading();
+        showError('決済処理中にエラーが発生しました。しばらく時間をおいて再度お試しください。');
+        
+        // ボタンを復元
+        resetPaymentButton();
+      }
+    }
+    
+    // テスト用決済処理のシミュレーション
+    async function simulatePaymentProcess(ticketData) {
+      console.log('テスト用決済処理を開始');
+      
+      // 2秒間の処理をシミュレート
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // 決済成功をシミュレート
+      console.log('決済処理完了、チャットページに遷移');
+      
+      // チャットページに遷移
+      const chatUrl = `./consult/chat.html?nickname=${testUserData.nickname}&year=${testUserData.year}&month=${testUserData.month}&day=${testUserData.day}&guardian=${testUserData.guardianKey}&worry=${encodeURIComponent(testUserData.worry)}`;
+      
+      hideLoading();
+      showMessage('✅ 決済完了！チャットページに遷移します', 'success');
+      
+      setTimeout(() => {
+        window.location.href = chatUrl;
+      }, 1500);
+    }
+    
+    // フォームバリデーション
+    function validatePaymentForm(cardNumber, expiryDate, cvv, postalCode) {
+      let isValid = true;
+      let errorMessage = '';
+      
+      if (!cardNumber || cardNumber.length < 16) {
+        errorMessage = 'カード番号を正しく入力してください。';
+        isValid = false;
+      } else if (!expiryDate || expiryDate.length < 5) {
+        errorMessage = '有効期限を正しく入力してください。';
+        isValid = false;
+      } else if (!cvv || cvv.length < 3) {
+        errorMessage = 'CVCを正しく入力してください。';
+        isValid = false;
+      } else if (!postalCode) {
+        errorMessage = '郵便番号を入力してください。';
+        isValid = false;
+      }
+      
+      if (!isValid) {
+        showError(errorMessage);
+      }
+      
+      return isValid;
+    }
+    
+    // ローディング表示
+    function showLoading() {
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      loadingOverlay.classList.add('show');
+    }
+    
+    // ローディング非表示
+    function hideLoading() {
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      loadingOverlay.classList.remove('show');
+    }
+    
+    // エラー表示
+    function showError(message) {
+      const errorMessage = document.getElementById('errorMessage');
+      const errorText = document.getElementById('errorText');
+      
+      errorText.textContent = message;
+      errorMessage.classList.add('show');
+      
+      // 5秒後に自動で非表示
+      setTimeout(() => {
+        hideError();
+      }, 5000);
+    }
+    
+    // 決済ボタンを復元
+    function resetPaymentButton() {
+      const paymentButton = document.getElementById('paymentButton');
+      paymentButton.disabled = false;
+      paymentButton.innerHTML = `
+        <span class="button-icon">✨</span>
+        <span class="button-text">100円で体験を開始</span>
+        <span class="button-subtext">5分間の神秘的な鑑定</span>
+      `;
+    }
+    
+    // UID生成
+    function generateUID() {
+      const timestamp = Date.now().toString(36);
+      const randomStr = Math.random().toString(36).substring(2, 15);
+      return `test_user_${timestamp}_${randomStr}`;
+    }
+    
+    // ページ離脱時の処理
+    window.addEventListener('beforeunload', function() {
+      hideLoading();
+      hideError();
+    });
+    
+    // エラーハンドリング
+    window.addEventListener('error', function(event) {
+      console.error('JavaScript エラー:', event.error);
+      hideLoading();
+      showError('予期しないエラーが発生しました。ページを再読み込みしてください。');
+    });
+    
+    // 未処理のPromise rejectionをキャッチ
+    window.addEventListener('unhandledrejection', function(event) {
+      console.error('未処理のPromise rejection:', event.reason);
+      hideLoading();
+      showError('処理中にエラーが発生しました。');
+      event.preventDefault();
+    });
+  </script>
+</body>
+</html>
