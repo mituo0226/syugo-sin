@@ -1139,6 +1139,9 @@
         clearInterval(readingInterval);
         
         try {
+          // 会話履歴を取得
+          const conversationHistory = getConversationHistory();
+          
           // APIリクエストデータ
           const requestData = {
             text: userMessage,
@@ -1146,7 +1149,8 @@
             month: userData.month,
             day: userData.day,
             category: "総合",
-            guardian: guardianName
+            guardian: guardianName,
+            conversationHistory: conversationHistory
           };
           
           console.log('API呼び出し:', requestData);
@@ -1210,6 +1214,35 @@
       
       chatArea.appendChild(messageDiv);
       scrollToBottom();
+    }
+    
+    // 会話履歴を取得
+    function getConversationHistory() {
+      try {
+        const history = localStorage.getItem('chatHistory');
+        if (!history) return [];
+        
+        const messages = JSON.parse(history);
+        const conversationHistory = [];
+        
+        // メッセージをペアにまとめる
+        for (let i = 0; i < messages.length; i += 2) {
+          const userMessage = messages[i];
+          const assistantMessage = messages[i + 1];
+          
+          if (userMessage && assistantMessage) {
+            conversationHistory.push({
+              user: userMessage.content,
+              assistant: assistantMessage.content
+            });
+          }
+        }
+        
+        return conversationHistory;
+      } catch (error) {
+        console.error('会話履歴の取得エラー:', error);
+        return [];
+      }
     }
     
     // HTMLエスケープ
