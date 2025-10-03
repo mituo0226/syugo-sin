@@ -219,8 +219,8 @@
 </head>
 <body>
   <!-- hikari.mp4背景動画 -->
-  <video class="hikari-background" autoplay muted loop>
-    <source src="video/hikari.mp4" type="video/mp4">
+  <video class="hikari-background" autoplay muted loop onerror="handleVideoError(this)">
+    <source src="photo/hikari.mp4" type="video/mp4">
   </video>
   
   <!-- メール入力フォーム -->
@@ -251,6 +251,14 @@
   </div>
 
   <script>
+    // 動画エラーハンドリング関数
+    function handleVideoError(videoElement) {
+      console.error('hikari.mp4の読み込みエラー');
+      // 動画の代わりに光る背景を設定
+      videoElement.parentElement.style.background = 'radial-gradient(circle, #ffd700, #ffed4e, #ffffff)';
+      videoElement.style.display = 'none';
+    }
+    
     // ページ読み込み時の処理
     window.addEventListener("load", function() {
       // フォームをフェードインで表示

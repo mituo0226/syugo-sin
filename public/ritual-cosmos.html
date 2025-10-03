@@ -136,18 +136,18 @@
 </head>
 <body>
   <!-- 宇宙背景動画 -->
-  <video class="cosmos-video" id="cosmosVideo" autoplay muted loop>
-    <source src="video/cosmo.mp4" type="video/mp4">
+  <video class="cosmos-video" id="cosmosVideo" autoplay muted loop onerror="handleVideoError(this, 'cosmo')">
+    <source src="photo/cosmo.mp4" type="video/mp4">
   </video>
   
   <!-- sinden.mp4動画 -->
-  <video class="sinden-video" id="sindenVideo" autoplay muted>
-    <source src="video/sinden.mp4" type="video/mp4">
+  <video class="sinden-video" id="sindenVideo" autoplay muted onerror="handleVideoError(this, 'sinden')">
+    <source src="photo/sinden.mp4" type="video/mp4">
   </video>
   
   <!-- hikari.mp4動画 -->
-  <video class="hikari-video" id="hikariVideo" autoplay muted>
-    <source src="video/hikari.mp4" type="video/mp4">
+  <video class="hikari-video" id="hikariVideo" autoplay muted onerror="handleVideoError(this, 'hikari')">
+    <source src="photo/hikari.mp4" type="video/mp4">
   </video>
   
   <!-- 神秘的なメッセージ -->
@@ -156,6 +156,23 @@
   </div>
 
   <script>
+    // 動画エラーハンドリング関数
+    function handleVideoError(videoElement, videoName) {
+      console.error(`動画読み込みエラー: ${videoName}.mp4`);
+      
+      // 動画の代わりに背景色を設定
+      if (videoName === 'cosmo') {
+        videoElement.parentElement.style.background = 'linear-gradient(45deg, #000428, #004e92)';
+      } else if (videoName === 'sinden') {
+        videoElement.parentElement.style.background = 'radial-gradient(circle, #1a1a2e, #16213e)';
+      } else if (videoName === 'hikari') {
+        videoElement.parentElement.style.background = 'radial-gradient(circle, #ffd700, #ffed4e)';
+      }
+      
+      // 動画要素を非表示
+      videoElement.style.display = 'none';
+    }
+    
     // ページ読み込み時の処理
     window.addEventListener("load", function() {
       try {
