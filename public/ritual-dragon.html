@@ -75,18 +75,38 @@
     /* チケット購入ボタン */
     .ticket-button {
       position: fixed;
-      bottom: 5%;
+      bottom: 8%;
       left: 50%;
       transform: translateX(-50%);
       background: linear-gradient(45deg, #66ccff, #9d4edd);
       color: white;
       border: none;
-      padding: 15px 30px;
-      border-radius: 25px;
-      font-size: 18px;
+      padding: 20px 40px;
+      border-radius: 30px;
+      font-size: 22px;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 4px 15px rgba(102, 204, 255, 0.3);
+      box-shadow: 0 6px 20px rgba(102, 204, 255, 0.4);
+      opacity: 0;
+      transition: all 1s ease-in-out;
+      z-index: 3;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    /* 購入しないボタン */
+    .decline-button {
+      position: fixed;
+      bottom: 3%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 8px 20px;
+      border-radius: 15px;
+      font-size: 14px;
+      cursor: pointer;
       opacity: 0;
       transition: all 1s ease-in-out;
       z-index: 3;
@@ -96,10 +116,20 @@
     
     .ticket-button:hover {
       transform: translateX(-50%) scale(1.05);
-      box-shadow: 0 6px 20px rgba(102, 204, 255, 0.5);
+      box-shadow: 0 8px 25px rgba(102, 204, 255, 0.6);
+    }
+    
+    .decline-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.9);
+      transform: translateX(-50%) scale(1.02);
     }
     
     .ticket-button.show {
+      opacity: 1;
+    }
+    
+    .decline-button.show {
       opacity: 1;
     }
     
@@ -169,9 +199,15 @@
       }
       
       .ticket-button {
-        bottom: 8%;
-        padding: 12px 25px;
-        font-size: 16px;
+        bottom: 10%;
+        padding: 15px 30px;
+        font-size: 18px;
+      }
+      
+      .decline-button {
+        bottom: 5%;
+        padding: 6px 15px;
+        font-size: 12px;
       }
     }
     
@@ -194,9 +230,15 @@
       }
       
       .ticket-button {
-        bottom: 10%;
-        padding: 10px 20px;
-        font-size: 14px;
+        bottom: 12%;
+        padding: 12px 25px;
+        font-size: 16px;
+      }
+      
+      .decline-button {
+        bottom: 6%;
+        padding: 5px 12px;
+        font-size: 11px;
       }
     }
   </style>
@@ -214,6 +256,11 @@
   <a href="payment-ticket.html" class="ticket-button" id="ticketButton">
     🎫 チケット購入
   </a>
+  
+  <!-- 購入しないボタン -->
+  <a href="ritual-decline.html" class="decline-button" id="declineButton">
+    購入しない
+  </a>
 
   <script>
     // 画像エラーハンドリング関数
@@ -230,7 +277,7 @@
         // ユーザーデータを取得
         const userData = JSON.parse(localStorage.getItem("userData") || "{}");
         const nickname = userData.nickname || userData.name || "あなた";
-        const guardianName = userData.guardian || "守護神";
+        const guardianName = userData.guardian || userData.guardianName || "守護神";
         
         // 龍の言葉を設定
         const speechText = `${guardianName}の精神を取り込んで${nickname}と鑑定を続けるにあたりあなたのエネルギーを会話チケットという形で購入してもらう必要がある。\n\n守護神への供物と考えてほしい。\n\n私との5分間の会話を初回限定100円で行うことができる。\nさらなる鑑定を希望する場合は、会話チケットの購入をしてくれ`;
@@ -247,6 +294,10 @@
         setTimeout(() => {
           showTicketButton();
         }, 8000);
+        
+        setTimeout(() => {
+          showDeclineButton();
+        }, 9000);
         
       } catch (error) {
         console.error("ページ読み込みエラー:", error);
@@ -276,6 +327,12 @@
     function showTicketButton() {
       const ticketButton = document.getElementById('ticketButton');
       ticketButton.classList.add('show');
+    }
+    
+    // 購入しないボタンを表示
+    function showDeclineButton() {
+      const declineButton = document.getElementById('declineButton');
+      declineButton.classList.add('show');
     }
     
     // タイプライター効果

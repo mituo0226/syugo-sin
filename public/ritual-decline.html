@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>守護神と龍の言葉 | AI鑑定師 龍</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      overflow: hidden;
+      position: relative;
+      min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* 守護神の画像 */
+    .guardian-image {
+      position: fixed;
+      top: 30%;
+      left: 30%;
+      transform: translate(-50%, -50%) scale(0.3);
+      width: 200px;
+      height: 200px;
+      object-fit: contain;
+      border-radius: 20px;
+      box-shadow: 0 0 50px rgba(157, 78, 221, 0.8);
+      opacity: 0;
+      transition: all 2s ease-in-out;
+      z-index: 1;
+    }
+    
+    .guardian-image.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    
+    /* 龍の画像 */
+    .dragon-image {
+      position: fixed;
+      top: 30%;
+      right: 30%;
+      transform: translate(50%, -50%) scale(0.3);
+      width: 200px;
+      height: 200px;
+      object-fit: contain;
+      border-radius: 20px;
+      box-shadow: 0 0 50px rgba(102, 204, 255, 0.8);
+      opacity: 0;
+      transition: all 2s ease-in-out;
+      z-index: 1;
+    }
+    
+    .dragon-image.show {
+      opacity: 1;
+      transform: translate(50%, -50%) scale(1);
+    }
+    
+    /* 言葉 */
+    .message-speech {
+      position: fixed;
+      bottom: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(13, 13, 26, 0.9);
+      border: 2px solid rgba(102, 204, 255, 0.3);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 600px;
+      width: 90%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      opacity: 0;
+      transition: all 2s ease-in-out;
+      z-index: 2;
+    }
+    
+    .message-speech.show {
+      opacity: 1;
+    }
+    
+    .message-text {
+      font-size: 1.3em;
+      line-height: 1.8;
+      text-align: center;
+      color: #fff;
+      margin: 0;
+      white-space: pre-line;
+    }
+    
+    /* アニメーション */
+    @keyframes guardianMysticalEffect {
+      0%, 100% {
+        box-shadow: 0 0 50px rgba(157, 78, 221, 0.8);
+        filter: brightness(1) contrast(1);
+      }
+      50% {
+        box-shadow: 0 0 80px rgba(157, 78, 221, 1.2);
+        filter: brightness(1.2) contrast(1.1);
+      }
+    }
+    
+    @keyframes dragonMysticalEffect {
+      0%, 100% {
+        box-shadow: 0 0 50px rgba(102, 204, 255, 0.8);
+        filter: brightness(1) contrast(1);
+      }
+      50% {
+        box-shadow: 0 0 80px rgba(102, 204, 255, 1.2);
+        filter: brightness(1.2) contrast(1.1);
+      }
+    }
+    
+    @keyframes messageFloat {
+      0%, 100% {
+        transform: translateX(-50%) translateY(0px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      }
+      50% {
+        transform: translateX(-50%) translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9);
+      }
+    }
+    
+    @keyframes messageMysticalGlow {
+      0%, 100% {
+        text-shadow: 0 0 10px rgba(102, 204, 255, 0.5);
+        color: #fff;
+      }
+      50% {
+        text-shadow: 0 0 20px rgba(102, 204, 255, 0.8), 0 0 30px rgba(255, 215, 0, 0.3);
+        color: #66ccff;
+      }
+    }
+    
+    .guardian-image.show {
+      animation: guardianMysticalEffect 3s ease-in-out infinite;
+    }
+    
+    .dragon-image.show {
+      animation: dragonMysticalEffect 3s ease-in-out infinite;
+    }
+    
+    .message-speech.show {
+      animation: messageFloat 4s ease-in-out infinite;
+    }
+    
+    .message-text {
+      animation: messageMysticalGlow 2s ease-in-out infinite;
+    }
+    
+    /* モバイル向け調整 */
+    @media (max-width: 768px) {
+      .guardian-image {
+        top: 25%;
+        left: 25%;
+        width: 150px;
+        height: 150px;
+      }
+      
+      .dragon-image {
+        top: 25%;
+        right: 25%;
+        width: 150px;
+        height: 150px;
+      }
+      
+      .message-speech {
+        bottom: 15%;
+        padding: 20px;
+        max-width: 90%;
+      }
+      
+      .message-text {
+        font-size: 1.1em;
+        line-height: 1.6;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .guardian-image {
+        top: 20%;
+        left: 20%;
+        width: 120px;
+        height: 120px;
+      }
+      
+      .dragon-image {
+        top: 20%;
+        right: 20%;
+        width: 120px;
+        height: 120px;
+      }
+      
+      .message-speech {
+        bottom: 10%;
+        padding: 15px;
+        max-width: 95%;
+      }
+      
+      .message-text {
+        font-size: 1em;
+        line-height: 1.5;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 守護神の画像 -->
+  <img class="guardian-image" id="guardianImage" src="photo/ryu.png" alt="守護神" onerror="handleImageError(this, 'guardian')">
+  
+  <!-- 龍の画像 -->
+  <img class="dragon-image" id="dragonImage" src="photo/ryu.png" alt="龍" onerror="handleImageError(this, 'dragon')">
+  
+  <!-- 言葉 -->
+  <div class="message-speech" id="messageSpeech">
+    <p class="message-text" id="messageText"></p>
+  </div>
+
+  <script>
+    // 画像エラーハンドリング関数
+    function handleImageError(imageElement, type) {
+      console.error(`${type}の画像読み込みエラー`);
+      // 画像の代わりに背景色を設定
+      if (type === 'guardian') {
+        imageElement.parentElement.style.background = 'radial-gradient(circle, #1a1a2e, #16213e)';
+      } else {
+        imageElement.parentElement.style.background = 'radial-gradient(circle, #0d1a2e, #1a2e4a)';
+      }
+      imageElement.style.display = 'none';
+    }
+    
+    // ページ読み込み時の処理
+    window.addEventListener("load", function() {
+      try {
+        // ユーザーデータを取得
+        const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+        const nickname = userData.nickname || userData.name || "あなた";
+        
+        // 守護神の画像を設定
+        const guardianImage = document.getElementById('guardianImage');
+        if (userData.guardianKey) {
+          guardianImage.src = `photo/${userData.guardianKey}.png`;
+          guardianImage.alt = userData.guardian || "守護神";
+        } else {
+          guardianImage.src = 'photo/ryu.png';
+          guardianImage.alt = '守護神';
+        }
+        
+        // 龍の画像を設定
+        const dragonImage = document.getElementById('dragonImage');
+        dragonImage.src = 'photo/ryu.png';
+        dragonImage.alt = '龍';
+        
+        // 言葉を設定
+        const messageText = `あなたの意思は確認できた。また、繋がれたい時はいつでも来てくれ`;
+        
+        // 段階的に表示
+        setTimeout(() => {
+          showGuardianImage();
+        }, 1000);
+        
+        setTimeout(() => {
+          showDragonImage();
+        }, 2000);
+        
+        setTimeout(() => {
+          showMessageSpeech(messageText);
+        }, 4000);
+        
+        setTimeout(() => {
+          // トップページに自動遷移
+          window.location.href = 'index.html';
+        }, 8000);
+        
+      } catch (error) {
+        console.error("ページ読み込みエラー:", error);
+        // エラー時はデフォルトで進行
+        setTimeout(() => {
+          showGuardianImage();
+        }, 1000);
+      }
+    });
+    
+    // 守護神の画像を表示
+    function showGuardianImage() {
+      const guardianImage = document.getElementById('guardianImage');
+      guardianImage.classList.add('show');
+    }
+    
+    // 龍の画像を表示
+    function showDragonImage() {
+      const dragonImage = document.getElementById('dragonImage');
+      dragonImage.classList.add('show');
+    }
+    
+    // 言葉を表示
+    function showMessageSpeech(text) {
+      const messageSpeech = document.getElementById('messageSpeech');
+      const messageText = document.getElementById('messageText');
+      
+      messageSpeech.classList.add('show');
+      typeWriter(messageText, text, 100);
+    }
+    
+    // タイプライター効果
+    function typeWriter(element, text, speed) {
+      let i = 0;
+      element.textContent = "";
+      
+      function type() {
+        if (i < text.length) {
+          element.textContent += text.charAt(i);
+          i++;
+          setTimeout(type, speed);
+        }
+      }
+      
+      type();
+    }
+  </script>
+</body>
+</html>
