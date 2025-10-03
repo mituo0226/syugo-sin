@@ -331,6 +331,22 @@
   </a>
 
   <script>
+    // 守護神のキーから名前への変換関数
+    function getGuardianName(guardianKey) {
+      const guardianMap = {
+        'senju': '千手観音',
+        'yakushi': '薬師如来',
+        'amida': '阿弥陀如来',
+        'kokuzo': '虚空蔵菩薩',
+        'monju': '文殊菩薩',
+        'fugen': '普賢菩薩',
+        'seishi': '勢至菩薩',
+        'dainichi': '大日如来',
+        'fudo': '不動明王'
+      };
+      return guardianMap[guardianKey] || '守護神';
+    }
+    
     // 画像エラーハンドリング関数
     function handleImageError(imageElement) {
       console.error('龍の画像読み込みエラー');
@@ -341,14 +357,84 @@
     
     // ページ読み込み時の処理
     window.addEventListener("load", function() {
+      initializeDragonPage();
+    });
+
+    // 龍ページの初期化
+    async function initializeDragonPage() {
       try {
-        // ユーザーデータを取得
-        const userData = JSON.parse(localStorage.getItem("userData") || "{}");
-        const nickname = userData.nickname || userData.name || "あなた";
-        const guardianName = userData.guardian || userData.guardianName || "守護神";
+        // まずローカルストレージからユーザーデータを取得
+        let userData = JSON.parse(localStorage.getItem("userData") || "{}");
+        let nickname = userData.nickname || userData.name || "あなた";
+        let guardianKey = userData.guardianKey;
+        let guardianName = getGuardianName(guardianKey);
+
+        // ローカルストレージにデータがない場合、URLパラメータからメールアドレスを取得
+        if (!userData.email && !userData.nickname) {
+          const urlParams = new URLSearchParams(window.location.search);
+          const email = urlParams.get('email');
+          
+          if (email) {
+            console.log("ローカルストレージにデータがないため、Cloudflareから取得します:", email);
+            
+            try {
+              // Cloudflareからユーザーデータを取得
+              const response = await fetch(`/api/get-user-data?email=${encodeURIComponent(email)}`);
+              const result = await response.json();
+              
+              if (response.ok && result.status === "success") {
+                const cloudflareData = result.data;
+                console.log("Cloudflareから取得したデータ:", cloudflareData);
+                
+                // guardian_keyがオブジェクトの場合の処理
+                let processedGuardianKey = cloudflareData.magic_guardian_key || cloudflareData.guardian_key;
+                if (typeof processedGuardianKey === 'object' && processedGuardianKey !== null) {
+                  console.warn("guardian_keyがオブジェクト形式です:", processedGuardianKey);
+                  // オブジェクトの場合は文字列に変換を試行
+                  processedGuardianKey = processedGuardianKey.name || processedGuardianKey.key || processedGuardianKey.guardian_key || null;
+                  console.log("変換後のguardian_key:", processedGuardianKey);
+                }
+                
+                // データを統合（マジックリンクデータを優先）
+                userData = {
+                  email: cloudflareData.email,
+                  nickname: cloudflareData.magic_nickname || cloudflareData.nickname || "あなた",
+                  guardian: cloudflareData.magic_guardian_name || cloudflareData.guardian_name || "守護神",
+                  guardianName: cloudflareData.magic_guardian_name || cloudflareData.guardian_name || "守護神",
+                  guardianKey: processedGuardianKey,
+                  year: cloudflareData.magic_birth_year || cloudflareData.birth_year,
+                  month: cloudflareData.magic_birth_month || cloudflareData.birth_month,
+                  day: cloudflareData.magic_birth_day || cloudflareData.birth_day,
+                  worry: cloudflareData.magic_worry_type || cloudflareData.worry_type || cloudflareData.theme
+                };
+                
+                nickname = userData.nickname;
+                guardianKey = userData.guardianKey;
+                
+                // guardianKeyからguardianNameを取得（getGuardianName関数を使用）
+                if (guardianKey && typeof guardianKey === 'string') {
+                  guardianName = getGuardianName(guardianKey);
+                } else {
+                  // guardianKeyが無効な場合は、直接guardianNameを使用
+                  guardianName = cloudflareData.magic_guardian_name || cloudflareData.guardian_name || "守護神";
+                }
+                
+                console.log("統合されたユーザーデータ:", userData);
+              } else {
+                console.error("Cloudflareからのデータ取得に失敗:", result);
+              }
+            } catch (fetchError) {
+              console.error("Cloudflareデータ取得エラー:", fetchError);
+            }
+          }
+        }
         
         // 龍の言葉を設定
         const speechText = `${guardianName}の精神を取り込んで${nickname}と鑑定を続けるにあたりあなたのエネルギーを会話チケットという形で購入してもらう必要がある。\n\n守護神への供物と考えてほしい。\n\n私との5分間の会話を初回限定100円で行うことができる。\nさらなる鑑定を希望する場合は、会話チケットの購入をしてくれ`;
+        
+        console.log("龍の言葉:", speechText);
+        console.log("ニックネーム:", nickname);
+        console.log("守護神名:", guardianName);
         
         // 次元切り替えアニメーションから開始
         showDimensionTransition();
@@ -380,7 +466,7 @@
           showDragonImage();
         }, 1000);
       }
-    });
+    }
     
     // 龍の画像を表示
     function showDragonImage() {

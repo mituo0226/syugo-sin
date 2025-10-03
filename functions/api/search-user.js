@@ -9,12 +9,21 @@ export async function onRequestPost(context) {
     // JSON パース
     let payload;
     try {
-      payload = await request.json();
+      const requestText = await request.text();
+      console.log("Raw request body:", requestText);
+      console.log("Request headers:", Object.fromEntries(request.headers.entries()));
+      
+      if (!requestText || requestText.trim() === '') {
+        console.error("Empty request body");
+        return createErrorResponse("Empty request body", 400, corsHeaders);
+      }
+      
+      payload = JSON.parse(requestText);
       console.log("Search user request payload:", payload);
     } catch (jsonError) {
       console.error("JSON parse error:", jsonError);
-      console.error("Request body:", await request.text());
-      return createErrorResponse("Invalid JSON body", 400, corsHeaders);
+      console.error("Request text that failed to parse:", requestText);
+      return createErrorResponse(`Invalid JSON body: ${jsonError.message}`, 400, corsHeaders);
     }
 
     const { email, nickname, birthdate, searchType } = payload;
@@ -78,27 +87,145 @@ export async function onRequestPost(context) {
       return createErrorResponse("検索されたユーザーは登録されていません", 404, corsHeaders);
     }
 
-    // ユーザーデータを整形
-    const formattedUsers = users.results.map(user => ({
-      id: user.id,
-      email: user.email,
-      nickname: user.nickname,
-      birthdate: user.birthdate,
-      guardian_id: user.guardian_id,
-      theme: user.theme,
-      created_at: user.created_at
+    // 守護神のキーから名前への変換関数
+    function getGuardianName(guardianKey) {
+      const guardianMap = {
+        'senju': '千手観音',
+        'yakushi': '薬師如来',
+        'amida': '阿弥陀如来',
+        'kokuzo': '虚空蔵菩薩',
+        'monju': '文殊菩薩',
+        'fugen': '普賢菩薩',
+        'seishi': '勢至菩薩',
+        'dainichi': '大日如来',
+        'fudo': '不動明王'
+      };
+      return guardianMap[guardianKey] || '守護神';
+    }
+
+    // ユーザーデータを整形（守護神情報を含む）
+    const formattedUsers = await Promise.all(users.results.map(async (user) => {
+      let guardianName = '未設定';
+      let guardianKey = null;
+      let birthdate = user.birthdate;
+      let worryType = user.theme;
+      
+      // user_profilesテーブルから詳細情報を取得
+      try {
+        const userProfile = await env.DB.prepare(`
+          SELECT * FROM user_profiles WHERE user_id = ?
+        `).bind(user.id).first();
+        
+        if (userProfile) {
+          console.log(`User profile found for user ${user.id}:`, userProfile);
+          
+          // 守護神情報を取得
+          guardianKey = userProfile.guardian_key;
+          guardianName = userProfile.guardian_name || '未設定';
+          
+          // 生年月日を組み立て
+          if (userProfile.birth_year && userProfile.birth_month && userProfile.birth_day) {
+            birthdate = `${userProfile.birth_year}/${userProfile.birth_month}/${userProfile.birth_day}`;
+          }
+          
+          // 悩みの相談内容を取得
+          worryType = userProfile.worry_type || user.theme;
+          
+          // guardian_keyがオブジェクト形式の場合の処理
+          if (typeof guardianKey === 'object' && guardianKey !== null) {
+            console.log("guardian_keyがオブジェクト形式です:", guardianKey);
+            guardianKey = guardianKey.name || guardianKey.key || guardianKey.guardian_key || null;
+            console.log("変換後のguardian_key:", guardianKey);
+          }
+          
+          // guardian_nameが無い場合は、guardian_keyから変換
+          if (!guardianName || guardianName === '未設定') {
+            if (guardianKey && typeof guardianKey === 'string') {
+              guardianName = getGuardianName(guardianKey);
+            }
+          }
+        } else {
+          console.log(`No user profile found for user ${user.id}`);
+          // user_profilesテーブルにデータがない場合は、usersテーブルのguardian_idを使用
+          guardianKey = user.guardian_id;
+          if (guardianKey && typeof guardianKey === 'string') {
+            guardianName = getGuardianName(guardianKey);
+          }
+        }
+      } catch (profileError) {
+        console.error(`Error fetching user profile for user ${user.id}:`, profileError);
+        // エラーの場合は、usersテーブルのguardian_idを使用
+        guardianKey = user.guardian_id;
+        if (guardianKey && typeof guardianKey === 'string') {
+          guardianName = getGuardianName(guardianKey);
+        }
+      }
+      
+      return {
+        id: user.id,
+        email: user.email,
+        nickname: user.nickname,
+        birthdate: birthdate,
+        guardian_id: user.guardian_id,
+        guardian_key: guardianKey,
+        guardian_name: guardianName,
+        theme: worryType,
+        created_at: user.created_at
+      };
     }));
 
     console.log("Formatted users:", formattedUsers);
 
-    return createSuccessResponse({
-      success: true,
-      users: formattedUsers,
-      count: formattedUsers.length
-    }, corsHeaders);
+    // 成功レスポンスを確実に返す
+    try {
+      // データを安全にシリアライズ
+      const safeData = {
+        success: true,
+        users: formattedUsers,
+        count: formattedUsers.length
+      };
+      
+      return new Response(JSON.stringify(safeData), {
+        status: 200,
+        headers: { 
+          "Content-Type": "application/json",
+          ...corsHeaders 
+        }
+      });
+    } catch (responseError) {
+      console.error("Failed to create success response:", responseError);
+      return new Response(JSON.stringify({
+        success: false,
+        error: "Failed to serialize response data",
+        message: responseError.message
+      }), {
+        status: 500,
+        headers: { 
+          "Content-Type": "application/json",
+          ...corsHeaders 
+        }
+      });
+    }
 
   } catch (error) {
     console.error("User search error:", error);
-    return createErrorResponse(`ユーザー検索中にエラーが発生しました: ${error.message}`, 500, corsHeaders);
+    console.error("Error stack:", error.stack);
+    
+    // エラーレスポンスを確実に返す
+    try {
+      return createErrorResponse(`ユーザー検索中にエラーが発生しました: ${error.message}`, 500, corsHeaders);
+    } catch (responseError) {
+      console.error("Failed to create error response:", responseError);
+      return new Response(JSON.stringify({ 
+        error: "Internal server error",
+        message: error.message 
+      }), {
+        status: 500,
+        headers: { 
+          "Content-Type": "application/json",
+          ...corsHeaders 
+        }
+      });
+    }
   }
 }

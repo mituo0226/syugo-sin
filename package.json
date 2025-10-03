@@ -2,10 +2,10 @@
   "name": "syugo-sin-new",
   "version": "1.0.0",
   "description": "AI鑑定師 龍 - 新しい独立プロジェクト",
-  "main": "worker.js",
+  "main": "functions/_routes.js",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "dev": "wrangler pages dev public --compatibility-date=2024-01-01",
+    "deploy": "wrangler pages deploy public"
   },
   "keywords": ["cloudflare", "workers", "ai", "divination"],
   "author": "mituo0226",

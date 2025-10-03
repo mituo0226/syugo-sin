@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>登録情報確認 | AI鑑定師 龍</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #0f0f23, #1a1a2e, #16213e);
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: rgba(13, 13, 26, 0.9);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+      border: 2px solid rgba(102, 204, 255, 0.3);
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .header h1 {
+      font-size: 2em;
+      margin: 0 0 10px 0;
+      color: #66ccff;
+      text-shadow: 0 0 20px rgba(102, 204, 255, 0.8);
+    }
+    
+    .header p {
+      font-size: 1.1em;
+      margin: 0;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .data-section {
+      margin-bottom: 25px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      border: 1px solid rgba(102, 204, 255, 0.2);
+    }
+    
+    .data-section h3 {
+      font-size: 1.3em;
+      margin: 0 0 15px 0;
+      color: #66ccff;
+      display: flex;
+      align-items: center;
+    }
+    
+    .data-section h3::before {
+      content: "📋";
+      margin-right: 10px;
+      font-size: 1.2em;
+    }
+    
+    .data-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .data-item:last-child {
+      border-bottom: none;
+    }
+    
+    .data-label {
+      font-weight: bold;
+      color: rgba(255, 255, 255, 0.9);
+      min-width: 120px;
+    }
+    
+    .data-value {
+      color: #fff;
+      text-align: right;
+      flex: 1;
+      margin-left: 20px;
+    }
+    
+    .guardian-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .guardian-image {
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 2px solid rgba(102, 204, 255, 0.5);
+    }
+    
+    .guardian-details {
+      flex: 1;
+    }
+    
+    .guardian-name {
+      font-size: 1.1em;
+      font-weight: bold;
+      color: #66ccff;
+      margin-bottom: 5px;
+    }
+    
+    .guardian-key {
+      font-size: 0.9em;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .worry-content {
+      background: rgba(157, 78, 221, 0.1);
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid rgba(157, 78, 221, 0.3);
+      margin-top: 10px;
+      line-height: 1.6;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+      justify-content: center;
+    }
+    
+    .btn {
+      padding: 15px 30px;
+      border: none;
+      border-radius: 25px;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+      min-width: 140px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(45deg, #66ccff, #3399ff);
+      color: #000;
+      box-shadow: 0 6px 20px rgba(102, 204, 255, 0.4);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 204, 255, 0.6);
+    }
+    
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .error {
+      text-align: center;
+      padding: 40px;
+      color: #ff6b6b;
+      background: rgba(255, 107, 107, 0.1);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 107, 107, 0.3);
+    }
+    
+    .debug-info {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      font-family: monospace;
+      font-size: 0.9em;
+      color: rgba(255, 255, 255, 0.7);
+      white-space: pre-wrap;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        margin: 10px;
+        padding: 20px;
+      }
+      
+      .header h1 {
+        font-size: 1.6em;
+      }
+      
+      .data-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+      }
+      
+      .data-value {
+        text-align: left;
+        margin-left: 0;
+      }
+      
+      .button-group {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .btn {
+        width: 100%;
+        max-width: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔮 登録情報確認</h1>
+      <p>以下の情報で登録を進めますか？</p>
+    </div>
+    
+    <div id="loading" class="loading">
+      <p>登録情報を読み込み中...</p>
+    </div>
+    
+    <div id="error" class="error" style="display: none;">
+      <p>エラーが発生しました。ページを再読み込みしてください。</p>
+    </div>
+    
+    <div id="dataDisplay" style="display: none;">
+      <!-- ニックネーム -->
+      <div class="data-section">
+        <h3>基本情報</h3>
+        <div class="data-item">
+          <span class="data-label">ニックネーム</span>
+          <span class="data-value" id="nicknameValue">-</span>
+        </div>
+        <div class="data-item">
+          <span class="data-label">メールアドレス</span>
+          <span class="data-value" id="emailValue">-</span>
+        </div>
+      </div>
+      
+      <!-- 生年月日 -->
+      <div class="data-section">
+        <h3>生年月日</h3>
+        <div class="data-item">
+          <span class="data-label">生年月日</span>
+          <span class="data-value" id="birthdateValue">-</span>
+        </div>
+      </div>
+      
+      <!-- 守護神 -->
+      <div class="data-section">
+        <h3>守護神</h3>
+        <div class="data-item">
+          <span class="data-label">守護神</span>
+          <div class="data-value">
+            <div class="guardian-info">
+              <img id="guardianImage" class="guardian-image" src="" alt="守護神" style="display: none;">
+              <div class="guardian-details">
+                <div class="guardian-name" id="guardianNameValue">-</div>
+                <div class="guardian-key" id="guardianKeyValue">-</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 悩みの相談 -->
+      <div class="data-section">
+        <h3>悩みの相談</h3>
+        <div class="data-item">
+          <span class="data-label">相談内容</span>
+          <div class="data-value">
+            <div class="worry-content" id="worryValue">-</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="button-group">
+        <button class="btn btn-primary" onclick="proceedToRitual()">
+          ✅ この内容で進む
+        </button>
+        <button class="btn btn-secondary" onclick="goBackToRegistration()">
+          ✏️ 修正する
+        </button>
+      </div>
+    </div>
+    
+    <div id="debugInfo" class="debug-info" style="display: none;"></div>
+  </div>
+
+  <script>
+    // 守護神のキーから名前への変換関数
+    function getGuardianName(guardianKey) {
+      const guardianMap = {
+        'senju': '千手観音',
+        'yakushi': '薬師如来',
+        'amida': '阿弥陀如来',
+        'kokuzo': '虚空蔵菩薩',
+        'monju': '文殊菩薩',
+        'fugen': '普賢菩薩',
+        'seishi': '勢至菩薩',
+        'dainichi': '大日如来',
+        'fudo': '不動明王'
+      };
+      return guardianMap[guardianKey] || '守護神';
+    }
+    
+    // ページ読み込み時の処理
+    window.addEventListener("load", function() {
+      initializeRegistrationConfirm();
+    });
+
+    // 登録確認ページの初期化
+    async function initializeRegistrationConfirm() {
+      try {
+        // URLパラメータからメールアドレスを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const email = urlParams.get('email');
+        
+        if (!email) {
+          showError('メールアドレスが指定されていません。');
+          return;
+        }
+        
+        console.log("メールアドレス:", email);
+        
+        // Cloudflareからユーザーデータを取得
+        const response = await fetch(`/api/get-user-data?email=${encodeURIComponent(email)}`);
+        const result = await response.json();
+        
+        if (response.ok && result.status === "success") {
+          const cloudflareData = result.data;
+          console.log("Cloudflareから取得したデータ:", cloudflareData);
+          
+          // データを処理して表示
+          displayUserData(cloudflareData);
+          
+        } else {
+          console.error("Cloudflareからのデータ取得に失敗:", result);
+          showError('ユーザーデータの取得に失敗しました。');
+        }
+        
+      } catch (error) {
+        console.error("ページ読み込みエラー:", error);
+        showError('エラーが発生しました。ページを再読み込みしてください。');
+      }
+    }
+    
+    // ユーザーデータを表示
+    function displayUserData(cloudflareData) {
+      try {
+        // ニックネーム
+        const nickname = cloudflareData.magic_nickname || cloudflareData.nickname || "未設定";
+        document.getElementById('nicknameValue').textContent = nickname;
+        
+        // メールアドレス
+        document.getElementById('emailValue').textContent = cloudflareData.email || "未設定";
+        
+        // 生年月日
+        let birthdate = "未設定";
+        if (cloudflareData.magic_birth_year && cloudflareData.magic_birth_month && cloudflareData.magic_birth_day) {
+          birthdate = `${cloudflareData.magic_birth_year}年${cloudflareData.magic_birth_month}月${cloudflareData.magic_birth_day}日`;
+        } else if (cloudflareData.birth_year && cloudflareData.birth_month && cloudflareData.birth_day) {
+          birthdate = `${cloudflareData.birth_year}年${cloudflareData.birth_month}月${cloudflareData.birth_day}日`;
+        } else if (cloudflareData.birthdate) {
+          birthdate = cloudflareData.birthdate;
+        }
+        document.getElementById('birthdateValue').textContent = birthdate;
+        
+        // 守護神
+        let guardianKey = cloudflareData.magic_guardian_key || cloudflareData.guardian_key;
+        let guardianName = "未設定";
+        
+        // guardian_keyがオブジェクトの場合の処理
+        if (typeof guardianKey === 'object' && guardianKey !== null) {
+          console.log("guardian_keyがオブジェクト形式です:", guardianKey);
+          guardianKey = guardianKey.name || guardianKey.key || guardianKey.guardian_key || null;
+          console.log("変換後のguardian_key:", guardianKey);
+        }
+        
+        if (guardianKey && typeof guardianKey === 'string') {
+          guardianName = getGuardianName(guardianKey);
+          document.getElementById('guardianKeyValue').textContent = `キー: ${guardianKey}`;
+          
+          // 守護神の画像を設定
+          const guardianImage = document.getElementById('guardianImage');
+          guardianImage.src = `photo/${guardianKey}.png`;
+          guardianImage.style.display = 'block';
+          guardianImage.onerror = function() {
+            this.style.display = 'none';
+          };
+        } else {
+          // guardianKeyが無効な場合は、直接guardianNameを使用
+          guardianName = cloudflareData.magic_guardian_name || cloudflareData.guardian_name || "未設定";
+          document.getElementById('guardianKeyValue').textContent = "キー: 未設定";
+        }
+        
+        document.getElementById('guardianNameValue').textContent = guardianName;
+        
+        // 悩みの相談
+        const worry = cloudflareData.magic_worry_type || cloudflareData.worry_type || cloudflareData.theme || "未設定";
+        document.getElementById('worryValue').textContent = worry;
+        
+        // デバッグ情報を表示（開発時のみ）
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+          const debugInfo = document.getElementById('debugInfo');
+          debugInfo.textContent = JSON.stringify(cloudflareData, null, 2);
+          debugInfo.style.display = 'block';
+        }
+        
+        // データ表示を表示
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('dataDisplay').style.display = 'block';
+        
+      } catch (error) {
+        console.error("データ表示エラー:", error);
+        showError('データの表示中にエラーが発生しました。');
+      }
+    }
+    
+    // エラー表示
+    function showError(message) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error').style.display = 'block';
+      document.getElementById('error').querySelector('p').textContent = message;
+    }
+    
+    // 儀式ページに進む
+    function proceedToRitual() {
+      // ユーザーデータをローカルストレージに保存
+      const urlParams = new URLSearchParams(window.location.search);
+      const email = urlParams.get('email');
+      
+      if (email) {
+        // データを取得してローカルストレージに保存
+        fetch(`/api/get-user-data?email=${encodeURIComponent(email)}`)
+          .then(response => response.json())
+          .then(result => {
+            if (result.status === "success") {
+              const cloudflareData = result.data;
+              
+              // データを統合してローカルストレージに保存
+              const userData = {
+                email: cloudflareData.email,
+                nickname: cloudflareData.magic_nickname || cloudflareData.nickname || "あなた",
+                guardian: cloudflareData.magic_guardian_name || cloudflareData.guardian_name || "守護神",
+                guardianName: cloudflareData.magic_guardian_name || cloudflareData.guardian_name || "守護神",
+                guardianKey: cloudflareData.magic_guardian_key || cloudflareData.guardian_key,
+                year: cloudflareData.magic_birth_year || cloudflareData.birth_year,
+                month: cloudflareData.magic_birth_month || cloudflareData.birth_month,
+                day: cloudflareData.magic_birth_day || cloudflareData.birth_day,
+                worry: cloudflareData.magic_worry_type || cloudflareData.worry_type || cloudflareData.theme
+              };
+              
+              localStorage.setItem("userData", JSON.stringify(userData));
+              
+              // 守護神の儀式ページに遷移
+              window.location.href = 'ritual-guardian.html';
+            }
+          })
+          .catch(error => {
+            console.error("データ保存エラー:", error);
+            // エラー時も儀式ページに遷移
+            window.location.href = 'ritual-guardian.html';
+          });
+      } else {
+        // メールアドレスがない場合は直接遷移
+        window.location.href = 'ritual-guardian.html';
+      }
+    }
+    
+    // 登録ページに戻る
+    function goBackToRegistration() {
+      window.location.href = 'regist.html';
+    }
+  </script>
+</body>
+</html>

@@ -105,24 +105,66 @@ export async function onRequestPost(context) {
       }
     }
 
-    return createSuccessResponse({
-      success: true,
-      database_bound: !!env.DB,
-      tables: tables.results || [],
-      users_table_info: tableInfo.results || [],
-      user_count: userCount,
-      test_user: testUser,
-      foreign_keys_enabled: foreignKeysEnabled,
-      users_foreign_keys: foreignKeyInfo?.results || [],
-      all_foreign_keys: allForeignKeys,
-      debug_info: {
-        timestamp: new Date().toISOString(),
-        environment: context.env ? Object.keys(context.env) : []
-      }
-    }, corsHeaders);
+    // 成功レスポンスを確実に返す
+    try {
+      // データを安全にシリアライズ
+      const safeData = {
+        success: true,
+        database_bound: !!env.DB,
+        tables: tables.results || [],
+        users_table_info: tableInfo.results || [],
+        user_count: userCount,
+        test_user: testUser,
+        foreign_keys_enabled: foreignKeysEnabled,
+        users_foreign_keys: foreignKeyInfo?.results || [],
+        all_foreign_keys: allForeignKeys,
+        debug_info: {
+          timestamp: new Date().toISOString(),
+          environment: context.env ? Object.keys(context.env) : []
+        }
+      };
+      
+      return new Response(JSON.stringify(safeData), {
+        status: 200,
+        headers: { 
+          "Content-Type": "application/json",
+          ...corsHeaders 
+        }
+      });
+    } catch (responseError) {
+      console.error("Failed to create success response:", responseError);
+      return new Response(JSON.stringify({
+        success: false,
+        error: "Failed to serialize response data",
+        message: responseError.message
+      }), {
+        status: 500,
+        headers: { 
+          "Content-Type": "application/json",
+          ...corsHeaders 
+        }
+      });
+    }
 
   } catch (error) {
     console.error("Debug DB error:", error);
-    return createErrorResponse(`デバッグ処理中にエラーが発生しました: ${error.message}`, 500, corsHeaders);
+    console.error("Error stack:", error.stack);
+    
+    // エラーレスポンスを確実に返す
+    try {
+      return createErrorResponse(`デバッグ処理中にエラーが発生しました: ${error.message}`, 500, corsHeaders);
+    } catch (responseError) {
+      console.error("Failed to create error response:", responseError);
+      return new Response(JSON.stringify({ 
+        error: "Internal server error",
+        message: error.message 
+      }), {
+        status: 500,
+        headers: { 
+          "Content-Type": "application/json",
+          ...corsHeaders 
+        }
+      });
+    }
   }
 }

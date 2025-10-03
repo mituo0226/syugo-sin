@@ -469,6 +469,15 @@
         addLog(`ユーザー検索開始: タイプ=${searchType}, email=${email}, nickname=${nickname}, birthdate=${birthdate}`);
         
         // APIに送信
+        const requestBody = { 
+          email: email,
+          nickname: nickname,
+          birthdate: birthdate,
+          searchType: searchType
+        };
+        
+        console.log('Sending request body:', requestBody);
+        
         const response = await fetch('/api/search-user', {
           method: 'POST',
           mode: 'cors',
@@ -476,12 +485,7 @@
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ 
-            email: email,
-            nickname: nickname,
-            birthdate: birthdate,
-            searchType: searchType
-          })
+          body: JSON.stringify(requestBody)
         });
         
         if (!response.ok) {
@@ -493,6 +497,7 @@
         }
         
         const result = await response.json();
+        console.log('API Response:', result);
         currentUsers = result.users;
         
         addLog('ユーザー検索完了', 'success');
@@ -525,7 +530,25 @@
       resultCount.textContent = `検索結果: ${users.length}件のユーザーが見つかりました`;
       usersContainer.innerHTML = '';
       
+      // デバッグ: 受信したデータを確認
+      console.log('受信したユーザーデータ:', users);
+      
       users.forEach((user, index) => {
+        // デバッグ: 各ユーザーのデータを確認
+        console.log(`ユーザー ${index + 1} のデータ:`, {
+          id: user.id,
+          email: user.email,
+          nickname: user.nickname,
+          birthdate: user.birthdate,
+          guardian_name: user.guardian_name,
+          guardian_key: user.guardian_key,
+          theme: user.theme,
+          created_at: user.created_at
+        });
+        
+        // ローカルストレージから追加情報を取得
+        const localStorageInfo = getLocalStorageInfo(user.email);
+        
         const userCard = document.createElement('div');
         userCard.className = 'user-card';
         userCard.innerHTML = `
@@ -544,17 +567,27 @@
               <div class="user-info-value">${user.birthdate || '未設定'}</div>
             </div>
             <div class="user-info-item">
-              <div class="user-info-label">守護神ID</div>
-              <div class="user-info-value">${user.guardian_id || '未設定'}</div>
+              <div class="user-info-label">守護神名</div>
+              <div class="user-info-value">${user.guardian_name || '未設定'}</div>
             </div>
             <div class="user-info-item">
-              <div class="user-info-label">テーマ</div>
+              <div class="user-info-label">守護神キー</div>
+              <div class="user-info-value">${user.guardian_key || '未設定'}</div>
+            </div>
+            <div class="user-info-item">
+              <div class="user-info-label">鑑定してほしいカテゴリー</div>
               <div class="user-info-value">${user.theme || '未設定'}</div>
             </div>
             <div class="user-info-item">
               <div class="user-info-label">登録日時</div>
               <div class="user-info-value">${user.created_at}</div>
             </div>
+            ${localStorageInfo ? `
+            <div class="user-info-item" style="border-top: 2px solid #66ccff; margin-top: 10px; padding-top: 10px;">
+              <div class="user-info-label" style="color: #66ccff; font-weight: bold;">ローカルストレージ情報</div>
+              <div class="user-info-value" style="color: #66ccff;">${localStorageInfo}</div>
+            </div>
+            ` : ''}
           </div>
           <div class="user-actions">
             <button class="user-withdraw-button" onclick="withdrawUser('${user.email}', ${user.id})">
@@ -564,6 +597,67 @@
         `;
         usersContainer.appendChild(userCard);
       });
+    }
+    
+    // ローカルストレージからユーザー情報を取得する関数
+    function getLocalStorageInfo(email) {
+      try {
+        // 現在のブラウザのローカルストレージを確認
+        const userDataStr = localStorage.getItem('userData');
+        if (userDataStr) {
+          const userData = JSON.parse(userDataStr);
+          console.log('ローカルストレージのuserData:', userData);
+          
+          // ユーザーデータの詳細情報を構築
+          let info = [];
+          
+          if (userData.nickname) {
+            info.push(`ニックネーム: ${userData.nickname}`);
+          }
+          
+          if (userData.year && userData.month && userData.day) {
+            info.push(`生年月日: ${userData.year}/${userData.month}/${userData.day}`);
+          }
+          
+          if (userData.guardian) {
+            if (typeof userData.guardian === 'object') {
+              info.push(`守護神名: ${userData.guardian.name || userData.guardian.key || '不明'}`);
+            } else {
+              info.push(`守護神名: ${userData.guardian}`);
+            }
+          }
+          
+          if (userData.guardianKey) {
+            info.push(`守護神キー: ${userData.guardianKey}`);
+          }
+          
+          if (userData.worry) {
+            info.push(`悩み: ${userData.worry}`);
+          }
+          
+          if (userData.theme) {
+            info.push(`鑑定してほしいカテゴリー: ${userData.theme}`);
+          }
+          
+          // チケット情報も確認
+          const ticketMinutes = localStorage.getItem('ticketMinutes');
+          if (ticketMinutes) {
+            info.push(`チケット時間: ${ticketMinutes}分`);
+          }
+          
+          const ssCreditMinutes = sessionStorage.getItem('ss_credit_minutes');
+          if (ssCreditMinutes) {
+            info.push(`セッション残り時間: ${ssCreditMinutes}分`);
+          }
+          
+          return info.length > 0 ? info.join(' | ') : 'ローカルストレージに情報なし';
+        }
+        
+        return 'ローカルストレージにuserDataなし';
+      } catch (error) {
+        console.error('ローカルストレージ情報取得エラー:', error);
+        return `エラー: ${error.message}`;
+      }
     }
     
     // 個別ユーザーの退会処理

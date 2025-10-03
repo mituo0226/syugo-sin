@@ -117,11 +117,11 @@ export async function onRequestGet(context) {
         UPDATE magic_links SET used = TRUE WHERE token = ?
       `).bind(token).run();
 
-      // 既存ユーザーの場合も直接ritual-guardian.htmlにリダイレクト（メールアドレスをパラメータとして渡す）
+      // 既存ユーザーの場合は登録情報確認ページにリダイレクト
       return new Response(null, {
         status: 302,
         headers: {
-          "Location": `/ritual-guardian.html?email=${encodeURIComponent(magicLinkData.email)}`
+          "Location": `/registration-confirm.html?email=${encodeURIComponent(magicLinkData.email)}`
         }
       });
     }
@@ -185,11 +185,11 @@ export async function onRequestGet(context) {
         nickname: magicLinkData.nickname 
       });
 
-      // 成功時は直接ritual-guardian.htmlにリダイレクト（メールアドレスをパラメータとして渡す）
+      // 成功時は登録情報確認ページにリダイレクト
       return new Response(null, {
         status: 302,
         headers: {
-          "Location": `/ritual-guardian.html?email=${encodeURIComponent(magicLinkData.email)}`
+          "Location": `/registration-confirm.html?email=${encodeURIComponent(magicLinkData.email)}`
         }
       });
 

@@ -365,6 +365,22 @@
   </button>
 
   <script>
+    // 守護神のキーから名前への変換関数
+    function getGuardianName(guardianKey) {
+      const guardianMap = {
+        'senju': '千手観音',
+        'yakushi': '薬師如来',
+        'amida': '阿弥陀如来',
+        'kokuzo': '虚空蔵菩薩',
+        'monju': '文殊菩薩',
+        'fugen': '普賢菩薩',
+        'seishi': '勢至菩薩',
+        'dainichi': '大日如来',
+        'fudo': '不動明王'
+      };
+      return guardianMap[guardianKey] || '守護神';
+    }
+    
     // 動画エラーハンドリング関数
     function handleVideoError(videoElement) {
       console.error('cosmo.mp4の読み込みエラー');
@@ -384,8 +400,8 @@
         // まずローカルストレージからユーザーデータを取得
         let userData = JSON.parse(localStorage.getItem("userData") || "{}");
         let nickname = userData.nickname || userData.name || "あなた";
-        let guardianName = userData.guardian || userData.guardianName || userData.guardianKey || "守護神";
         let guardianKey = userData.guardianKey;
+        let guardianName = getGuardianName(guardianKey);
 
         // ローカルストレージにデータがない場合、URLパラメータからメールアドレスを取得
         if (!userData.email && !userData.nickname) {
@@ -404,13 +420,22 @@
                 const cloudflareData = result.data;
                 console.log("Cloudflareから取得したデータ:", cloudflareData);
                 
+                // guardian_keyがオブジェクトの場合の処理
+                let processedGuardianKey = cloudflareData.magic_guardian_key || cloudflareData.guardian_key;
+                if (typeof processedGuardianKey === 'object' && processedGuardianKey !== null) {
+                  console.warn("guardian_keyがオブジェクト形式です:", processedGuardianKey);
+                  // オブジェクトの場合は文字列に変換を試行
+                  processedGuardianKey = processedGuardianKey.name || processedGuardianKey.key || processedGuardianKey.guardian_key || null;
+                  console.log("変換後のguardian_key:", processedGuardianKey);
+                }
+                
                 // データを統合（マジックリンクデータを優先）
                 userData = {
                   email: cloudflareData.email,
                   nickname: cloudflareData.magic_nickname || cloudflareData.nickname || "あなた",
                   guardian: cloudflareData.magic_guardian_name || cloudflareData.guardian_name || "守護神",
                   guardianName: cloudflareData.magic_guardian_name || cloudflareData.guardian_name || "守護神",
-                  guardianKey: cloudflareData.magic_guardian_key || cloudflareData.guardian_key,
+                  guardianKey: processedGuardianKey,
                   year: cloudflareData.magic_birth_year || cloudflareData.birth_year,
                   month: cloudflareData.magic_birth_month || cloudflareData.birth_month,
                   day: cloudflareData.magic_birth_day || cloudflareData.birth_day,
@@ -418,8 +443,15 @@
                 };
                 
                 nickname = userData.nickname;
-                guardianName = userData.guardian || userData.guardianName || userData.guardianKey || "守護神";
                 guardianKey = userData.guardianKey;
+                
+                // guardianKeyからguardianNameを取得（getGuardianName関数を使用）
+                if (guardianKey && typeof guardianKey === 'string') {
+                  guardianName = getGuardianName(guardianKey);
+                } else {
+                  // guardianKeyが無効な場合は、直接guardianNameを使用
+                  guardianName = cloudflareData.magic_guardian_name || cloudflareData.guardian_name || "守護神";
+                }
                 
                 console.log("統合されたユーザーデータ:", userData);
               } else {

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理画面 | AI鑑定師 龍</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out;
+        }
+        .mobile-sidebar {
+            transform: translateX(-100%);
+        }
+        .mobile-sidebar.show {
+            transform: translateX(0);
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        @media (max-width: 768px) {
+            .table-responsive table {
+                display: none;
+            }
+            .card-view {
+                display: block;
+            }
+        }
+        @media (min-width: 769px) {
+            .card-view {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- ヘッダー -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="flex items-center justify-between px-4 py-3">
+            <div class="flex items-center">
+                <button id="menuToggle" class="md:hidden text-gray-600 hover:text-gray-900 mr-3">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <h1 class="text-xl font-bold text-gray-900">管理画面</h1>
+            </div>
+            <div class="text-sm text-gray-500">
+                AI鑑定師 龍
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- サイドバー -->
+        <nav id="sidebar" class="bg-white shadow-lg sidebar-transition mobile-sidebar md:translate-x-0 md:block fixed md:relative w-64 h-full md:h-auto z-50">
+            <div class="p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#" onclick="showSection('dashboard')" class="flex items-center px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
+                            <i class="fas fa-tachometer-alt mr-3"></i>
+                            ダッシュボード
+                        </a>
+                    </li>
+                    <li class="border-t border-gray-200 pt-2 mt-2">
+                        <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">会員管理</div>
+                        <ul class="mt-2 space-y-1">
+                            <li>
+                                <a href="#" onclick="showSection('member-search')" class="flex items-center px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-search mr-3"></i>
+                                    会員検索
+                                </a>
+                            </li>
+                            <li>
+                                <a href="database-viewer.html" class="flex items-center px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-database mr-3"></i>
+                                    データベースビューア
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="border-t border-gray-200 pt-2 mt-2">
+                        <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">テストツール</div>
+                        <ul class="mt-2 space-y-1">
+                            <li>
+                                <a href="magic-link-test.html" class="flex items-center px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-link mr-3"></i>
+                                    マジックリンクテスト
+                                </a>
+                            </li>
+                            <li>
+                                <a href="register-test.html" class="flex items-center px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-user-plus mr-3"></i>
+                                    会員登録テスト
+                                </a>
+                            </li>
+                            <li>
+                                <a href="payment-test.html" class="flex items-center px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-credit-card mr-3"></i>
+                                    決済テスト
+                                </a>
+                            </li>
+                            <li>
+                                <a href="chat-test.html" class="flex items-center px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-comments mr-3"></i>
+                                    チャットテスト
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 p-6">
+            <!-- ダッシュボード -->
+            <section id="dashboard" class="section">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">ダッシュボード</h2>
+                    <p class="text-gray-600">システムの概要と主要機能へのアクセス</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-blue-100 rounded-full">
+                                <i class="fas fa-users text-blue-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">総会員数</p>
+                                <p id="totalMembers" class="text-2xl font-bold text-gray-900">-</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-green-100 rounded-full">
+                                <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">今日の登録</p>
+                                <p id="todayRegistrations" class="text-2xl font-bold text-gray-900">-</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-yellow-100 rounded-full">
+                                <i class="fas fa-exclamation-triangle text-yellow-600 text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">システム状態</p>
+                                <p class="text-2xl font-bold text-green-600">正常</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">クイックアクセス</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <a href="#" onclick="showSection('member-search')" class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-search text-blue-600 text-2xl mb-2"></i>
+                            <p class="font-medium text-gray-900">会員検索</p>
+                            <p class="text-sm text-gray-600">メールアドレスで検索</p>
+                        </a>
+                        <a href="database-viewer.html" class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-database text-green-600 text-2xl mb-2"></i>
+                            <p class="font-medium text-gray-900">データベースビューア</p>
+                            <p class="text-sm text-gray-600">全データを表示</p>
+                        </a>
+                        <a href="magic-link-test.html" class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-link text-purple-600 text-2xl mb-2"></i>
+                            <p class="font-medium text-gray-900">マジックリンクテスト</p>
+                            <p class="text-sm text-gray-600">メール送信テスト</p>
+                        </a>
+                        <a href="register-test.html" class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-user-plus text-orange-600 text-2xl mb-2"></i>
+                            <p class="font-medium text-gray-900">会員登録テスト</p>
+                            <p class="text-sm text-gray-600">登録機能テスト</p>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 会員検索 -->
+            <section id="member-search" class="section hidden">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">会員検索</h2>
+                    <p class="text-gray-600">メールアドレスで会員情報を検索</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <form id="searchForm" class="space-y-4">
+                        <div>
+                            <label for="searchEmail" class="block text-sm font-medium text-gray-700 mb-2">
+                                メールアドレス
+                            </label>
+                            <input 
+                                type="email" 
+                                id="searchEmail" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="mituo0226@gmail.com"
+                                value="mituo0226@gmail.com"
+                                required
+                            >
+                        </div>
+                        <button 
+                            type="submit" 
+                            id="searchButton"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition-colors duration-200 flex items-center justify-center"
+                        >
+                            <i class="fas fa-search mr-2"></i>検索
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 検索結果 -->
+                <div id="searchResults" class="hidden">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">検索結果</h3>
+                        <div id="userInfo" class="space-y-3">
+                            <!-- ユーザー情報がここに表示されます -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- メッセージ表示エリア -->
+                <div id="messageArea" class="mt-4"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 退会確認モーダル -->
+    <div id="withdrawModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+                <div class="p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-lg font-medium text-gray-900">退会処理の確認</h3>
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <p class="text-sm text-gray-600">
+                            以下のユーザーの退会処理を実行しますか？<br>
+                            この操作は取り消すことができません。
+                        </p>
+                        <div class="mt-3 p-3 bg-gray-50 rounded-md">
+                            <div class="text-sm">
+                                <p><strong>ID:</strong> <span id="modalUserId"></span></p>
+                                <p><strong>メール:</strong> <span id="modalUserEmail"></span></p>
+                                <p><strong>ニックネーム:</strong> <span id="modalUserNickname"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button 
+                            id="cancelWithdraw"
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-200"
+                        >
+                            キャンセル
+                        </button>
+                        <button 
+                            id="confirmWithdraw"
+                            class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors duration-200"
+                        >
+                            <i class="fas fa-user-times mr-2"></i>退会処理を実行
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // サイドバーの表示/非表示制御
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('show');
+        });
+
+        // セクション表示制御
+        function showSection(sectionId) {
+            // すべてのセクションを非表示
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // 指定されたセクションを表示
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // モバイルサイドバーを閉じる
+            document.getElementById('sidebar').classList.remove('show');
+        }
+
+        // 検索フォームの処理
+        document.getElementById('searchForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('searchEmail').value.trim();
+            const searchButton = document.getElementById('searchButton');
+            const searchResults = document.getElementById('searchResults');
+            const messageArea = document.getElementById('messageArea');
+            const userInfo = document.getElementById('userInfo');
+
+            if (!email) {
+                messageArea.innerHTML = '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">メールアドレスを入力してください</div>';
+                return;
+            }
+
+            try {
+                // ボタンを無効化
+                searchButton.disabled = true;
+                searchButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>検索中...';
+                
+                console.log('検索開始:', email);
+                
+                // APIにリクエスト送信
+                const response = await fetch('/api/search-user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        searchType: 'email'
+                    })
+                });
+
+                console.log('レスポンスステータス:', response.status);
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`検索エラー: ${response.status} - ${errorData.error || 'Unknown error'}`);
+                }
+
+                const result = await response.json();
+                console.log('検索結果:', result);
+
+                if (result.success && result.users && result.users.length > 0) {
+                    const user = result.users[0];
+                    
+                    // ユーザー情報を表示
+                    userInfo.innerHTML = `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-gray-900 mb-3">基本情報</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">ID:</span>
+                                        <span class="font-medium">${user.id}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">メールアドレス:</span>
+                                        <span class="font-medium">${user.email}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">ニックネーム:</span>
+                                        <span class="font-medium">${user.nickname}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">生年月日:</span>
+                                        <span class="font-medium">${user.birthdate || '未設定'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-gray-900 mb-3">詳細情報</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">守護神名:</span>
+                                        <span class="font-medium">${user.guardian_name || '未設定'}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">守護神キー:</span>
+                                        <span class="font-medium">${user.guardian_key || '未設定'}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">鑑定カテゴリー:</span>
+                                        <span class="font-medium">${user.theme || '未設定'}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">登録日時:</span>
+                                        <span class="font-medium">${user.created_at}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6 flex justify-end space-x-3">
+                            <button 
+                                onclick="withdrawUser(${user.id}, '${user.email}', '${user.nickname}')"
+                                class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition-colors duration-200 flex items-center"
+                            >
+                                <i class="fas fa-user-times mr-2"></i>退会処理
+                            </button>
+                        </div>
+                    `;
+                    
+                    // 成功メッセージ
+                    messageArea.innerHTML = '<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">検索が完了しました</div>';
+                    
+                    // 結果セクションを表示
+                    searchResults.classList.remove('hidden');
+                    
+                } else {
+                    messageArea.innerHTML = '<div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">ユーザーが見つかりませんでした</div>';
+                    searchResults.classList.add('hidden');
+                }
+
+            } catch (error) {
+                console.error('検索エラー:', error);
+                messageArea.innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">検索に失敗しました: ${error.message}</div>`;
+                searchResults.classList.add('hidden');
+            } finally {
+                // ボタンを有効化
+                searchButton.disabled = false;
+                searchButton.innerHTML = '<i class="fas fa-search mr-2"></i>検索';
+            }
+        });
+
+        // 退会処理のグローバル変数
+        let currentWithdrawUser = null;
+
+        // 退会確認モーダルの制御
+        function withdrawUser(userId, email, nickname) {
+            currentWithdrawUser = { userId, email, nickname };
+            
+            // モーダルに情報を設定
+            document.getElementById('modalUserId').textContent = userId;
+            document.getElementById('modalUserEmail').textContent = email;
+            document.getElementById('modalUserNickname').textContent = nickname;
+            
+            // モーダルを表示
+            document.getElementById('withdrawModal').classList.remove('hidden');
+        }
+
+        // モーダルキャンセル処理
+        document.getElementById('cancelWithdraw').addEventListener('click', function() {
+            document.getElementById('withdrawModal').classList.add('hidden');
+            currentWithdrawUser = null;
+        });
+
+        // 退会処理実行
+        document.getElementById('confirmWithdraw').addEventListener('click', async function() {
+            if (!currentWithdrawUser) return;
+
+            const confirmButton = document.getElementById('confirmWithdraw');
+            const cancelButton = document.getElementById('cancelWithdraw');
+            const messageArea = document.getElementById('messageArea');
+            const searchResults = document.getElementById('searchResults');
+
+            try {
+                // ボタンを無効化
+                confirmButton.disabled = true;
+                cancelButton.disabled = true;
+                confirmButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>処理中...';
+
+                console.log('退会処理開始:', currentWithdrawUser);
+
+                // APIにリクエスト送信
+                const response = await fetch('/api/withdraw', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: currentWithdrawUser.userId,
+                        email: currentWithdrawUser.email
+                    })
+                });
+
+                console.log('退会APIレスポンスステータス:', response.status);
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`退会処理エラー: ${response.status} - ${errorData.error || 'Unknown error'}`);
+                }
+
+                const result = await response.json();
+                console.log('退会処理結果:', result);
+
+                // 成功メッセージを表示
+                messageArea.innerHTML = `
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        退会処理が完了しました: ${currentWithdrawUser.email}
+                    </div>
+                `;
+
+                // 検索結果を非表示にする
+                searchResults.classList.add('hidden');
+
+                // モーダルを閉じる
+                document.getElementById('withdrawModal').classList.add('hidden');
+                currentWithdrawUser = null;
+
+            } catch (error) {
+                console.error('退会処理エラー:', error);
+                messageArea.innerHTML = `
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        退会処理に失敗しました: ${error.message}
+                    </div>
+                `;
+            } finally {
+                // ボタンを有効化
+                confirmButton.disabled = false;
+                cancelButton.disabled = false;
+                confirmButton.innerHTML = '<i class="fas fa-user-times mr-2"></i>退会処理を実行';
+            }
+        });
+
+        // モーダル外クリックで閉じる
+        document.getElementById('withdrawModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                document.getElementById('withdrawModal').classList.add('hidden');
+                currentWithdrawUser = null;
+            }
+        });
+
+        // ページ読み込み時の処理
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('管理画面読み込み完了');
+            showSection('dashboard');
+        });
+    </script>
+</body>
+</html>
