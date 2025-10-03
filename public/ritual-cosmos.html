@@ -31,7 +31,7 @@
         radial-gradient(circle at 80% 20%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
         radial-gradient(circle at 40% 40%, rgba(199, 125, 255, 0.05) 0%, transparent 50%),
         linear-gradient(45deg, #000428 0%, #004e92 50%, #000428 100%);
-      animation: cosmicPulse 8s ease-in-out infinite;
+      animation: cosmicPulse 8s ease-in-out infinite, cosmicVortex 12s linear infinite;
       transition: opacity 3s ease-in-out;
     }
     
@@ -54,6 +54,29 @@
       }
     }
     
+    @keyframes cosmicVortex {
+      0% {
+        transform: scale(1) rotate(0deg);
+        filter: hue-rotate(0deg) brightness(1);
+      }
+      25% {
+        transform: scale(1.1) rotate(90deg);
+        filter: hue-rotate(90deg) brightness(1.2);
+      }
+      50% {
+        transform: scale(1.2) rotate(180deg);
+        filter: hue-rotate(180deg) brightness(1.4);
+      }
+      75% {
+        transform: scale(1.1) rotate(270deg);
+        filter: hue-rotate(270deg) brightness(1.2);
+      }
+      100% {
+        transform: scale(1) rotate(360deg);
+        filter: hue-rotate(360deg) brightness(1);
+      }
+    }
+    
     /* 浮遊する星 */
     .stars {
       position: fixed;
@@ -72,7 +95,7 @@
       height: 2px;
       background: #fff;
       border-radius: 50%;
-      animation: twinkle 3s ease-in-out infinite;
+      animation: twinkle 3s ease-in-out infinite, starVortex 15s linear infinite;
     }
     
     .star:nth-child(1) { top: 10%; left: 20%; animation-delay: 0s; }
@@ -99,6 +122,24 @@
       }
     }
     
+    @keyframes starVortex {
+      0% {
+        transform: translate(0, 0) scale(1);
+      }
+      25% {
+        transform: translate(-20px, -20px) scale(1.2);
+      }
+      50% {
+        transform: translate(-40px, -40px) scale(1.5);
+      }
+      75% {
+        transform: translate(-20px, -20px) scale(1.2);
+      }
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+    }
+    
     /* 神秘的な光の流れ */
     .cosmic-light {
       position: fixed;
@@ -111,7 +152,7 @@
       background: 
         conic-gradient(from 0deg at 30% 30%, transparent 0deg, rgba(102, 204, 255, 0.1) 45deg, transparent 90deg),
         conic-gradient(from 180deg at 70% 70%, transparent 0deg, rgba(157, 78, 221, 0.1) 45deg, transparent 90deg);
-      animation: cosmicRotate 20s linear infinite;
+      animation: cosmicRotate 20s linear infinite, lightVortex 8s ease-in-out infinite;
       transition: opacity 3s ease-in-out;
     }
     
@@ -126,6 +167,106 @@
       100% {
         transform: rotate(360deg);
         opacity: 0.3;
+      }
+    }
+    
+    @keyframes lightVortex {
+      0% {
+        transform: scale(1) rotate(0deg);
+        filter: brightness(1) contrast(1);
+      }
+      25% {
+        transform: scale(1.3) rotate(90deg);
+        filter: brightness(1.5) contrast(1.2);
+      }
+      50% {
+        transform: scale(1.6) rotate(180deg);
+        filter: brightness(2) contrast(1.5);
+      }
+      75% {
+        transform: scale(1.3) rotate(270deg);
+        filter: brightness(1.5) contrast(1.2);
+      }
+      100% {
+        transform: scale(1) rotate(360deg);
+        filter: brightness(1) contrast(1);
+      }
+    }
+    
+    /* 異次元吸い込み効果 */
+    .vortex-effect {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 200px;
+      height: 200px;
+      transform: translate(-50%, -50%);
+      background: 
+        radial-gradient(circle, transparent 30%, rgba(102, 204, 255, 0.1) 50%, rgba(157, 78, 221, 0.2) 70%, transparent 100%);
+      border-radius: 50%;
+      z-index: 0;
+      animation: vortexSuck 6s ease-in-out infinite;
+    }
+    
+    @keyframes vortexSuck {
+      0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0.3;
+      }
+      25% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.6;
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0.8;
+      }
+      75% {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0.6;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(2.5);
+        opacity: 0.3;
+      }
+    }
+    
+    /* 高速粒子 */
+    .particle-stream {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+      background: 
+        radial-gradient(ellipse at 20% 20%, rgba(102, 204, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(199, 125, 255, 0.05) 0%, transparent 50%);
+      animation: particleRush 4s linear infinite;
+    }
+    
+    @keyframes particleRush {
+      0% {
+        transform: translateX(-100%) translateY(-100%) scale(0.5);
+        opacity: 0;
+      }
+      25% {
+        transform: translateX(-50%) translateY(-50%) scale(0.8);
+        opacity: 0.5;
+      }
+      50% {
+        transform: translateX(0%) translateY(0%) scale(1);
+        opacity: 0.8;
+      }
+      75% {
+        transform: translateX(50%) translateY(50%) scale(1.2);
+        opacity: 0.5;
+      }
+      100% {
+        transform: translateX(100%) translateY(100%) scale(1.5);
+        opacity: 0;
       }
     }
     
@@ -481,6 +622,12 @@
   <!-- 神秘的な光の流れ -->
   <div class="cosmic-light"></div>
   
+  <!-- 異次元吸い込み効果 -->
+  <div class="vortex-effect"></div>
+  
+  <!-- 高速粒子 -->
+  <div class="particle-stream"></div>
+  
   <!-- sinden.mp4動画 -->
   <video class="sinden-video" id="sindenVideo" autoplay muted onerror="handleVideoError(this, 'sinden')">
     <source src="photo/sinden.mp4" type="video/mp4">
@@ -617,6 +764,12 @@
       
       // 星のアニメーションを開始
       createFloatingStars();
+      
+      // 異次元吸い込み効果を開始
+      startVortexEffect();
+      
+      // 高速粒子効果を開始
+      startParticleStream();
     }
     
     // 動的に星を生成して浮遊させる
@@ -632,6 +785,51 @@
         star.style.animationDelay = Math.random() * 3 + 's';
         star.style.animationDuration = (2 + Math.random() * 4) + 's';
         starsContainer.appendChild(star);
+      }
+    }
+    
+    // 異次元吸い込み効果を開始
+    function startVortexEffect() {
+      const vortexEffect = document.querySelector('.vortex-effect');
+      vortexEffect.style.opacity = '1';
+      
+      // 追加の渦巻き効果を動的に生成
+      for (let i = 0; i < 3; i++) {
+        const vortex = document.createElement('div');
+        vortex.className = 'vortex-effect';
+        vortex.style.position = 'fixed';
+        vortex.style.top = (30 + Math.random() * 40) + '%';
+        vortex.style.left = (30 + Math.random() * 40) + '%';
+        vortex.style.width = (100 + Math.random() * 200) + 'px';
+        vortex.style.height = (100 + Math.random() * 200) + 'px';
+        vortex.style.animationDelay = Math.random() * 2 + 's';
+        vortex.style.animationDuration = (4 + Math.random() * 4) + 's';
+        vortex.style.zIndex = '0';
+        document.body.appendChild(vortex);
+      }
+    }
+    
+    // 高速粒子効果を開始
+    function startParticleStream() {
+      const particleStream = document.querySelector('.particle-stream');
+      particleStream.style.opacity = '1';
+      
+      // 追加の粒子ストリームを動的に生成
+      for (let i = 0; i < 5; i++) {
+        const stream = document.createElement('div');
+        stream.className = 'particle-stream';
+        stream.style.position = 'fixed';
+        stream.style.top = Math.random() * 100 + '%';
+        stream.style.left = Math.random() * 100 + '%';
+        stream.style.width = (50 + Math.random() * 100) + 'px';
+        stream.style.height = (50 + Math.random() * 100) + 'px';
+        stream.style.animationDelay = Math.random() * 3 + 's';
+        stream.style.animationDuration = (2 + Math.random() * 3) + 's';
+        stream.style.zIndex = '1';
+        stream.style.pointerEvents = 'none';
+        stream.style.background = 
+          `radial-gradient(ellipse, rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.1) 0%, transparent 50%)`;
+        document.body.appendChild(stream);
       }
     }
     
