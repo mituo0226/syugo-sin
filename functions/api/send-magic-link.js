@@ -105,9 +105,9 @@ export async function onRequestPost(context) {
     // メール本文のHTML
     const htmlContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; color: #333333; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);">
-        <div style="text-align: center; margin-bottom: 30px; background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 25px; border-radius: 12px;">
-          <h1 style="color: #ffffff; font-size: 24px; margin: 0; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">【守護神】メール登録完了</h1>
-          <p style="color: #ffd700; font-size: 16px; margin: 10px 0; font-weight: bold;">会員登録のご案内</p>
+        <div style="text-align: center; margin-bottom: 30px; background: #ffffff; padding: 25px; border-radius: 12px; border: 3px solid #66ccff; box-shadow: 0 4px 15px rgba(102, 204, 255, 0.3);">
+          <h1 style="color: #1a1a2e; font-size: 24px; margin: 0; font-weight: bold; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);">【守護神】メール登録完了</h1>
+          <p style="color: #2c3e50; font-size: 16px; margin: 10px 0; font-weight: bold;">会員登録のご案内</p>
         </div>
         
         <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; border: 2px solid #66ccff; box-shadow: 0 2px 8px rgba(102, 204, 255, 0.2);">
