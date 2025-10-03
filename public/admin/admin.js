@@ -648,4 +648,83 @@ document.addEventListener('DOMContentLoaded', function() {
     // 各機能のセットアップ
     setupMemberSearch();
     setupMagicLinkTest();
+    setupRegistrationTest();
 });
+
+// 会員登録テスト機能のセットアップ
+function setupRegistrationTest() {
+    const registrationForm = document.getElementById('registrationTestForm');
+    if (registrationForm) {
+        registrationForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(registrationForm);
+            const registrationData = {
+                email: formData.get('email'),
+                nickname: formData.get('nickname'),
+                birthdate: formData.get('birthdate'),
+                guardian_id: formData.get('guardian_id'),
+                theme: formData.get('theme')
+            };
+            
+            const resultDiv = document.getElementById('registrationResult');
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin text-blue-600"></i> 会員登録をテスト中...</div>';
+            
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(registrationData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    resultDiv.innerHTML = `
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-600 mr-3"></i>
+                                <div>
+                                    <h3 class="text-sm font-medium text-green-800">会員登録成功</h3>
+                                    <div class="mt-2 text-sm text-green-700">
+                                        <p><strong>ID:</strong> ${result.id}</p>
+                                        <p><strong>メール:</strong> ${result.email}</p>
+                                        <p><strong>ニックネーム:</strong> ${result.nickname}</p>
+                                        <p><strong>登録日時:</strong> ${new Date(result.created_at).toLocaleString()}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-circle text-red-600 mr-3"></i>
+                                <div>
+                                    <h3 class="text-sm font-medium text-red-800">会員登録エラー</h3>
+                                    <p class="mt-2 text-sm text-red-700">${result.error || '不明なエラーが発生しました'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-circle text-red-600 mr-3"></i>
+                            <div>
+                                <h3 class="text-sm font-medium text-red-800">通信エラー</h3>
+                                <p class="mt-2 text-sm text-red-700">${error.message}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    }
+}

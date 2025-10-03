@@ -108,6 +108,15 @@
       }
     }
     
+    @keyframes successPulse {
+      0% {
+        color: #fff;
+      }
+      100% {
+        color: #66ccff;
+      }
+    }
+    
     /* 会話開始ボタン */
     .chat-start-button {
       position: fixed;
@@ -258,7 +267,7 @@
         }, 6000);
         
         setTimeout(() => {
-          showChatButton();
+          performUserRegistration();
         }, 12000);
         
       } catch (error) {
@@ -291,6 +300,79 @@
       
       // タイプライター効果
       typeWriter(speechText, text, 80);
+    }
+    
+    // 会員登録を実行
+    async function performUserRegistration() {
+      try {
+        // ユーザーデータを取得
+        const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+        
+        if (!userData.email) {
+          console.error('メールアドレスが見つかりません');
+          showChatButton(); // エラー時は会話ボタンを表示
+          return;
+        }
+        
+        // 会員登録データを準備
+        const registrationData = {
+          email: userData.email,
+          nickname: userData.nickname || userData.name || 'ユーザー',
+          birthdate: userData.year && userData.month && userData.day 
+            ? `${userData.year}-${userData.month.toString().padStart(2, '0')}-${userData.day.toString().padStart(2, '0')}` 
+            : null,
+          guardian_id: userData.guardianKey || null,
+          theme: userData.worry || userData.question || null
+        };
+        
+        console.log('会員登録データ:', registrationData);
+        
+        // API呼び出し
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(registrationData)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+          console.log('会員登録成功:', result);
+          
+          // 登録成功メッセージを表示
+          showRegistrationSuccess();
+          
+          // 3秒後に会話ボタンを表示
+          setTimeout(() => {
+            showChatButton();
+          }, 3000);
+          
+        } else {
+          console.error('会員登録エラー:', result);
+          
+          // エラー時も会話ボタンを表示（既存ユーザーの可能性）
+          showChatButton();
+        }
+        
+      } catch (error) {
+        console.error('会員登録処理エラー:', error);
+        
+        // エラー時は会話ボタンを表示
+        showChatButton();
+      }
+    }
+    
+    // 登録成功メッセージを表示
+    function showRegistrationSuccess() {
+      const speechText = document.getElementById('speechText');
+      const originalText = speechText.textContent;
+      
+      speechText.textContent = originalText + '\n\n✨ 会員登録が完了しました ✨';
+      
+      // 成功メッセージを光らせる
+      speechText.style.animation = 'speechGlow 1s ease-in-out infinite alternate, successPulse 2s ease-in-out infinite';
     }
     
     // 会話開始ボタンを表示

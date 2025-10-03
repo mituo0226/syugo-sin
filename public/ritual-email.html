@@ -284,13 +284,14 @@
       // エラーメッセージを非表示
       hideError();
       
-      // メールアドレスをlocalStorageに保存
-      try {
-        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-        userData.email = email;
-        localStorage.setItem('userData', JSON.stringify(userData));
-        
-        console.log('メールアドレスを保存:', email);
+        // メールアドレスをlocalStorageに保存
+        try {
+          const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+          userData.email = email;
+          localStorage.setItem('userData', JSON.stringify(userData));
+          
+          console.log('メールアドレスを保存:', email);
+          console.log('保存されたユーザーデータ:', userData);
         
         // 2秒後に次のページに遷移
         setTimeout(() => {
