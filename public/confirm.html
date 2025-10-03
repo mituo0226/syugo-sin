@@ -388,8 +388,20 @@
           return;
         }
         
+        // チケットデータを取得
+        const selectedTicket = localStorage.getItem('selectedTicket');
+        let ticketData = null;
+        
+        if (selectedTicket) {
+          try {
+            ticketData = JSON.parse(selectedTicket);
+          } catch (error) {
+            console.error('チケットデータの解析エラー:', error);
+          }
+        }
+        
         // 決済検証を実行
-        verifyPayment(uid, checkoutId);
+        verifyPayment(uid, checkoutId, ticketData);
         
         // メインコンテンツを表示
         setTimeout(() => {
@@ -404,7 +416,7 @@
     });
     
     // 決済検証関数
-    async function verifyPayment(uid, checkoutId) {
+    async function verifyPayment(uid, checkoutId, ticketData) {
       const loadingElement = document.getElementById('loading');
       const errorElement = document.getElementById('error');
       
@@ -412,7 +424,7 @@
         loadingElement.classList.add('show');
         errorElement.classList.remove('show');
         
-        console.log('決済検証開始:', { uid, checkoutId });
+        console.log('決済検証開始:', { uid, checkoutId, ticketData });
         
         // /api/verifyを呼び出し
         const response = await fetch('/api/verify', {
@@ -420,7 +432,11 @@
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ uid, checkoutId })
+          body: JSON.stringify({ 
+            uid: uid, 
+            checkoutId: checkoutId,
+            ticketData: ticketData
+          })
         });
         
         if (response.ok) {

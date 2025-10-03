@@ -117,6 +117,12 @@
                                     会員登録テスト
                                 </a>
                             </li>
+                            <li>
+                                <a href="#" onclick="showSection('purchase-history')" class="flex items-center px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-shopping-cart mr-3"></i>
+                                    購入履歴確認
+                                </a>
+                            </li>
                         </ul>
                     </li>
                     <li class="border-t border-gray-200 pt-2 mt-2">
@@ -521,6 +527,36 @@
                         </form>
 
                         <div id="registrationResult" class="mt-6 hidden"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 購入履歴確認 -->
+            <section id="purchase-history" class="section hidden">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">購入履歴確認</h2>
+                    <p class="text-gray-600">ユーザーの購入履歴と統計情報を確認</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow">
+                    <div class="p-6">
+                        <form id="purchaseHistoryForm" class="space-y-4">
+                            <div>
+                                <label for="historyEmail" class="block text-sm font-medium text-gray-700 mb-2">メールアドレス</label>
+                                <div class="flex space-x-2">
+                                    <input type="email" id="historyEmail" name="email" required
+                                           class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                           placeholder="user@example.com">
+                                    <button type="submit" 
+                                            class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+                                        <i class="fas fa-search mr-2"></i>
+                                        履歴を取得
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div id="purchaseHistoryResult" class="mt-6 hidden"></div>
                     </div>
                 </div>
             </section>

@@ -1,5 +1,48 @@
 import { getCorsHeaders, createErrorResponse, createSuccessResponse } from '../utils.js';
 
+// 購入履歴を保存する関数
+async function savePurchaseHistory(db, uid, ticketData, orderId, isTest) {
+  try {
+    // ユーザーIDを取得（UIDから）
+    const user = await db.prepare(`
+      SELECT id FROM users WHERE email = ?
+    `).bind(uid).first();
+
+    if (!user) {
+      console.error('ユーザーが見つかりません:', uid);
+      return;
+    }
+
+    const userId = user.id;
+    
+    // 購入履歴を保存
+    const result = await db.prepare(`
+      INSERT INTO purchases (user_id, ticket_type, ticket_name, price, minutes, payment_method, payment_status, square_order_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      userId,
+      ticketData.type || 'default',
+      ticketData.name || 'チケット',
+      ticketData.price || 0,
+      ticketData.minutes || 0,
+      isTest ? 'test' : 'square',
+      'completed',
+      orderId
+    ).run();
+
+    console.log('購入履歴を保存しました:', {
+      userId,
+      ticketData,
+      orderId,
+      isTest,
+      result
+    });
+
+  } catch (error) {
+    console.error('購入履歴保存エラー:', error);
+  }
+}
+
 export async function onRequestPost(context) {
   const { request, env } = context;
   const origin = request.headers.get("Origin");
@@ -26,7 +69,7 @@ export async function onRequestPost(context) {
       return createErrorResponse("Invalid JSON format", 400, corsHeaders);
     }
     
-    const { uid, checkoutId } = requestBody;
+    const { uid, checkoutId, ticketData } = requestBody;
     
     if (!uid || !checkoutId) {
       return createErrorResponse("UID and checkoutId are required", 400, corsHeaders);
@@ -34,8 +77,14 @@ export async function onRequestPost(context) {
 
     // テスト用のダミーcheckoutIdの場合は成功として扱う
     if (checkoutId.startsWith('test-checkout-')) {
-      console.log('テスト用決済検証:', { uid, checkoutId });
-      const expireAt = new Date(Date.now() + 3 * 60 * 1000).toISOString();
+      console.log('テスト用決済検証:', { uid, checkoutId, ticketData });
+      
+      // 購入履歴を保存
+      if (ticketData && env.DB) {
+        await savePurchaseHistory(env.DB, uid, ticketData, checkoutId, true);
+      }
+      
+      const expireAt = new Date(Date.now() + (ticketData?.minutes || 3) * 60 * 1000).toISOString();
       
       return createSuccessResponse({ 
         ok: true, 
@@ -67,8 +116,13 @@ export async function onRequestPost(context) {
       
       // 決済が完了しているかチェック
       if (order.state === "COMPLETED") {
-        // 有効期限を設定（10円＝3分）
-        const expireAt = new Date(Date.now() + 3 * 60 * 1000).toISOString();
+        // 購入履歴を保存
+        if (ticketData && env.DB) {
+          await savePurchaseHistory(env.DB, uid, ticketData, order.id, false);
+        }
+        
+        // 有効期限を設定
+        const expireAt = new Date(Date.now() + (ticketData?.minutes || 3) * 60 * 1000).toISOString();
         
         return createSuccessResponse({ 
           ok: true, 

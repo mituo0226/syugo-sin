@@ -649,6 +649,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupMemberSearch();
     setupMagicLinkTest();
     setupRegistrationTest();
+    setupPurchaseHistory();
 });
 
 // 会員登録テスト機能のセットアップ
@@ -706,6 +707,126 @@ function setupRegistrationTest() {
                                 <i class="fas fa-exclamation-circle text-red-600 mr-3"></i>
                                 <div>
                                     <h3 class="text-sm font-medium text-red-800">会員登録エラー</h3>
+                                    <p class="mt-2 text-sm text-red-700">${result.error || '不明なエラーが発生しました'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-circle text-red-600 mr-3"></i>
+                            <div>
+                                <h3 class="text-sm font-medium text-red-800">通信エラー</h3>
+                                <p class="mt-2 text-sm text-red-700">${error.message}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    }
+}
+
+// 購入履歴機能のセットアップ
+function setupPurchaseHistory() {
+    const historyForm = document.getElementById('purchaseHistoryForm');
+    if (historyForm) {
+        historyForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(historyForm);
+            const email = formData.get('email');
+            
+            const resultDiv = document.getElementById('purchaseHistoryResult');
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin text-blue-600"></i> 購入履歴を取得中...</div>';
+            
+            try {
+                const response = await fetch(`/api/purchase-history?email=${encodeURIComponent(email)}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    const { user, purchases, statistics } = result;
+                    
+                    let purchasesHtml = '';
+                    if (purchases.length > 0) {
+                        purchasesHtml = purchases.map(purchase => `
+                            <tr class="border-b border-gray-200">
+                                <td class="px-4 py-3 text-sm text-gray-900">${purchase.ticket_name}</td>
+                                <td class="px-4 py-3 text-sm text-gray-900">${purchase.ticket_type}</td>
+                                <td class="px-4 py-3 text-sm text-gray-900">¥${purchase.price.toLocaleString()}</td>
+                                <td class="px-4 py-3 text-sm text-gray-900">${purchase.minutes}分</td>
+                                <td class="px-4 py-3 text-sm text-gray-900">${purchase.payment_method}</td>
+                                <td class="px-4 py-3 text-sm text-gray-900">${new Date(purchase.purchase_date).toLocaleString()}</td>
+                                <td class="px-4 py-3 text-sm text-gray-900">${purchase.square_order_id || '-'}</td>
+                            </tr>
+                        `).join('');
+                    } else {
+                        purchasesHtml = `
+                            <tr>
+                                <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                                    購入履歴がありません
+                                </td>
+                            </tr>
+                        `;
+                    }
+                    
+                    resultDiv.innerHTML = `
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <div class="mb-4">
+                                <h3 class="text-lg font-medium text-green-800 mb-2">購入履歴</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                    <div class="bg-white p-3 rounded-lg">
+                                        <div class="text-sm text-gray-600">ユーザー</div>
+                                        <div class="font-semibold text-gray-900">${user.nickname} (${user.email})</div>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-lg">
+                                        <div class="text-sm text-gray-600">総購入回数</div>
+                                        <div class="font-semibold text-gray-900">${statistics.totalPurchases}回</div>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-lg">
+                                        <div class="text-sm text-gray-600">総購入金額</div>
+                                        <div class="font-semibold text-gray-900">¥${statistics.totalAmount.toLocaleString()}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">チケット名</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">タイプ</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">価格</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">時間</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">決済方法</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">購入日時</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">注文ID</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200">
+                                        ${purchasesHtml}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-circle text-red-600 mr-3"></i>
+                                <div>
+                                    <h3 class="text-sm font-medium text-red-800">エラー</h3>
                                     <p class="mt-2 text-sm text-red-700">${result.error || '不明なエラーが発生しました'}</p>
                                 </div>
                             </div>
