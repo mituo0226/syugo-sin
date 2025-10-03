@@ -18,25 +18,115 @@
       -moz-osx-font-smoothing: grayscale;
     }
     
-    /* 宇宙背景動画 */
-    .cosmos-video {
+    /* 神秘的な宇宙背景 */
+    .cosmic-background {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      object-fit: cover;
       z-index: -2;
-      opacity: 0;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(102, 204, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(199, 125, 255, 0.05) 0%, transparent 50%),
+        linear-gradient(45deg, #000428 0%, #004e92 50%, #000428 100%);
+      animation: cosmicPulse 8s ease-in-out infinite;
       transition: opacity 3s ease-in-out;
     }
     
-    .cosmos-video.fade-in {
-      opacity: 1;
+    @keyframes cosmicPulse {
+      0%, 100% {
+        opacity: 0.8;
+        background: 
+          radial-gradient(circle at 20% 80%, rgba(102, 204, 255, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 40% 40%, rgba(199, 125, 255, 0.05) 0%, transparent 50%),
+          linear-gradient(45deg, #000428 0%, #004e92 50%, #000428 100%);
+      }
+      50% {
+        opacity: 1;
+        background: 
+          radial-gradient(circle at 20% 80%, rgba(102, 204, 255, 0.2) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(157, 78, 221, 0.2) 0%, transparent 50%),
+          radial-gradient(circle at 40% 40%, rgba(199, 125, 255, 0.1) 0%, transparent 50%),
+          linear-gradient(45deg, #000428 0%, #004e92 50%, #000428 100%);
+      }
     }
     
-    .cosmos-video.fade-out {
-      opacity: 0;
+    /* 浮遊する星 */
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+      transition: opacity 3s ease-in-out;
+    }
+    
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: #fff;
+      border-radius: 50%;
+      animation: twinkle 3s ease-in-out infinite;
+    }
+    
+    .star:nth-child(1) { top: 10%; left: 20%; animation-delay: 0s; }
+    .star:nth-child(2) { top: 20%; left: 80%; animation-delay: 1s; }
+    .star:nth-child(3) { top: 30%; left: 40%; animation-delay: 2s; }
+    .star:nth-child(4) { top: 40%; left: 70%; animation-delay: 0.5s; }
+    .star:nth-child(5) { top: 50%; left: 10%; animation-delay: 1.5s; }
+    .star:nth-child(6) { top: 60%; left: 90%; animation-delay: 2.5s; }
+    .star:nth-child(7) { top: 70%; left: 30%; animation-delay: 0.8s; }
+    .star:nth-child(8) { top: 80%; left: 60%; animation-delay: 1.8s; }
+    .star:nth-child(9) { top: 90%; left: 15%; animation-delay: 2.2s; }
+    .star:nth-child(10) { top: 15%; left: 85%; animation-delay: 0.3s; }
+    .star:nth-child(11) { top: 35%; left: 25%; animation-delay: 1.2s; }
+    .star:nth-child(12) { top: 55%; left: 75%; animation-delay: 2.8s; }
+    
+    @keyframes twinkle {
+      0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.5);
+      }
+    }
+    
+    /* 神秘的な光の流れ */
+    .cosmic-light {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+      background: 
+        conic-gradient(from 0deg at 30% 30%, transparent 0deg, rgba(102, 204, 255, 0.1) 45deg, transparent 90deg),
+        conic-gradient(from 180deg at 70% 70%, transparent 0deg, rgba(157, 78, 221, 0.1) 45deg, transparent 90deg);
+      animation: cosmicRotate 20s linear infinite;
+      transition: opacity 3s ease-in-out;
+    }
+    
+    @keyframes cosmicRotate {
+      0% {
+        transform: rotate(0deg);
+        opacity: 0.3;
+      }
+      50% {
+        opacity: 0.6;
+      }
+      100% {
+        transform: rotate(360deg);
+        opacity: 0.3;
+      }
     }
     
     /* sinden.mp4動画 */
@@ -165,10 +255,27 @@
   </style>
 </head>
 <body>
-  <!-- 宇宙背景動画 -->
-  <video class="cosmos-video" id="cosmosVideo" autoplay muted loop onerror="handleVideoError(this, 'cosmo')">
-    <source src="photo/cosmo.mp4" type="video/mp4">
-  </video>
+  <!-- 神秘的な宇宙背景 -->
+  <div class="cosmic-background"></div>
+  
+  <!-- 浮遊する星 -->
+  <div class="stars">
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+  </div>
+  
+  <!-- 神秘的な光の流れ -->
+  <div class="cosmic-light"></div>
   
   <!-- sinden.mp4動画 -->
   <video class="sinden-video" id="sindenVideo" autoplay muted onerror="handleVideoError(this, 'sinden')">
@@ -191,9 +298,7 @@
       console.error(`動画読み込みエラー: ${videoName}.mp4`);
       
       // 動画の代わりに背景色を設定
-      if (videoName === 'cosmo') {
-        videoElement.parentElement.style.background = 'linear-gradient(45deg, #000428, #004e92)';
-      } else if (videoName === 'sinden') {
+      if (videoName === 'sinden') {
         videoElement.parentElement.style.background = 'radial-gradient(circle, #1a1a2e, #16213e)';
       } else if (videoName === 'hikari') {
         videoElement.parentElement.style.background = 'radial-gradient(circle, #ffd700, #ffed4e)';
@@ -210,9 +315,9 @@
         const userData = JSON.parse(localStorage.getItem("userData") || "{}");
         const nickname = userData.nickname || userData.name || "あなた";
         
-        // 1. cosmo.mp4をフェードインで表示
+        // 1. 神秘的な宇宙背景を表示
         setTimeout(() => {
-          showCosmosVideo();
+          showCosmicBackground();
         }, 500);
         
         // 2. 神秘的なメッセージを表示
@@ -269,12 +374,29 @@
       type();
     }
     
-    // cosmo動画をフェードインで表示
-    function showCosmosVideo() {
-      const cosmosVideo = document.getElementById('cosmosVideo');
+    // 神秘的な宇宙背景を表示
+    function showCosmicBackground() {
       const cosmicMessage = document.getElementById('cosmicMessage');
-      cosmosVideo.classList.add('fade-in');
       cosmicMessage.classList.add('show');
+      
+      // 星のアニメーションを開始
+      createFloatingStars();
+    }
+    
+    // 動的に星を生成して浮遊させる
+    function createFloatingStars() {
+      const starsContainer = document.querySelector('.stars');
+      
+      // 追加の星を動的に生成
+      for (let i = 0; i < 20; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.animationDelay = Math.random() * 3 + 's';
+        star.style.animationDuration = (2 + Math.random() * 4) + 's';
+        starsContainer.appendChild(star);
+      }
     }
     
     // メッセージをフェードアウト
@@ -283,13 +405,18 @@
       cosmicMessage.classList.add('fade-out');
     }
     
-    // cosmoからsindenにゆっくり切り替え
+    // 神秘的な背景からsindenにゆっくり切り替え
     function transitionToSindenVideo() {
-      const cosmosVideo = document.getElementById('cosmosVideo');
       const sindenVideo = document.getElementById('sindenVideo');
       
-      // cosmoをフェードアウト
-      cosmosVideo.classList.add('fade-out');
+      // 神秘的な背景をフェードアウト
+      const cosmicBackground = document.querySelector('.cosmic-background');
+      const stars = document.querySelector('.stars');
+      const cosmicLight = document.querySelector('.cosmic-light');
+      
+      cosmicBackground.style.opacity = '0';
+      stars.style.opacity = '0';
+      cosmicLight.style.opacity = '0';
       
       // sindenをフェードイン
       setTimeout(() => {
