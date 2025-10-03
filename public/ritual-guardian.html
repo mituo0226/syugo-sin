@@ -441,15 +441,19 @@
       const speechText = document.getElementById('speechText');
       const originalText = speechText.textContent;
       
-      speechText.textContent = originalText + '\n\n✨ 会員登録が完了しました ✨';
+      speechText.textContent = originalText + '\n\n📧 メールを確認してください 📧\n\nメールに記載されたリンクをクリックして\n会員登録を完了してください';
       
       // 成功メッセージを光らせる
       speechText.style.animation = 'speechGlow 1s ease-in-out infinite alternate, successPulse 2s ease-in-out infinite';
     }
     
-    // 会話開始ボタンを表示
+    // 会話開始ボタンを表示（メール確認を促す）
     function showChatButton() {
       const chatButton = document.getElementById('chatStartButton');
+      chatButton.textContent = 'メール確認後に会話を開始';
+      chatButton.disabled = true;
+      chatButton.style.opacity = '0.6';
+      chatButton.style.cursor = 'not-allowed';
       chatButton.classList.add('show');
     }
     
@@ -469,35 +473,10 @@
       type();
     }
     
-    // チャット開始
+    // チャット開始（メール確認後）
     function startChat() {
-      const chatButton = document.getElementById('chatStartButton');
-      chatButton.disabled = true;
-      chatButton.textContent = '会話を開始中...';
-      
-      // ユーザーデータをチャット用に準備
-      try {
-        const userData = JSON.parse(localStorage.getItem("userData") || "{}");
-        
-        // チャットページのURLパラメータを構築
-        const params = new URLSearchParams();
-        if (userData.nickname) params.set('nickname', userData.nickname);
-        if (userData.year) params.set('year', userData.year);
-        if (userData.month) params.set('month', userData.month);
-        if (userData.day) params.set('day', userData.day);
-        if (userData.guardianKey) params.set('guardian', userData.guardianKey);
-        if (userData.worry) params.set('worry', userData.worry);
-        
-        const chatUrl = `./consult/chat.html?${params.toString()}`;
-        
-        setTimeout(() => {
-          window.location.href = chatUrl;
-        }, 1500);
-        
-      } catch (error) {
-        console.error('チャット開始エラー:', error);
-        window.location.href = './consult/chat.html';
-      }
+      // メール確認を促すメッセージを表示
+      alert('まずメールを確認して、メールに記載されたリンクをクリックして会員登録を完了してください。\n\n登録完了後、再度このページにアクセスして会話を開始できます。');
     }
   </script>
 </body>

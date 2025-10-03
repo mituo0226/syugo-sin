@@ -529,6 +529,118 @@
       }
     }
     
+    /* 大きな成功メッセージ */
+    .success-message-large {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      animation: successFadeIn 0.5s ease-in-out;
+    }
+    
+    .email-check-notice {
+      background: linear-gradient(135deg, rgba(13, 13, 26, 0.95), rgba(25, 25, 50, 0.95));
+      border: 2px solid rgba(102, 204, 255, 0.3);
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+      animation: noticePulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes noticePulse {
+      0%, 100% {
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(102, 204, 255, 0.2);
+      }
+      50% {
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 50px rgba(102, 204, 255, 0.4);
+      }
+    }
+    
+    .notice-icon {
+      font-size: 4em;
+      margin-bottom: 20px;
+      animation: iconBounce 1s ease-in-out infinite;
+    }
+    
+    @keyframes iconBounce {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+    }
+    
+    .notice-title {
+      color: #66ccff;
+      font-size: 1.8em;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+    
+    .notice-email {
+      color: #fff;
+      font-size: 1.2em;
+      margin-bottom: 20px;
+      background: rgba(102, 204, 255, 0.1);
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(102, 204, 255, 0.3);
+    }
+    
+    .notice-message {
+      margin-bottom: 25px;
+    }
+    
+    .notice-main {
+      color: #ffd700;
+      font-size: 1.4em;
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+    
+    .notice-sub {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1em;
+      line-height: 1.6;
+    }
+    
+    .notice-timer {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.9em;
+      font-style: italic;
+    }
+    
+    /* モバイル向け調整 */
+    @media (max-width: 768px) {
+      .email-check-notice {
+        padding: 30px 20px;
+        margin: 20px;
+      }
+      
+      .notice-title {
+        font-size: 1.5em;
+      }
+      
+      .notice-main {
+        font-size: 1.2em;
+      }
+      
+      .notice-email {
+        font-size: 1em;
+      }
+    }
+    
     /* モバイル向け調整 */
     @media (max-width: 768px) {
       .cosmic-message {
@@ -939,22 +1051,22 @@
       // エラーメッセージを非表示
       hideError();
       
-      // マジックリンク送信
-      sendMagicLink(email);
+      // メール送信
+      sendEmail(email);
     });
     
-    // マジックリンク送信処理
-    async function sendMagicLink(email) {
+    // メール送信処理
+    async function sendEmail(email) {
       try {
         // ユーザーデータを取得
         const userData = JSON.parse(localStorage.getItem('userData') || '{}');
         userData.email = email;
         localStorage.setItem('userData', JSON.stringify(userData));
         
-        console.log('マジックリンク送信開始:', email);
+        console.log('メール送信開始:', email);
         console.log('ユーザーデータ:', userData);
         
-        // マジックリンク送信APIを呼び出し
+        // メール送信APIを呼び出し
         const response = await fetch('/api/send-magic-link', {
           method: 'POST',
           headers: {
@@ -970,7 +1082,7 @@
         const result = await response.json();
         
         if (response.ok && result.status === 'ok') {
-          console.log('マジックリンク送信成功:', result);
+          console.log('メール送信成功:', result);
           
           // 成功メッセージを表示
           showSuccessMessage(email);
@@ -981,7 +1093,7 @@
           }, 3000);
           
         } else {
-          console.error('マジックリンク送信エラー:', result);
+          console.error('メール送信エラー:', result);
           
           if (response.status === 409) {
             showError('このメールアドレスは既に登録されています');
@@ -996,7 +1108,7 @@
         }
         
       } catch (error) {
-        console.error('マジックリンク送信処理エラー:', error);
+        console.error('メール送信処理エラー:', error);
         showError('メール送信に失敗しました。ネットワーク接続を確認してください。');
         
         // ボタンを再有効化
@@ -1012,14 +1124,21 @@
       submitButton.textContent = 'メール送信完了！';
       submitButton.style.background = 'linear-gradient(90deg, #28a745, #20c997)';
       
-      // 成功メッセージを表示
+      // 大きな成功メッセージを表示
       const successMessage = document.createElement('div');
-      successMessage.className = 'success-message';
+      successMessage.className = 'success-message-large';
       successMessage.innerHTML = `
-        <div style="color: #28a745; font-size: 0.9em; margin-top: 10px; text-align: center;">
-          ✨ メールを送信しました ✨<br>
-          ${email} にマジックリンクを送信しました<br>
-          メールを確認してリンクをクリックしてください
+        <div class="email-check-notice">
+          <div class="notice-icon">📧</div>
+          <h2 class="notice-title">メールを送信しました！</h2>
+          <p class="notice-email">${email}</p>
+          <div class="notice-message">
+            <p class="notice-main">メールアドレスをすぐ確認してください</p>
+            <p class="notice-sub">メールに記載されたリンクをクリックして<br>会員登録を完了してください</p>
+          </div>
+          <div class="notice-timer">
+            <p>このページは3秒後に自動的に進みます...</p>
+          </div>
         </div>
       `;
       
