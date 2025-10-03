@@ -149,7 +149,7 @@
     
     .sinden-video.move-forward {
       animation: moveIntoDepth 8s ease-in-out infinite;
-      opacity: 0.5;
+      opacity: 1;
     }
     
     @keyframes moveIntoDepth {
@@ -163,7 +163,7 @@
       }
       100% { 
         transform: translate(-50%, -50%) scale(1.4);
-        filter: brightness(1.2);
+        filter: brightness(1);
       }
     }
     
@@ -178,11 +178,12 @@
       object-fit: contain;
       z-index: 2;
       opacity: 0;
-      transition: opacity 2s ease-in-out;
+      transition: all 3s ease-in-out;
     }
     
     .hikari-video.show {
-      opacity: 1;
+      opacity: 0.8;
+      transform: translate(-50%, -50%) scale(1);
     }
     
     /* 神秘的なメッセージ */
@@ -624,19 +625,26 @@
     function transitionToSindenVideo() {
       const sindenVideo = document.getElementById('sindenVideo');
       
-      // 神秘的な背景をフェードアウト
+      // sindenを先にフェードイン
+      sindenVideo.classList.add('show');
+      
+      // 神秘的な背景をゆっくりフェードアウト
       const cosmicBackground = document.querySelector('.cosmic-background');
       const stars = document.querySelector('.stars');
       const cosmicLight = document.querySelector('.cosmic-light');
       
-      cosmicBackground.style.opacity = '0';
-      stars.style.opacity = '0';
-      cosmicLight.style.opacity = '0';
-      
-      // sindenをフェードイン
+      // 段階的にフェードアウト
       setTimeout(() => {
-        sindenVideo.classList.add('show');
-      }, 2000);
+        cosmicBackground.style.opacity = '0.5';
+        stars.style.opacity = '0.5';
+        cosmicLight.style.opacity = '0.5';
+      }, 1000);
+      
+      setTimeout(() => {
+        cosmicBackground.style.opacity = '0';
+        stars.style.opacity = '0';
+        cosmicLight.style.opacity = '0';
+      }, 3000);
     }
     
     // sinden動画を表示
@@ -657,13 +665,18 @@
       
       // hikari動画を段階的に表示
       setTimeout(() => {
-        hikariVideo.style.opacity = '0.4';
+        hikariVideo.style.opacity = '0.3';
         hikariVideo.style.transform = 'translate(-50%, -50%) scale(0.6)';
       }, 500);
       
       setTimeout(() => {
+        hikariVideo.style.opacity = '0.6';
+        hikariVideo.style.transform = 'translate(-50%, -50%) scale(0.8)';
+      }, 1500);
+      
+      setTimeout(() => {
         hikariVideo.classList.add('show');
-      }, 2000);
+      }, 2500);
     }
     
     // メール入力フォームを表示
