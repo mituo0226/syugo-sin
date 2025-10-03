@@ -260,12 +260,51 @@
       box-shadow: 0 4px 15px rgba(102,204,255,0.3);
       transition: all 0.3s ease;
       margin: 10px;
+      position: relative;
+      overflow: hidden;
+      animation: mysticalGlow 3s ease-in-out infinite alternate;
+    }
+    
+    .action-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.6s ease;
+    }
+    
+    .action-button:hover::before {
+      left: 100%;
     }
     
     .action-button:hover {
       background: linear-gradient(90deg, #99e0ff, #66ccff);
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(102,204,255,0.4);
+      box-shadow: 0 6px 20px rgba(102,204,255,0.4), 0 0 30px rgba(102,204,255,0.3);
+      animation: mysticalPulse 1s ease-in-out infinite alternate;
+    }
+    
+    @keyframes mysticalGlow {
+      0% {
+        box-shadow: 0 4px 15px rgba(102,204,255,0.3), 0 0 10px rgba(102,204,255,0.2);
+      }
+      100% {
+        box-shadow: 0 4px 15px rgba(102,204,255,0.3), 0 0 20px rgba(102,204,255,0.4);
+      }
+    }
+    
+    @keyframes mysticalPulse {
+      0% {
+        box-shadow: 0 6px 20px rgba(102,204,255,0.4), 0 0 30px rgba(102,204,255,0.3);
+        transform: translateY(-2px) scale(1);
+      }
+      100% {
+        box-shadow: 0 6px 20px rgba(102,204,255,0.4), 0 0 40px rgba(102,204,255,0.5);
+        transform: translateY(-2px) scale(1.02);
+      }
     }
     
     /* 個人情報の説明 */
@@ -380,7 +419,7 @@
 
       <!-- 次へ進むボタン（龍の言葉の上に浮かび上がる） -->
       <div id="nextButton" class="next-button">
-        <button class="action-button" id="proceedButton">次へ進む</button>
+        <button class="action-button" id="proceedButton">守護神との交信に進む</button>
       </div>
 
       <!-- 個人情報の説明 -->
@@ -505,7 +544,7 @@
         console.error("ページ遷移エラー:", error);
         // エラーの場合はボタンを再有効化
         this.disabled = false;
-        this.textContent = "次へ進む";
+        this.textContent = "守護神との交信に進む";
         alert("ページの読み込みに失敗しました。もう一度お試しください。");
       }
     });
