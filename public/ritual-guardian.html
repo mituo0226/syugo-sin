@@ -307,24 +307,78 @@
     
     // ページ読み込み時の処理
     window.addEventListener("load", function() {
+      initializeGuardianPage();
+    });
+
+    // 守護神ページの初期化
+    async function initializeGuardianPage() {
       try {
-        // ユーザーデータを取得
-        const userData = JSON.parse(localStorage.getItem("userData") || "{}");
-        const nickname = userData.nickname || userData.name || "あなた";
+        // まずローカルストレージからユーザーデータを取得
+        let userData = JSON.parse(localStorage.getItem("userData") || "{}");
+        let nickname = userData.nickname || userData.name || "あなた";
+        let guardianName = userData.guardian || userData.guardianName || userData.guardianKey || "守護神";
+        let guardianKey = userData.guardianKey;
+
+        // ローカルストレージにデータがない場合、URLパラメータからメールアドレスを取得
+        if (!userData.email && !userData.nickname) {
+          const urlParams = new URLSearchParams(window.location.search);
+          const email = urlParams.get('email');
+          
+          if (email) {
+            console.log("ローカルストレージにデータがないため、Cloudflareから取得します:", email);
+            
+            try {
+              // Cloudflareからユーザーデータを取得
+              const response = await fetch(`/api/get-user-data?email=${encodeURIComponent(email)}`);
+              const result = await response.json();
+              
+              if (response.ok && result.status === "success") {
+                const cloudflareData = result.data;
+                console.log("Cloudflareから取得したデータ:", cloudflareData);
+                
+                // データを統合（マジックリンクデータを優先）
+                userData = {
+                  email: cloudflareData.email,
+                  nickname: cloudflareData.magic_nickname || cloudflareData.nickname || "あなた",
+                  guardian: cloudflareData.magic_guardian_name || cloudflareData.guardian_name || "守護神",
+                  guardianName: cloudflareData.magic_guardian_name || cloudflareData.guardian_name || "守護神",
+                  guardianKey: cloudflareData.magic_guardian_key || cloudflareData.guardian_key,
+                  year: cloudflareData.magic_birth_year || cloudflareData.birth_year,
+                  month: cloudflareData.magic_birth_month || cloudflareData.birth_month,
+                  day: cloudflareData.magic_birth_day || cloudflareData.birth_day,
+                  worry: cloudflareData.magic_worry_type || cloudflareData.worry_type || cloudflareData.theme
+                };
+                
+                nickname = userData.nickname;
+                guardianName = userData.guardian || userData.guardianName || userData.guardianKey || "守護神";
+                guardianKey = userData.guardianKey;
+                
+                console.log("統合されたユーザーデータ:", userData);
+              } else {
+                console.error("Cloudflareからのデータ取得に失敗:", result);
+              }
+            } catch (fetchError) {
+              console.error("Cloudflareデータ取得エラー:", fetchError);
+            }
+          }
+        }
         
         // 守護神の画像を設定
         const guardianImage = document.getElementById('guardianImage');
-        if (userData.guardianKey) {
-          guardianImage.src = `photo/${userData.guardianKey}.png`;
-          guardianImage.alt = userData.guardian || "守護神";
+        if (guardianKey) {
+          guardianImage.src = `photo/${guardianKey}.png`;
+          guardianImage.alt = guardianName;
         } else {
           guardianImage.src = 'photo/ryu.png';
           guardianImage.alt = '守護神';
         }
         
-        // 守護神の言葉を設定（ローカルストレージから取得）
-        const guardianName = userData.guardian || userData.guardianName || userData.guardianKey || "守護神";
+        // 守護神の言葉を設定
         const speechText = `私は${nickname}を守護する神${guardianName}。${nickname}の意志は届いた･･･魂が繋がった。\n私の意志は、鑑定士に届けられ、${nickname}への言葉となる。\nこれから先、いつも私があなたの側にいる、安心せよ。`;
+        
+        console.log("守護神の言葉:", speechText);
+        console.log("ニックネーム:", nickname);
+        console.log("守護神名:", guardianName);
         
         // 段階的に表示
         setTimeout(() => {
@@ -357,7 +411,7 @@
           window.location.href = './consult/chat.html';
         }, 3000);
       }
-    });
+    }
     
     // cosmo動画を表示
     function showCosmoVideo() {
