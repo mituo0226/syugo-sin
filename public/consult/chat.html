@@ -1182,6 +1182,9 @@
               responseText = '鑑定結果を取得できませんでした。';
             }
             
+            // 「あなた」をニックネームに変換
+            responseText = replaceYouWithNickname(responseText);
+            
             // 鑑定中メッセージを削除
             readingDiv.remove();
             
@@ -1242,6 +1245,57 @@
       } catch (error) {
         console.error('会話履歴の取得エラー:', error);
         return [];
+      }
+    }
+    
+    // 「あなた」をニックネームに変換
+    function replaceYouWithNickname(text) {
+      try {
+        // ユーザーデータからニックネームを取得
+        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        const nickname = userData.nickname || userData.name;
+        
+        // ニックネームが存在する場合のみ変換
+        if (nickname && nickname.trim() !== '') {
+          console.log('ニックネーム変換:', nickname);
+          
+          // 「あなた」をニックネームに置換
+          // 文脈を考慮して適切に置換
+          let convertedText = text;
+          
+          // 「あなたは」→「{ニックネーム}は」
+          convertedText = convertedText.replace(/あなたは/g, `${nickname}は`);
+          
+          // 「あなたの」→「{ニックネーム}の」
+          convertedText = convertedText.replace(/あなたの/g, `${nickname}の`);
+          
+          // 「あなたに」→「{ニックネーム}に」
+          convertedText = convertedText.replace(/あなたに/g, `${nickname}に`);
+          
+          // 「あなたが」→「{ニックネーム}が」
+          convertedText = convertedText.replace(/あなたが/g, `${nickname}が`);
+          
+          // 「あなたを」→「{ニックネーム}を」
+          convertedText = convertedText.replace(/あなたを/g, `${nickname}を`);
+          
+          // 「あなたも」→「{ニックネーム}も」
+          convertedText = convertedText.replace(/あなたも/g, `${nickname}も`);
+          
+          // 「あなたと」→「{ニックネーム}と」
+          convertedText = convertedText.replace(/あなたと/g, `${nickname}と`);
+          
+          // 単独の「あなた」→「{ニックネーム}」
+          // ただし、「あなた」が他の単語に含まれていない場合のみ
+          convertedText = convertedText.replace(/\bあなた\b/g, nickname);
+          
+          return convertedText;
+        } else {
+          console.log('ニックネームが設定されていないため、変換をスキップ');
+          return text;
+        }
+      } catch (error) {
+        console.error('ニックネーム変換エラー:', error);
+        return text;
       }
     }
     

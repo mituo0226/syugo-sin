@@ -388,8 +388,11 @@
         // システムメッセージを削除
         removeLastSystemMessage();
         
+        // 「あなた」をニックネームに変換
+        const convertedResponse = replaceYouWithNickname(response);
+        
         // 龍の返信を追加
-        addMessage(response, 'assistant');
+        addMessage(convertedResponse, 'assistant');
         
         updateDebugInfo(`🐉 龍の返信を生成: ${response.substring(0, 50)}...`);
         
@@ -477,6 +480,46 @@
       
       if (enabled) {
         messageInput.focus();
+      }
+    }
+    
+    // 「あなた」をニックネームに変換
+    function replaceYouWithNickname(text) {
+      try {
+        // ユーザーデータからニックネームを取得
+        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        const nickname = userData.nickname || userData.name;
+        
+        // ニックネームが存在する場合のみ変換
+        if (nickname && nickname.trim() !== '') {
+          console.log('ニックネーム変換:', nickname);
+          updateDebugInfo(`🔄 ニックネーム変換: ${nickname}`);
+          
+          // 「あなた」をニックネームに置換
+          let convertedText = text;
+          
+          // 助詞付きの「あなた」を変換
+          convertedText = convertedText.replace(/あなたは/g, `${nickname}は`);
+          convertedText = convertedText.replace(/あなたの/g, `${nickname}の`);
+          convertedText = convertedText.replace(/あなたに/g, `${nickname}に`);
+          convertedText = convertedText.replace(/あなたが/g, `${nickname}が`);
+          convertedText = convertedText.replace(/あなたを/g, `${nickname}を`);
+          convertedText = convertedText.replace(/あなたも/g, `${nickname}も`);
+          convertedText = convertedText.replace(/あなたと/g, `${nickname}と`);
+          
+          // 単独の「あなた」を変換
+          convertedText = convertedText.replace(/\bあなた\b/g, nickname);
+          
+          return convertedText;
+        } else {
+          console.log('ニックネームが設定されていないため、変換をスキップ');
+          updateDebugInfo('⚠️ ニックネームが設定されていないため、変換をスキップ');
+          return text;
+        }
+      } catch (error) {
+        console.error('ニックネーム変換エラー:', error);
+        updateDebugInfo(`❌ ニックネーム変換エラー: ${error.message}`);
+        return text;
       }
     }
     
