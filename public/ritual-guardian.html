@@ -323,7 +323,8 @@
         }
         
         // 守護神の言葉を設定
-        const speechText = `${nickname}の情報は伝わった。メールが届いているからすぐに確認して登録を完了しなさい。その後は私の精神の取り込んだ龍が${nickname}の相談を受けてくれ。安心して心を開いて交流を続けなさい。`;
+        const guardianName = userData.guardian || "守護神";
+        const speechText = `私は${nickname}を守護する神${guardianName}。${nickname}の意志は届いた･･･魂が繋がった。\n私の意志は、鑑定士に届けられ、${nickname}への言葉となる。\nこれから先、いつも私があなたの側にいる、安心せよ。`;
         
         // 段階的に表示
         setTimeout(() => {
@@ -339,7 +340,8 @@
         }, 6000);
         
         setTimeout(() => {
-          performUserRegistration();
+          // 龍の言葉ページに自動遷移
+          window.location.href = 'ritual-dragon.html';
         }, 12000);
         
       } catch (error) {
@@ -447,14 +449,10 @@
       speechText.style.animation = 'speechGlow 1s ease-in-out infinite alternate, successPulse 2s ease-in-out infinite';
     }
     
-    // 会話開始ボタンを表示（メール確認を促す）
+    // 会話開始ボタンを表示（削除済み）
     function showChatButton() {
-      const chatButton = document.getElementById('chatStartButton');
-      chatButton.textContent = 'メール確認後に会話を開始';
-      chatButton.disabled = true;
-      chatButton.style.opacity = '0.6';
-      chatButton.style.cursor = 'not-allowed';
-      chatButton.classList.add('show');
+      // ボタンは削除され、自動で龍のページに遷移
+      console.log('会話ボタンは削除されました。龍のページに自動遷移します。');
     }
     
     // タイプライター効果

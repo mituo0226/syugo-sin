@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>龍の言葉 | AI鑑定師 龍</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      overflow: hidden;
+      position: relative;
+      min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* 龍の画像 */
+    .dragon-image {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.3);
+      width: 80vw;
+      height: 80vh;
+      max-width: none;
+      max-height: none;
+      object-fit: contain;
+      border-radius: 30px;
+      box-shadow: 0 0 100px rgba(102, 204, 255, 0.9);
+      opacity: 0;
+      transition: all 2s ease-in-out;
+      z-index: 1;
+    }
+    
+    .dragon-image.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    
+    /* 龍の言葉 */
+    .dragon-speech {
+      position: fixed;
+      bottom: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(13, 13, 26, 0.85);
+      border: 2px solid rgba(102, 204, 255, 0.3);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 700px;
+      width: 90%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      opacity: 0;
+      transition: all 2s ease-in-out;
+      z-index: 2;
+    }
+    
+    .dragon-speech.show {
+      opacity: 1;
+    }
+    
+    .speech-text {
+      font-size: 1.4em;
+      line-height: 1.9;
+      text-align: center;
+      color: #fff;
+      margin: 0;
+      white-space: pre-line;
+    }
+    
+    /* チケット購入ボタン */
+    .ticket-button {
+      position: fixed;
+      bottom: 5%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(45deg, #66ccff, #9d4edd);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 25px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(102, 204, 255, 0.3);
+      opacity: 0;
+      transition: all 1s ease-in-out;
+      z-index: 3;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .ticket-button:hover {
+      transform: translateX(-50%) scale(1.05);
+      box-shadow: 0 6px 20px rgba(102, 204, 255, 0.5);
+    }
+    
+    .ticket-button.show {
+      opacity: 1;
+    }
+    
+    /* アニメーション */
+    @keyframes dragonMysticalEffect {
+      0%, 100% {
+        box-shadow: 0 0 100px rgba(102, 204, 255, 0.9);
+        filter: brightness(1) contrast(1);
+      }
+      50% {
+        box-shadow: 0 0 150px rgba(102, 204, 255, 1.2), 0 0 200px rgba(157, 78, 221, 0.8);
+        filter: brightness(1.2) contrast(1.1);
+      }
+    }
+    
+    @keyframes speechFloat {
+      0%, 100% {
+        transform: translateX(-50%) translateY(0px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      }
+      50% {
+        transform: translateX(-50%) translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9);
+      }
+    }
+    
+    @keyframes speechMysticalGlow {
+      0%, 100% {
+        text-shadow: 0 0 10px rgba(102, 204, 255, 0.5);
+        color: #fff;
+      }
+      50% {
+        text-shadow: 0 0 20px rgba(102, 204, 255, 0.8), 0 0 30px rgba(255, 215, 0, 0.3);
+        color: #66ccff;
+      }
+    }
+    
+    .dragon-image.show {
+      animation: dragonMysticalEffect 3s ease-in-out infinite;
+    }
+    
+    .dragon-speech.show {
+      animation: speechFloat 4s ease-in-out infinite;
+    }
+    
+    .speech-text {
+      animation: speechMysticalGlow 2s ease-in-out infinite;
+    }
+    
+    /* モバイル向け調整 */
+    @media (max-width: 768px) {
+      .dragon-image {
+        width: 90vw;
+        height: 70vh;
+        top: 45%;
+      }
+      
+      .dragon-speech {
+        bottom: 15%;
+        padding: 20px;
+        max-width: 90%;
+      }
+      
+      .speech-text {
+        font-size: 1.2em;
+        line-height: 1.7;
+      }
+      
+      .ticket-button {
+        bottom: 8%;
+        padding: 12px 25px;
+        font-size: 16px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .dragon-image {
+        width: 95vw;
+        height: 65vh;
+        top: 40%;
+      }
+      
+      .dragon-speech {
+        bottom: 12%;
+        padding: 15px;
+        max-width: 95%;
+      }
+      
+      .speech-text {
+        font-size: 1em;
+        line-height: 1.6;
+      }
+      
+      .ticket-button {
+        bottom: 10%;
+        padding: 10px 20px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 龍の画像 -->
+  <img class="dragon-image" id="dragonImage" src="photo/ryu.png" alt="龍" onerror="handleImageError(this)">
+  
+  <!-- 龍の言葉 -->
+  <div class="dragon-speech" id="dragonSpeech">
+    <p class="speech-text" id="speechText"></p>
+  </div>
+  
+  <!-- チケット購入ボタン -->
+  <a href="payment-ticket.html" class="ticket-button" id="ticketButton">
+    🎫 チケット購入
+  </a>
+
+  <script>
+    // 画像エラーハンドリング関数
+    function handleImageError(imageElement) {
+      console.error('龍の画像読み込みエラー');
+      // 画像の代わりに背景色を設定
+      imageElement.parentElement.style.background = 'radial-gradient(circle, #1a1a2e, #16213e)';
+      imageElement.style.display = 'none';
+    }
+    
+    // ページ読み込み時の処理
+    window.addEventListener("load", function() {
+      try {
+        // ユーザーデータを取得
+        const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+        const nickname = userData.nickname || userData.name || "あなた";
+        const guardianName = userData.guardian || "守護神";
+        
+        // 龍の言葉を設定
+        const speechText = `${guardianName}の精神を取り込んで${nickname}と鑑定を続けるにあたりあなたのエネルギーを会話チケットという形で購入してもらう必要がある。\n\n守護神への供物と考えてほしい。\n\n私との5分間の会話を初回限定100円で行うことができる。\nさらなる鑑定を希望する場合は、会話チケットの購入をしてくれ`;
+        
+        // 段階的に表示
+        setTimeout(() => {
+          showDragonImage();
+        }, 1000);
+        
+        setTimeout(() => {
+          showDragonSpeech(speechText);
+        }, 3000);
+        
+        setTimeout(() => {
+          showTicketButton();
+        }, 8000);
+        
+      } catch (error) {
+        console.error("ページ読み込みエラー:", error);
+        // エラー時はデフォルトで進行
+        setTimeout(() => {
+          showDragonImage();
+        }, 1000);
+      }
+    });
+    
+    // 龍の画像を表示
+    function showDragonImage() {
+      const dragonImage = document.getElementById('dragonImage');
+      dragonImage.classList.add('show');
+    }
+    
+    // 龍の言葉を表示
+    function showDragonSpeech(text) {
+      const dragonSpeech = document.getElementById('dragonSpeech');
+      const speechText = document.getElementById('speechText');
+      
+      dragonSpeech.classList.add('show');
+      typeWriter(speechText, text, 80);
+    }
+    
+    // チケット購入ボタンを表示
+    function showTicketButton() {
+      const ticketButton = document.getElementById('ticketButton');
+      ticketButton.classList.add('show');
+    }
+    
+    // タイプライター効果
+    function typeWriter(element, text, speed) {
+      let i = 0;
+      element.textContent = "";
+      
+      function type() {
+        if (i < text.length) {
+          element.textContent += text.charAt(i);
+          i++;
+          setTimeout(type, speed);
+        }
+      }
+      
+      type();
+    }
+  </script>
+</body>
+</html>
