@@ -104,36 +104,38 @@ export async function onRequestPost(context) {
 
     // メール本文のHTML
     const htmlContent = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #0d0d1a, #1a1a2e); color: #fff; padding: 30px; border-radius: 15px;">
-        <div style="text-align: center; margin-bottom: 30px;">
-          <h1 style="color: #66ccff; font-size: 24px; margin: 0;">【守護神】メール登録完了</h1>
-          <p style="color: #ffd700; font-size: 16px; margin: 10px 0;">会員登録のご案内</p>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; color: #333333; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);">
+        <div style="text-align: center; margin-bottom: 30px; background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 25px; border-radius: 12px;">
+          <h1 style="color: #ffffff; font-size: 24px; margin: 0; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">【守護神】メール登録完了</h1>
+          <p style="color: #ffd700; font-size: 16px; margin: 10px 0; font-weight: bold;">会員登録のご案内</p>
         </div>
         
-        <div style="background: rgba(102, 204, 255, 0.2); padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid rgba(102, 204, 255, 0.3);">
-          <p style="font-size: 18px; margin: 0; color: #ffffff; font-weight: bold;">${nickname || 'ユーザー'} 様</p>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; border: 2px solid #66ccff; box-shadow: 0 2px 8px rgba(102, 204, 255, 0.2);">
+          <p style="font-size: 18px; margin: 0; color: #1a1a2e; font-weight: bold; text-align: center;">${nickname || 'ユーザー'} 様</p>
         </div>
         
-        <p style="font-size: 16px; line-height: 1.6; margin: 20px 0; color: #ffffff; background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2);">
-          守護神との交信を完了するために、以下のリンクをクリックして会員登録を完了してください。
-        </p>
+        <div style="background: #f0f8ff; padding: 20px; border-radius: 10px; margin: 20px 0; border: 2px solid #4a90e2; box-shadow: 0 2px 8px rgba(74, 144, 226, 0.15);">
+          <p style="font-size: 16px; line-height: 1.6; margin: 0; color: #2c3e50; text-align: center; font-weight: 500;">
+            守護神との交信を完了するために、以下のリンクをクリックして会員登録を完了してください。
+          </p>
+        </div>
         
         <div style="text-align: center; margin: 30px 0;">
-          <a href="${magicLink}" style="background: linear-gradient(45deg, #66ccff, #9d4edd); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; display: inline-block; font-size: 16px; font-weight: bold; box-shadow: 0 4px 15px rgba(102, 204, 255, 0.3);">
+          <a href="${magicLink}" style="background: linear-gradient(45deg, #66ccff, #9d4edd); color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 30px; display: inline-block; font-size: 18px; font-weight: bold; box-shadow: 0 6px 20px rgba(102, 204, 255, 0.4); border: 2px solid #ffffff;">
             ✨ 登録を確認 ✨
           </a>
         </div>
         
-        <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid rgba(255, 255, 255, 0.2);">
-          <p style="color: #e0e0e0; font-size: 14px; margin: 0; line-height: 1.5;">
-            ⏰ このリンクは30分間有効です<br>
-            📧 もしボタンがクリックできない場合は、以下のURLをコピーしてブラウザに貼り付けてください：<br>
-            <a href="${magicLink}" style="color: #66ccff; word-break: break-all; text-decoration: underline;">${magicLink}</a>
+        <div style="background: #fff8dc; padding: 20px; border-radius: 10px; margin: 20px 0; border: 2px solid #ffa500; box-shadow: 0 2px 8px rgba(255, 165, 0, 0.2);">
+          <p style="color: #8b4513; font-size: 14px; margin: 0; line-height: 1.6; font-weight: 500;">
+            ⏰ <strong>このリンクは30分間有効です</strong><br><br>
+            📧 もしボタンがクリックできない場合は、以下のURLをコピーしてブラウザに貼り付けてください：<br><br>
+            <a href="${magicLink}" style="color: #0066cc; word-break: break-all; text-decoration: underline; font-weight: bold; background: #e6f3ff; padding: 5px 8px; border-radius: 4px; display: inline-block; margin-top: 8px;">${magicLink}</a>
           </p>
         </div>
         
-        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(102, 204, 255, 0.2);">
-          <p style="color: #cccccc; font-size: 12px; margin: 0;">
+        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #e0e0e0;">
+          <p style="color: #666666; font-size: 12px; margin: 0; font-style: italic;">
             【守護神】AIjudgment - あなたの運命を導くAI鑑定師
           </p>
         </div>
