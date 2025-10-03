@@ -323,7 +323,7 @@
         }
         
         // 守護神の言葉を設定
-        const guardianName = userData.guardian || "守護神";
+        const guardianName = userData.guardian || userData.guardianName || "守護神";
         const speechText = `私は${nickname}を守護する神${guardianName}。${nickname}の意志は届いた･･･魂が繋がった。\n私の意志は、鑑定士に届けられ、${nickname}への言葉となる。\nこれから先、いつも私があなたの側にいる、安心せよ。`;
         
         // 段階的に表示
@@ -339,10 +339,15 @@
           showGuardianSpeech(speechText);
         }, 6000);
         
+        // 言葉が表示し終わった後にフェードアウト開始
+        setTimeout(() => {
+          startFadeOut();
+        }, 10000);
+        
         setTimeout(() => {
           // 龍の言葉ページに自動遷移
           window.location.href = 'ritual-dragon.html';
-        }, 12000);
+        }, 13000);
         
       } catch (error) {
         console.error("ページ読み込みエラー:", error);
@@ -469,6 +474,24 @@
       }
       
       type();
+    }
+    
+    // フェードアウト開始
+    function startFadeOut() {
+      // 守護神の画像をフェードアウト
+      const guardianImage = document.getElementById('guardianImage');
+      guardianImage.style.transition = 'opacity 2s ease-in-out';
+      guardianImage.style.opacity = '0';
+      
+      // 守護神の言葉をフェードアウト
+      const guardianSpeech = document.getElementById('guardianSpeech');
+      guardianSpeech.style.transition = 'opacity 2s ease-in-out';
+      guardianSpeech.style.opacity = '0';
+      
+      // コスモ映像をフェードアウト
+      const cosmoBackground = document.getElementById('cosmoBackground');
+      cosmoBackground.style.transition = 'opacity 2s ease-in-out';
+      cosmoBackground.style.opacity = '0';
     }
     
     // チャット開始（メール確認後）
