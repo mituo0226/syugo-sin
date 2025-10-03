@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>守護神の言葉 | AI鑑定師 龍</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      overflow: hidden;
+      position: relative;
+      min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* cosmo.mp4背景動画 */
+    .cosmo-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: -2;
+      opacity: 0;
+      transition: opacity 2s ease-in-out;
+    }
+    
+    .cosmo-background.show {
+      opacity: 1;
+    }
+    
+    /* 守護神の画像 */
+    .guardian-image {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 200px;
+      max-height: 200px;
+      border-radius: 20px;
+      box-shadow: 0 0 50px rgba(157, 78, 221, 0.8);
+      z-index: 5;
+      opacity: 0;
+      transition: all 3s ease-in-out;
+    }
+    
+    .guardian-image.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+      animation: guardianGlow 4s ease-in-out infinite alternate;
+    }
+    
+    @keyframes guardianGlow {
+      0% {
+        box-shadow: 0 0 50px rgba(157, 78, 221, 0.8);
+      }
+      100% {
+        box-shadow: 0 0 80px rgba(157, 78, 221, 1), 0 0 100px rgba(199, 125, 255, 0.5);
+      }
+    }
+    
+    /* 守護神の言葉 */
+    .guardian-speech {
+      position: fixed;
+      bottom: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(13, 13, 26, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 30px;
+      border: 2px solid rgba(157, 78, 221, 0.4);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(157, 78, 221, 0.3);
+      z-index: 10;
+      opacity: 0;
+      transition: all 2s ease-in-out;
+      max-width: 90vw;
+      width: 600px;
+    }
+    
+    .guardian-speech.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    
+    .speech-text {
+      font-size: 1.3em;
+      line-height: 1.8;
+      text-align: center;
+      color: #fff;
+      text-shadow: 0 0 15px rgba(157, 78, 221, 0.6);
+      animation: speechGlow 3s ease-in-out infinite alternate;
+    }
+    
+    @keyframes speechGlow {
+      0% {
+        text-shadow: 0 0 15px rgba(157, 78, 221, 0.6);
+      }
+      100% {
+        text-shadow: 0 0 25px rgba(157, 78, 221, 0.8), 0 0 35px rgba(199, 125, 255, 0.4);
+      }
+    }
+    
+    /* 会話開始ボタン */
+    .chat-start-button {
+      position: fixed;
+      bottom: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, #66ccff, #3399ff);
+      border: none;
+      border-radius: 15px;
+      padding: 15px 40px;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #000;
+      cursor: pointer;
+      z-index: 15;
+      opacity: 0;
+      transition: all 2s ease-in-out;
+      box-shadow: 0 8px 25px rgba(102, 204, 255, 0.4);
+      animation: buttonPulse 3s ease-in-out infinite alternate;
+    }
+    
+    .chat-start-button.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    
+    .chat-start-button:hover {
+      background: linear-gradient(90deg, #99e0ff, #66ccff);
+      transform: translateX(-50%) translateY(-3px);
+      box-shadow: 0 12px 35px rgba(102, 204, 255, 0.6);
+    }
+    
+    @keyframes buttonPulse {
+      0% {
+        box-shadow: 0 8px 25px rgba(102, 204, 255, 0.4);
+      }
+      100% {
+        box-shadow: 0 8px 25px rgba(102, 204, 255, 0.4), 0 0 20px rgba(102, 204, 255, 0.3);
+      }
+    }
+    
+    /* モバイル向け調整 */
+    @media (max-width: 768px) {
+      .guardian-image {
+        max-width: 150px;
+        max-height: 150px;
+        top: 40%;
+      }
+      
+      .guardian-speech {
+        bottom: 25%;
+        padding: 25px;
+        width: 95vw;
+        max-width: 400px;
+      }
+      
+      .speech-text {
+        font-size: 1.1em;
+        line-height: 1.6;
+      }
+      
+      .chat-start-button {
+        bottom: 8%;
+        padding: 12px 30px;
+        font-size: 1.1em;
+      }
+    }
+    
+    /* iPhone向け調整 */
+    @media (max-width: 480px) {
+      .guardian-image {
+        max-width: 120px;
+        max-height: 120px;
+        top: 35%;
+      }
+      
+      .guardian-speech {
+        bottom: 30%;
+        padding: 20px;
+        width: 98vw;
+        max-width: 350px;
+      }
+      
+      .speech-text {
+        font-size: 1em;
+        line-height: 1.5;
+      }
+      
+      .chat-start-button {
+        bottom: 6%;
+        padding: 10px 25px;
+        font-size: 1em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- cosmo.mp4背景動画 -->
+  <video class="cosmo-background" id="cosmoVideo" autoplay muted loop>
+    <source src="video/cosmo.mp4" type="video/mp4">
+  </video>
+  
+  <!-- 守護神の画像 -->
+  <img class="guardian-image" id="guardianImage" src="" alt="守護神">
+  
+  <!-- 守護神の言葉 -->
+  <div class="guardian-speech" id="guardianSpeech">
+    <div class="speech-text" id="speechText"></div>
+  </div>
+  
+  <!-- 会話開始ボタン -->
+  <button class="chat-start-button" id="chatStartButton" onclick="startChat()">
+    龍との会話を進める
+  </button>
+
+  <script>
+    // ページ読み込み時の処理
+    window.addEventListener("load", function() {
+      try {
+        // ユーザーデータを取得
+        const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+        const nickname = userData.nickname || userData.name || "あなた";
+        
+        // 守護神の画像を設定
+        const guardianImage = document.getElementById('guardianImage');
+        if (userData.guardianKey) {
+          guardianImage.src = `photo/${userData.guardianKey}.png`;
+          guardianImage.alt = userData.guardian || "守護神";
+        } else {
+          guardianImage.src = 'photo/ryu.png';
+          guardianImage.alt = '守護神';
+        }
+        
+        // 守護神の言葉を設定
+        const speechText = `${nickname}の情報は伝わった。メールが届いているからすぐに確認して登録を完了しなさい。その後は私の精神の取り込んだ龍が${nickname}の相談を受けてくれ。安心して心を開いて交流を続けなさい。`;
+        
+        // 段階的に表示
+        setTimeout(() => {
+          showCosmoVideo();
+        }, 1000);
+        
+        setTimeout(() => {
+          showGuardianImage();
+        }, 3000);
+        
+        setTimeout(() => {
+          showGuardianSpeech(speechText);
+        }, 6000);
+        
+        setTimeout(() => {
+          showChatButton();
+        }, 12000);
+        
+      } catch (error) {
+        console.error("ページ読み込みエラー:", error);
+        // エラー時はデフォルトで進行
+        setTimeout(() => {
+          window.location.href = './consult/chat.html';
+        }, 3000);
+      }
+    });
+    
+    // cosmo動画を表示
+    function showCosmoVideo() {
+      const cosmoVideo = document.getElementById('cosmoVideo');
+      cosmoVideo.classList.add('show');
+    }
+    
+    // 守護神画像を表示
+    function showGuardianImage() {
+      const guardianImage = document.getElementById('guardianImage');
+      guardianImage.classList.add('show');
+    }
+    
+    // 守護神の言葉をタイプライター効果で表示
+    function showGuardianSpeech(text) {
+      const speechText = document.getElementById('speechText');
+      const guardianSpeech = document.getElementById('guardianSpeech');
+      
+      guardianSpeech.classList.add('show');
+      
+      // タイプライター効果
+      typeWriter(speechText, text, 80);
+    }
+    
+    // 会話開始ボタンを表示
+    function showChatButton() {
+      const chatButton = document.getElementById('chatStartButton');
+      chatButton.classList.add('show');
+    }
+    
+    // タイプライター効果
+    function typeWriter(element, text, speed) {
+      let i = 0;
+      element.textContent = "";
+      
+      function type() {
+        if (i < text.length) {
+          element.textContent += text.charAt(i);
+          i++;
+          setTimeout(type, speed);
+        }
+      }
+      
+      type();
+    }
+    
+    // チャット開始
+    function startChat() {
+      const chatButton = document.getElementById('chatStartButton');
+      chatButton.disabled = true;
+      chatButton.textContent = '会話を開始中...';
+      
+      // ユーザーデータをチャット用に準備
+      try {
+        const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+        
+        // チャットページのURLパラメータを構築
+        const params = new URLSearchParams();
+        if (userData.nickname) params.set('nickname', userData.nickname);
+        if (userData.year) params.set('year', userData.year);
+        if (userData.month) params.set('month', userData.month);
+        if (userData.day) params.set('day', userData.day);
+        if (userData.guardianKey) params.set('guardian', userData.guardianKey);
+        if (userData.worry) params.set('worry', userData.worry);
+        
+        const chatUrl = `./consult/chat.html?${params.toString()}`;
+        
+        setTimeout(() => {
+          window.location.href = chatUrl;
+        }, 1500);
+        
+      } catch (error) {
+        console.error('チャット開始エラー:', error);
+        window.location.href = './consult/chat.html';
+      }
+    }
+  </script>
+</body>
+</html>
