@@ -370,6 +370,24 @@
       opacity: 1;
     }
     
+    /* 成功メッセージ */
+    .success-message {
+      margin-top: 15px;
+      opacity: 1;
+      animation: successFadeIn 0.5s ease-in-out;
+    }
+    
+    @keyframes successFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
     /* モバイル向け調整 */
     @media (max-width: 768px) {
       .cosmic-message {
@@ -718,32 +736,98 @@
       
       // ボタンを無効化
       submitButton.disabled = true;
-      submitButton.textContent = '処理中...';
+      submitButton.textContent = 'メール送信中...';
       
       // エラーメッセージを非表示
       hideError();
       
-      // メールアドレスをlocalStorageに保存
+      // マジックリンク送信
+      sendMagicLink(email);
+    });
+    
+    // マジックリンク送信処理
+    async function sendMagicLink(email) {
       try {
+        // ユーザーデータを取得
         const userData = JSON.parse(localStorage.getItem('userData') || '{}');
         userData.email = email;
         localStorage.setItem('userData', JSON.stringify(userData));
         
-        console.log('メールアドレスを保存:', email);
-        console.log('保存されたユーザーデータ:', userData);
+        console.log('マジックリンク送信開始:', email);
+        console.log('ユーザーデータ:', userData);
         
-        // 2秒後に次のページに遷移
-        setTimeout(() => {
-          window.location.href = 'ritual-guardian.html';
-        }, 2000);
+        // マジックリンク送信APIを呼び出し
+        const response = await fetch('/api/send-magic-link', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            nickname: userData.nickname || userData.name || 'ユーザー',
+            userData: userData
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok && result.status === 'ok') {
+          console.log('マジックリンク送信成功:', result);
+          
+          // 成功メッセージを表示
+          showSuccessMessage(email);
+          
+          // 3秒後に次のページに遷移
+          setTimeout(() => {
+            window.location.href = 'ritual-guardian.html';
+          }, 3000);
+          
+        } else {
+          console.error('マジックリンク送信エラー:', result);
+          
+          if (response.status === 409) {
+            showError('このメールアドレスは既に登録されています');
+          } else {
+            showError(result.error || 'メール送信に失敗しました');
+          }
+          
+          // ボタンを再有効化
+          const submitButton = document.getElementById('submitButton');
+          submitButton.disabled = false;
+          submitButton.textContent = '入力完了';
+        }
         
       } catch (error) {
-        console.error('データ保存エラー:', error);
-        showError('データの保存に失敗しました');
+        console.error('マジックリンク送信処理エラー:', error);
+        showError('メール送信に失敗しました。ネットワーク接続を確認してください。');
+        
+        // ボタンを再有効化
+        const submitButton = document.getElementById('submitButton');
         submitButton.disabled = false;
         submitButton.textContent = '入力完了';
       }
-    });
+    }
+    
+    // 成功メッセージ表示
+    function showSuccessMessage(email) {
+      const submitButton = document.getElementById('submitButton');
+      submitButton.textContent = 'メール送信完了！';
+      submitButton.style.background = 'linear-gradient(90deg, #28a745, #20c997)';
+      
+      // 成功メッセージを表示
+      const successMessage = document.createElement('div');
+      successMessage.className = 'success-message';
+      successMessage.innerHTML = `
+        <div style="color: #28a745; font-size: 0.9em; margin-top: 10px; text-align: center;">
+          ✨ メールを送信しました ✨<br>
+          ${email} にマジックリンクを送信しました<br>
+          メールを確認してリンクをクリックしてください
+        </div>
+      `;
+      
+      const form = document.getElementById('emailForm');
+      form.appendChild(successMessage);
+    }
     
     // メールアドレスバリデーション
     function isValidEmail(email) {
