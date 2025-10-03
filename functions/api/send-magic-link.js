@@ -104,20 +104,39 @@ export async function onRequestPost(context) {
 
     // メール本文のHTML
     const htmlContent = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2>【守護神占い】会員登録完了</h2>
-        <p>${nickname || 'ユーザー'} 様</p>
-        <p>以下のリンクをクリックして会員登録を完了してください：</p>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #0d0d1a, #1a1a2e); color: #fff; padding: 30px; border-radius: 15px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #66ccff; font-size: 24px; margin: 0;">【守護神】AIjudgment</h1>
+          <p style="color: #ffd700; font-size: 16px; margin: 10px 0;">会員登録のご案内</p>
+        </div>
+        
+        <div style="background: rgba(102, 204, 255, 0.1); padding: 20px; border-radius: 10px; margin: 20px 0;">
+          <p style="font-size: 18px; margin: 0;">${nickname || 'ユーザー'} 様</p>
+        </div>
+        
+        <p style="font-size: 16px; line-height: 1.6; margin: 20px 0;">
+          守護神との交信を完了するために、以下のリンクをクリックして会員登録を完了してください。
+        </p>
+        
         <div style="text-align: center; margin: 30px 0;">
-          <a href="${magicLink}" style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
-            会員登録を完了
+          <a href="${magicLink}" style="background: linear-gradient(45deg, #66ccff, #9d4edd); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; display: inline-block; font-size: 16px; font-weight: bold; box-shadow: 0 4px 15px rgba(102, 204, 255, 0.3);">
+            ✨ 会員登録を完了 ✨
           </a>
         </div>
-        <p style="color: #666; font-size: 14px;">
-          このリンクは30分間有効です。<br>
-          もしボタンがクリックできない場合は、以下のURLをコピーしてブラウザに貼り付けてください：<br>
-          <a href="${magicLink}">${magicLink}</a>
-        </p>
+        
+        <div style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <p style="color: #ccc; font-size: 14px; margin: 0; line-height: 1.5;">
+            ⏰ このリンクは30分間有効です<br>
+            📧 もしボタンがクリックできない場合は、以下のURLをコピーしてブラウザに貼り付けてください：<br>
+            <a href="${magicLink}" style="color: #66ccff; word-break: break-all;">${magicLink}</a>
+          </p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(102, 204, 255, 0.2);">
+          <p style="color: #999; font-size: 12px; margin: 0;">
+            【守護神】AIjudgment - あなたの運命を導くAI鑑定師
+          </p>
+        </div>
       </div>
     `;
 
@@ -131,7 +150,7 @@ export async function onRequestPost(context) {
       body: JSON.stringify({
         from: "noreply@syugo-sin.com",
         to: email,
-        subject: "ログイン用マジックリンク",
+        subject: "【守護神】AIjudgment",
         html: htmlContent,
       }),
     });
