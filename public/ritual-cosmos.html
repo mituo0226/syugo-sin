@@ -59,6 +59,7 @@
     
     .sinden-video.move-forward {
       animation: moveIntoDepth 8s ease-in-out infinite;
+      opacity: 0.5;
     }
     
     @keyframes moveIntoDepth {
@@ -68,11 +69,11 @@
       }
       50% { 
         transform: translate(-50%, -50%) scale(1.2);
-        filter: brightness(0.8);
+        filter: brightness(1);
       }
       100% { 
         transform: translate(-50%, -50%) scale(1.4);
-        filter: brightness(0.6);
+        filter: brightness(1.2);
       }
     }
     
