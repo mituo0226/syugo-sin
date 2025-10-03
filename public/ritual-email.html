@@ -18,16 +18,43 @@
       -moz-osx-font-smoothing: grayscale;
     }
     
-    /* hikari.mp4背景動画 */
-    .hikari-background {
+    /* sinden.mp4動画（奥に進んでいく） */
+    .sinden-background {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
       object-fit: cover;
+      z-index: -3;
+      opacity: 0.8;
+      animation: moveForward 8s ease-in-out infinite;
+    }
+    
+    @keyframes moveForward {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    
+    /* hikari.mp4動画（小さく現れて大きくなる） */
+    .hikari-background {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20vw;
+      height: 20vh;
+      object-fit: contain;
       z-index: -2;
-      opacity: 0.6;
+      opacity: 0;
+      transition: all 4s ease-in-out;
+    }
+    
+    .hikari-background.show {
+      opacity: 1;
+      width: 60vw;
+      height: 60vh;
     }
     
     /* メール入力フォーム */
@@ -218,8 +245,13 @@
   </style>
 </head>
 <body>
-  <!-- hikari.mp4背景動画 -->
-  <video class="hikari-background" autoplay muted loop onerror="handleVideoError(this)">
+  <!-- sinden.mp4背景動画（奥に進んでいく） -->
+  <video class="sinden-background" autoplay muted loop onerror="handleVideoError(this, 'sinden')">
+    <source src="photo/sinden.mp4" type="video/mp4">
+  </video>
+  
+  <!-- hikari.mp4動画（小さく現れて大きくなる） -->
+  <video class="hikari-background" autoplay muted loop onerror="handleVideoError(this, 'hikari')">
     <source src="photo/hikari.mp4" type="video/mp4">
   </video>
   
@@ -252,23 +284,44 @@
 
   <script>
     // 動画エラーハンドリング関数
-    function handleVideoError(videoElement) {
-      console.error('hikari.mp4の読み込みエラー');
-      // 動画の代わりに光る背景を設定
-      videoElement.parentElement.style.background = 'radial-gradient(circle, #ffd700, #ffed4e, #ffffff)';
+    function handleVideoError(videoElement, videoName) {
+      console.error(`${videoName}.mp4の読み込みエラー`);
+      
+      if (videoName === 'sinden') {
+        // sindenの代わりに深い背景を設定
+        videoElement.parentElement.style.background = 'radial-gradient(circle, #1a1a2e, #16213e)';
+      } else if (videoName === 'hikari') {
+        // hikariの代わりに光る背景を設定
+        videoElement.parentElement.style.background = 'radial-gradient(circle, #ffd700, #ffed4e, #ffffff)';
+      }
+      
       videoElement.style.display = 'none';
     }
     
     // ページ読み込み時の処理
     window.addEventListener("load", function() {
-      // フォームをフェードインで表示
+      // 1. hikari動画を小さく表示開始
+      setTimeout(() => {
+        const hikariVideo = document.querySelector('.hikari-background');
+        hikariVideo.style.opacity = '0.3';
+        hikariVideo.style.width = '10vw';
+        hikariVideo.style.height = '10vh';
+      }, 500);
+      
+      // 2. hikari動画を少しずつ大きくする
+      setTimeout(() => {
+        const hikariVideo = document.querySelector('.hikari-background');
+        hikariVideo.classList.add('show');
+      }, 2000);
+      
+      // 3. hikari動画がある程度大きくなったらフォームを表示
       setTimeout(() => {
         const container = document.getElementById('emailFormContainer');
         container.classList.add('show');
         
         // フォーカスをメール入力欄に
         document.getElementById('email').focus();
-      }, 1000);
+      }, 6000);
     });
     
     // フォーム送信処理

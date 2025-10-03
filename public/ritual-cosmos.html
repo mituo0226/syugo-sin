@@ -27,8 +27,12 @@
       height: 100vh;
       object-fit: cover;
       z-index: -2;
+      opacity: 0;
+      transition: opacity 3s ease-in-out;
+    }
+    
+    .cosmos-video.fade-in {
       opacity: 1;
-      transition: opacity 2s ease-in-out;
     }
     
     .cosmos-video.fade-out {
@@ -46,7 +50,7 @@
       object-fit: contain;
       z-index: 1;
       opacity: 0;
-      transition: opacity 2s ease-in-out;
+      transition: opacity 4s ease-in-out;
     }
     
     .sinden-video.show {
@@ -81,17 +85,23 @@
       z-index: 10;
       opacity: 0;
       transition: opacity 2s ease-in-out;
-      background: rgba(0, 0, 0, 0.7);
-      padding: 20px;
-      border-radius: 15px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(102, 204, 255, 0.3);
+      background: rgba(0, 0, 0, 0.8);
+      padding: 30px;
+      border-radius: 20px;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 2px solid rgba(102, 204, 255, 0.5);
+      box-shadow: 0 0 30px rgba(102, 204, 255, 0.3);
       max-width: 90vw;
     }
     
     .cosmic-message.show {
       opacity: 1;
+    }
+    
+    .cosmic-message.fade-out {
+      opacity: 0;
+      transition: opacity 2s ease-in-out;
     }
     
     .cosmic-text {
@@ -180,25 +190,39 @@
         const userData = JSON.parse(localStorage.getItem("userData") || "{}");
         const nickname = userData.nickname || userData.name || "あなた";
         
-        // 神秘的なメッセージを設定
-        const cosmicText = document.getElementById('cosmicText');
-        const message = `神の領域に${nickname}の精神が取り込まれていく...`;
-        
-        // タイプライター効果でメッセージを表示
-        typeWriter(cosmicText, message, 100);
-        
-        // 動画の順次表示
+        // 1. cosmo.mp4をフェードインで表示
         setTimeout(() => {
-          showSindenVideo();
-        }, 3000);
+          showCosmosVideo();
+        }, 500);
         
+        // 2. 神秘的なメッセージを表示
         setTimeout(() => {
-          showHikariVideo();
+          const cosmicText = document.getElementById('cosmicText');
+          const message = `神の世界に入っていく...`;
+          
+          // タイプライター効果でメッセージを表示
+          typeWriter(cosmicText, message, 120);
+        }, 2000);
+        
+        // 3. メッセージをフェードアウト
+        setTimeout(() => {
+          fadeOutMessage();
+        }, 6000);
+        
+        // 4. cosmo.mp4からsinden.mp4にゆっくり切り替え
+        setTimeout(() => {
+          transitionToSindenVideo();
         }, 8000);
         
+        // 5. hikari.mp4を表示
+        setTimeout(() => {
+          showHikariVideo();
+        }, 14000);
+        
+        // 6. メール入力ページに遷移
         setTimeout(() => {
           proceedToEmailInput();
-        }, 13000);
+        }, 19000);
         
       } catch (error) {
         console.error("ページ読み込みエラー:", error);
@@ -223,6 +247,34 @@
       }
       
       type();
+    }
+    
+    // cosmo動画をフェードインで表示
+    function showCosmosVideo() {
+      const cosmosVideo = document.getElementById('cosmosVideo');
+      const cosmicMessage = document.getElementById('cosmicMessage');
+      cosmosVideo.classList.add('fade-in');
+      cosmicMessage.classList.add('show');
+    }
+    
+    // メッセージをフェードアウト
+    function fadeOutMessage() {
+      const cosmicMessage = document.getElementById('cosmicMessage');
+      cosmicMessage.classList.add('fade-out');
+    }
+    
+    // cosmoからsindenにゆっくり切り替え
+    function transitionToSindenVideo() {
+      const cosmosVideo = document.getElementById('cosmosVideo');
+      const sindenVideo = document.getElementById('sindenVideo');
+      
+      // cosmoをフェードアウト
+      cosmosVideo.classList.add('fade-out');
+      
+      // sindenをフェードイン
+      setTimeout(() => {
+        sindenVideo.classList.add('show');
+      }, 2000);
     }
     
     // sinden動画を表示
