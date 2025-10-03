@@ -117,7 +117,7 @@ export async function onRequestGet(context) {
         UPDATE magic_links SET used = TRUE WHERE token = ?
       `).bind(token).run();
 
-      // 既存ユーザーの場合もHTMLページを返してcomplete.htmlにリダイレクト
+      // 既存ユーザーの場合もHTMLページを返してritual-guardian.htmlにリダイレクト
       const alreadyRegisteredHtml = `
         <!DOCTYPE html>
         <html lang="ja">
@@ -177,13 +177,13 @@ export async function onRequestGet(context) {
               <p>自動的に移動しない場合は、以下のリンクをクリックしてください。</p>
             </div>
             <div class="manual-link">
-              <a href="/complete.html">登録完了ページへ</a>
+              <a href="/ritual-guardian.html">守護神の言葉へ</a>
             </div>
           </div>
           <script>
             // 3秒後に自動リダイレクト
             setTimeout(() => {
-              window.location.href = '/complete.html';
+              window.location.href = '/ritual-guardian.html';
             }, 3000);
           </script>
         </body>
@@ -255,7 +255,7 @@ export async function onRequestGet(context) {
         nickname: magicLinkData.nickname 
       });
 
-      // 成功時はHTMLページを返してcomplete.htmlにリダイレクト
+      // 成功時はHTMLページを返してritual-guardian.htmlにリダイレクト
       const successHtml = `
         <!DOCTYPE html>
         <html lang="ja">
@@ -315,13 +315,13 @@ export async function onRequestGet(context) {
               <p>自動的に移動しない場合は、以下のリンクをクリックしてください。</p>
             </div>
             <div class="manual-link">
-              <a href="/complete.html">登録完了ページへ</a>
+              <a href="/ritual-guardian.html">守護神の言葉へ</a>
             </div>
           </div>
           <script>
             // 3秒後に自動リダイレクト
             setTimeout(() => {
-              window.location.href = '/complete.html';
+              window.location.href = '/ritual-guardian.html';
             }, 3000);
           </script>
         </body>

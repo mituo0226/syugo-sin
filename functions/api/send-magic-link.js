@@ -120,7 +120,7 @@ export async function onRequestPost(context) {
         
         <div style="text-align: center; margin: 30px 0;">
           <a href="${magicLink}" style="background: linear-gradient(45deg, #66ccff, #9d4edd); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; display: inline-block; font-size: 16px; font-weight: bold; box-shadow: 0 4px 15px rgba(102, 204, 255, 0.3);">
-            ✨ 会員登録を完了 ✨
+            ✨ 登録を確認 ✨
           </a>
         </div>
         
@@ -150,7 +150,7 @@ export async function onRequestPost(context) {
       body: JSON.stringify({
         from: "noreply@syugo-sin.com",
         to: email,
-        subject: "【守護神】AIjudgment",
+        subject: "【守護神】メール登録完了",
         html: htmlContent,
       }),
     });
