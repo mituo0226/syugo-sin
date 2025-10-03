@@ -275,6 +275,74 @@
         font-size: 1em;
       }
     }
+    
+    /* 次元切り替え表示 */
+    .dimension-transition {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.9);
+      color: #fff;
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 2s ease-in-out;
+      border: 2px solid rgba(102, 204, 255, 0.5);
+      box-shadow: 0 0 50px rgba(102, 204, 255, 0.3);
+    }
+    
+    .dimension-transition.show {
+      opacity: 1;
+    }
+    
+    .dimension-transition h2 {
+      font-size: 1.8em;
+      margin: 0 0 20px 0;
+      color: #66ccff;
+      text-shadow: 0 0 20px rgba(102, 204, 255, 0.8);
+    }
+    
+    .dimension-transition p {
+      font-size: 1.2em;
+      margin: 0;
+      line-height: 1.6;
+    }
+    
+    /* 次元切り替えアニメーション */
+    .dimension-vortex {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.3) 30%, rgba(0, 0, 0, 0.8) 70%, #000 100%);
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 3s ease-in-out;
+    }
+    
+    .dimension-vortex.show {
+      opacity: 1;
+      animation: dimensionShift 4s ease-in-out;
+    }
+    
+    @keyframes dimensionShift {
+      0% {
+        background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.3) 30%, rgba(0, 0, 0, 0.8) 70%, #000 100%);
+        transform: scale(1);
+      }
+      50% {
+        background: radial-gradient(circle at center, rgba(102, 204, 255, 0.1) 0%, rgba(157, 78, 221, 0.2) 30%, rgba(0, 0, 0, 0.9) 70%, #000 100%);
+        transform: scale(1.1);
+      }
+      100% {
+        background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.3) 30%, rgba(0, 0, 0, 0.8) 70%, #000 100%);
+        transform: scale(1);
+      }
+    }
   </style>
 </head>
 <body>
@@ -544,9 +612,42 @@
       guardianSpeech.style.opacity = '0';
       
       // コスモ映像をフェードアウト
-      const cosmoBackground = document.getElementById('cosmoBackground');
+      const cosmoBackground = document.getElementById('cosmoVideo');
       cosmoBackground.style.transition = 'opacity 2s ease-in-out';
       cosmoBackground.style.opacity = '0';
+      
+      // 2秒後に次元切り替え表示
+      setTimeout(() => {
+        showDimensionTransition();
+      }, 2000);
+    }
+    
+    // 次元切り替え表示
+    function showDimensionTransition() {
+      // 次元切り替えアニメーションを開始
+      const dimensionVortex = document.createElement('div');
+      dimensionVortex.className = 'dimension-vortex';
+      document.body.appendChild(dimensionVortex);
+      
+      // 次元切り替えメッセージを表示
+      const dimensionTransition = document.createElement('div');
+      dimensionTransition.className = 'dimension-transition';
+      dimensionTransition.innerHTML = `
+        <h2>🌌 次元の扉が開かれる 🌌</h2>
+        <p>これより龍があなたに語りかけます</p>
+      `;
+      document.body.appendChild(dimensionTransition);
+      
+      // アニメーション開始
+      setTimeout(() => {
+        dimensionVortex.classList.add('show');
+        dimensionTransition.classList.add('show');
+      }, 100);
+      
+      // 3秒後に龍のページに遷移
+      setTimeout(() => {
+        window.location.href = 'ritual-dragon.html';
+      }, 3000);
     }
     
     // チャット開始（メール確認後）

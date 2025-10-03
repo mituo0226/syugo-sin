@@ -241,6 +241,74 @@
         font-size: 11px;
       }
     }
+    
+    /* 次元切り替え表示（ritual-guardian.htmlと同じ） */
+    .dimension-transition {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.9);
+      color: #fff;
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 2s ease-in-out;
+      border: 2px solid rgba(102, 204, 255, 0.5);
+      box-shadow: 0 0 50px rgba(102, 204, 255, 0.3);
+    }
+    
+    .dimension-transition.show {
+      opacity: 1;
+    }
+    
+    .dimension-transition h2 {
+      font-size: 1.8em;
+      margin: 0 0 20px 0;
+      color: #66ccff;
+      text-shadow: 0 0 20px rgba(102, 204, 255, 0.8);
+    }
+    
+    .dimension-transition p {
+      font-size: 1.2em;
+      margin: 0;
+      line-height: 1.6;
+    }
+    
+    /* 次元切り替えアニメーション */
+    .dimension-vortex {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.3) 30%, rgba(0, 0, 0, 0.8) 70%, #000 100%);
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 3s ease-in-out;
+    }
+    
+    .dimension-vortex.show {
+      opacity: 1;
+      animation: dimensionShift 4s ease-in-out;
+    }
+    
+    @keyframes dimensionShift {
+      0% {
+        background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.3) 30%, rgba(0, 0, 0, 0.8) 70%, #000 100%);
+        transform: scale(1);
+      }
+      50% {
+        background: radial-gradient(circle at center, rgba(102, 204, 255, 0.1) 0%, rgba(157, 78, 221, 0.2) 30%, rgba(0, 0, 0, 0.9) 70%, #000 100%);
+        transform: scale(1.1);
+      }
+      100% {
+        background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.3) 30%, rgba(0, 0, 0, 0.8) 70%, #000 100%);
+        transform: scale(1);
+      }
+    }
   </style>
 </head>
 <body>
@@ -282,22 +350,28 @@
         // 龍の言葉を設定
         const speechText = `${guardianName}の精神を取り込んで${nickname}と鑑定を続けるにあたりあなたのエネルギーを会話チケットという形で購入してもらう必要がある。\n\n守護神への供物と考えてほしい。\n\n私との5分間の会話を初回限定100円で行うことができる。\nさらなる鑑定を希望する場合は、会話チケットの購入をしてくれ`;
         
-        // 段階的に表示
+        // 次元切り替えアニメーションから開始
+        showDimensionTransition();
+        
+        // 3秒後に龍の画像を表示
         setTimeout(() => {
           showDragonImage();
-        }, 1000);
-        
-        setTimeout(() => {
-          showDragonSpeech(speechText);
         }, 3000);
         
+        // 5秒後に龍の言葉を表示
+        setTimeout(() => {
+          showDragonSpeech(speechText);
+        }, 5000);
+        
+        // 龍の言葉が終わってからボタンを表示（タイプライター効果の完了を待つ）
+        const typewriterDuration = speechText.length * 80; // タイプライター速度に基づく
         setTimeout(() => {
           showTicketButton();
-        }, 8000);
+        }, 5000 + typewriterDuration + 2000); // 表示開始 + タイプライター完了 + 2秒待機
         
         setTimeout(() => {
           showDeclineButton();
-        }, 9000);
+        }, 5000 + typewriterDuration + 3000); // チケットボタンの1秒後
         
       } catch (error) {
         console.error("ページ読み込みエラー:", error);
@@ -333,6 +407,39 @@
     function showDeclineButton() {
       const declineButton = document.getElementById('declineButton');
       declineButton.classList.add('show');
+    }
+    
+    // 次元切り替え表示
+    function showDimensionTransition() {
+      // 次元切り替えアニメーションを開始
+      const dimensionVortex = document.createElement('div');
+      dimensionVortex.className = 'dimension-vortex';
+      document.body.appendChild(dimensionVortex);
+      
+      // 次元切り替えメッセージを表示
+      const dimensionTransition = document.createElement('div');
+      dimensionTransition.className = 'dimension-transition';
+      dimensionTransition.innerHTML = `
+        <h2>🌌 次元の扉が開かれる 🌌</h2>
+        <p>これより龍があなたに語りかけます</p>
+      `;
+      document.body.appendChild(dimensionTransition);
+      
+      // アニメーション開始
+      setTimeout(() => {
+        dimensionVortex.classList.add('show');
+        dimensionTransition.classList.add('show');
+      }, 100);
+      
+      // 2.5秒後に次元切り替え要素を削除
+      setTimeout(() => {
+        if (dimensionVortex.parentNode) {
+          dimensionVortex.parentNode.removeChild(dimensionVortex);
+        }
+        if (dimensionTransition.parentNode) {
+          dimensionTransition.parentNode.removeChild(dimensionTransition);
+        }
+      }, 2500);
     }
     
     // タイプライター効果
