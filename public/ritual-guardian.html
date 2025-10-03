@@ -322,8 +322,8 @@
           guardianImage.alt = '守護神';
         }
         
-        // 守護神の言葉を設定
-        const guardianName = userData.guardian || userData.guardianName || "守護神";
+        // 守護神の言葉を設定（ローカルストレージから取得）
+        const guardianName = userData.guardian || userData.guardianName || userData.guardianKey || "守護神";
         const speechText = `私は${nickname}を守護する神${guardianName}。${nickname}の意志は届いた･･･魂が繋がった。\n私の意志は、鑑定士に届けられ、${nickname}への言葉となる。\nこれから先、いつも私があなたの側にいる、安心せよ。`;
         
         // 段階的に表示
@@ -339,15 +339,16 @@
           showGuardianSpeech(speechText);
         }, 6000);
         
-        // 言葉が表示し終わった後にフェードアウト開始
+        // 言葉が表示し終わった後にフェードアウト開始（タイプライター効果の完了を待つ）
+        const typewriterDuration = speechText.length * 80; // タイプライター速度に基づく
         setTimeout(() => {
           startFadeOut();
-        }, 10000);
+        }, 6000 + typewriterDuration + 2000); // 表示開始 + タイプライター完了 + 2秒待機
         
         setTimeout(() => {
           // 龍の言葉ページに自動遷移
           window.location.href = 'ritual-dragon.html';
-        }, 13000);
+        }, 6000 + typewriterDuration + 6000); // フェードアウト完了後
         
       } catch (error) {
         console.error("ページ読み込みエラー:", error);
