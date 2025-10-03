@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>宇宙の神秘 | AI鑑定師 龍</title>
+  <title>宇宙の神秘とメール入力 | AI鑑定師 龍</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
   <style>
     body {
@@ -230,6 +230,145 @@
       }
     }
     
+    /* メール入力フォーム */
+    .email-form-container {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(13, 13, 26, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 30px;
+      border: 2px solid rgba(102, 204, 255, 0.4);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(102, 204, 255, 0.3);
+      z-index: 10;
+      opacity: 0;
+      transition: all 2s ease-in-out;
+      max-width: 90vw;
+      width: 400px;
+    }
+    
+    .email-form-container.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    
+    .form-title {
+      text-align: center;
+      font-size: 1.4em;
+      margin-bottom: 25px;
+      color: #66ccff;
+      text-shadow: 0 0 15px rgba(102, 204, 255, 0.6);
+      animation: titleGlow 3s ease-in-out infinite alternate;
+    }
+    
+    @keyframes titleGlow {
+      0% {
+        text-shadow: 0 0 15px rgba(102, 204, 255, 0.6);
+      }
+      100% {
+        text-shadow: 0 0 25px rgba(102, 204, 255, 0.8);
+      }
+    }
+    
+    .form-description {
+      text-align: center;
+      font-size: 0.9em;
+      margin-bottom: 25px;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.6;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1em;
+      color: #fff;
+      font-weight: bold;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 15px;
+      font-size: 1.1em;
+      border: 2px solid rgba(102, 204, 255, 0.3);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #66ccff;
+      box-shadow: 0 0 20px rgba(102, 204, 255, 0.3);
+      background: rgba(255, 255, 255, 0.15);
+    }
+    
+    .form-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .submit-button {
+      width: 100%;
+      padding: 15px;
+      font-size: 1.2em;
+      background: linear-gradient(90deg, #66ccff, #3399ff);
+      border: none;
+      border-radius: 12px;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+      position: relative;
+      overflow: hidden;
+      animation: buttonGlow 3s ease-in-out infinite alternate;
+    }
+    
+    .submit-button:hover {
+      background: linear-gradient(90deg, #99e0ff, #66ccff);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 204, 255, 0.4);
+    }
+    
+    .submit-button:disabled {
+      background: #666;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    @keyframes buttonGlow {
+      0% {
+        box-shadow: 0 4px 15px rgba(102, 204, 255, 0.3);
+      }
+      100% {
+        box-shadow: 0 4px 15px rgba(102, 204, 255, 0.3), 0 0 20px rgba(102, 204, 255, 0.2);
+      }
+    }
+    
+    /* エラーメッセージ */
+    .error-message {
+      color: #ff6b6b;
+      font-size: 0.9em;
+      margin-top: 10px;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .error-message.show {
+      opacity: 1;
+    }
+    
     /* モバイル向け調整 */
     @media (max-width: 768px) {
       .cosmic-message {
@@ -250,6 +389,50 @@
       .hikari-video {
         width: 100vw;
         height: 100vh;
+      }
+      
+      .email-form-container {
+        padding: 25px;
+        width: 95vw;
+        max-width: 350px;
+      }
+      
+      .form-title {
+        font-size: 1.2em;
+        margin-bottom: 20px;
+      }
+      
+      .form-description {
+        font-size: 0.85em;
+        margin-bottom: 20px;
+      }
+      
+      .form-input {
+        padding: 12px;
+        font-size: 1em;
+      }
+      
+      .submit-button {
+        padding: 12px;
+        font-size: 1.1em;
+      }
+    }
+    
+    /* iPhone向け調整 */
+    @media (max-width: 480px) {
+      .email-form-container {
+        padding: 20px;
+        width: 98vw;
+        max-width: 320px;
+      }
+      
+      .form-title {
+        font-size: 1.1em;
+      }
+      
+      .form-input {
+        padding: 10px;
+        font-size: 0.95em;
       }
     }
   </style>
@@ -290,6 +473,33 @@
   <!-- 神秘的なメッセージ -->
   <div class="cosmic-message" id="cosmicMessage">
     <div class="cosmic-text" id="cosmicText"></div>
+  </div>
+  
+  <!-- メール入力フォーム -->
+  <div class="email-form-container" id="emailFormContainer">
+    <h2 class="form-title">メールアドレスを入力</h2>
+    <p class="form-description">守護神との交信を完了するために<br>メールアドレスを入力してください</p>
+    
+    <form id="emailForm">
+      <div class="form-group">
+        <label for="email" class="form-label">メールアドレス</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          class="form-input" 
+          placeholder="example@email.com"
+          required
+          autocomplete="email"
+        >
+      </div>
+      
+      <button type="submit" class="submit-button" id="submitButton">
+        入力完了
+      </button>
+      
+      <div class="error-message" id="errorMessage"></div>
+    </form>
   </div>
 
   <script>
@@ -344,9 +554,14 @@
           startSindenMoveForward();
         }, 12000);
         
-        // 6. メール入力ページに遷移
+        // 6. hikari動画を表示開始
         setTimeout(() => {
-          proceedToEmailInput();
+          showHikariVideo();
+        }, 16000);
+        
+        // 7. メール入力フォームを表示
+        setTimeout(() => {
+          showEmailForm();
         }, 20000);
         
       } catch (error) {
@@ -438,25 +653,99 @@
     
     // hikari動画を表示
     function showHikariVideo() {
-      const sindenVideo = document.getElementById('sindenVideo');
       const hikariVideo = document.getElementById('hikariVideo');
       
-      sindenVideo.classList.remove('show');
-      hikariVideo.classList.add('show');
-    }
-    
-    // メール入力画面に遷移
-    function proceedToEmailInput() {
-      const hikariVideo = document.getElementById('hikariVideo');
-      const cosmicMessage = document.getElementById('cosmicMessage');
-      
-      hikariVideo.classList.remove('show');
-      cosmicMessage.classList.remove('show');
+      // hikari動画を段階的に表示
+      setTimeout(() => {
+        hikariVideo.style.opacity = '0.4';
+        hikariVideo.style.transform = 'translate(-50%, -50%) scale(0.6)';
+      }, 500);
       
       setTimeout(() => {
-        window.location.href = 'ritual-email.html';
-      }, 1000);
+        hikariVideo.classList.add('show');
+      }, 2000);
     }
+    
+    // メール入力フォームを表示
+    function showEmailForm() {
+      const container = document.getElementById('emailFormContainer');
+      container.classList.add('show');
+      
+      // フォーカスをメール入力欄に
+      setTimeout(() => {
+        document.getElementById('email').focus();
+      }, 500);
+    }
+    
+    // フォーム送信処理
+    document.getElementById('emailForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value.trim();
+      const submitButton = document.getElementById('submitButton');
+      const errorMessage = document.getElementById('errorMessage');
+      
+      // バリデーション
+      if (!isValidEmail(email)) {
+        showError('有効なメールアドレスを入力してください');
+        return;
+      }
+      
+      // ボタンを無効化
+      submitButton.disabled = true;
+      submitButton.textContent = '処理中...';
+      
+      // エラーメッセージを非表示
+      hideError();
+      
+      // メールアドレスをlocalStorageに保存
+      try {
+        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        userData.email = email;
+        localStorage.setItem('userData', JSON.stringify(userData));
+        
+        console.log('メールアドレスを保存:', email);
+        console.log('保存されたユーザーデータ:', userData);
+        
+        // 2秒後に次のページに遷移
+        setTimeout(() => {
+          window.location.href = 'ritual-guardian.html';
+        }, 2000);
+        
+      } catch (error) {
+        console.error('データ保存エラー:', error);
+        showError('データの保存に失敗しました');
+        submitButton.disabled = false;
+        submitButton.textContent = '入力完了';
+      }
+    });
+    
+    // メールアドレスバリデーション
+    function isValidEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+    
+    // エラーメッセージ表示
+    function showError(message) {
+      const errorMessage = document.getElementById('errorMessage');
+      errorMessage.textContent = message;
+      errorMessage.classList.add('show');
+    }
+    
+    // エラーメッセージ非表示
+    function hideError() {
+      const errorMessage = document.getElementById('errorMessage');
+      errorMessage.classList.remove('show');
+    }
+    
+    // Enterキーでフォーム送信
+    document.getElementById('email').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('emailForm').dispatchEvent(new Event('submit'));
+      }
+    });
   </script>
 </body>
 </html>
