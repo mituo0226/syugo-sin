@@ -50,11 +50,30 @@
       object-fit: contain;
       z-index: 1;
       opacity: 0;
-      transition: opacity 4s ease-in-out;
+      transition: all 4s ease-in-out;
     }
     
     .sinden-video.show {
       opacity: 1;
+    }
+    
+    .sinden-video.move-forward {
+      animation: moveIntoDepth 8s ease-in-out infinite;
+    }
+    
+    @keyframes moveIntoDepth {
+      0% { 
+        transform: translate(-50%, -50%) scale(1);
+        filter: brightness(1);
+      }
+      50% { 
+        transform: translate(-50%, -50%) scale(1.2);
+        filter: brightness(0.8);
+      }
+      100% { 
+        transform: translate(-50%, -50%) scale(1.4);
+        filter: brightness(0.6);
+      }
     }
     
     /* hikari.mp4動画 */
@@ -214,15 +233,15 @@
           transitionToSindenVideo();
         }, 8000);
         
-        // 5. hikari.mp4を表示
+        // 5. sinden.mp4が奥に進んでいく動きを開始
         setTimeout(() => {
-          showHikariVideo();
-        }, 14000);
+          startSindenMoveForward();
+        }, 12000);
         
         // 6. メール入力ページに遷移
         setTimeout(() => {
           proceedToEmailInput();
-        }, 19000);
+        }, 20000);
         
       } catch (error) {
         console.error("ページ読み込みエラー:", error);
@@ -281,6 +300,12 @@
     function showSindenVideo() {
       const sindenVideo = document.getElementById('sindenVideo');
       sindenVideo.classList.add('show');
+    }
+    
+    // sinden動画が奥に進んでいく動きを開始
+    function startSindenMoveForward() {
+      const sindenVideo = document.getElementById('sindenVideo');
+      sindenVideo.classList.add('move-forward');
     }
     
     // hikari動画を表示

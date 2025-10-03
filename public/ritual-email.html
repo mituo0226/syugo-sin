@@ -18,43 +18,55 @@
       -moz-osx-font-smoothing: grayscale;
     }
     
-    /* sinden.mp4動画（奥に進んでいく） */
+    /* sinden.mp4動画（奥に進んでいく - ritual-cosmos.htmlから継続） */
     .sinden-background {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1.4);
+      width: 80vw;
+      height: 80vh;
+      object-fit: contain;
       z-index: -3;
-      opacity: 0.8;
-      animation: moveForward 8s ease-in-out infinite;
+      opacity: 0.6;
+      filter: brightness(0.6);
+      animation: continueMovingForward 6s ease-in-out infinite;
     }
     
-    @keyframes moveForward {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-      100% { transform: scale(1); }
+    @keyframes continueMovingForward {
+      0% { 
+        transform: translate(-50%, -50%) scale(1.4);
+        filter: brightness(0.6);
+      }
+      50% { 
+        transform: translate(-50%, -50%) scale(1.6);
+        filter: brightness(0.4);
+      }
+      100% { 
+        transform: translate(-50%, -50%) scale(1.8);
+        filter: brightness(0.2);
+      }
     }
     
-    /* hikari.mp4動画（小さく現れて大きくなる） */
+    /* hikari.mp4動画（奥から現れて大きくなる） */
     .hikari-background {
       position: fixed;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%) scale(0.3);
       width: 20vw;
       height: 20vh;
       object-fit: contain;
       z-index: -2;
       opacity: 0;
-      transition: all 4s ease-in-out;
+      transition: all 5s ease-in-out;
     }
     
     .hikari-background.show {
       opacity: 1;
-      width: 60vw;
-      height: 60vh;
+      transform: translate(-50%, -50%) scale(1);
+      width: 70vw;
+      height: 70vh;
     }
     
     /* メール入力フォーム */
@@ -300,28 +312,30 @@
     
     // ページ読み込み時の処理
     window.addEventListener("load", function() {
-      // 1. hikari動画を小さく表示開始
+      // 1. sinden動画が奥に進んでいく動きを継続（ritual-cosmos.htmlから継続）
+      // sinden動画は既に奥に進んでいる状態で開始
+      
+      // 2. hikari動画を奥から小さく表示開始
       setTimeout(() => {
         const hikariVideo = document.querySelector('.hikari-background');
-        hikariVideo.style.opacity = '0.3';
-        hikariVideo.style.width = '10vw';
-        hikariVideo.style.height = '10vh';
-      }, 500);
+        hikariVideo.style.opacity = '0.2';
+        hikariVideo.style.transform = 'translate(-50%, -50%) scale(0.2)';
+      }, 1000);
       
-      // 2. hikari動画を少しずつ大きくする
+      // 3. hikari動画を段階的に大きくする（70%の大きさまで）
       setTimeout(() => {
         const hikariVideo = document.querySelector('.hikari-background');
         hikariVideo.classList.add('show');
-      }, 2000);
+      }, 3000);
       
-      // 3. hikari動画がある程度大きくなったらフォームを表示
+      // 4. hikari動画が70%の大きさになったらフォームを表示
       setTimeout(() => {
         const container = document.getElementById('emailFormContainer');
         container.classList.add('show');
         
         // フォーカスをメール入力欄に
         document.getElementById('email').focus();
-      }, 6000);
+      }, 8000);
     });
     
     // フォーム送信処理
