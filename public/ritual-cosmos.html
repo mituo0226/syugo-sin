@@ -623,21 +623,92 @@
     
     /* モバイル向け調整 */
     @media (max-width: 768px) {
+      .success-message-large {
+        padding: 20px;
+        box-sizing: border-box;
+      }
+      
       .email-check-notice {
-        padding: 30px 20px;
-        margin: 20px;
+        padding: 25px 15px;
+        margin: 10px;
+        max-width: 90%;
+        width: calc(100% - 20px);
+        box-sizing: border-box;
+      }
+      
+      .notice-icon {
+        font-size: 3em;
+        margin-bottom: 15px;
       }
       
       .notice-title {
-        font-size: 1.5em;
-      }
-      
-      .notice-main {
-        font-size: 1.2em;
+        font-size: 1.4em;
+        margin-bottom: 12px;
       }
       
       .notice-email {
+        font-size: 0.9em;
+        padding: 8px;
+        margin-bottom: 15px;
+      }
+      
+      .notice-main {
+        font-size: 1.1em;
+        margin-bottom: 8px;
+      }
+      
+      .notice-sub {
+        font-size: 0.9em;
+        line-height: 1.5;
+      }
+      
+      .notice-timer {
+        font-size: 0.8em;
+      }
+    }
+    
+    /* スマートフォン向け調整 */
+    @media (max-width: 480px) {
+      .success-message-large {
+        padding: 15px;
+      }
+      
+      .email-check-notice {
+        padding: 20px 12px;
+        margin: 5px;
+        max-width: 95%;
+        width: calc(100% - 10px);
+      }
+      
+      .notice-icon {
+        font-size: 2.5em;
+        margin-bottom: 12px;
+      }
+      
+      .notice-title {
+        font-size: 1.2em;
+        margin-bottom: 10px;
+      }
+      
+      .notice-email {
+        font-size: 0.8em;
+        padding: 6px;
+        margin-bottom: 12px;
+        word-break: break-all;
+      }
+      
+      .notice-main {
         font-size: 1em;
+        margin-bottom: 6px;
+      }
+      
+      .notice-sub {
+        font-size: 0.8em;
+        line-height: 1.4;
+      }
+      
+      .notice-timer {
+        font-size: 0.7em;
       }
     }
     
@@ -1087,10 +1158,7 @@
           // 成功メッセージを表示
           showSuccessMessage(email);
           
-          // 3秒後に次のページに遷移
-          setTimeout(() => {
-            window.location.href = 'ritual-guardian.html';
-          }, 3000);
+          // ページ遷移は停止（メール確認を促すため）
           
         } else {
           console.error('メール送信エラー:', result);
@@ -1137,7 +1205,7 @@
             <p class="notice-sub">メールに記載されたリンクをクリックして<br>会員登録を完了してください</p>
           </div>
           <div class="notice-timer">
-            <p>このページは3秒後に自動的に進みます...</p>
+            <p>メールを確認してリンクをクリックしてください</p>
           </div>
         </div>
       `;
