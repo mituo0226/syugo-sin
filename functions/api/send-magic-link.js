@@ -77,11 +77,21 @@ export async function onRequestPost(context) {
     }
 
     // APIキーの確認
+    console.log("Environment variables:", {
+      ENVIRONMENT: env.ENVIRONMENT,
+      hasRESEND_API_KEY: !!env.RESEND_API_KEY,
+      RESEND_API_KEY_length: env.RESEND_API_KEY ? env.RESEND_API_KEY.length : 0
+    });
+    
     if (!env.RESEND_API_KEY) {
       console.error("RESEND_API_KEY not found");
       return new Response(JSON.stringify({ 
         error: "api_key_missing", 
-        message: "メール送信に必要なAPIキーが設定されていません"
+        message: "メール送信に必要なAPIキーが設定されていません",
+        debug: {
+          environment: env.ENVIRONMENT,
+          hasApiKey: !!env.RESEND_API_KEY
+        }
       }), { 
         status: 500,
         headers: { "Content-Type": "application/json" }
