@@ -12,12 +12,12 @@ export async function onRequestGet(context) {
     const isTestToken = token.startsWith('test-') || token.length > 36; // UUIDの長さより長い場合はテストトークンと判断
     
     if (isTestToken) {
-      // テストモード：ローカルストレージデータを使用してHTMLページを返す
+      // テストモード：シンプルな完了ページを返す
       const html = `<!doctype html>
 <html lang="ja">
 <head>
     <meta charset="utf-8">
-    <title>マジックリンクテスト - 登録完了</title>
+    <title>マジックリンクテスト - 完了</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -28,11 +28,11 @@ export async function onRequestGet(context) {
             <h1 class="text-2xl font-bold text-gray-800 mb-2">マジックリンクテスト完了</h1>
             <p class="text-gray-600 mb-6">テスト用のマジックリンクが正常に動作しました！</p>
             
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                <h3 class="font-semibold text-blue-900 mb-2">テストデータ確認</h3>
-                <div id="testData" class="text-sm text-blue-800">
-                    <p>ローカルストレージからデータを読み込み中...</p>
-                </div>
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <h3 class="font-semibold text-green-900 mb-2">
+                    <i class="fas fa-check-circle mr-2"></i>テスト成功
+                </h3>
+                <p class="text-sm text-green-800">マジックリンクの生成と動作確認が完了しました。</p>
             </div>
             
             <div class="space-y-2">
@@ -45,23 +45,6 @@ export async function onRequestGet(context) {
             </div>
         </div>
     </div>
-    
-    <script>
-        // ローカルストレージからテストデータを取得して表示
-        const testData = localStorage.getItem('magicLinkTestData');
-        if (testData) {
-            const data = JSON.parse(testData);
-            document.getElementById('testData').innerHTML = \`
-                <p><strong>メール:</strong> \${data.email}</p>
-                <p><strong>ニックネーム:</strong> \${data.nickname}</p>
-                <p><strong>生年月日:</strong> \${data.birthdate}</p>
-                <p><strong>守護神:</strong> \${data.guardian}</p>
-                <p><strong>相談内容:</strong> \${data.topic}</p>
-            \`;
-        } else {
-            document.getElementById('testData').innerHTML = '<p class="text-red-600">テストデータが見つかりません</p>';
-        }
-    </script>
 </body>
 </html>`;
 
