@@ -4,7 +4,10 @@ export async function onRequestPost(context) {
   console.log("Send magic link API called");
   console.log("Environment variables available:", {
     hasDB: !!env.DB,
-    environment: env.ENVIRONMENT
+    environment: env.ENVIRONMENT,
+    hasResendApiKey: !!env.RESEND_API_KEY,
+    resendApiKeyLength: env.RESEND_API_KEY ? env.RESEND_API_KEY.length : 0,
+    resendApiKeyPrefix: env.RESEND_API_KEY ? env.RESEND_API_KEY.substring(0, 10) + "..." : "none"
   });
 
   try {
@@ -90,7 +93,9 @@ export async function onRequestPost(context) {
         message: "メール送信に必要なAPIキーが設定されていません。管理画面でAPIキーを確認してください。",
         debug: {
           environment: env.ENVIRONMENT,
-          hasApiKey: !!env.RESEND_API_KEY
+          hasApiKey: !!env.RESEND_API_KEY,
+          availableEnvKeys: Object.keys(env).filter(key => key.includes('RESEND') || key.includes('API')),
+          allEnvKeys: Object.keys(env)
         }
       }), { 
         status: 500,
