@@ -2,12 +2,17 @@ export async function onRequestGet(context) {
   const { env } = context;
 
   try {
+    console.log("Database tables API called");
+    console.log("DB binding exists:", !!env.DB);
+    
     // テーブル一覧を取得
     const tablesResult = await env.DB.prepare(`
       SELECT name FROM sqlite_master 
       WHERE type='table' AND name NOT LIKE 'sqlite_%'
       ORDER BY name
     `).all();
+    
+    console.log("Tables query result:", tablesResult);
 
     const tables = [];
     

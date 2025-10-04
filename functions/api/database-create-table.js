@@ -2,7 +2,13 @@ export async function onRequestPost(context) {
   const { request, env } = context;
 
   try {
-    const { tableName, schema } = await request.json();
+    console.log("Database create table API called");
+    const requestBody = await request.json();
+    console.log("Request body:", requestBody);
+    
+    const { tableName, schema } = requestBody;
+    console.log("Table name:", tableName);
+    console.log("Schema:", schema);
 
     if (!tableName || !schema) {
       return new Response(JSON.stringify({
@@ -14,11 +20,11 @@ export async function onRequestPost(context) {
       });
     }
 
-    // テーブル名の検証（基本的なセキュリティ）
-    if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tableName)) {
+    // テーブル名の検証（基本的なセキュリティ）- ハイフンも許可
+    if (!/^[a-zA-Z_][a-zA-Z0-9_-]*$/.test(tableName)) {
       return new Response(JSON.stringify({
         success: false,
-        error: "無効なテーブル名です"
+        error: "無効なテーブル名です（英数字、アンダースコア、ハイフンのみ使用可能）"
       }), {
         status: 400,
         headers: { "Content-Type": "application/json" }
