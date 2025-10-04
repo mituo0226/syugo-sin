@@ -63,18 +63,14 @@ export async function onRequestPost(context) {
 
     console.log("Magic link generated:", magicLink);
 
-    // 開発環境またはAPIキーがない場合はメール送信をスキップ
-    if (env.ENVIRONMENT === "development" || !env.RESEND_API_KEY) {
-      console.log("Development environment or no API key - skipping email send");
-      console.log("Environment:", env.ENVIRONMENT);
-      console.log("Has API key:", !!env.RESEND_API_KEY);
+    // 開発環境のみメール送信をスキップ
+    if (env.ENVIRONMENT === "development") {
+      console.log("Development environment - skipping email send");
       console.log("Magic link for testing:", magicLink);
       return new Response(JSON.stringify({ 
         ok: true, 
         magicLink,
-        message: env.ENVIRONMENT === "development" 
-          ? "開発環境ではメール送信をスキップしてマジックリンクを直接返します"
-          : "APIキーが設定されていないため、テスト用マジックリンクを直接返します"
+        message: "開発環境ではメール送信をスキップしてマジックリンクを直接返します"
       }), {
         headers: { "Content-Type": "application/json" },
       });
@@ -86,6 +82,21 @@ export async function onRequestPost(context) {
       hasRESEND_API_KEY: !!env.RESEND_API_KEY,
       RESEND_API_KEY_length: env.RESEND_API_KEY ? env.RESEND_API_KEY.length : 0
     });
+    
+    if (!env.RESEND_API_KEY) {
+      console.error("RESEND_API_KEY not found");
+      return new Response(JSON.stringify({ 
+        error: "api_key_missing", 
+        message: "メール送信に必要なAPIキーが設定されていません。管理画面でAPIキーを確認してください。",
+        debug: {
+          environment: env.ENVIRONMENT,
+          hasApiKey: !!env.RESEND_API_KEY
+        }
+      }), { 
+        status: 500,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
 
     console.log("Sending email via Resend API to:", email);
     
