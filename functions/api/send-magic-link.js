@@ -80,6 +80,14 @@ export async function onRequestPost(context) {
     }
 
     // APIキーの確認
+    console.log("=== 環境変数デバッグ情報 ===");
+    console.log("Environment:", env.ENVIRONMENT);
+    console.log("All environment keys:", Object.keys(env));
+    console.log("RESEND_API_KEY exists:", !!env.RESEND_API_KEY);
+    console.log("RESEND_API_KEY length:", env.RESEND_API_KEY ? env.RESEND_API_KEY.length : 0);
+    console.log("RESEND_API_KEY prefix:", env.RESEND_API_KEY ? env.RESEND_API_KEY.substring(0, 10) + "..." : "none");
+    console.log("=============================");
+    
     if (!env.RESEND_API_KEY) {
       console.error("RESEND_API_KEY not found");
       return new Response(JSON.stringify({ 
@@ -88,7 +96,8 @@ export async function onRequestPost(context) {
         debug: {
           environment: env.ENVIRONMENT,
           hasApiKey: !!env.RESEND_API_KEY,
-          availableEnvKeys: Object.keys(env).filter(key => key.includes('RESEND') || key.includes('API'))
+          availableEnvKeys: Object.keys(env).filter(key => key.includes('RESEND') || key.includes('API')),
+          allEnvKeys: Object.keys(env)
         }
       }), { 
         status: 500,
