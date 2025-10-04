@@ -427,7 +427,12 @@
         console.log('マジックリンク送信開始:', { email, nickname, birthdate, guardianId, theme });
         console.log('API URL: /api/send-magic-link');
         
-        // APIに送信
+        // 守護神情報を取得
+        const guardianSelect = document.getElementById('guardianId');
+        const guardianOption = guardianSelect.options[guardianSelect.selectedIndex];
+        const guardianName = guardianOption ? guardianOption.text : null;
+        
+        // APIに送信（新しいデータ構造）
         const response = await fetch('/api/send-magic-link', {
           method: 'POST',
           mode: 'cors',
@@ -438,23 +443,45 @@
           },
           body: JSON.stringify({
             email: email,
-            nickname: nickname,
-            birthdate: birthdate,
-            guardian_id: guardianId,
-            theme: theme
+            userData: {
+              birthdate: birthdate,
+              guardian: guardianName,
+              nickname: nickname,
+              topic: theme
+            }
           })
         });
         
         console.log(`レスポンス受信: ${response.status} ${response.statusText}`);
         
         if (!response.ok) {
-          const errorData = await response.json();
-          console.error('API送信エラー:', errorData);
+          let errorMessage = '送信に失敗しました。もう一度お試しください';
           
-          // 具体的なエラーメッセージを表示
-          let errorMessage = errorData.error || '送信に失敗しました。もう一度お試しください';
-          if (response.status === 409 && errorData.error === "このメールアドレスは既に登録されています") {
-            errorMessage = 'このメールアドレスは既に登録されています';
+          try {
+            const errorData = await response.json();
+            console.error('API送信エラー:', errorData);
+            
+            // エラーメッセージのマッピング
+            switch (errorData.error) {
+              case 'email_required':
+                errorMessage = 'メールアドレスが必要です';
+                break;
+              case 'send_error':
+                errorMessage = `メール送信に失敗しました: ${errorData.message || 'Unknown error'}`;
+                break;
+              case 'internal_error':
+                errorMessage = `サーバー内部エラーが発生しました: ${errorData.message || 'Unknown error'}`;
+                break;
+              case 'invalid_json':
+                errorMessage = '送信データの形式が正しくありません';
+                break;
+              default:
+                errorMessage = errorData.message || errorData.error || errorText;
+            }
+          } catch (parseError) {
+            const errorText = await response.text();
+            console.error('API送信エラー（テキスト）:', errorText);
+            errorMessage = errorText;
           }
           
           throw new Error(errorMessage);

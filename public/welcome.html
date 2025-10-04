@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登録完了 - 守護神</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .typewriter {
+            overflow: hidden;
+            border-right: .15em solid orange;
+            white-space: nowrap;
+            margin: 0 auto;
+            letter-spacing: .15em;
+            animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+        }
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: orange; }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen flex items-center justify-center">
+    <div class="max-w-md w-full mx-4">
+        <div class="bg-white rounded-lg shadow-xl p-8 text-center">
+            <div class="mb-6">
+                <i class="fas fa-check-circle text-6xl text-green-500 mb-4"></i>
+                <h1 class="text-2xl font-bold text-gray-800 mb-2">
+                    <span class="typewriter">登録が完了しました</span>
+                </h1>
+                <p class="text-gray-600">守護神のご加護をいただき、ありがとうございます</p>
+            </div>
+
+            <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                <h2 class="text-lg font-semibold text-gray-800 mb-3">
+                    <i class="fas fa-user-circle mr-2"></i>登録情報
+                </h2>
+                <div id="userInfo" class="text-left space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">ニックネーム:</span>
+                        <span id="nickname" class="font-medium">読み込み中...</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">メールアドレス:</span>
+                        <span id="email" class="font-medium">読み込み中...</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">生年月日:</span>
+                        <span id="birthdate" class="font-medium">読み込み中...</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">守護神:</span>
+                        <span id="guardian" class="font-medium">読み込み中...</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">相談内容:</span>
+                        <span id="topic" class="font-medium">読み込み中...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <a href="/ritual-guardian.html" 
+                   class="block w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-md transition-colors duration-200">
+                    <i class="fas fa-shield-alt mr-2"></i>
+                    守護神の言葉を聞く
+                </a>
+                
+                <a href="/ritual-dragon.html" 
+                   class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md transition-colors duration-200">
+                    <i class="fas fa-dragon mr-2"></i>
+                    龍の言葉を聞く
+                </a>
+
+                <a href="/admin/admin-new.html" 
+                   class="block w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-md transition-colors duration-200">
+                    <i class="fas fa-cog mr-2"></i>
+                    管理画面へ
+                </a>
+            </div>
+
+            <div class="mt-6 text-sm text-gray-500">
+                <p>あなたの守護神が常に見守っています</p>
+                <p class="mt-1">✨ 心を込めて ✨</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ユーザー情報を取得して表示
+        async function loadUserInfo() {
+            try {
+                // クッキーからユーザーIDを取得
+                const cookies = document.cookie.split(';');
+                let userId = null;
+                
+                for (let cookie of cookies) {
+                    const [name, value] = cookie.trim().split('=');
+                    if (name === 'session_user') {
+                        userId = value;
+                        break;
+                    }
+                }
+
+                if (!userId) {
+                    console.log('No session user found');
+                    document.getElementById('nickname').textContent = 'セッションが見つかりません';
+                    document.getElementById('email').textContent = 'セッションが見つかりません';
+                    document.getElementById('birthdate').textContent = 'セッションが見つかりません';
+                    document.getElementById('guardian').textContent = 'セッションが見つかりません';
+                    document.getElementById('topic').textContent = 'セッションが見つかりません';
+                    return;
+                }
+
+                console.log('Session user ID:', userId);
+
+                // APIからユーザー情報を取得
+                try {
+                    console.log('Making API call to /api/get-user-data');
+                    console.log('Cookies being sent:', document.cookie);
+                    
+                    const response = await fetch('/api/get-user-data', {
+                        method: 'GET',
+                        credentials: 'include'   // ← Cookieを必ず送信する
+                    });
+                    
+                    console.log('API response status:', response.status);
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log('API response:', result);
+                        
+                        if (result.ok && result.user) {
+                            const userData = result.user;
+                            document.getElementById('nickname').textContent = userData.nickname || '未設定';
+                            document.getElementById('email').textContent = userData.email || '未設定';
+                            document.getElementById('birthdate').textContent = userData.birthdate || '未設定';
+                            document.getElementById('guardian').textContent = userData.guardian || '未設定';
+                            document.getElementById('topic').textContent = userData.topic || '未設定';
+                        } else {
+                            throw new Error(`API Error: ${result.error || 'Unknown error'}`);
+                        }
+                    } else {
+                        const errorData = await response.json();
+                        throw new Error(`API Error: ${response.status} - ${errorData.error || 'Unknown error'}`);
+                    }
+                } catch (apiError) {
+                    console.error('API Error:', apiError);
+                    
+                    // APIエラーの場合は、ローカルストレージから取得を試みる
+                    const userData = localStorage.getItem('userData');
+                    if (userData) {
+                        const data = JSON.parse(userData);
+                        document.getElementById('nickname').textContent = data.nickname || '未設定';
+                        document.getElementById('email').textContent = data.email || '未設定';
+                        document.getElementById('birthdate').textContent = data.birthdate || '未設定';
+                        document.getElementById('guardian').textContent = data.guardian || '未設定';
+                        document.getElementById('topic').textContent = data.topic || '未設定';
+                    } else {
+                        // デフォルト値を表示
+                        document.getElementById('nickname').textContent = '登録完了';
+                        document.getElementById('email').textContent = '登録完了';
+                        document.getElementById('birthdate').textContent = '登録完了';
+                        document.getElementById('guardian').textContent = '登録完了';
+                        document.getElementById('topic').textContent = '登録完了';
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error loading user info:', error);
+                document.getElementById('nickname').textContent = 'エラーが発生しました';
+                document.getElementById('email').textContent = 'エラーが発生しました';
+                document.getElementById('birthdate').textContent = 'エラーが発生しました';
+                document.getElementById('guardian').textContent = 'エラーが発生しました';
+                document.getElementById('topic').textContent = 'エラーが発生しました';
+            }
+        }
+
+        // ページ読み込み時にユーザー情報を取得
+        document.addEventListener('DOMContentLoaded', loadUserInfo);
+
+        // デバッグ情報をコンソールに出力
+        console.log('Welcome page loaded');
+        console.log('Current URL:', window.location.href);
+        console.log('Document cookies:', document.cookie);
+        
+        // Cookieの詳細を解析
+        const cookies = document.cookie.split(';');
+        console.log('All cookies:', cookies);
+        const sessionCookie = cookies.find(cookie => cookie.trim().startsWith('session_user='));
+        console.log('Session cookie:', sessionCookie);
+    </script>
+</body>
+</html>
+
