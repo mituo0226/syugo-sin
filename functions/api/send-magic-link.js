@@ -79,20 +79,30 @@ export async function onRequestPost(context) {
       });
     }
 
-    // 本番環境でAPIキーがない場合は一時的にハードコーディングされたキーを使用
-    const apiKey = env.RESEND_API_KEY || "re_VGKW928W_PcukEwTQf6ZnzrkWxJHGn2QV";
-    
+    // APIキーの確認
     if (!env.RESEND_API_KEY) {
-      console.log("⚠️ APIキーが環境変数で設定されていません。一時的にハードコーディングされたキーを使用します。");
-      console.log("Cloudflareダッシュボードで環境変数を設定してください。");
+      console.error("RESEND_API_KEY not found");
+      return new Response(JSON.stringify({ 
+        error: "api_key_missing", 
+        message: "メール送信に必要なAPIキーが設定されていません。Cloudflareダッシュボードで環境変数を設定してください。",
+        debug: {
+          environment: env.ENVIRONMENT,
+          hasApiKey: !!env.RESEND_API_KEY,
+          availableEnvKeys: Object.keys(env).filter(key => key.includes('RESEND') || key.includes('API'))
+        }
+      }), { 
+        status: 500,
+        headers: { "Content-Type": "application/json" }
+      });
     }
+    
+    const apiKey = env.RESEND_API_KEY;
 
     // APIキーの確認
     console.log("Environment variables:", {
       ENVIRONMENT: env.ENVIRONMENT,
       hasRESEND_API_KEY: !!env.RESEND_API_KEY,
-      RESEND_API_KEY_length: env.RESEND_API_KEY ? env.RESEND_API_KEY.length : 0,
-      usingFallbackKey: !env.RESEND_API_KEY
+      RESEND_API_KEY_length: env.RESEND_API_KEY ? env.RESEND_API_KEY.length : 0
     });
 
     console.log("Sending email via Resend API to:", email);
