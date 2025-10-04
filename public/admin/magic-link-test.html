@@ -76,8 +76,8 @@
 
                     <button type="submit" id="submitBtn"
                             class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center">
-                        <i class="fas fa-paper-plane mr-2"></i>
-                        マジックリンクを送信
+                        <i class="fas fa-link mr-2"></i>
+                        マジックリンクを生成
                     </button>
                 </form>
 
@@ -88,10 +88,11 @@
                         <i class="fas fa-info-circle mr-1"></i>テスト手順
                     </h3>
                     <ol class="text-sm text-blue-800 space-y-1">
-                        <li>1. 実際のメールアドレスを入力してください</li>
-                        <li>2. 「マジックリンクを送信」をクリック</li>
-                        <li>3. メールボックス（迷惑メールフォルダも含む）を確認</li>
-                        <li>4. 受信したメール内のリンクをクリックして動作確認</li>
+                        <li>1. テスト用のデータを入力してください</li>
+                        <li>2. 「マジックリンクを生成」をクリック</li>
+                        <li>3. 生成されたマジックリンクをコピー</li>
+                        <li>4. 新しいタブでマジックリンクを開いて動作確認</li>
+                        <li>5. 登録フローが正常に動作することを確認</li>
                     </ol>
                 </div>
             </div>
@@ -113,63 +114,90 @@
             
             // ボタンを無効化し、ローディング表示
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>送信中...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>生成中...';
             result.classList.add('hidden');
             
             try {
-                const response = await fetch('/api/send-magic-link', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        email: email,
-                        userData: {
-                            nickname: nickname,
-                            birthdate: birthdate,
-                            guardian: guardian,
-                            topic: topic
-                        }
-                    })
-                });
+                // マジックリンクを直接生成（データベースに保存しない）
+                const token = `test-${crypto.randomUUID()}`;
+                const magicLink = `${window.location.origin}/api/verify-magic-link?token=${token}`;
                 
-                const data = await response.json();
+                // ローカルストレージにテストデータを保存
+                const testData = {
+                    email: email,
+                    nickname: nickname,
+                    birthdate: birthdate,
+                    guardian: guardian,
+                    topic: topic,
+                    token: token
+                };
+                localStorage.setItem('magicLinkTestData', JSON.stringify(testData));
                 
-                if (response.ok) {
-                    result.className = 'mt-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-md';
-                    result.innerHTML = `
-                        <h3 class="font-bold mb-2">
-                            <i class="fas fa-check-circle mr-2"></i>送信成功！
-                        </h3>
-                        <p><strong>メールアドレス:</strong> ${email}</p>
-                        ${data.magicLink ? `
-                            <p class="mt-2"><strong>開発環境用リンク:</strong></p>
-                            <a href="${data.magicLink}" target="_blank" class="text-blue-600 underline break-all">
-                                ${data.magicLink}
+                // 結果を表示
+                result.className = 'mt-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-md';
+                result.innerHTML = `
+                    <h3 class="font-bold mb-2">
+                        <i class="fas fa-check-circle mr-2"></i>マジックリンク生成成功！
+                    </h3>
+                    <p><strong>テストデータ:</strong></p>
+                    <ul class="text-sm mt-2 space-y-1">
+                        <li>• メール: ${email}</li>
+                        <li>• ニックネーム: ${nickname}</li>
+                        <li>• 生年月日: ${birthdate}</li>
+                        <li>• 守護神: ${guardian}</li>
+                        <li>• 相談内容: ${topic}</li>
+                    </ul>
+                    <div class="mt-4">
+                        <p class="font-semibold mb-2">生成されたマジックリンク:</p>
+                        <div class="bg-white p-3 rounded border">
+                            <a href="${magicLink}" target="_blank" class="text-blue-600 underline break-all block mb-2">
+                                ${magicLink}
                             </a>
-                        ` : ''}
-                        <p class="text-sm mt-2"><strong>注意:</strong> メールが届かない場合は、迷惑メールフォルダも確認してください。</p>
-                    `;
-                    result.classList.remove('hidden');
-                } else {
-                    throw new Error(data.error || data.message || '送信に失敗しました');
-                }
+                            <button onclick="copyToClipboard('${magicLink}')" 
+                                    class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">
+                                <i class="fas fa-copy mr-1"></i>コピー
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-sm mt-3"><strong>注意:</strong> このリンクはローカルストレージに保存されたテストデータを使用します。</p>
+                `;
+                result.classList.remove('hidden');
                 
             } catch (error) {
                 result.className = 'mt-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md';
                 result.innerHTML = `
                     <h3 class="font-bold mb-2">
-                        <i class="fas fa-exclamation-triangle mr-2"></i>送信エラー
+                        <i class="fas fa-exclamation-triangle mr-2"></i>生成エラー
                     </h3>
                     <p><strong>エラー:</strong> ${error.message}</p>
-                    <p class="text-sm mt-2">APIキーやメール設定を確認してください。</p>
                 `;
                 result.classList.remove('hidden');
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>マジックリンクを送信';
+                submitBtn.innerHTML = '<i class="fas fa-link mr-2"></i>マジックリンクを生成';
             }
         });
+
+        // クリップボードにコピーする関数
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // 一時的にボタンのテキストを変更
+                const button = event.target;
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check mr-1"></i>コピー済み';
+                button.classList.add('bg-green-500');
+                button.classList.remove('bg-blue-500');
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.classList.remove('bg-green-500');
+                    button.classList.add('bg-blue-500');
+                }, 2000);
+            }).catch(err => {
+                console.error('コピーに失敗しました:', err);
+                alert('コピーに失敗しました。手動でコピーしてください。');
+            });
+        }
     </script>
 </body>
 </html>
