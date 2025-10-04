@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マジックリンクテスト</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-2">
+                        <i class="fas fa-link text-blue-600 mr-3"></i>
+                        マジックリンクテスト
+                    </h1>
+                    <p class="text-gray-600">メール送信機能をテストします</p>
+                </div>
+
+                <form id="magicLinkForm" class="space-y-6">
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-envelope mr-2"></i>メールアドレス
+                        </label>
+                        <input type="email" id="email" name="email" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="test@example.com">
+                    </div>
+
+                    <div>
+                        <label for="nickname" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-user mr-2"></i>ニックネーム
+                        </label>
+                        <input type="text" id="nickname" name="nickname" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="テストユーザー">
+                    </div>
+
+                    <div>
+                        <label for="birthdate" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-calendar-alt mr-2"></i>生年月日
+                        </label>
+                        <input type="date" id="birthdate" name="birthdate" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               value="1990-01-01">
+                    </div>
+
+                    <div>
+                        <label for="guardian" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-shield-alt mr-2"></i>守護神
+                        </label>
+                        <select id="guardian" name="guardian" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="薬師如来">薬師如来</option>
+                            <option value="阿弥陀如来">阿弥陀如来</option>
+                            <option value="千手観音">千手観音</option>
+                            <option value="虚空蔵菩薩">虚空蔵菩薩</option>
+                            <option value="文殊菩薩">文殊菩薩</option>
+                            <option value="普賢菩薩">普賢菩薩</option>
+                            <option value="勢至菩薩">勢至菩薩</option>
+                            <option value="大日如来">大日如来</option>
+                            <option value="不動明王">不動明王</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="topic" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-heart mr-2"></i>相談内容
+                        </label>
+                        <input type="text" id="topic" name="topic" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               value="恋愛について相談したい" readonly>
+                    </div>
+
+                    <button type="submit" id="submitBtn"
+                            class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center">
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        マジックリンクを送信
+                    </button>
+                </form>
+
+                <div id="result" class="mt-6 hidden"></div>
+
+                <div class="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <h3 class="text-sm font-medium text-blue-900 mb-2">
+                        <i class="fas fa-info-circle mr-1"></i>テスト手順
+                    </h3>
+                    <ol class="text-sm text-blue-800 space-y-1">
+                        <li>1. 実際のメールアドレスを入力してください</li>
+                        <li>2. 「マジックリンクを送信」をクリック</li>
+                        <li>3. メールボックス（迷惑メールフォルダも含む）を確認</li>
+                        <li>4. 受信したメール内のリンクをクリックして動作確認</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('magicLinkForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const nickname = document.getElementById('nickname').value;
+            const birthdate = document.getElementById('birthdate').value;
+            const guardian = document.getElementById('guardian').value;
+            const topic = document.getElementById('topic').value;
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const result = document.getElementById('result');
+            
+            // ボタンを無効化し、ローディング表示
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>送信中...';
+            result.classList.add('hidden');
+            
+            try {
+                const response = await fetch('/api/send-magic-link', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        userData: {
+                            nickname: nickname,
+                            birthdate: birthdate,
+                            guardian: guardian,
+                            topic: topic
+                        }
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    result.className = 'mt-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-md';
+                    result.innerHTML = `
+                        <h3 class="font-bold mb-2">
+                            <i class="fas fa-check-circle mr-2"></i>送信成功！
+                        </h3>
+                        <p><strong>メールアドレス:</strong> ${email}</p>
+                        ${data.magicLink ? `
+                            <p class="mt-2"><strong>開発環境用リンク:</strong></p>
+                            <a href="${data.magicLink}" target="_blank" class="text-blue-600 underline break-all">
+                                ${data.magicLink}
+                            </a>
+                        ` : ''}
+                        <p class="text-sm mt-2"><strong>注意:</strong> メールが届かない場合は、迷惑メールフォルダも確認してください。</p>
+                    `;
+                    result.classList.remove('hidden');
+                } else {
+                    throw new Error(data.error || data.message || '送信に失敗しました');
+                }
+                
+            } catch (error) {
+                result.className = 'mt-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md';
+                result.innerHTML = `
+                    <h3 class="font-bold mb-2">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>送信エラー
+                    </h3>
+                    <p><strong>エラー:</strong> ${error.message}</p>
+                    <p class="text-sm mt-2">APIキーやメール設定を確認してください。</p>
+                `;
+                result.classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>マジックリンクを送信';
+            }
+        });
+    </script>
+</body>
+</html>
