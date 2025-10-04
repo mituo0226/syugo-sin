@@ -63,19 +63,33 @@ export async function onRequestPost(context) {
 
     console.log("Magic link generated:", magicLink);
 
-    // ローカル環境またはテストモードではメール送信をスキップ
-    if (env.ENVIRONMENT === "development" || !env.RESEND_API_KEY) {
-      console.log("Skipping email send - returning magic link directly");
+    // 開発環境のみメール送信をスキップ
+    if (env.ENVIRONMENT === "development") {
+      console.log("Development environment - skipping email send");
       console.log("Magic link for testing:", magicLink);
       return new Response(JSON.stringify({ 
         ok: true, 
         magicLink,
-        message: "ローカル環境ではメール送信をスキップしてマジックリンクを直接返します"
+        message: "開発環境ではメール送信をスキップしてマジックリンクを直接返します"
       }), {
         headers: { "Content-Type": "application/json" },
       });
     }
 
+    // APIキーの確認
+    if (!env.RESEND_API_KEY) {
+      console.error("RESEND_API_KEY not found");
+      return new Response(JSON.stringify({ 
+        error: "api_key_missing", 
+        message: "メール送信に必要なAPIキーが設定されていません"
+      }), { 
+        status: 500,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
+
+    console.log("Sending email via Resend API to:", email);
+    
     // 本番では Resend API でメール送信
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -94,7 +108,8 @@ export async function onRequestPost(context) {
 
     if (!response.ok) {
       const text = await response.text();
-      console.error("Resend error:", text);
+      console.error("Resend API error:", text);
+      console.error("Response status:", response.status);
       return new Response(JSON.stringify({ 
         error: "send_error", 
         message: text,
@@ -105,7 +120,14 @@ export async function onRequestPost(context) {
       });
     }
 
-    return new Response(JSON.stringify({ ok: true }), {
+    const resendData = await response.json();
+    console.log("Email sent successfully:", resendData);
+
+    return new Response(JSON.stringify({ 
+      ok: true,
+      message: "メールが正常に送信されました",
+      emailId: resendData.id 
+    }), {
       headers: { "Content-Type": "application/json" },
     });
 
