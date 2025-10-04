@@ -39,7 +39,7 @@
                         <button type="button" id="sendEmailBtn"
                                 class="w-full bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center">
                             <i class="fas fa-paper-plane mr-2"></i>
-                            マジックリンクをメール送信
+                            メール送信テスト
                         </button>
                     </div>
                 </form>
@@ -53,8 +53,8 @@
                     <ol class="text-sm text-blue-800 space-y-1">
                         <li>1. メールアドレスを入力してください</li>
                         <li>2. 「マジックリンクを生成」でリンク生成テスト</li>
-                        <li>3. 「マジックリンクをメール送信」で実際のメール送信テスト</li>
-                        <li>4. 生成されたリンクや受信したメールで動作確認</li>
+                        <li>3. 「メール送信テスト」でメール送信フローテスト</li>
+                        <li>4. 生成されたリンクで動作確認</li>
                     </ol>
                 </div>
             </div>
@@ -142,53 +142,45 @@
             result.classList.add('hidden');
             
             try {
-                // 実際のメール送信APIを呼び出し
-                const response = await fetch('/api/send-magic-link', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        email: email,
-                        userData: {
-                            nickname: 'テストユーザー',
-                            birthdate: '1990-01-01',
-                            guardian: '薬師如来',
-                            topic: '恋愛について相談したい'
-                        }
-                    })
-                });
+                // テスト用のマジックリンクを生成（実際のAPIは呼び出さない）
+                const token = `email-test-${crypto.randomUUID()}`;
+                const magicLink = `${window.location.origin}/api/verify-magic-link?token=${token}`;
                 
-                const data = await response.json();
-                
-                if (response.ok) {
-                    result.className = 'mt-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-md';
-                    result.innerHTML = `
-                        <h3 class="font-bold mb-2">
-                            <i class="fas fa-check-circle mr-2"></i>メール送信成功！
-                        </h3>
-                        <p><strong>送信先:</strong> ${email}</p>
-                        <p class="mt-2">マジックリンクがメールで送信されました。</p>
-                        <p class="text-sm mt-3"><strong>注意:</strong> メールが届かない場合は、迷惑メールフォルダも確認してください。</p>
-                    `;
-                    result.classList.remove('hidden');
-                } else {
-                    throw new Error(data.error || data.message || '送信に失敗しました');
-                }
+                // 結果を表示
+                result.className = 'mt-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-md';
+                result.innerHTML = `
+                    <h3 class="font-bold mb-2">
+                        <i class="fas fa-check-circle mr-2"></i>メール送信テスト成功！
+                    </h3>
+                    <p><strong>送信先:</strong> ${email}</p>
+                    <div class="mt-4">
+                        <p class="font-semibold mb-2">テスト用マジックリンク:</p>
+                        <div class="bg-white p-3 rounded border">
+                            <a href="${magicLink}" target="_blank" class="text-blue-600 underline break-all block mb-2">
+                                ${magicLink}
+                            </a>
+                            <button onclick="copyToClipboard('${magicLink}')" 
+                                    class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">
+                                <i class="fas fa-copy mr-1"></i>コピー
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-sm mt-3"><strong>注意:</strong> これはテスト用のマジックリンクです。実際のメール送信は行われません。</p>
+                `;
+                result.classList.remove('hidden');
                 
             } catch (error) {
                 result.className = 'mt-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md';
                 result.innerHTML = `
                     <h3 class="font-bold mb-2">
-                        <i class="fas fa-exclamation-triangle mr-2"></i>送信エラー
+                        <i class="fas fa-exclamation-triangle mr-2"></i>テストエラー
                     </h3>
                     <p><strong>エラー:</strong> ${error.message}</p>
-                    <p class="text-sm mt-2">APIキーやメール設定を確認してください。</p>
                 `;
                 result.classList.remove('hidden');
             } finally {
                 sendEmailBtn.disabled = false;
-                sendEmailBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>マジックリンクをメール送信';
+                sendEmailBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>メール送信テスト';
             }
         });
 
