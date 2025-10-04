@@ -4,15 +4,22 @@
   "description": "AI鑑定師 龍 - 新しい独立プロジェクト",
   "main": "functions/_routes.js",
   "scripts": {
+    "prepare": "husky install",
     "dev": "wrangler pages dev public --compatibility-date=2024-01-01",
     "deploy": "wrangler pages deploy public",
     "test-local": "echo 'ローカル環境でのマジックリンクテスト: http://localhost:8788/admin/magic-link-test-local.html'",
     "db-reset": "npx wrangler d1 execute syugo-sin-db --local --file=schema.sql"
   },
-  "keywords": ["cloudflare", "workers", "ai", "divination"],
+  "keywords": [
+    "cloudflare",
+    "workers",
+    "ai",
+    "divination"
+  ],
   "author": "mituo0226",
   "license": "MIT",
   "devDependencies": {
+    "husky": "^9.1.7",
     "wrangler": "^3.0.0"
   }
 }

@@ -1,0 +1,37 @@
+name = "syugo-sin"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "public"
+
+[env.production]
+name = "syugo-sin"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "syugo-sin-db"
+database_id = "0eee225f-f4a4-41ea-a64b-1ae31cb92138"
+
+[env.preview]
+name = "syugo-sin-preview"
+
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "syugo-sin-db"
+database_id = "0eee225f-f4a4-41ea-a64b-1ae31cb92138"
+
+# D1データベースの設定（デフォルト）
+[[d1_databases]]
+binding = "DB"
+database_name = "syugo-sin-db"
+database_id = "0eee225f-f4a4-41ea-a64b-1ae31cb92138"
+
+# 環境変数の設定
+[vars]
+ENVIRONMENT = "development"
+
+# プレビュー環境用の設定
+[env.preview.vars]
+ENVIRONMENT = "preview"
+
+# 本番環境用の設定
+[env.production.vars]
+ENVIRONMENT = "production"
