@@ -230,10 +230,17 @@
         document.getElementById('loadTablesBtn').addEventListener('click', loadTables);
         
         // テーブル作成フォーム
-        document.getElementById('createTableForm').addEventListener('submit', createTable);
+        document.getElementById('createTableForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('フォーム送信が防止されました');
+        });
         
         // 簡単テーブル作成
-        document.getElementById('generateSimpleTableBtn').addEventListener('click', createSimpleTable);
+        document.getElementById('generateSimpleTableBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('簡単テーブル作成ボタンがクリックされました');
+            createSimpleTable();
+        });
         
         // 上級者向けフォームの表示切り替え
         document.getElementById('toggleAdvancedBtn').addEventListener('click', toggleAdvancedForm);
@@ -282,7 +289,10 @@
 
         // 簡単テーブル作成機能
         async function createSimpleTable() {
+            console.log('createSimpleTable関数が実行されました');
+            
             const tableName = document.getElementById('tableName').value;
+            console.log('テーブル名:', tableName);
             
             if (!tableName) {
                 alert('テーブル名を入力してください');
@@ -295,6 +305,8 @@
                 selectedFields.push(checkbox.value);
             });
             
+            console.log('選択された項目:', selectedFields);
+            
             if (selectedFields.length === 0) {
                 alert('少なくとも1つの項目を選択してください');
                 return;
@@ -302,6 +314,7 @@
             
             // SQLスキーマを自動生成
             const schema = generateTableSchema(tableName, selectedFields);
+            console.log('生成されたSQLスキーマ:', schema);
             
             try {
                 const response = await fetch('/api/database-create-table', {
