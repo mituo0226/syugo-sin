@@ -61,6 +61,9 @@ export async function onRequestGet(context) {
                 
                 const data = JSON.parse(userData);
                 
+                // データ構造を確認してログ出力
+                console.log('Local storage data:', data);
+                
                 // 登録APIを呼び出し
                 const response = await fetch('/api/register', {
                     method: 'POST',
