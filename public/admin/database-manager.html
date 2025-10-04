@@ -78,25 +78,76 @@
                                    placeholder="例: 会員情報、商品リスト、注文履歴">
                             <p class="text-xs text-gray-500 mt-1">何のデータを保存する表なのか、分かりやすい名前を付けてください</p>
                         </div>
-                        <div>
-                            <label for="tableSchema" class="block text-sm font-medium text-gray-700 mb-1">
-                                <i class="fas fa-list mr-1"></i>テーブルの設計書
-                            </label>
-                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-2">
-                                <p class="text-yellow-800 text-xs">
-                                    <i class="fas fa-exclamation-triangle mr-1"></i>
-                                    <strong>注意：</strong>これは上級者向けの機能です。基本的には「データベース初期化」ボタンを使用することをお勧めします。
-                                </p>
+                        <!-- 初心者向けの簡単テーブル作成 -->
+                        <div id="simpleTableForm">
+                            <h4 class="text-md font-semibold text-gray-800 mb-3">
+                                <i class="fas fa-magic mr-2"></i>簡単テーブル作成（初心者向け）
+                            </h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                                        <i class="fas fa-columns mr-1"></i>テーブルに含めたい項目を選択してください
+                                    </label>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <label class="flex items-center">
+                                            <input type="checkbox" class="table-field" value="email" checked>
+                                            <span class="ml-2 text-sm">メールアドレス</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" class="table-field" value="nickname" checked>
+                                            <span class="ml-2 text-sm">ニックネーム</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" class="table-field" value="birthdate">
+                                            <span class="ml-2 text-sm">生年月日</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" class="table-field" value="phone">
+                                            <span class="ml-2 text-sm">電話番号</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" class="table-field" value="address">
+                                            <span class="ml-2 text-sm">住所</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" class="table-field" value="created_at" checked>
+                                            <span class="ml-2 text-sm">作成日時</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <button type="button" id="generateSimpleTableBtn" class="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                    <i class="fas fa-magic mr-2"></i>選択した項目でテーブルを作成
+                                </button>
                             </div>
-                            <textarea id="tableSchema" name="tableSchema" required rows="8"
-                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                                      placeholder="CREATE TABLE 会員情報 (
+                        </div>
+                        
+                        <!-- 上級者向けのSQL入力 -->
+                        <div class="border-t pt-4 mt-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-md font-semibold text-gray-800">
+                                    <i class="fas fa-code mr-2"></i>上級者向け：SQLで直接作成
+                                </h4>
+                                <button type="button" id="toggleAdvancedBtn" class="text-blue-600 hover:text-blue-800 text-sm">
+                                    <i class="fas fa-chevron-down mr-1"></i>表示
+                                </button>
+                            </div>
+                            <div id="advancedTableForm" class="hidden">
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-3">
+                                    <p class="text-yellow-800 text-xs">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                                        <strong>注意：</strong>これは上級者向けの機能です。初心者の方は上記の簡単作成を使用してください。
+                                    </p>
+                                </div>
+                                <textarea id="tableSchema" name="tableSchema" rows="8"
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                                          placeholder="CREATE TABLE 会員情報 (
   id TEXT PRIMARY KEY,
   メールアドレス TEXT UNIQUE NOT NULL,
   ニックネーム TEXT,
   登録日時 TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );"></textarea>
-                            <p class="text-xs text-gray-500 mt-1">テーブルの構造を定義します（上級者向け）</p>
+                                <p class="text-xs text-gray-500 mt-1">テーブルの構造を定義します（上級者向け）</p>
+                            </div>
                         </div>
                         <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
                             <i class="fas fa-plus mr-2"></i>新しいテーブルを作成する
@@ -181,6 +232,12 @@
         // テーブル作成フォーム
         document.getElementById('createTableForm').addEventListener('submit', createTable);
         
+        // 簡単テーブル作成
+        document.getElementById('generateSimpleTableBtn').addEventListener('click', createSimpleTable);
+        
+        // 上級者向けフォームの表示切り替え
+        document.getElementById('toggleAdvancedBtn').addEventListener('click', toggleAdvancedForm);
+        
         // SQLクエリ実行
         document.getElementById('executeQueryBtn').addEventListener('click', executeQuery);
         
@@ -223,11 +280,112 @@
             }
         }
 
+        // 簡単テーブル作成機能
+        async function createSimpleTable() {
+            const tableName = document.getElementById('tableName').value;
+            
+            if (!tableName) {
+                alert('テーブル名を入力してください');
+                return;
+            }
+            
+            // 選択された項目を取得
+            const selectedFields = [];
+            document.querySelectorAll('.table-field:checked').forEach(checkbox => {
+                selectedFields.push(checkbox.value);
+            });
+            
+            if (selectedFields.length === 0) {
+                alert('少なくとも1つの項目を選択してください');
+                return;
+            }
+            
+            // SQLスキーマを自動生成
+            const schema = generateTableSchema(tableName, selectedFields);
+            
+            try {
+                const response = await fetch('/api/database-create-table', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        tableName: tableName,
+                        schema: schema
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showResult(`テーブル "${tableName}" を作成しました！\n\n含まれる項目：\n${selectedFields.join(', ')}`, 'success');
+                    loadTables(); // テーブル一覧を更新
+                    document.getElementById('createTableForm').reset();
+                } else {
+                    showResult('エラー: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showResult('エラー: ' + error.message, 'error');
+            }
+        }
+        
+        // テーブルスキーマを自動生成
+        function generateTableSchema(tableName, fields) {
+            let schema = `CREATE TABLE ${tableName} (\n`;
+            schema += `  id TEXT PRIMARY KEY,\n`;
+            
+            fields.forEach(field => {
+                switch(field) {
+                    case 'email':
+                        schema += `  email TEXT UNIQUE NOT NULL,\n`;
+                        break;
+                    case 'nickname':
+                        schema += `  nickname TEXT,\n`;
+                        break;
+                    case 'birthdate':
+                        schema += `  birthdate TEXT,\n`;
+                        break;
+                    case 'phone':
+                        schema += `  phone TEXT,\n`;
+                        break;
+                    case 'address':
+                        schema += `  address TEXT,\n`;
+                        break;
+                    case 'created_at':
+                        schema += `  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n`;
+                        break;
+                }
+            });
+            
+            schema = schema.slice(0, -2); // 最後のカンマと改行を削除
+            schema += '\n);';
+            
+            return schema;
+        }
+        
+        // 上級者向けフォームの表示切り替え
+        function toggleAdvancedForm() {
+            const advancedForm = document.getElementById('advancedTableForm');
+            const toggleBtn = document.getElementById('toggleAdvancedBtn');
+            
+            if (advancedForm.classList.contains('hidden')) {
+                advancedForm.classList.remove('hidden');
+                toggleBtn.innerHTML = '<i class="fas fa-chevron-up mr-1"></i>非表示';
+            } else {
+                advancedForm.classList.add('hidden');
+                toggleBtn.innerHTML = '<i class="fas fa-chevron-down mr-1"></i>表示';
+            }
+        }
+
         async function createTable(e) {
             e.preventDefault();
             
             const tableName = document.getElementById('tableName').value;
             const tableSchema = document.getElementById('tableSchema').value;
+            
+            if (!tableName || !tableSchema) {
+                alert('テーブル名とスキーマの両方を入力してください');
+                return;
+            }
             
             try {
                 const response = await fetch('/api/database-create-table', {
