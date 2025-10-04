@@ -66,14 +66,18 @@ export async function onRequestPost(context) {
 
     console.log("Magic link generated:", magicLink);
 
-    // 開発環境のみメール送信をスキップ
-    if (env.ENVIRONMENT === "development") {
-      console.log("Development environment - skipping email send");
+    // 開発環境またはAPIキーがない場合はメール送信をスキップ
+    if (env.ENVIRONMENT === "development" || !env.RESEND_API_KEY) {
+      console.log("Development environment or no API key - skipping email send");
+      console.log("Environment:", env.ENVIRONMENT);
+      console.log("Has API key:", !!env.RESEND_API_KEY);
       console.log("Magic link for testing:", magicLink);
       return new Response(JSON.stringify({ 
         ok: true, 
         magicLink,
-        message: "開発環境ではメール送信をスキップしてマジックリンクを直接返します"
+        message: !env.RESEND_API_KEY 
+          ? "APIキーが設定されていないため、テスト用マジックリンクを直接返します。Cloudflareダッシュボードで環境変数を設定してください。"
+          : "開発環境ではメール送信をスキップしてマジックリンクを直接返します"
       }), {
         headers: { "Content-Type": "application/json" },
       });
