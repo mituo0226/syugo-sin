@@ -12,7 +12,7 @@ export async function onRequestGet(context) {
     const isTestToken = token.startsWith('test-') || token.length > 36; // UUIDの長さより長い場合はテストトークンと判断
     
     if (isTestToken) {
-      // テストモード：シンプルな完了ページを返す
+      // テストモード：ローカルストレージからデータを取得してデータベースに保存
       const html = `<!doctype html>
 <html lang="ja">
 <head>
@@ -36,6 +36,9 @@ export async function onRequestGet(context) {
             </div>
             
             <div class="space-y-2">
+                <button onclick="registerFromLocalStorage()" class="w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+                    <i class="fas fa-database mr-2"></i>データベースに登録
+                </button>
                 <button onclick="window.close()" class="w-full bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
                     <i class="fas fa-times mr-2"></i>このタブを閉じる
                 </button>
@@ -45,6 +48,47 @@ export async function onRequestGet(context) {
             </div>
         </div>
     </div>
+
+    <script>
+        async function registerFromLocalStorage() {
+            try {
+                // ローカルストレージからデータを取得
+                const userData = localStorage.getItem('userData');
+                if (!userData) {
+                    alert('ローカルストレージにデータがありません');
+                    return;
+                }
+                
+                const data = JSON.parse(userData);
+                
+                // 登録APIを呼び出し
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: data.email,
+                        nickname: data.nickname,
+                        birthdate: data.birthdate,
+                        guardian: data.guardian,
+                        topic: data.topic
+                    })
+                });
+                
+                if (response.ok) {
+                    alert('データベースに登録完了しました！');
+                    window.location.href = '/welcome';
+                } else {
+                    const error = await response.text();
+                    alert('登録エラー: ' + error);
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                alert('登録エラーが発生しました');
+            }
+        }
+    </script>
 </body>
 </html>`;
 

@@ -29,7 +29,7 @@ export async function onRequestPost(context) {
       return createErrorResponse("Invalid JSON format", 400, corsHeaders);
     }
     
-    const { email, nickname, birthdate, guardian_id, theme } = requestBody;
+    const { email, nickname, birthdate, guardian, topic } = requestBody;
     
     if (!email || !nickname) {
       return createErrorResponse("Email and nickname are required", 400, corsHeaders);
@@ -41,51 +41,81 @@ export async function onRequestPost(context) {
       throw new Error("Database not available");
     }
 
-    console.log("Attempting to insert user data:", { email, nickname, birthdate, guardian_id, theme });
+    console.log("Attempting to insert user data:", { email, nickname, birthdate, guardian, topic });
 
     // 重複チェック：同じメールアドレスが既に存在するか確認
     const existingUser = await env.DB.prepare(`
       SELECT id FROM users WHERE email = ?
     `).bind(email).first();
 
+    let userId;
     if (existingUser) {
-      console.log("Duplicate email found:", email);
-      return createErrorResponse("このメールアドレスは既に登録されています", 409, corsHeaders);
-    }
-
-    // D1データベースに保存
-    const result = await env.DB.prepare(`
-      INSERT INTO users (email, nickname, birthdate, guardian_id, theme)
-      VALUES (?, ?, ?, ?, ?)
-    `).bind(
-      email,
-      nickname,
-      birthdate || null,
-      guardian_id || null,
-      theme || null
-    ).run();
-
-    console.log('User registration result:', result);
-
-    if (result.success) {
-      // 保存されたデータを取得
-      const savedUser = await env.DB.prepare(`
-        SELECT * FROM users WHERE id = ?
-      `).bind(result.meta.last_row_id).first();
-
-      return createSuccessResponse({ 
-        success: true,
-        id: result.meta.last_row_id,
-        email: savedUser.email,
-        nickname: savedUser.nickname,
-        birthdate: savedUser.birthdate,
-        guardian_id: savedUser.guardian_id,
-        theme: savedUser.theme,
-        created_at: savedUser.created_at
-      }, corsHeaders);
+      console.log("Duplicate email found, updating existing user:", email);
+      userId = existingUser.id;
+      
+      // 既存ユーザーの情報を更新
+      await env.DB.prepare(`
+        UPDATE users SET nickname=?, birthdate=?, guardian=?, topic=? WHERE id=?
+      `).bind(
+        nickname,
+        birthdate || null,
+        guardian || null,
+        topic || null,
+        userId
+      ).run();
     } else {
-      throw new Error("Failed to insert user data");
+      // 新規ユーザーを作成
+      userId = "usr_" + crypto.randomUUID();
+      
+      const result = await env.DB.prepare(`
+        INSERT INTO users (id, email, nickname, birthdate, guardian, topic)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `).bind(
+        userId,
+        email,
+        nickname,
+        birthdate || null,
+        guardian || null,
+        topic || null
+      ).run();
+      
+      if (!result.success) {
+        throw new Error("Failed to insert user data");
+      }
     }
+
+    // 保存されたデータを取得
+    const savedUser = await env.DB.prepare(`
+      SELECT * FROM users WHERE id = ?
+    `).bind(userId).first();
+
+    // セッションCookieを設定
+    const cookie = [
+      `session_user=${userId}`,
+      "Path=/",
+      "SameSite=Lax",
+      "HttpOnly",
+      `Max-Age=${60 * 60 * 24 * 30}`,
+      "Secure"
+    ].join("; ");
+
+    return new Response(JSON.stringify({ 
+      success: true,
+      id: userId,
+      email: savedUser.email,
+      nickname: savedUser.nickname,
+      birthdate: savedUser.birthdate,
+      guardian: savedUser.guardian,
+      topic: savedUser.topic,
+      created_at: savedUser.created_at
+    }), {
+      status: 200,
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json",
+        "Set-Cookie": cookie
+      }
+    });
 
   } catch (error) {
     console.error("User registration error:", error);
