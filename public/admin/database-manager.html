@@ -54,48 +54,110 @@
 
             <!-- テーブル操作 -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- テーブル作成 -->
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">
-                        <i class="fas fa-plus mr-2"></i>新しいテーブルを作成する
-                    </h2>
-                    <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                        <h3 class="text-lg font-semibold text-green-900 mb-2">
-                            <i class="fas fa-lightbulb mr-2"></i>テーブル作成とは？
-                        </h3>
-                        <p class="text-green-800 text-sm">
-                            新しいデータを保存するための「表」を作ることです。<br>
-                            例えば「商品情報」や「注文履歴」などの新しい表を作ることができます。
-                        </p>
-                    </div>
-                    <form id="createTableForm" class="space-y-4">
-                        <div>
-                            <label for="tableName" class="block text-sm font-medium text-gray-700 mb-1">
-                                <i class="fas fa-tag mr-1"></i>テーブル名（表の名前）
-                            </label>
-                            <input type="text" id="tableName" name="tableName" required
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                   placeholder="例: 会員情報、商品リスト、注文履歴">
-                            <p class="text-xs text-gray-500 mt-1">何のデータを保存する表なのか、分かりやすい名前を付けてください</p>
-                        </div>
-                            <!-- シンプルなテーブル作成 -->
-                            <div id="simpleTableForm">
-                                <h4 class="text-md font-semibold text-gray-800 mb-3">
-                                    <i class="fas fa-magic mr-2"></i>シンプルテーブル作成
+                        <!-- テーブル作成 -->
+                        <div class="bg-white rounded-lg shadow-lg p-6">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                                <i class="fas fa-plus mr-2"></i>新しいテーブルを作成する
+                            </h2>
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                                <h3 class="text-lg font-semibold text-green-900 mb-2">
+                                    <i class="fas fa-lightbulb mr-2"></i>2段階でテーブルを作成
+                                </h3>
+                                <p class="text-green-800 text-sm">
+                                    <strong>第1段階:</strong> テーブル名を登録<br>
+                                    <strong>第2段階:</strong> そのテーブルに必要な項目（カテゴリー）を追加<br>
+                                    後から項目を追加・削除できますので、まずはテーブル名だけ登録してください。
+                                </p>
+                            </div>
+                            
+                            <!-- 第1段階: テーブル名登録 -->
+                            <div id="step1TableRegistration">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-3">
+                                    <i class="fas fa-step-forward mr-2"></i>第1段階: テーブル名を登録
                                 </h4>
-                                <div class="space-y-4">
+                                <form id="createTableForm" class="space-y-4">
+                                    <div>
+                                        <label for="tableName" class="block text-sm font-medium text-gray-700 mb-1">
+                                            <i class="fas fa-tag mr-1"></i>テーブル名（表の名前）
+                                        </label>
+                                        <input type="text" id="tableName" name="tableName" required
+                                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                               placeholder="例: 会員情報、商品リスト、注文履歴">
+                                        <p class="text-xs text-gray-500 mt-1">何のデータを保存する表なのか、分かりやすい名前を付けてください</p>
+                                    </div>
                                     <div>
                                         <label for="tableDescription" class="block text-sm font-medium text-gray-700 mb-1">
                                             <i class="fas fa-info-circle mr-1"></i>テーブルの説明（何を保存するか）
                                         </label>
-                                        <textarea id="tableDescription" name="tableDescription" rows="3"
+                                        <textarea id="tableDescription" name="tableDescription" rows="2"
                                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                  placeholder="例: 会員情報を保存するテーブルです。メールアドレス、ニックネーム、生年月日、登録日時を保存します。"></textarea>
+                                                  placeholder="例: 会員情報を保存するテーブル"></textarea>
                                         <p class="text-xs text-gray-500 mt-1">このテーブルに何を保存するかを簡単に説明してください</p>
                                     </div>
-                                    <button type="button" id="generateSimpleTableBtn" class="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors">
-                                        <i class="fas fa-magic mr-2"></i>シンプルテーブルを作成
+                                    <button type="button" id="registerTableBtn" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                        <i class="fas fa-plus mr-2"></i>テーブル名を登録する
                                     </button>
+                                </form>
+                            </div>
+                            
+                            <!-- 第2段階: カテゴリー追加（最初は非表示） -->
+                            <div id="step2CategoryManagement" class="hidden mt-6 pt-6 border-t border-gray-200">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-3">
+                                    <i class="fas fa-step-forward mr-2"></i>第2段階: カテゴリー（項目）を追加
+                                </h4>
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                                    <p class="text-blue-800 text-sm">
+                                        <strong>テーブル名:</strong> <span id="registeredTableName"></span><br>
+                                        このテーブルに保存したい項目（カテゴリー）を追加してください。
+                                    </p>
+                                </div>
+                                <form id="addCategoryForm" class="space-y-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="categoryName" class="block text-sm font-medium text-gray-700 mb-1">
+                                                <i class="fas fa-columns mr-1"></i>項目名
+                                            </label>
+                                            <input type="text" id="categoryName" name="categoryName" required
+                                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                   placeholder="例: メールアドレス、ニックネーム">
+                                        </div>
+                                        <div>
+                                            <label for="categoryType" class="block text-sm font-medium text-gray-700 mb-1">
+                                                <i class="fas fa-cog mr-1"></i>データの種類
+                                            </label>
+                                            <select id="categoryType" name="categoryType" required
+                                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                <option value="TEXT">テキスト（文字）</option>
+                                                <option value="INTEGER">数値</option>
+                                                <option value="REAL">小数点</option>
+                                                <option value="TIMESTAMP">日時</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="categoryDescription" class="block text-sm font-medium text-gray-700 mb-1">
+                                            <i class="fas fa-info-circle mr-1"></i>項目の説明
+                                        </label>
+                                        <textarea id="categoryDescription" name="categoryDescription" rows="2"
+                                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                  placeholder="例: ユーザーのメールアドレスを保存"></textarea>
+                                    </div>
+                                    <div class="flex space-x-3">
+                                        <button type="button" id="addCategoryBtn" class="flex-1 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                            <i class="fas fa-plus mr-2"></i>この項目を追加
+                                        </button>
+                                        <button type="button" id="finishTableBtn" class="flex-1 bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                            <i class="fas fa-check mr-2"></i>テーブル作成完了
+                                        </button>
+                                    </div>
+                                </form>
+                                
+                                <!-- 追加された項目一覧 -->
+                                <div id="addedCategories" class="mt-6">
+                                    <h5 class="text-md font-semibold text-gray-800 mb-3">追加された項目一覧</h5>
+                                    <div id="categoryList" class="space-y-2">
+                                        <div class="text-gray-500 text-sm italic">まだ項目が追加されていません</div>
+                                    </div>
                                 </div>
                             </div>
                         
@@ -213,11 +275,25 @@
             console.log('フォーム送信が防止されました');
         });
         
-        // 簡単テーブル作成
-        document.getElementById('generateSimpleTableBtn').addEventListener('click', function(e) {
+        // テーブル名登録
+        document.getElementById('registerTableBtn').addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('簡単テーブル作成ボタンがクリックされました');
-            createSimpleTable();
+            console.log('テーブル名登録ボタンがクリックされました');
+            registerTableName();
+        });
+        
+        // カテゴリー追加
+        document.getElementById('addCategoryBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('カテゴリー追加ボタンがクリックされました');
+            addCategory();
+        });
+        
+        // テーブル作成完了
+        document.getElementById('finishTableBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('テーブル作成完了ボタンがクリックされました');
+            finishTableCreation();
         });
         
         // 上級者向けフォームの表示切り替え
@@ -265,9 +341,16 @@
             }
         }
 
-        // シンプルテーブル作成機能
-        async function createSimpleTable() {
-            console.log('createSimpleTable関数が実行されました');
+        // グローバル変数：現在編集中のテーブル情報
+        let currentTableInfo = {
+            name: '',
+            description: '',
+            categories: []
+        };
+        
+        // 第1段階: テーブル名登録
+        async function registerTableName() {
+            console.log('registerTableName関数が実行されました');
             
             const tableName = document.getElementById('tableName').value;
             const tableDescription = document.getElementById('tableDescription').value;
@@ -285,8 +368,117 @@
                 return;
             }
             
-            // 説明に基づいて標準的なテーブルスキーマを生成
-            const schema = generateStandardTableSchema(tableName, tableDescription);
+            // グローバル変数に保存
+            currentTableInfo.name = tableName;
+            currentTableInfo.description = tableDescription;
+            currentTableInfo.categories = [];
+            
+            // 第2段階のUIを表示
+            document.getElementById('registeredTableName').textContent = tableName;
+            document.getElementById('step2CategoryManagement').classList.remove('hidden');
+            
+            // 第1段階のフォームを無効化
+            document.getElementById('step1TableRegistration').style.opacity = '0.5';
+            document.getElementById('step1TableRegistration').style.pointerEvents = 'none';
+            
+            showResult(`テーブル名 "${tableName}" を登録しました！\n次に、必要な項目（カテゴリー）を追加してください。`, 'success');
+        }
+        
+        // カテゴリー追加
+        function addCategory() {
+            console.log('addCategory関数が実行されました');
+            
+            const categoryName = document.getElementById('categoryName').value;
+            const categoryType = document.getElementById('categoryType').value;
+            const categoryDescription = document.getElementById('categoryDescription').value;
+            
+            console.log('カテゴリー名:', categoryName);
+            console.log('カテゴリータイプ:', categoryType);
+            console.log('カテゴリー説明:', categoryDescription);
+            
+            if (!categoryName) {
+                alert('項目名を入力してください');
+                return;
+            }
+            
+            if (!categoryDescription) {
+                alert('項目の説明を入力してください');
+                return;
+            }
+            
+            // 重複チェック
+            if (currentTableInfo.categories.some(cat => cat.name === categoryName)) {
+                alert('同じ名前の項目が既に追加されています');
+                return;
+            }
+            
+            // カテゴリーを追加
+            const category = {
+                name: categoryName,
+                type: categoryType,
+                description: categoryDescription
+            };
+            
+            currentTableInfo.categories.push(category);
+            
+            // カテゴリー一覧を更新
+            updateCategoryList();
+            
+            // フォームをリセット
+            document.getElementById('addCategoryForm').reset();
+            
+            showResult(`項目 "${categoryName}" を追加しました！`, 'success');
+        }
+        
+        // カテゴリー一覧を更新
+        function updateCategoryList() {
+            const categoryList = document.getElementById('categoryList');
+            
+            if (currentTableInfo.categories.length === 0) {
+                categoryList.innerHTML = '<div class="text-gray-500 text-sm italic">まだ項目が追加されていません</div>';
+                return;
+            }
+            
+            let html = '';
+            currentTableInfo.categories.forEach((category, index) => {
+                html += `
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 flex items-center justify-between">
+                        <div>
+                            <div class="font-semibold text-gray-800">${category.name}</div>
+                            <div class="text-sm text-gray-600">種類: ${category.type} | ${category.description}</div>
+                        </div>
+                        <button onclick="removeCategory(${index})" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            
+            categoryList.innerHTML = html;
+        }
+        
+        // カテゴリー削除
+        function removeCategory(index) {
+            const category = currentTableInfo.categories[index];
+            if (confirm(`項目 "${category.name}" を削除しますか？`)) {
+                currentTableInfo.categories.splice(index, 1);
+                updateCategoryList();
+                showResult(`項目 "${category.name}" を削除しました`, 'info');
+            }
+        }
+        
+        // テーブル作成完了
+        async function finishTableCreation() {
+            console.log('finishTableCreation関数が実行されました');
+            
+            if (currentTableInfo.categories.length === 0) {
+                if (!confirm('まだ項目が追加されていません。このままテーブルを作成しますか？（後から項目を追加できます）')) {
+                    return;
+                }
+            }
+            
+            // テーブルスキーマを生成
+            const schema = generateTableSchemaWithCategories(currentTableInfo.name, currentTableInfo.categories);
             console.log('生成されたSQLスキーマ:', schema);
             
             try {
@@ -296,22 +488,41 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        tableName: tableName,
+                        tableName: currentTableInfo.name,
                         schema: schema
                     })
                 });
                 
                 const data = await response.json();
                 if (data.success) {
-                    showResult(`テーブル "${tableName}" を作成しました！\n\n説明: ${tableDescription}`, 'success');
+                    showResult(`テーブル "${currentTableInfo.name}" を作成しました！\n\n説明: ${currentTableInfo.description}\n項目数: ${currentTableInfo.categories.length}個`, 'success');
                     loadTables(); // テーブル一覧を更新
-                    document.getElementById('createTableForm').reset();
+                    
+                    // フォームをリセット
+                    resetTableCreationForm();
                 } else {
                     showResult('エラー: ' + data.error, 'error');
                 }
             } catch (error) {
                 showResult('エラー: ' + error.message, 'error');
             }
+        }
+        
+        // フォームリセット
+        function resetTableCreationForm() {
+            document.getElementById('createTableForm').reset();
+            document.getElementById('addCategoryForm').reset();
+            document.getElementById('step2CategoryManagement').classList.add('hidden');
+            document.getElementById('step1TableRegistration').style.opacity = '1';
+            document.getElementById('step1TableRegistration').style.pointerEvents = 'auto';
+            
+            currentTableInfo = {
+                name: '',
+                description: '',
+                categories: []
+            };
+            
+            updateCategoryList();
         }
         
         // テーブルスキーマを自動生成
@@ -348,11 +559,37 @@
             return schema;
         }
         
-        // 標準的なテーブルスキーマを自動生成
-        function generateStandardTableSchema(tableName, description) {
-            // 基本的なテーブル構造（ID + 作成日時は必須）
+        // カテゴリー付きテーブルスキーマを生成
+        function generateTableSchemaWithCategories(tableName, categories) {
             let schema = `CREATE TABLE ${tableName} (\n`;
             schema += `  id TEXT PRIMARY KEY,\n`;
+            
+            // 各カテゴリーを追加
+            categories.forEach(category => {
+                let columnType = category.type;
+                
+                // データ型の調整
+                switch(category.type) {
+                    case 'TEXT':
+                        columnType = 'TEXT';
+                        break;
+                    case 'INTEGER':
+                        columnType = 'INTEGER';
+                        break;
+                    case 'REAL':
+                        columnType = 'REAL';
+                        break;
+                    case 'TIMESTAMP':
+                        columnType = 'TIMESTAMP';
+                        break;
+                    default:
+                        columnType = 'TEXT';
+                }
+                
+                schema += `  ${category.name} ${columnType},\n`;
+            });
+            
+            // 作成日時を追加
             schema += `  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n`;
             schema += ');';
             
