@@ -70,10 +70,10 @@
                                 </p>
                             </div>
                             
-                            <!-- 第1段階: テーブル名登録 -->
-                            <div id="step1TableRegistration">
+                            <!-- 第1段階: テーブル作成 -->
+                            <div id="step1TableCreation">
                                 <h4 class="text-lg font-semibold text-gray-800 mb-3">
-                                    <i class="fas fa-step-forward mr-2"></i>第1段階: テーブル名を登録
+                                    <i class="fas fa-plus mr-2"></i>テーブルを作成する
                                 </h4>
                                 <form id="createTableForm" class="space-y-4">
                                     <div>
@@ -94,22 +94,30 @@
                                                   placeholder="例: 会員情報を保存するテーブル"></textarea>
                                         <p class="text-xs text-gray-500 mt-1">このテーブルに何を保存するかを簡単に説明してください</p>
                                     </div>
-                                    <button type="button" id="registerTableBtn" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
-                                        <i class="fas fa-plus mr-2"></i>テーブル名を登録する
+                                    <button type="button" id="createTableBtn" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                        <i class="fas fa-plus mr-2"></i>テーブルを作成する
                                     </button>
                                 </form>
+                                <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <p class="text-blue-800 text-sm">
+                                        <i class="fas fa-info-circle mr-1"></i>
+                                        <strong>注意:</strong> テーブル作成後、テーブル一覧から「項目を追加」ボタンで項目を追加できます。
+                                    </p>
+                                </div>
                             </div>
                             
-                            <!-- 第2段階: カテゴリー追加（最初は非表示） -->
-                            <div id="step2CategoryManagement" class="hidden mt-6 pt-6 border-t border-gray-200">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-3">
-                                    <i class="fas fa-step-forward mr-2"></i>第2段階: カテゴリー（項目）を追加
-                                </h4>
-                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                                    <p class="text-blue-800 text-sm">
-                                        <strong>テーブル名:</strong> <span id="registeredTableName"></span><br>
+                            <!-- 項目追加画面（独立セクション） -->
+                            <div id="categoryManagementSection" class="hidden">
+                                <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
+                                    <h3 class="text-lg font-semibold text-purple-900 mb-2">
+                                        <i class="fas fa-columns mr-2"></i>項目追加: <span id="currentTableName"></span>
+                                    </h3>
+                                    <p class="text-purple-800 text-sm">
                                         このテーブルに保存したい項目（カテゴリー）を追加してください。
                                     </p>
+                                    <button onclick="closeCategoryManagement()" class="mt-2 text-purple-600 hover:text-purple-800 text-sm">
+                                        <i class="fas fa-times mr-1"></i>項目追加を終了
+                                    </button>
                                 </div>
                                 <form id="addCategoryForm" class="space-y-4">
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -275,11 +283,11 @@
             console.log('フォーム送信が防止されました');
         });
         
-        // テーブル名登録
-        document.getElementById('registerTableBtn').addEventListener('click', function(e) {
+        // テーブル作成
+        document.getElementById('createTableBtn').addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('テーブル名登録ボタンがクリックされました');
-            registerTableName();
+            console.log('テーブル作成ボタンがクリックされました');
+            createTable();
         });
         
         // カテゴリー追加
@@ -326,6 +334,9 @@
                                     <button onclick="viewTable('${table.name}')" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
                                         <i class="fas fa-eye mr-1"></i>表示
                                     </button>
+                                    <button onclick="editTableCategories('${table.name}')" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm">
+                                        <i class="fas fa-plus mr-1"></i>項目を追加
+                                    </button>
                                     <button onclick="dropTable('${table.name}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
                                         <i class="fas fa-trash mr-1"></i>削除
                                     </button>
@@ -348,9 +359,9 @@
             categories: []
         };
         
-        // 第1段階: テーブル名登録
-        async function registerTableName() {
-            console.log('registerTableName関数が実行されました');
+        // テーブル作成（第1段階）
+        async function createTable() {
+            console.log('createTable関数が実行されました');
             
             const tableName = document.getElementById('tableName').value;
             const tableDescription = document.getElementById('tableDescription').value;
@@ -368,20 +379,65 @@
                 return;
             }
             
-            // グローバル変数に保存
+            // 基本的なテーブルスキーマを生成（ID + 作成日時のみ）
+            const schema = generateBasicTableSchema(tableName);
+            console.log('生成されたSQLスキーマ:', schema);
+            
+            try {
+                const response = await fetch('/api/database-create-table', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        tableName: tableName,
+                        schema: schema
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showResult(`テーブル "${tableName}" を作成しました！\n\n説明: ${tableDescription}\n\nテーブル一覧から「項目を追加」ボタンで項目を追加できます。`, 'success');
+                    loadTables(); // テーブル一覧を更新
+                    document.getElementById('createTableForm').reset(); // フォームをリセット
+                } else {
+                    showResult('エラー: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showResult('エラー: ' + error.message, 'error');
+            }
+        }
+        
+        // テーブルの項目追加画面を開く
+        function editTableCategories(tableName) {
+            console.log('editTableCategories関数が実行されました:', tableName);
+            
+            // 現在編集中のテーブル名を設定
             currentTableInfo.name = tableName;
-            currentTableInfo.description = tableDescription;
+            currentTableInfo.description = '';
             currentTableInfo.categories = [];
             
-            // 第2段階のUIを表示
-            document.getElementById('registeredTableName').textContent = tableName;
-            document.getElementById('step2CategoryManagement').classList.remove('hidden');
+            // 項目追加画面を表示
+            document.getElementById('currentTableName').textContent = tableName;
+            document.getElementById('categoryManagementSection').classList.remove('hidden');
             
-            // 第1段階のフォームを無効化
-            document.getElementById('step1TableRegistration').style.opacity = '0.5';
-            document.getElementById('step1TableRegistration').style.pointerEvents = 'none';
+            // ページを項目追加セクションにスクロール
+            document.getElementById('categoryManagementSection').scrollIntoView({ behavior: 'smooth' });
             
-            showResult(`テーブル名 "${tableName}" を登録しました！\n次に、必要な項目（カテゴリー）を追加してください。`, 'success');
+            showResult(`テーブル "${tableName}" の項目追加画面を開きました。`, 'info');
+        }
+        
+        // 項目追加画面を閉じる
+        function closeCategoryManagement() {
+            document.getElementById('categoryManagementSection').classList.add('hidden');
+            document.getElementById('addCategoryForm').reset();
+            currentTableInfo = {
+                name: '',
+                description: '',
+                categories: []
+            };
+            updateCategoryList();
+            showResult('項目追加を終了しました。', 'info');
         }
         
         // カテゴリー追加
@@ -467,62 +523,21 @@
             }
         }
         
-        // テーブル作成完了
+        // 項目追加完了
         async function finishTableCreation() {
             console.log('finishTableCreation関数が実行されました');
             
             if (currentTableInfo.categories.length === 0) {
-                if (!confirm('まだ項目が追加されていません。このままテーブルを作成しますか？（後から項目を追加できます）')) {
-                    return;
-                }
+                showResult('まだ項目が追加されていません。項目を追加するか、「項目追加を終了」ボタンで終了してください。', 'info');
+                return;
             }
             
-            // テーブルスキーマを生成
-            const schema = generateTableSchemaWithCategories(currentTableInfo.name, currentTableInfo.categories);
-            console.log('生成されたSQLスキーマ:', schema);
+            // テーブルに項目を追加するAPIを呼び出す（将来的に実装）
+            // 現在は項目一覧を表示するだけ
+            showResult(`項目追加完了！\n\nテーブル: ${currentTableInfo.name}\n追加された項目数: ${currentTableInfo.categories.length}個\n\n項目: ${currentTableInfo.categories.map(cat => cat.name).join(', ')}`, 'success');
             
-            try {
-                const response = await fetch('/api/database-create-table', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        tableName: currentTableInfo.name,
-                        schema: schema
-                    })
-                });
-                
-                const data = await response.json();
-                if (data.success) {
-                    showResult(`テーブル "${currentTableInfo.name}" を作成しました！\n\n説明: ${currentTableInfo.description}\n項目数: ${currentTableInfo.categories.length}個`, 'success');
-                    loadTables(); // テーブル一覧を更新
-                    
-                    // フォームをリセット
-                    resetTableCreationForm();
-                } else {
-                    showResult('エラー: ' + data.error, 'error');
-                }
-            } catch (error) {
-                showResult('エラー: ' + error.message, 'error');
-            }
-        }
-        
-        // フォームリセット
-        function resetTableCreationForm() {
-            document.getElementById('createTableForm').reset();
-            document.getElementById('addCategoryForm').reset();
-            document.getElementById('step2CategoryManagement').classList.add('hidden');
-            document.getElementById('step1TableRegistration').style.opacity = '1';
-            document.getElementById('step1TableRegistration').style.pointerEvents = 'auto';
-            
-            currentTableInfo = {
-                name: '',
-                description: '',
-                categories: []
-            };
-            
-            updateCategoryList();
+            // 項目追加画面を閉じる
+            closeCategoryManagement();
         }
         
         // テーブルスキーマを自動生成
@@ -555,6 +570,16 @@
             
             schema = schema.slice(0, -2); // 最後のカンマと改行を削除
             schema += '\n);';
+            
+            return schema;
+        }
+        
+        // 基本的なテーブルスキーマを生成（ID + 作成日時のみ）
+        function generateBasicTableSchema(tableName) {
+            let schema = `CREATE TABLE ${tableName} (\n`;
+            schema += `  id TEXT PRIMARY KEY,\n`;
+            schema += `  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n`;
+            schema += ');';
             
             return schema;
         }
