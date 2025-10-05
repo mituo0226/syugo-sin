@@ -61,10 +61,26 @@ export async function onRequestPost(context) {
 
     // 新規レコードを作成（UPSERT方式）
     try {
-      console.log('新規レコードを作成中...');
+      console.log('=== データベース保存開始 ===');
+      console.log('email:', email);
+      console.log('token:', token);
       console.log('localData:', localData);
       
-      await env.DB.prepare(`
+      // データベース接続確認
+      if (!env.DB) {
+        console.error('データベース接続が見つかりません');
+        return new Response(JSON.stringify({
+          success: false,
+          error: 'データベース接続エラー'
+        }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+      
+      console.log('データベース接続確認完了');
+      
+      const result = await env.DB.prepare(`
         INSERT INTO user_profiles (
           user_id, nickname, birth_year, birth_month, birth_day,
           guardian_key, guardian_name, worry, registration_info,
@@ -100,13 +116,18 @@ export async function onRequestPost(context) {
         token
       ).run();
       
+      console.log('データベース保存結果:', result);
       console.log('ユーザーデータとマジックリンク情報をデータベースに保存しました');
     } catch (dbError) {
-      console.error('データベース保存エラー:', dbError);
+      console.error('=== データベース保存エラー ===');
+      console.error('エラー詳細:', dbError);
+      console.error('エラーメッセージ:', dbError.message);
+      console.error('エラースタック:', dbError.stack);
       return new Response(JSON.stringify({
         success: false,
         error: 'ユーザーデータの保存に失敗しました',
-        details: dbError.message
+        details: dbError.message,
+        stack: dbError.stack
       }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' }
@@ -114,24 +135,38 @@ export async function onRequestPost(context) {
     }
 
     // メール送信処理
-    const emailSent = await sendMagicLinkEmail(email, magicLinkUrl, env);
-    
-    if (emailSent) {
-      console.log('マジックリンクメールの送信が完了しました');
+    console.log('=== メール送信開始 ===');
+    try {
+      const emailSent = await sendMagicLinkEmail(email, magicLinkUrl, env);
       
-      return new Response(JSON.stringify({
-        success: true,
-        message: 'マジックリンクを送信しました',
-        token: token
-      }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    } else {
-      console.error('メール送信に失敗しました');
+      if (emailSent) {
+        console.log('マジックリンクメールの送信が完了しました');
+        
+        return new Response(JSON.stringify({
+          success: true,
+          message: 'マジックリンクを送信しました',
+          token: token
+        }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      } else {
+        console.error('メール送信に失敗しました');
+        return new Response(JSON.stringify({
+          success: false,
+          error: 'メール送信に失敗しました'
+        }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+    } catch (emailError) {
+      console.error('=== メール送信エラー ===');
+      console.error('メール送信エラー詳細:', emailError);
       return new Response(JSON.stringify({
         success: false,
-        error: 'メール送信に失敗しました'
+        error: 'メール送信中にエラーが発生しました',
+        details: emailError.message
       }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' }
@@ -160,12 +195,17 @@ export async function onRequestPost(context) {
  */
 async function sendMagicLinkEmail(email, magicLinkUrl, env) {
   try {
-    console.log('メール送信開始:', email);
+    console.log('=== sendMagicLinkEmail 関数開始 ===');
+    console.log('メール送信先:', email);
+    console.log('マジックリンクURL:', magicLinkUrl);
     
     if (!env.RESEND_API_KEY) {
       console.error('Resend APIキーが設定されていません');
+      console.log('環境変数一覧:', Object.keys(env));
       return false;
     }
+    
+    console.log('Resend APIキー確認完了');
 
     const emailData = {
       from: 'AI鑑定師 龍 <noreply@syugo-sin.com>',
@@ -206,6 +246,7 @@ async function sendMagicLinkEmail(email, magicLinkUrl, env) {
       `
     };
 
+    console.log('Resend APIに送信開始');
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -215,13 +256,17 @@ async function sendMagicLinkEmail(email, magicLinkUrl, env) {
       body: JSON.stringify(emailData)
     });
 
+    console.log('Resend API応答:', response.status, response.statusText);
+
     if (response.ok) {
       const result = await response.json();
       console.log('メール送信成功:', result);
       return true;
     } else {
       const errorText = await response.text();
-      console.error('メール送信失敗:', response.status, errorText);
+      console.error('=== メール送信失敗 ===');
+      console.error('HTTPステータス:', response.status);
+      console.error('エラーレスポンス:', errorText);
       return false;
     }
 

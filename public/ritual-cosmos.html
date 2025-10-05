@@ -1299,7 +1299,7 @@
           
         } else {
           console.error('❌ マジックリンク送信エラー:', result);
-          showError(result.error || 'マジックリンクの送信に失敗しました');
+          showError('マジックリンクの送信に失敗しました: ' + (result.error || '不明なエラー'));
           
           // ボタンを再有効化
           const submitButton = document.getElementById('submitButton');
@@ -1312,6 +1312,8 @@
         
         if (error.message.includes('ユーザーデータの保存に失敗')) {
           showError('ユーザーデータの保存に失敗しました: ' + error.message);
+        } else if (error.message.includes('マジックリンク')) {
+          showError('マジックリンクの送信に失敗しました: ' + error.message);
         } else {
           showError('メール送信に失敗しました: ' + error.message);
         }
