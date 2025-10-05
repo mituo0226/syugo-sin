@@ -877,9 +877,68 @@
     // ページ読み込み時の処理
     window.addEventListener("load", function() {
       try {
-        // ユーザーデータを取得
-        const userData = JSON.parse(localStorage.getItem("userData") || "{}");
-        const nickname = userData.nickname || userData.name || "あなた";
+        console.log("=== ritual-cosmos.html ページ読み込み開始 ===");
+        
+        // 1. URLパラメータを確認
+        const urlParams = new URLSearchParams(window.location.search);
+        console.log("ritual-cosmos.html - URLパラメータ:", urlParams.toString());
+        console.log("ritual-cosmos.html - 現在のURL:", window.location.href);
+        
+        // 2. localStorageからuserDataを取得
+        const rawUserData = localStorage.getItem("userData");
+        console.log("ritual-cosmos.html - localStorageから取得したrawUserData:", rawUserData);
+        
+        let userData;
+        if (rawUserData) {
+          try {
+            userData = JSON.parse(rawUserData);
+            console.log("ritual-cosmos.html - パースされたuserData:", userData);
+          } catch (parseError) {
+            console.error("ritual-cosmos.html - JSONパースエラー:", parseError);
+            userData = {};
+          }
+        } else {
+          console.log("ritual-cosmos.html - localStorageにuserDataが見つかりません");
+          userData = {};
+        }
+        
+        // 3. URLパラメータから情報を取得（フォールバック用）
+        const nickname = urlParams.get('nickname');
+        const birthYear = urlParams.get('birthYear');
+        const birthMonth = urlParams.get('birthMonth');
+        const birthDay = urlParams.get('birthDay');
+        const guardianKey = urlParams.get('guardianKey');
+        const worry = urlParams.get('worry');
+        
+        console.log("ritual-cosmos.html - URLパラメータから取得したデータ:", {
+          nickname, birthYear, birthMonth, birthDay, guardianKey, worry
+        });
+        
+        // 4. userDataが不完全な場合、URLパラメータで補完
+        if (!userData.nickname && nickname) {
+          console.log("ritual-cosmos.html - localStorageのnicknameが不足、URLパラメータから補完");
+          userData.nickname = nickname;
+        }
+        if (!userData.birthYear && birthYear) {
+          userData.birthYear = birthYear;
+        }
+        if (!userData.birthMonth && birthMonth) {
+          userData.birthMonth = birthMonth;
+        }
+        if (!userData.birthDay && birthDay) {
+          userData.birthDay = birthDay;
+        }
+        if (!userData.guardianKey && guardianKey) {
+          userData.guardianKey = guardianKey;
+        }
+        if (!userData.worry && worry) {
+          userData.worry = worry;
+        }
+        
+        // 5. 最終的なuserDataを確認
+        console.log("ritual-cosmos.html - 最終的なuserData:", userData);
+        
+        const displayNickname = userData.nickname || userData.name || "あなた";
         
         // 1. 神秘的な宇宙背景を表示
         setTimeout(() => {
@@ -1142,7 +1201,7 @@
         console.log('メール送信開始:', email);
         console.log('ユーザーデータ:', userData);
         
-        // メール送信APIを呼び出し
+        // メール送信APIを呼び出し（修正されたAPI仕様に合わせる）
         const response = await fetch('/api/send-magic-link', {
           method: 'POST',
           headers: {
@@ -1150,15 +1209,17 @@
           },
           body: JSON.stringify({
             email: email,
-            nickname: userData.nickname || userData.name || 'ユーザー',
-            userData: userData
+            localData: userData  // 修正されたAPI仕様に合わせてlocalDataに変更
           })
         });
         
         const result = await response.json();
         
-        if (response.ok && result.status === 'ok') {
+        if (response.ok && result.success) {
           console.log('メール送信成功:', result);
+          
+          // URLパラメータを更新（メールアドレスを追加）
+          updateUrlWithUserData(userData, email);
           
           // 成功メッセージを表示
           showSuccessMessage(email);
@@ -1236,6 +1297,36 @@
     function hideError() {
       const errorMessage = document.getElementById('errorMessage');
       errorMessage.classList.remove('show');
+    }
+    
+    // URLパラメータを更新する関数
+    function updateUrlWithUserData(userData, email) {
+      try {
+        console.log("URLパラメータを更新中:", userData, email);
+        
+        const urlParams = new URLSearchParams();
+        
+        // ユーザーデータをURLパラメータに追加
+        if (userData.nickname) urlParams.set('nickname', userData.nickname);
+        if (userData.birthYear) urlParams.set('birthYear', userData.birthYear);
+        if (userData.birthMonth) urlParams.set('birthMonth', userData.birthMonth);
+        if (userData.birthDay) urlParams.set('birthDay', userData.birthDay);
+        if (userData.guardianKey) urlParams.set('guardianKey', userData.guardianKey);
+        if (userData.worry) urlParams.set('worry', userData.worry);
+        if (email) urlParams.set('email', email);
+        
+        // URLを更新（ページリロードなし）
+        const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+        console.log("新しいURL:", newUrl);
+        
+        // ブラウザの履歴を更新
+        window.history.replaceState({}, '', newUrl);
+        
+        console.log("URLパラメータの更新が完了しました");
+        
+      } catch (error) {
+        console.error("URLパラメータ更新エラー:", error);
+      }
     }
     
     // Enterキーでフォーム送信
