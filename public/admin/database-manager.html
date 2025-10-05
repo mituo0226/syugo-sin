@@ -274,45 +274,61 @@
     </div>
 
     <script>
-        // テーブル一覧を読み込み
-        document.getElementById('loadTablesBtn').addEventListener('click', loadTables);
-        
-        // テーブル作成フォーム
-        document.getElementById('createTableForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            console.log('フォーム送信が防止されました');
+        // DOMが読み込まれた後に実行
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, setting up event listeners');
+            
+            // ボタンの存在確認
+            const createTableBtn = document.getElementById('createTableBtn');
+            console.log('createTableBtn element:', createTableBtn);
+            
+            if (!createTableBtn) {
+                console.error('createTableBtn not found!');
+                return;
+            }
+            
+            // テーブル一覧を読み込み
+            document.getElementById('loadTablesBtn').addEventListener('click', loadTables);
+            
+            // テーブル作成フォーム
+            document.getElementById('createTableForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                console.log('フォーム送信が防止されました');
+            });
+            
+            // テーブル作成
+            createTableBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('=== テーブル作成ボタンがクリックされました ===');
+                console.log('Event:', e);
+                console.log('Button element:', this);
+                createTable();
+            });
+            
+            // カテゴリー追加
+            document.getElementById('addCategoryBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('カテゴリー追加ボタンがクリックされました');
+                addCategory();
+            });
+            
+            // テーブル作成完了
+            document.getElementById('finishTableBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('テーブル作成完了ボタンがクリックされました');
+                finishTableCreation();
+            });
+            
+            // 上級者向けフォームの表示切り替え
+            document.getElementById('toggleAdvancedBtn').addEventListener('click', toggleAdvancedForm);
+            
+            // SQLクエリ実行
+            document.getElementById('executeQueryBtn').addEventListener('click', executeQuery);
+            
+            // クイック操作
+            document.getElementById('resetDbBtn').addEventListener('click', resetDatabase);
+            document.getElementById('initDbBtn').addEventListener('click', initDatabase);
         });
-        
-        // テーブル作成
-        document.getElementById('createTableBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('テーブル作成ボタンがクリックされました');
-            createTable();
-        });
-        
-        // カテゴリー追加
-        document.getElementById('addCategoryBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('カテゴリー追加ボタンがクリックされました');
-            addCategory();
-        });
-        
-        // テーブル作成完了
-        document.getElementById('finishTableBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('テーブル作成完了ボタンがクリックされました');
-            finishTableCreation();
-        });
-        
-        // 上級者向けフォームの表示切り替え
-        document.getElementById('toggleAdvancedBtn').addEventListener('click', toggleAdvancedForm);
-        
-        // SQLクエリ実行
-        document.getElementById('executeQueryBtn').addEventListener('click', executeQuery);
-        
-        // クイック操作
-        document.getElementById('resetDbBtn').addEventListener('click', resetDatabase);
-        document.getElementById('initDbBtn').addEventListener('click', initDatabase);
 
         async function loadTables() {
             try {
@@ -361,10 +377,22 @@
         
         // テーブル作成（第1段階）
         async function createTable() {
-            console.log('createTable関数が実行されました');
+            console.log('=== createTable関数が実行されました ===');
             
-            const tableName = document.getElementById('tableName').value;
-            const tableDescription = document.getElementById('tableDescription').value;
+            const tableNameElement = document.getElementById('tableName');
+            const tableDescriptionElement = document.getElementById('tableDescription');
+            
+            console.log('tableName element:', tableNameElement);
+            console.log('tableDescription element:', tableDescriptionElement);
+            
+            if (!tableNameElement || !tableDescriptionElement) {
+                console.error('Required elements not found!');
+                alert('フォームの要素が見つかりません。ページを再読み込みしてください。');
+                return;
+            }
+            
+            const tableName = tableNameElement.value;
+            const tableDescription = tableDescriptionElement.value;
             
             console.log('テーブル名:', tableName);
             console.log('テーブル説明:', tableDescription);
