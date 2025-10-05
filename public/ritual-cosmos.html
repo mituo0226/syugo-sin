@@ -938,6 +938,52 @@
         // 5. 最終的なuserDataを確認
         console.log("ritual-cosmos.html - 最終的なuserData:", userData);
         
+        // 6. URLパラメータの完全な状態を確認
+        const finalUrlParams = new URLSearchParams(window.location.search);
+        console.log("ritual-cosmos.html - 最終的なURLパラメータ:", finalUrlParams.toString());
+        console.log("ritual-cosmos.html - 現在の完全なURL:", window.location.href);
+        
+        // 7. localStorageとURLパラメータの整合性を確認
+        console.log("=== localStorageとURLパラメータの整合性確認 ===");
+        console.log("localStorage nickname:", userData.nickname, "| URL nickname:", finalUrlParams.get('nickname'));
+        console.log("localStorage birthYear:", userData.birthYear, "| URL birthYear:", finalUrlParams.get('birthYear'));
+        console.log("localStorage guardianKey:", userData.guardianKey, "| URL guardianKey:", finalUrlParams.get('guardianKey'));
+        console.log("localStorage worry:", userData.worry, "| URL worry:", finalUrlParams.get('worry'));
+        
+        // 8. localStorageが不完全な場合、URLパラメータから復元
+        let localStorageUpdated = false;
+        if (!userData.nickname && finalUrlParams.get('nickname')) {
+          userData.nickname = finalUrlParams.get('nickname');
+          localStorageUpdated = true;
+          console.log("localStorageのnicknameをURLパラメータから復元:", userData.nickname);
+        }
+        if (!userData.birthYear && finalUrlParams.get('birthYear')) {
+          userData.birthYear = finalUrlParams.get('birthYear');
+          localStorageUpdated = true;
+        }
+        if (!userData.birthMonth && finalUrlParams.get('birthMonth')) {
+          userData.birthMonth = finalUrlParams.get('birthMonth');
+          localStorageUpdated = true;
+        }
+        if (!userData.birthDay && finalUrlParams.get('birthDay')) {
+          userData.birthDay = finalUrlParams.get('birthDay');
+          localStorageUpdated = true;
+        }
+        if (!userData.guardianKey && finalUrlParams.get('guardianKey')) {
+          userData.guardianKey = finalUrlParams.get('guardianKey');
+          localStorageUpdated = true;
+        }
+        if (!userData.worry && finalUrlParams.get('worry')) {
+          userData.worry = finalUrlParams.get('worry');
+          localStorageUpdated = true;
+        }
+        
+        // 9. localStorageを更新（必要に応じて）
+        if (localStorageUpdated) {
+          localStorage.setItem('userData', JSON.stringify(userData));
+          console.log("localStorageをURLパラメータから復元したデータで更新しました:", userData);
+        }
+        
         const displayNickname = userData.nickname || userData.name || "あなた";
         
         // 1. 神秘的な宇宙背景を表示

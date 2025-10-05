@@ -818,9 +818,15 @@
       this.disabled = true;
       this.textContent = "読み込み中...";
       
-      // ritual-cosmos.htmlに遷移
+      // ritual-cosmos.htmlに遷移（URLパラメータを保持）
       try {
-        window.location.href = 'ritual-cosmos.html';
+        // 現在のURLパラメータを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const cosmosUrl = `ritual-cosmos.html${urlParams.toString() ? '?' + urlParams.toString() : ''}`;
+        
+        console.log("ritual-cosmos.htmlへの遷移URL:", cosmosUrl);
+        
+        window.location.href = cosmosUrl;
       } catch (error) {
         console.error("ページ遷移エラー:", error);
         // エラーの場合はボタンを再有効化
