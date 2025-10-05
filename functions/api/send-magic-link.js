@@ -1,6 +1,6 @@
 /**
- * マジックリンク送信API
- * ユーザーが入力したメールアドレスに認証用のマジックリンクを送信します
+ * マジックリンク送信API（新構造対応）
+ * ユーザーデータを新規作成し、マジックリンクを送信します
  */
 
 export async function onRequestPost(context) {
@@ -50,7 +50,7 @@ export async function onRequestPost(context) {
       });
     }
 
-    // ユニークなトークンを生成（UUID形式）
+    // ランダムなトークンを生成
     const token = crypto.randomUUID();
     console.log('生成されたトークン:', token);
 
@@ -59,39 +59,54 @@ export async function onRequestPost(context) {
     const magicLinkUrl = `${baseUrl}/api/verify-magic-link?token=${token}`;
     console.log('生成されたマジックリンク:', magicLinkUrl);
 
-    // 既存のユーザーデータにマジックリンク情報のみを追加
+    // 新規レコードを作成（UPSERT方式）
     try {
-      // 既存ユーザーの確認
-      const existingUser = await env.DB.prepare(`
-        SELECT id FROM user_profiles WHERE user_id = ?
-      `).bind(email).first();
-
-      if (!existingUser) {
-        console.error('ユーザーデータが見つかりません。先にユーザーデータを保存してください。');
-        return new Response(JSON.stringify({
-          success: false,
-          error: 'ユーザーデータが保存されていません。先にユーザーデータを保存してください。'
-        }), {
-          status: 400,
-          headers: { 'Content-Type': 'application/json' }
-        });
-      }
-
-      // マジックリンク情報のみを更新
-      await env.DB.prepare(`
-        UPDATE user_profiles SET
-          magic_link_token = ?,
-          magic_link_created_at = datetime('now'),
-          magic_link_used = 0
-        WHERE user_id = ?
-      `).bind(token, email).run();
+      console.log('新規レコードを作成中...');
+      console.log('localData:', localData);
       
-      console.log('マジックリンク情報をデータベースに保存しました');
+      await env.DB.prepare(`
+        INSERT INTO user_profiles (
+          user_id, nickname, birth_year, birth_month, birth_day,
+          guardian_key, guardian_name, worry, registration_info,
+          magic_link_token, magic_link_created_at, magic_link_used,
+          is_verified, is_active, created_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), 0, 0, 1, datetime('now'))
+        ON CONFLICT(user_id) DO UPDATE SET
+          nickname = excluded.nickname,
+          birth_year = excluded.birth_year,
+          birth_month = excluded.birth_month,
+          birth_day = excluded.birth_day,
+          guardian_key = excluded.guardian_key,
+          guardian_name = excluded.guardian_name,
+          worry = excluded.worry,
+          registration_info = excluded.registration_info,
+          magic_link_token = excluded.magic_link_token,
+          magic_link_created_at = excluded.magic_link_created_at,
+          magic_link_used = 0,
+          is_verified = 0,
+          is_active = 1,
+          created_at = excluded.created_at
+      `).bind(
+        email,
+        localData.nickname || '',
+        localData.birthYear || '',
+        localData.birthMonth || '',
+        localData.birthDay || '',
+        localData.guardianKey || '',
+        localData.guardian ? localData.guardian.name : '',
+        localData.worry || '',
+        JSON.stringify(localData),
+        token
+      ).run();
+      
+      console.log('ユーザーデータとマジックリンク情報をデータベースに保存しました');
     } catch (dbError) {
       console.error('データベース保存エラー:', dbError);
       return new Response(JSON.stringify({
         success: false,
-        error: 'マジックリンク情報の保存に失敗しました'
+        error: 'ユーザーデータの保存に失敗しました',
+        details: dbError.message
       }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' }
@@ -103,11 +118,13 @@ export async function onRequestPost(context) {
     
     if (emailSent) {
       console.log('マジックリンクメールの送信が完了しました');
+      
       return new Response(JSON.stringify({
         success: true,
-        message: '認証リンクを送信しました',
-        email: email
+        message: 'マジックリンクを送信しました',
+        token: token
       }), {
+        status: 200,
         headers: { 'Content-Type': 'application/json' }
       });
     } else {
@@ -137,97 +154,76 @@ export async function onRequestPost(context) {
 /**
  * マジックリンクメールを送信する関数
  * @param {string} email - 送信先メールアドレス
- * @param {string} magicLinkUrl - マジックリンクURL
+ * @param {string} magicLinkUrl - マジックリンクのURL
  * @param {object} env - 環境変数
- * @returns {boolean} 送信成功かどうか
+ * @returns {boolean} 送信成功の場合true
  */
 async function sendMagicLinkEmail(email, magicLinkUrl, env) {
   try {
-    // 開発環境の場合はメール送信をスキップ
-    if (env.ENVIRONMENT === 'development') {
-      console.log('開発環境のため、メール送信をスキップします');
-      console.log('マジックリンクURL:', magicLinkUrl);
-      return true;
-    }
-
-    // Resend APIキーの確認
+    console.log('メール送信開始:', email);
+    
     if (!env.RESEND_API_KEY) {
-      console.error('RESEND_API_KEYが設定されていません');
+      console.error('Resend APIキーが設定されていません');
       return false;
     }
 
-    console.log('Resend APIを使用してメールを送信します');
-
-    // Resend APIを使用してメール送信
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${env.RESEND_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: 'noreply@syugo-sin.com',
-        to: email,
-        subject: '【守護神占い】会員登録の認証をお願いします',
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="text-align: center; margin-bottom: 30px;">
-              <h1 style="color: #667eea; font-size: 24px;">🔮 守護神占い</h1>
-            </div>
-            
-            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-              <h2 style="color: #333; margin-bottom: 15px;">会員登録の認証</h2>
-              <p style="color: #666; line-height: 1.6;">
-                この度は守護神占いをご利用いただき、ありがとうございます。<br>
-                会員登録を完了するために、以下のボタンをクリックして認証を行ってください。
-              </p>
-            </div>
+    const emailData = {
+      from: 'AI鑑定師 龍 <noreply@syugo-sin.com>',
+      to: [email],
+      subject: '【AI鑑定師 龍】会員登録の認証をお願いします',
+      html: `
+        <div style="font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #66ccff; font-size: 24px; margin: 0;">AI鑑定師 龍</h1>
+            <p style="color: #666; font-size: 14px; margin: 10px 0 0 0;">守護神占い</p>
+          </div>
+          
+          <div style="background: #f8f9fa; padding: 30px; border-radius: 10px; margin-bottom: 20px;">
+            <h2 style="color: #333; font-size: 20px; margin: 0 0 20px 0;">会員登録の認証をお願いします</h2>
+            <p style="color: #666; line-height: 1.6; margin: 0 0 20px 0;">
+              ご登録いただき、ありがとうございます。<br>
+              会員登録を完了するため、下記のリンクをクリックして認証を行ってください。
+            </p>
             
             <div style="text-align: center; margin: 30px 0;">
               <a href="${magicLinkUrl}" 
-                 style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                        color: white; 
-                        padding: 15px 30px; 
-                        text-decoration: none; 
-                        border-radius: 25px; 
-                        font-weight: bold; 
-                        display: inline-block;">
+                 style="display: inline-block; background: #66ccff; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">
                 認証を完了する
               </a>
             </div>
             
-            <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin-top: 20px;">
-              <p style="color: #856404; margin: 0; font-size: 14px;">
-                <strong>⚠️ ご注意:</strong><br>
-                • このリンクは30分間有効です<br>
-                • 心当たりのない場合は、このメールを無視してください<br>
-                • リンクがクリックできない場合は、以下のURLをコピーしてブラウザに貼り付けてください
-              </p>
-            </div>
-            
-            <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 5px; word-break: break-all;">
-              <p style="color: #666; font-size: 12px; margin: 0;">
-                ${magicLinkUrl}
-              </p>
-            </div>
-            
-            <div style="text-align: center; margin-top: 30px; color: #999; font-size: 12px;">
-              <p>このメールは自動送信されています。返信はできません。</p>
-            </div>
+            <p style="color: #999; font-size: 12px; margin: 20px 0 0 0;">
+              ※このリンクの有効期限は30分です。<br>
+              ※もしこのメールに心当たりがない場合は、このメールを無視してください。
+            </p>
           </div>
-        `
-      }),
+          
+          <div style="text-align: center; color: #999; font-size: 12px;">
+            <p>AI鑑定師 龍 - 守護神占い</p>
+            <p>このメールに返信はできません。</p>
+          </div>
+        </div>
+      `
+    };
+
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(emailData)
     });
 
-    if (!response.ok) {
+    if (response.ok) {
+      const result = await response.json();
+      console.log('メール送信成功:', result);
+      return true;
+    } else {
       const errorText = await response.text();
-      console.error('Resend API エラー:', errorText);
+      console.error('メール送信失敗:', response.status, errorText);
       return false;
     }
-
-    const result = await response.json();
-    console.log('メール送信成功:', result);
-    return true;
 
   } catch (error) {
     console.error('メール送信エラー:', error);
