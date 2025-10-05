@@ -49,9 +49,12 @@ export async function onRequestPost(context) {
 
   } catch (error) {
     console.error("Database create table error:", error);
+    console.error("Error stack:", error.stack);
     return new Response(JSON.stringify({
       success: false,
-      error: error.message
+      error: error.message,
+      stack: error.stack,
+      type: error.constructor.name
     }), {
       status: 500,
       headers: { "Content-Type": "application/json" }

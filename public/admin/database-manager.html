@@ -433,16 +433,30 @@
                     })
                 });
                 
-                const data = await response.json();
+                const responseText = await response.text();
+                console.log('Raw API response:', responseText);
+                
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (parseError) {
+                    console.error('JSON parse error:', parseError);
+                    showResult(`API応答の解析エラー: ${responseText}`, 'error');
+                    return;
+                }
+                
+                console.log('Parsed API response:', data);
+                
                 if (data.success) {
                     showResult(`テーブル "${tableName}" を作成しました！\n\n説明: ${tableDescription}\n\nテーブル一覧から「項目を追加」ボタンで項目を追加できます。`, 'success');
                     loadTables(); // テーブル一覧を更新
                     document.getElementById('createTableForm').reset(); // フォームをリセット
                 } else {
-                    showResult('エラー: ' + data.error, 'error');
+                    showResult(`エラー: ${data.error}\n\n詳細: ${JSON.stringify(data, null, 2)}`, 'error');
                 }
             } catch (error) {
-                showResult('エラー: ' + error.message, 'error');
+                console.error('Request error:', error);
+                showResult(`リクエストエラー: ${error.message}\n\nスタック: ${error.stack}`, 'error');
             }
         }
         
