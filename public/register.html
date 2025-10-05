@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会員登録 | 守護神占い</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <!-- ヘッダー -->
+        <div class="text-center mb-8">
+            <div class="glass-effect rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                <i class="fas fa-crystal-ball text-white text-3xl"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-white mb-2">会員登録</h1>
+            <p class="text-white/80">守護神占いの会員登録を行います</p>
+        </div>
+
+        <!-- 登録フォーム -->
+        <div class="glass-effect rounded-2xl p-8">
+            <!-- ローカルストレージデータ確認 -->
+            <div id="localDataStatus" class="mb-6 p-4 rounded-lg bg-blue-50 border border-blue-200">
+                <h3 class="text-sm font-semibold text-blue-900 mb-2">
+                    <i class="fas fa-info-circle mr-1"></i>入力データの確認
+                </h3>
+                <div id="localDataContent" class="text-sm text-blue-800">
+                    <div class="animate-pulse">データを読み込み中...</div>
+                </div>
+            </div>
+
+            <!-- メールアドレス入力フォーム -->
+            <form id="registerForm" class="space-y-6">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-white mb-2">
+                        <i class="fas fa-envelope mr-2"></i>メールアドレス
+                    </label>
+                    <input type="email" id="email" name="email" required
+                           class="w-full px-4 py-3 bg-white/90 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                           placeholder="your@email.com">
+                    <p class="text-white/70 text-xs mt-1">認証用のマジックリンクを送信します</p>
+                </div>
+
+                <button type="submit" id="registerBtn" 
+                        class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 flex items-center justify-center">
+                    <i class="fas fa-user-plus mr-2"></i>
+                    会員登録を開始する
+                </button>
+            </form>
+
+            <!-- ローディング表示 -->
+            <div id="loading" class="hidden mt-6 text-center">
+                <div class="inline-flex items-center">
+                    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-3"></div>
+                    <span class="text-white">処理中...</span>
+                </div>
+            </div>
+
+            <!-- 結果表示 -->
+            <div id="result" class="hidden mt-6"></div>
+
+            <!-- 注意事項 -->
+            <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <h3 class="text-sm font-semibold text-yellow-900 mb-2">
+                    <i class="fas fa-exclamation-triangle mr-1"></i>ご注意
+                </h3>
+                <ul class="text-sm text-yellow-800 space-y-1">
+                    <li>• メールアドレスに認証リンクを送信します</li>
+                    <li>• 迷惑メールフォルダもご確認ください</li>
+                    <li>• 認証リンクの有効期限は30分です</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- フッター -->
+        <div class="text-center mt-8">
+            <a href="/" class="text-white/70 hover:text-white text-sm">
+                <i class="fas fa-arrow-left mr-1"></i>トップページに戻る
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // ページ読み込み時にローカルストレージのデータを確認
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('会員登録ページが読み込まれました');
+            checkLocalStorageData();
+            setupFormHandler();
+        });
+
+        // ローカルストレージのデータを確認・表示
+        function checkLocalStorageData() {
+            try {
+                const userData = localStorage.getItem('userData');
+                const statusDiv = document.getElementById('localDataStatus');
+                const contentDiv = document.getElementById('localDataContent');
+
+                if (!userData) {
+                    // データがない場合
+                    statusDiv.className = 'mb-6 p-4 rounded-lg bg-red-50 border border-red-200';
+                    contentDiv.innerHTML = `
+                        <div class="text-red-800">
+                            <i class="fas fa-exclamation-circle mr-1"></i>
+                            <strong>データが見つかりません</strong><br>
+                            <span class="text-xs">まず占いを完了してから会員登録を行ってください。</span>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // データがある場合
+                const data = JSON.parse(userData);
+                console.log('ローカルストレージのデータ:', data);
+
+                let dataHtml = '<div class="space-y-1">';
+                
+                if (data.birthYear && data.birthMonth && data.birthDay) {
+                    dataHtml += `<div><strong>生年月日:</strong> ${data.birthYear}年${data.birthMonth}月${data.birthDay}日</div>`;
+                }
+                
+                if (data.guardianName) {
+                    dataHtml += `<div><strong>守護神:</strong> ${data.guardianName}</div>`;
+                }
+                
+                if (data.worryType) {
+                    dataHtml += `<div><strong>悩みの種類:</strong> ${data.worryType}</div>`;
+                }
+
+                dataHtml += '</div>';
+
+                contentDiv.innerHTML = dataHtml;
+                statusDiv.className = 'mb-6 p-4 rounded-lg bg-green-50 border border-green-200';
+
+            } catch (error) {
+                console.error('ローカルストレージの読み込みエラー:', error);
+                document.getElementById('localDataContent').innerHTML = `
+                    <div class="text-red-800">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                        データの読み込みに失敗しました
+                    </div>
+                `;
+            }
+        }
+
+        // フォーム送信の処理
+        function setupFormHandler() {
+            document.getElementById('registerForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value.trim();
+                const registerBtn = document.getElementById('registerBtn');
+                const loading = document.getElementById('loading');
+                const result = document.getElementById('result');
+
+                // バリデーション
+                if (!email) {
+                    showResult('メールアドレスを入力してください。', 'error');
+                    return;
+                }
+
+                // ローカルストレージのデータを確認
+                const userData = localStorage.getItem('userData');
+                if (!userData) {
+                    showResult('占いデータが見つかりません。まず占いを完了してから会員登録を行ってください。', 'error');
+                    return;
+                }
+
+                try {
+                    // ボタンを無効化し、ローディング表示
+                    registerBtn.disabled = true;
+                    loading.classList.remove('hidden');
+                    result.classList.add('hidden');
+
+                    console.log('会員登録を開始します:', { email, userData: JSON.parse(userData) });
+
+                    // APIに送信
+                    const response = await fetch('/api/send-magic-link', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            email: email,
+                            localData: JSON.parse(userData)
+                        })
+                    });
+
+                    const responseText = await response.text();
+                    console.log('API応答:', responseText);
+
+                    let data;
+                    try {
+                        data = JSON.parse(responseText);
+                    } catch (parseError) {
+                        console.error('JSON解析エラー:', parseError);
+                        showResult(`サーバー応答の解析に失敗しました: ${responseText}`, 'error');
+                        return;
+                    }
+
+                    if (response.ok && data.success) {
+                        showResult(`
+                            <div class="text-center">
+                                <i class="fas fa-check-circle text-green-500 text-4xl mb-4"></i>
+                                <h3 class="text-lg font-bold text-green-900 mb-2">登録手続きを開始しました！</h3>
+                                <p class="text-green-800 mb-4">
+                                    <strong>${email}</strong> に認証リンクを送信しました。<br>
+                                    メールボックス（迷惑メールフォルダも含む）をご確認ください。
+                                </p>
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                    <p class="text-blue-800 text-sm">
+                                        <i class="fas fa-info-circle mr-1"></i>
+                                        リンクをクリックして会員登録を完了してください。
+                                    </p>
+                                </div>
+                            </div>
+                        `, 'success');
+                    } else {
+                        throw new Error(data.error || '登録に失敗しました');
+                    }
+
+                } catch (error) {
+                    console.error('登録エラー:', error);
+                    showResult(`登録エラー: ${error.message}`, 'error');
+                } finally {
+                    registerBtn.disabled = false;
+                    loading.classList.add('hidden');
+                }
+            });
+        }
+
+        // 結果表示関数
+        function showResult(message, type) {
+            const result = document.getElementById('result');
+            result.className = `mt-6 p-4 rounded-lg border ${
+                type === 'success' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+            }`;
+            result.innerHTML = message;
+            result.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

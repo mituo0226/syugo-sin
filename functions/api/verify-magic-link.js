@@ -1,172 +1,251 @@
+/**
+ * マジックリンク検証API
+ * メールで送信されたマジックリンクのトークンを検証し、
+ * 認証成功時にユーザープロフィールを保存します
+ */
+
 export async function onRequestGet(context) {
   const { request, env } = context;
   const url = new URL(request.url);
-  const token = url.searchParams.get("token");
-
-  if (!token) {
-    return new Response("invalid_token", { status: 400 });
-  }
+  const token = url.searchParams.get('token');
 
   try {
-    // テスト用のトークンの場合はローカルストレージデータを使用
-    const isTestToken = token.startsWith('test-') || token.length > 36; // UUIDの長さより長い場合はテストトークンと判断
-    
-    if (isTestToken) {
-      // テストモード：ローカルストレージからデータを取得してデータベースに保存
-      const html = `<!doctype html>
-<html lang="ja">
-<head>
-    <meta charset="utf-8">
-    <title>マジックリンクテスト - 完了</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
-    <div class="bg-white rounded-lg shadow-lg p-8 max-w-md w-full mx-4">
-        <div class="text-center">
-            <i class="fas fa-check-circle text-green-500 text-6xl mb-4"></i>
-            <h1 class="text-2xl font-bold text-gray-800 mb-2">マジックリンクテスト完了</h1>
-            <p class="text-gray-600 mb-6">テスト用のマジックリンクが正常に動作しました！</p>
-            
-            <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                <h3 class="font-semibold text-green-900 mb-2">
-                    <i class="fas fa-check-circle mr-2"></i>テスト成功
-                </h3>
-                <p class="text-sm text-green-800">マジックリンクの生成と動作確認が完了しました。</p>
-            </div>
-            
-            <div class="space-y-2">
-                <button onclick="registerFromLocalStorage()" class="w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
-                    <i class="fas fa-database mr-2"></i>データベースに登録
-                </button>
-                <button onclick="window.close()" class="w-full bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
-                    <i class="fas fa-times mr-2"></i>このタブを閉じる
-                </button>
-                <a href="/admin/magic-link-test.html" class="block w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-center">
-                    <i class="fas fa-redo mr-2"></i>テストページに戻る
-                </a>
-            </div>
-        </div>
-    </div>
+    console.log('=== マジックリンク検証APIが呼び出されました ===');
+    console.log('検証トークン:', token);
 
-    <script>
-        async function registerFromLocalStorage() {
-            try {
-                // ローカルストレージからデータを取得
-                const userData = localStorage.getItem('userData');
-                if (!userData) {
-                    alert('ローカルストレージにデータがありません');
-                    return;
-                }
-                
-                const data = JSON.parse(userData);
-                
-                // データ構造を確認してログ出力
-                console.log('Local storage data:', data);
-                
-                // 登録APIを呼び出し
-                const response = await fetch('/api/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        email: data.email,
-                        nickname: data.nickname,
-                        birthdate: data.birthdate,
-                        guardian: data.guardian,
-                        topic: data.topic
-                    })
-                });
-                
-                if (response.ok) {
-                    alert('データベースに登録完了しました！');
-                    window.location.href = '/welcome';
-                } else {
-                    const error = await response.text();
-                    alert('登録エラー: ' + error);
-                }
-            } catch (error) {
-                console.error('Registration error:', error);
-                alert('登録エラーが発生しました');
-            }
-        }
-    </script>
-</body>
-</html>`;
-
-      return new Response(html, {
-        status: 200,
-        headers: {
-          "Content-Type": "text/html; charset=utf-8"
-        }
+    // トークンの存在確認
+    if (!token) {
+      console.error('トークンが提供されていません');
+      return new Response(createErrorPage('トークンが見つかりません'), {
+        status: 400,
+        headers: { 'Content-Type': 'text/html; charset=utf-8' }
       });
     }
 
-    // 本番モード：データベースからデータを取得
-    const row = await env.DB.prepare(
-      `SELECT * FROM magic_links WHERE token = ? AND used = FALSE`
-    ).bind(token).first();
-
-    if (!row) {
-      return new Response("invalid_or_used_token", { status: 400 });
+    // データベース接続確認
+    if (!env.DB) {
+      console.error('データベース接続が見つかりません');
+      return new Response(createErrorPage('データベース接続エラー'), {
+        status: 500,
+        headers: { 'Content-Type': 'text/html; charset=utf-8' }
+      });
     }
 
-    if (new Date(row.expires_at) < new Date()) {
-      return new Response("token_expired", { status: 400 });
+    // トークンの有効性をチェック
+    const magicLinkRecord = await env.DB.prepare(`
+      SELECT * FROM magic_links 
+      WHERE token = ? AND used = 0
+      ORDER BY created_at DESC
+      LIMIT 1
+    `).bind(token).first();
+
+    if (!magicLinkRecord) {
+      console.error('無効または使用済みのトークンです');
+      return new Response(createErrorPage('無効または期限切れのリンクです'), {
+        status: 400,
+        headers: { 'Content-Type': 'text/html; charset=utf-8' }
+      });
     }
 
-    // usersテーブルに登録 or 更新
-    const existing = await env.DB.prepare(
-      `SELECT id FROM users WHERE email = ?`
-    ).bind(row.email).first();
+    console.log('有効なトークンが見つかりました:', magicLinkRecord);
 
-    let userId;
-    if (existing) {
-      userId = existing.id;
-      await env.DB.prepare(
-        `UPDATE users SET birthdate=?, guardian=?, nickname=?, topic=? WHERE id=?`
-      ).bind(row.birthdate, row.guardian, row.nickname, row.topic, userId).run();
-    } else {
-      userId = "usr_" + crypto.randomUUID();
-      await env.DB.prepare(
-        `INSERT INTO users (id, email, birthdate, guardian, nickname, topic)
-         VALUES (?, ?, ?, ?, ?, ?)`
-      ).bind(userId, row.email, row.birthdate, row.guardian, row.nickname, row.topic).run();
+    // トークンの有効期限チェック（30分）
+    const createdAt = new Date(magicLinkRecord.created_at);
+    const now = new Date();
+    const timeDiff = (now - createdAt) / (1000 * 60); // 分単位
+
+    if (timeDiff > 30) {
+      console.error('トークンの有効期限が切れています:', timeDiff, '分');
+      
+      // 期限切れのトークンを無効化
+      await env.DB.prepare(`
+        UPDATE magic_links SET used = 1 WHERE token = ?
+      `).bind(token).run();
+
+      return new Response(createErrorPage('リンクの有効期限が切れています。再度登録を行ってください。'), {
+        status: 400,
+        headers: { 'Content-Type': 'text/html; charset=utf-8' }
+      });
     }
 
-    // magic_links を使用済みに
-    await env.DB.prepare(
-      `UPDATE magic_links SET used = TRUE WHERE token = ?`
-    ).bind(token).run();
+    // ユーザープロフィールの保存
+    const registrationResult = await saveUserProfile(magicLinkRecord.email, env);
+    
+    if (!registrationResult.success) {
+      console.error('ユーザープロフィールの保存に失敗:', registrationResult.error);
+      return new Response(createErrorPage('登録処理でエラーが発生しました'), {
+        status: 500,
+        headers: { 'Content-Type': 'text/html; charset=utf-8' }
+      });
+    }
 
-    // Cookie発行（ローカルでは Secure を外す）
-    const isLocal = env.ENVIRONMENT === "development";
-    const cookie = [
-      `session_user=${userId}`,
-      "Path=/",
-      "SameSite=Lax",
-      "HttpOnly",
-      `Max-Age=${60 * 60 * 24 * 30}`,
-      ...(isLocal ? [] : ["Secure"])
-    ].join("; ");
+    // トークンを使用済みにマーク
+    await env.DB.prepare(`
+      UPDATE magic_links SET used = 1 WHERE token = ?
+    `).bind(token).run();
 
-    const html = `<!doctype html>
-<meta charset="utf-8">
-<title>登録完了</title>
-<p>登録処理が完了しました。画面を切り替えています…</p>
-<script>setTimeout(()=>location.replace("/welcome"), 400);</script>`;
+    console.log('マジックリンク認証が完了しました');
 
-    return new Response(html, {
+    // 成功ページを表示
+    return new Response(createSuccessPage(magicLinkRecord.email), {
       status: 200,
-      headers: {
-        "Set-Cookie": cookie,
-        "Content-Type": "text/html; charset=utf-8"
-      }
+      headers: { 'Content-Type': 'text/html; charset=utf-8' }
     });
 
-  } catch (err) {
-    console.error("verify-magic-link error:", err);
-    return new Response("internal_error", { status: 500 });
+  } catch (error) {
+    console.error('マジックリンク検証APIエラー:', error);
+    return new Response(createErrorPage('サーバーエラーが発生しました'), {
+      status: 500,
+      headers: { 'Content-Type': 'text/html; charset=utf-8' }
+    });
   }
+}
+
+/**
+ * ユーザープロフィールを保存する関数
+ * @param {string} email - メールアドレス
+ * @param {object} env - 環境変数
+ * @returns {object} 保存結果
+ */
+async function saveUserProfile(email, env) {
+  try {
+    console.log('ユーザープロフィールの保存を開始:', email);
+
+    // 一時保存されたローカルデータを取得
+    const tempData = await env.DB.prepare(`
+      SELECT registration_info FROM user_profiles 
+      WHERE user_id = ? 
+      ORDER BY created_at DESC 
+      LIMIT 1
+    `).bind(email).first();
+
+    if (!tempData || !tempData.registration_info) {
+      console.error('一時保存されたデータが見つかりません');
+      return { success: false, error: 'ユーザーデータが見つかりません' };
+    }
+
+    const localData = JSON.parse(tempData.registration_info);
+    console.log('取得したローカルデータ:', localData);
+
+    // 生年月日の分解
+    let birthYear = null, birthMonth = null, birthDay = null;
+    if (localData.birthYear && localData.birthMonth && localData.birthDay) {
+      birthYear = localData.birthYear;
+      birthMonth = localData.birthMonth;
+      birthDay = localData.birthDay;
+    }
+
+    // ユーザープロフィールを更新
+    const result = await env.DB.prepare(`
+      UPDATE user_profiles SET
+        birth_year = ?,
+        birth_month = ?,
+        birth_day = ?,
+        guardian_key = ?,
+        guardian_name = ?,
+        worry_type = ?,
+        created_at = datetime('now')
+      WHERE user_id = ?
+    `).bind(
+      birthYear,
+      birthMonth,
+      birthDay,
+      localData.guardianKey || null,
+      localData.guardianName || null,
+      localData.worryType || null,
+      email
+    ).run();
+
+    console.log('ユーザープロフィールの保存完了:', result);
+
+    return { success: true };
+
+  } catch (error) {
+    console.error('ユーザープロフィール保存エラー:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * エラーページのHTMLを生成
+ * @param {string} message - エラーメッセージ
+ * @returns {string} HTML
+ */
+function createErrorPage(message) {
+  return `
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>認証エラー | 守護神占い</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    </head>
+    <body class="bg-gradient-to-br from-red-400 to-red-600 min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
+            <div class="text-red-500 text-6xl mb-4">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-800 mb-4">認証エラー</h1>
+            <p class="text-gray-600 mb-6">${message}</p>
+            <div class="space-y-3">
+                <a href="/register.html" class="block w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+                    <i class="fas fa-redo mr-2"></i>再度登録する
+                </a>
+                <a href="/" class="block w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+                    <i class="fas fa-home mr-2"></i>トップページに戻る
+                </a>
+            </div>
+        </div>
+    </body>
+    </html>
+  `;
+}
+
+/**
+ * 成功ページのHTMLを生成
+ * @param {string} email - 登録されたメールアドレス
+ * @returns {string} HTML
+ */
+function createSuccessPage(email) {
+  return `
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>登録完了 | 守護神占い</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    </head>
+    <body class="bg-gradient-to-br from-green-400 to-green-600 min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
+            <div class="text-green-500 text-6xl mb-4">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-800 mb-4">登録完了！</h1>
+            <p class="text-gray-600 mb-6">
+                会員登録が正常に完了しました。<br>
+                <strong>${email}</strong> で登録されました。
+            </p>
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <h3 class="font-semibold text-green-900 mb-2">🎉 登録完了</h3>
+                <p class="text-green-800 text-sm">
+                    これで守護神占いの会員として、<br>
+                    様々な機能をご利用いただけます。
+                </p>
+            </div>
+            <div class="space-y-3">
+                <a href="/welcome.html" class="block w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+                    <i class="fas fa-home mr-2"></i>ダッシュボードへ
+                </a>
+                <a href="/" class="block w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+                    <i class="fas fa-crystal-ball mr-2"></i>占いを始める
+                </a>
+            </div>
+        </div>
+    </body>
+    </html>
+  `;
 }

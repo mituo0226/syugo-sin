@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会員データベース管理 | 守護神占い</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .user-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .user-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .search-highlight {
+            background-color: #fef08a;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- ヘッダー -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800 mb-2">
+                        <i class="fas fa-database text-blue-600 mr-3"></i>
+                        会員データベース管理
+                    </h1>
+                    <p class="text-gray-600">登録された会員情報を管理します</p>
+                </div>
+                <a href="/admin/admin-new.html" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>管理画面に戻る
+                </a>
+            </div>
+        </div>
+
+        <!-- 統計情報 -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                        <i class="fas fa-users text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">総会員数</p>
+                        <p class="text-2xl font-bold text-gray-900" id="totalUsers">-</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-green-100 text-green-600">
+                        <i class="fas fa-user-check text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">登録完了</p>
+                        <p class="text-2xl font-bold text-gray-900" id="completedUsers">-</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                        <i class="fas fa-envelope text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">未認証</p>
+                        <p class="text-2xl font-bold text-gray-900" id="pendingUsers">-</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                        <i class="fas fa-calendar text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">今日の登録</p>
+                        <p class="text-2xl font-bold text-gray-900" id="todayUsers">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 検索・フィルター -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-search mr-2"></i>検索・フィルター
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="searchEmail" class="block text-sm font-medium text-gray-700 mb-1">
+                        メールアドレスで検索
+                    </label>
+                    <input type="email" id="searchEmail" placeholder="user@example.com"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="searchGuardian" class="block text-sm font-medium text-gray-700 mb-1">
+                        守護神で検索
+                    </label>
+                    <select id="searchGuardian" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">すべて</option>
+                        <option value="薬師如来">薬師如来</option>
+                        <option value="阿弥陀如来">阿弥陀如来</option>
+                        <option value="大日如来">大日如来</option>
+                        <option value="観世音菩薩">観世音菩薩</option>
+                        <option value="地蔵菩薩">地蔵菩薩</option>
+                        <option value="文殊菩薩">文殊菩薩</option>
+                        <option value="普賢菩薩">普賢菩薩</option>
+                        <option value="不動明王">不動明王</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="searchDate" class="block text-sm font-medium text-gray-700 mb-1">
+                        登録日で検索
+                    </label>
+                    <input type="date" id="searchDate"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+            <div class="mt-4 flex space-x-3">
+                <button id="searchBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors">
+                    <i class="fas fa-search mr-2"></i>検索
+                </button>
+                <button id="clearSearchBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition-colors">
+                    <i class="fas fa-times mr-2"></i>クリア
+                </button>
+                <button id="refreshBtn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition-colors">
+                    <i class="fas fa-sync-alt mr-2"></i>更新
+                </button>
+            </div>
+        </div>
+
+        <!-- ユーザー一覧 -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-800">
+                    <i class="fas fa-list mr-2"></i>会員一覧
+                </h2>
+                <div class="text-sm text-gray-600">
+                    <span id="userCount">0</span> 件の会員
+                </div>
+            </div>
+
+            <!-- ローディング表示 -->
+            <div id="loading" class="text-center py-8 hidden">
+                <div class="inline-flex items-center">
+                    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-3"></div>
+                    <span class="text-gray-600">データを読み込み中...</span>
+                </div>
+            </div>
+
+            <!-- ユーザー一覧コンテナ -->
+            <div id="userList" class="space-y-4">
+                <!-- ユーザーカードがここに動的に生成されます -->
+            </div>
+
+            <!-- 結果なし表示 -->
+            <div id="noResults" class="text-center py-8 hidden">
+                <i class="fas fa-user-slash text-gray-400 text-4xl mb-4"></i>
+                <p class="text-gray-600">該当する会員が見つかりませんでした</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // グローバル変数
+        let allUsers = [];
+        let filteredUsers = [];
+
+        // ページ読み込み時の初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('会員データベース管理画面が読み込まれました');
+            setupEventListeners();
+            loadUserData();
+        });
+
+        // イベントリスナーの設定
+        function setupEventListeners() {
+            // 検索ボタン
+            document.getElementById('searchBtn').addEventListener('click', filterUsers);
+            
+            // クリアボタン
+            document.getElementById('clearSearchBtn').addEventListener('click', clearSearch);
+            
+            // 更新ボタン
+            document.getElementById('refreshBtn').addEventListener('click', loadUserData);
+            
+            // エンターキーで検索
+            document.getElementById('searchEmail').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') filterUsers();
+            });
+        }
+
+        // ユーザーデータの読み込み
+        async function loadUserData() {
+            console.log('ユーザーデータを読み込み中...');
+            
+            const loading = document.getElementById('loading');
+            const userList = document.getElementById('userList');
+            const noResults = document.getElementById('noResults');
+            
+            loading.classList.remove('hidden');
+            userList.classList.add('hidden');
+            noResults.classList.add('hidden');
+
+            try {
+                // データベースからユーザー一覧を取得
+                const response = await fetch('/api/database-execute', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: 'SELECT * FROM user_profiles ORDER BY created_at DESC'
+                    })
+                });
+
+                const responseText = await response.text();
+                console.log('データベース応答:', responseText);
+
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (parseError) {
+                    console.error('JSON解析エラー:', parseError);
+                    throw new Error('データの解析に失敗しました');
+                }
+
+                if (data.success && data.results) {
+                    allUsers = data.results;
+                    filteredUsers = [...allUsers];
+                    
+                    console.log('取得したユーザー数:', allUsers.length);
+                    updateStatistics();
+                    displayUsers();
+                } else {
+                    throw new Error(data.error || 'ユーザーデータの取得に失敗しました');
+                }
+
+            } catch (error) {
+                console.error('ユーザーデータ読み込みエラー:', error);
+                showError('ユーザーデータの読み込みに失敗しました: ' + error.message);
+            } finally {
+                loading.classList.add('hidden');
+            }
+        }
+
+        // 統計情報の更新
+        function updateStatistics() {
+            const total = allUsers.length;
+            const completed = allUsers.filter(user => user.guardian_name && user.guardian_name !== '').length;
+            const pending = total - completed;
+            
+            // 今日の登録数
+            const today = new Date().toISOString().split('T')[0];
+            const todayCount = allUsers.filter(user => 
+                user.created_at && user.created_at.startsWith(today)
+            ).length;
+
+            document.getElementById('totalUsers').textContent = total;
+            document.getElementById('completedUsers').textContent = completed;
+            document.getElementById('pendingUsers').textContent = pending;
+            document.getElementById('todayUsers').textContent = todayCount;
+        }
+
+        // ユーザー一覧の表示
+        function displayUsers() {
+            const userList = document.getElementById('userList');
+            const noResults = document.getElementById('noResults');
+            const userCount = document.getElementById('userCount');
+
+            userCount.textContent = filteredUsers.length;
+
+            if (filteredUsers.length === 0) {
+                userList.classList.add('hidden');
+                noResults.classList.remove('hidden');
+                return;
+            }
+
+            userList.classList.remove('hidden');
+            noResults.classList.add('hidden');
+
+            userList.innerHTML = filteredUsers.map(user => createUserCard(user)).join('');
+        }
+
+        // ユーザーカードの生成
+        function createUserCard(user) {
+            const registrationInfo = user.registration_info ? JSON.parse(user.registration_info) : {};
+            
+            return `
+                <div class="user-card bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center mb-2">
+                                <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                                    ${user.user_id ? user.user_id.charAt(0).toUpperCase() : '?'}
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="font-semibold text-gray-900">${user.user_id || '未設定'}</h3>
+                                    <p class="text-sm text-gray-600">ID: ${user.id}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                                <div>
+                                    <p class="text-sm text-gray-600">
+                                        <i class="fas fa-birthday-cake mr-1"></i>
+                                        <strong>生年月日:</strong> ${formatBirthdate(user)}
+                                    </p>
+                                    <p class="text-sm text-gray-600">
+                                        <i class="fas fa-crown mr-1"></i>
+                                        <strong>守護神:</strong> ${user.guardian_name || '未設定'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600">
+                                        <i class="fas fa-heart mr-1"></i>
+                                        <strong>悩み:</strong> ${user.worry_type || '未設定'}
+                                    </p>
+                                    <p class="text-sm text-gray-600">
+                                        <i class="fas fa-calendar mr-1"></i>
+                                        <strong>登録日:</strong> ${formatDate(user.created_at)}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="ml-4 flex space-x-2">
+                            <button onclick="viewUserDetails('${user.user_id}')" 
+                                    class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                                <i class="fas fa-eye mr-1"></i>詳細
+                            </button>
+                            <button onclick="deleteUser('${user.user_id}', '${user.id}')" 
+                                    class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                                <i class="fas fa-trash mr-1"></i>削除
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // フィルタリング機能
+        function filterUsers() {
+            const email = document.getElementById('searchEmail').value.toLowerCase();
+            const guardian = document.getElementById('searchGuardian').value;
+            const date = document.getElementById('searchDate').value;
+
+            filteredUsers = allUsers.filter(user => {
+                // メールアドレスでフィルタ
+                if (email && !user.user_id?.toLowerCase().includes(email)) {
+                    return false;
+                }
+                
+                // 守護神でフィルタ
+                if (guardian && user.guardian_name !== guardian) {
+                    return false;
+                }
+                
+                // 登録日でフィルタ
+                if (date && user.created_at && !user.created_at.startsWith(date)) {
+                    return false;
+                }
+                
+                return true;
+            });
+
+            displayUsers();
+        }
+
+        // 検索クリア
+        function clearSearch() {
+            document.getElementById('searchEmail').value = '';
+            document.getElementById('searchGuardian').value = '';
+            document.getElementById('searchDate').value = '';
+            filteredUsers = [...allUsers];
+            displayUsers();
+        }
+
+        // ユーザー詳細表示
+        function viewUserDetails(email) {
+            const user = allUsers.find(u => u.user_id === email);
+            if (!user) return;
+
+            const registrationInfo = user.registration_info ? JSON.parse(user.registration_info) : {};
+            
+            const details = `
+                <div class="space-y-3">
+                    <h3 class="font-bold text-lg">${email}</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p><strong>ID:</strong> ${user.id}</p>
+                            <p><strong>生年月日:</strong> ${formatBirthdate(user)}</p>
+                            <p><strong>守護神:</strong> ${user.guardian_name || '未設定'}</p>
+                            <p><strong>守護神キー:</strong> ${user.guardian_key || '未設定'}</p>
+                        </div>
+                        <div>
+                            <p><strong>悩みの種類:</strong> ${user.worry_type || '未設定'}</p>
+                            <p><strong>登録日:</strong> ${formatDate(user.created_at)}</p>
+                            <p><strong>データ状況:</strong> ${user.guardian_name ? '登録完了' : '未完了'}</p>
+                        </div>
+                    </div>
+                    ${Object.keys(registrationInfo).length > 0 ? `
+                        <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+                            <h4 class="font-semibold mb-2">詳細データ:</h4>
+                            <pre class="text-xs text-gray-700 overflow-auto">${JSON.stringify(registrationInfo, null, 2)}</pre>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            alert(details);
+        }
+
+        // ユーザー削除
+        async function deleteUser(email, id) {
+            if (!confirm(`ユーザー「${email}」を削除しますか？\nこの操作は元に戻せません。`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/database-execute', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: 'DELETE FROM user_profiles WHERE id = ?',
+                        params: [id]
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('ユーザーを削除しました');
+                    loadUserData(); // データを再読み込み
+                } else {
+                    throw new Error(data.error || '削除に失敗しました');
+                }
+            } catch (error) {
+                console.error('削除エラー:', error);
+                alert('削除エラー: ' + error.message);
+            }
+        }
+
+        // ユーティリティ関数
+        function formatBirthdate(user) {
+            if (user.birth_year && user.birth_month && user.birth_day) {
+                return `${user.birth_year}年${user.birth_month}月${user.birth_day}日`;
+            }
+            return '未設定';
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '未設定';
+            return new Date(dateString).toLocaleDateString('ja-JP');
+        }
+
+        function showError(message) {
+            const userList = document.getElementById('userList');
+            userList.innerHTML = `
+                <div class="text-center py-8">
+                    <i class="fas fa-exclamation-triangle text-red-500 text-4xl mb-4"></i>
+                    <p class="text-red-600">${message}</p>
+                    <button onclick="loadUserData()" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors">
+                        <i class="fas fa-redo mr-2"></i>再試行
+                    </button>
+                </div>
+            `;
+            userList.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
