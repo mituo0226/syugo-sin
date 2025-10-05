@@ -540,7 +540,10 @@
           console.log("デフォルト守護神画像を設定");
         }
         
-        // 8. 初期表示開始
+        // 8. localStorageとデータベースの内容を比較
+        compareLocalStorageWithDatabase(userData);
+        
+        // 9. 初期表示開始
         startInitialDisplay();
         
       } catch (error) {
@@ -576,6 +579,119 @@
           showDragonMessage(message);
         }, 2000);
       }, 500);
+    }
+
+    // localStorageとデータベースの内容を比較する関数
+    async function compareLocalStorageWithDatabase(userData) {
+      try {
+        console.log("=== localStorageとデータベースの内容比較開始 ===");
+        console.log("localStorageのuserData:", userData);
+        
+        // データベースからユーザー情報を取得
+        const response = await fetch('/api/database-execute', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            query: 'SELECT * FROM user_profiles ORDER BY created_at DESC LIMIT 10'
+          })
+        });
+
+        const responseText = await response.text();
+        console.log("データベース応答:", responseText);
+
+        let dbData;
+        try {
+          dbData = JSON.parse(responseText);
+        } catch (parseError) {
+          console.error("データベース応答のJSON解析エラー:", parseError);
+          return;
+        }
+
+        if (dbData.success && dbData.results) {
+          console.log("データベースのユーザー情報:", dbData.results);
+          
+          // localStorageのuserDataと比較
+          const localStorageData = {
+            nickname: userData.nickname,
+            birthYear: userData.birthYear,
+            birthMonth: userData.birthMonth,
+            birthDay: userData.birthDay,
+            guardianKey: userData.guardianKey,
+            guardianName: userData.guardian ? userData.guardian.name : null,
+            worry: userData.worry
+          };
+          
+          console.log("localStorageのデータ:", localStorageData);
+          
+          // データベースの最新レコードと比較
+          if (dbData.results.length > 0) {
+            const latestRecord = dbData.results[0];
+            console.log("データベースの最新レコード:", latestRecord);
+            
+            // 各フィールドの比較
+            const comparison = {
+              nickname: {
+                localStorage: localStorageData.nickname,
+                database: latestRecord.user_id,
+                match: localStorageData.nickname === latestRecord.user_id
+              },
+              birthYear: {
+                localStorage: localStorageData.birthYear,
+                database: latestRecord.birth_year,
+                match: localStorageData.birthYear === latestRecord.birth_year
+              },
+              birthMonth: {
+                localStorage: localStorageData.birthMonth,
+                database: latestRecord.birth_month,
+                match: localStorageData.birthMonth === latestRecord.birth_month
+              },
+              birthDay: {
+                localStorage: localStorageData.birthDay,
+                database: latestRecord.birth_day,
+                match: localStorageData.birthDay === latestRecord.birth_day
+              },
+              guardianKey: {
+                localStorage: localStorageData.guardianKey,
+                database: latestRecord.guardian_key,
+                match: localStorageData.guardianKey === latestRecord.guardian_key
+              },
+              guardianName: {
+                localStorage: localStorageData.guardianName,
+                database: latestRecord.guardian_name,
+                match: localStorageData.guardianName === latestRecord.guardian_name
+              },
+              worry: {
+                localStorage: localStorageData.worry,
+                database: latestRecord.worry_type,
+                match: localStorageData.worry === latestRecord.worry_type
+              }
+            };
+            
+            console.log("=== データ比較結果 ===");
+            Object.keys(comparison).forEach(key => {
+              const field = comparison[key];
+              const status = field.match ? "✅ 一致" : "❌ 不一致";
+              console.log(`${key}: ${status}`);
+              console.log(`  localStorage: ${field.localStorage}`);
+              console.log(`  database: ${field.database}`);
+            });
+            
+            // 全体的な一致状況
+            const allMatch = Object.values(comparison).every(field => field.match);
+            console.log(`全体的な一致状況: ${allMatch ? "✅ 全て一致" : "❌ 一部不一致"}`);
+            
+          } else {
+            console.log("データベースにユーザー情報が見つかりません");
+          }
+        } else {
+          console.error("データベースからの取得に失敗:", dbData.error);
+        }
+        
+      } catch (error) {
+        console.error("データベース比較エラー:", error);
+      }
     }
 
     // 現在のuserDataを取得する関数
