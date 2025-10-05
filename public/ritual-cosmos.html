@@ -1247,7 +1247,30 @@
         console.log('メール送信開始:', email);
         console.log('ユーザーデータ:', userData);
         
-        // メール送信APIを呼び出し（修正されたAPI仕様に合わせる）
+        // ステップ1: ユーザーデータをデータベースに保存
+        console.log('ステップ1: ユーザーデータをデータベースに保存中...');
+        const saveResponse = await fetch('/api/save-user-data', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            userData: userData
+          })
+        });
+        
+        const saveResult = await saveResponse.json();
+        console.log('ユーザーデータ保存結果:', saveResult);
+        
+        if (!saveResponse.ok || !saveResult.success) {
+          throw new Error(saveResult.error || 'ユーザーデータの保存に失敗しました');
+        }
+        
+        console.log('✅ ユーザーデータの保存が完了しました');
+        
+        // ステップ2: マジックリンクを送信
+        console.log('ステップ2: マジックリンクを送信中...');
         const response = await fetch('/api/send-magic-link', {
           method: 'POST',
           headers: {
@@ -1255,14 +1278,14 @@
           },
           body: JSON.stringify({
             email: email,
-            localData: userData  // 修正されたAPI仕様に合わせてlocalDataに変更
+            localData: userData
           })
         });
         
         const result = await response.json();
         
         if (response.ok && result.success) {
-          console.log('メール送信成功:', result);
+          console.log('✅ マジックリンク送信成功:', result);
           
           // URLパラメータを更新（メールアドレスを追加）
           updateUrlWithUserData(userData, email);
@@ -1270,16 +1293,13 @@
           // 成功メッセージを表示
           showSuccessMessage(email);
           
+          console.log('🎉 会員登録プロセス完了: データ保存 + マジックリンク送信');
+          
           // ページ遷移は停止（メール確認を促すため）
           
         } else {
-          console.error('メール送信エラー:', result);
-          
-          if (response.status === 409) {
-            showError('このメールアドレスは既に登録されています');
-          } else {
-            showError(result.error || 'メール送信に失敗しました');
-          }
+          console.error('❌ マジックリンク送信エラー:', result);
+          showError(result.error || 'マジックリンクの送信に失敗しました');
           
           // ボタンを再有効化
           const submitButton = document.getElementById('submitButton');
@@ -1288,8 +1308,13 @@
         }
         
       } catch (error) {
-        console.error('メール送信処理エラー:', error);
-        showError('メール送信に失敗しました。ネットワーク接続を確認してください。');
+        console.error('❌ メール送信処理エラー:', error);
+        
+        if (error.message.includes('ユーザーデータの保存に失敗')) {
+          showError('ユーザーデータの保存に失敗しました: ' + error.message);
+        } else {
+          showError('メール送信に失敗しました: ' + error.message);
+        }
         
         // ボタンを再有効化
         const submitButton = document.getElementById('submitButton');

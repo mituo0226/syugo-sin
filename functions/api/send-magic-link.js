@@ -59,47 +59,39 @@ export async function onRequestPost(context) {
     const magicLinkUrl = `${baseUrl}/api/verify-magic-link?token=${token}`;
     console.log('生成されたマジックリンク:', magicLinkUrl);
 
-    // ユーザープロフィールテーブルにトークンとローカルデータを保存
+    // 既存のユーザーデータにマジックリンク情報のみを追加
     try {
+      // 既存ユーザーの確認
+      const existingUser = await env.DB.prepare(`
+        SELECT id FROM user_profiles WHERE user_id = ?
+      `).bind(email).first();
+
+      if (!existingUser) {
+        console.error('ユーザーデータが見つかりません。先にユーザーデータを保存してください。');
+        return new Response(JSON.stringify({
+          success: false,
+          error: 'ユーザーデータが保存されていません。先にユーザーデータを保存してください。'
+        }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+      // マジックリンク情報のみを更新
       await env.DB.prepare(`
-        INSERT INTO user_profiles (
-          user_id, nickname, birth_year, birth_month, birth_day,
-          guardian_key, guardian_name, worry_type, registration_info,
-          magic_link_token, magic_link_created_at, magic_link_used, created_at
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), 0, datetime('now'))
-        ON CONFLICT(user_id) DO UPDATE SET
-          nickname = excluded.nickname,
-          birth_year = excluded.birth_year,
-          birth_month = excluded.birth_month,
-          birth_day = excluded.birth_day,
-          guardian_key = excluded.guardian_key,
-          guardian_name = excluded.guardian_name,
-          worry_type = excluded.worry_type,
-          registration_info = excluded.registration_info,
-          magic_link_token = excluded.magic_link_token,
-          magic_link_created_at = excluded.magic_link_created_at,
-          magic_link_used = 0,
-          created_at = excluded.created_at
-      `).bind(
-        email,
-        localData.nickname || '',
-        localData.birthYear || '',
-        localData.birthMonth || '',
-        localData.birthDay || '',
-        localData.guardianKey || '',
-        localData.guardian ? localData.guardian.name : '',
-        localData.worry || '',
-        JSON.stringify(localData),
-        token
-      ).run();
+        UPDATE user_profiles SET
+          magic_link_token = ?,
+          magic_link_created_at = datetime('now'),
+          magic_link_used = 0
+        WHERE user_id = ?
+      `).bind(token, email).run();
       
-      console.log('ユーザープロフィールとマジックリンク情報をデータベースに保存しました');
+      console.log('マジックリンク情報をデータベースに保存しました');
     } catch (dbError) {
       console.error('データベース保存エラー:', dbError);
       return new Response(JSON.stringify({
         success: false,
-        error: 'データベース保存に失敗しました'
+        error: 'マジックリンク情報の保存に失敗しました'
       }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' }

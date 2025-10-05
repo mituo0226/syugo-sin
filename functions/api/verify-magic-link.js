@@ -111,10 +111,12 @@ async function markUserAsVerified(email, env) {
   try {
     console.log('ユーザーの認証を開始:', email);
 
-    // ユーザープロフィールを認証済みにマーク（データは既に保存済み）
+    // ユーザープロフィールを認証済みにマーク
     const result = await env.DB.prepare(`
       UPDATE user_profiles SET
-        created_at = datetime('now')
+        is_verified = 1,
+        is_active = 1,
+        magic_link_used = 1
       WHERE user_id = ?
     `).bind(email).run();
 
