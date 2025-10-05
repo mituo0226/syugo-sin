@@ -59,14 +59,42 @@ export async function onRequestPost(context) {
     const magicLinkUrl = `${baseUrl}/api/verify-magic-link?token=${token}`;
     console.log('生成されたマジックリンク:', magicLinkUrl);
 
-    // データベースにトークンとローカルデータを保存
+    // ユーザープロフィールテーブルにトークンとローカルデータを保存
     try {
       await env.DB.prepare(`
-        INSERT INTO magic_links (email, token, created_at)
-        VALUES (?, ?, datetime('now'))
-      `).bind(email, token).run();
+        INSERT INTO user_profiles (
+          user_id, nickname, birth_year, birth_month, birth_day,
+          guardian_key, guardian_name, worry_type, registration_info,
+          magic_link_token, magic_link_created_at, magic_link_used, created_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), 0, datetime('now'))
+        ON CONFLICT(user_id) DO UPDATE SET
+          nickname = excluded.nickname,
+          birth_year = excluded.birth_year,
+          birth_month = excluded.birth_month,
+          birth_day = excluded.birth_day,
+          guardian_key = excluded.guardian_key,
+          guardian_name = excluded.guardian_name,
+          worry_type = excluded.worry_type,
+          registration_info = excluded.registration_info,
+          magic_link_token = excluded.magic_link_token,
+          magic_link_created_at = excluded.magic_link_created_at,
+          magic_link_used = 0,
+          created_at = excluded.created_at
+      `).bind(
+        email,
+        localData.nickname || '',
+        localData.birthYear || '',
+        localData.birthMonth || '',
+        localData.birthDay || '',
+        localData.guardianKey || '',
+        localData.guardian ? localData.guardian.name : '',
+        localData.worry || '',
+        JSON.stringify(localData),
+        token
+      ).run();
       
-      console.log('マジックリンク情報をデータベースに保存しました');
+      console.log('ユーザープロフィールとマジックリンク情報をデータベースに保存しました');
     } catch (dbError) {
       console.error('データベース保存エラー:', dbError);
       return new Response(JSON.stringify({
@@ -76,23 +104,6 @@ export async function onRequestPost(context) {
         status: 500,
         headers: { 'Content-Type': 'application/json' }
       });
-    }
-
-    // ローカルデータを一時的に保存（検証時に使用）
-    // 実際の実装では、セキュアな方法でデータを保存することを推奨
-    try {
-      await env.DB.prepare(`
-        INSERT INTO user_profiles (user_id, registration_info, created_at)
-        VALUES (?, ?, datetime('now'))
-        ON CONFLICT(user_id) DO UPDATE SET
-          registration_info = excluded.registration_info,
-          created_at = excluded.created_at
-      `).bind(email, JSON.stringify(localData)).run();
-      
-      console.log('ローカルデータを一時保存しました');
-    } catch (tempSaveError) {
-      console.error('一時保存エラー:', tempSaveError);
-      // 一時保存の失敗は致命的ではないので続行
     }
 
     // メール送信処理

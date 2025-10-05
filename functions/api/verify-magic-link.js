@@ -31,15 +31,15 @@ export async function onRequestGet(context) {
       });
     }
 
-    // トークンの有効性をチェック
-    const magicLinkRecord = await env.DB.prepare(`
-      SELECT * FROM magic_links 
-      WHERE token = ? AND used = 0
-      ORDER BY created_at DESC
+    // トークンの有効性をチェック（ユーザープロフィールテーブルから）
+    const userRecord = await env.DB.prepare(`
+      SELECT * FROM user_profiles 
+      WHERE magic_link_token = ? AND magic_link_used = 0
+      ORDER BY magic_link_created_at DESC
       LIMIT 1
     `).bind(token).first();
 
-    if (!magicLinkRecord) {
+    if (!userRecord) {
       console.error('無効または使用済みのトークンです');
       return new Response(createErrorPage('無効または期限切れのリンクです'), {
         status: 400,
@@ -47,10 +47,10 @@ export async function onRequestGet(context) {
       });
     }
 
-    console.log('有効なトークンが見つかりました:', magicLinkRecord);
+    console.log('有効なトークンが見つかりました:', userRecord);
 
     // トークンの有効期限チェック（30分）
-    const createdAt = new Date(magicLinkRecord.created_at);
+    const createdAt = new Date(userRecord.magic_link_created_at);
     const now = new Date();
     const timeDiff = (now - createdAt) / (1000 * 60); // 分単位
 
@@ -59,7 +59,7 @@ export async function onRequestGet(context) {
       
       // 期限切れのトークンを無効化
       await env.DB.prepare(`
-        UPDATE magic_links SET used = 1 WHERE token = ?
+        UPDATE user_profiles SET magic_link_used = 1 WHERE magic_link_token = ?
       `).bind(token).run();
 
       return new Response(createErrorPage('リンクの有効期限が切れています。再度登録を行ってください。'), {
@@ -68,12 +68,12 @@ export async function onRequestGet(context) {
       });
     }
 
-    // ユーザープロフィールの保存
-    const registrationResult = await saveUserProfile(magicLinkRecord.email, env);
+    // ユーザープロフィールを認証済みにマーク
+    const registrationResult = await markUserAsVerified(userRecord.user_id, env);
     
     if (!registrationResult.success) {
-      console.error('ユーザープロフィールの保存に失敗:', registrationResult.error);
-      return new Response(createErrorPage('登録処理でエラーが発生しました'), {
+      console.error('ユーザープロフィールの認証に失敗:', registrationResult.error);
+      return new Response(createErrorPage('認証処理でエラーが発生しました'), {
         status: 500,
         headers: { 'Content-Type': 'text/html; charset=utf-8' }
       });
@@ -81,13 +81,13 @@ export async function onRequestGet(context) {
 
     // トークンを使用済みにマーク
     await env.DB.prepare(`
-      UPDATE magic_links SET used = 1 WHERE token = ?
+      UPDATE user_profiles SET magic_link_used = 1 WHERE magic_link_token = ?
     `).bind(token).run();
 
     console.log('マジックリンク認証が完了しました');
 
     // 成功ページを表示
-    return new Response(createSuccessPage(magicLinkRecord.email), {
+    return new Response(createSuccessPage(userRecord.user_id), {
       status: 200,
       headers: { 'Content-Type': 'text/html; charset=utf-8' }
     });
@@ -102,66 +102,28 @@ export async function onRequestGet(context) {
 }
 
 /**
- * ユーザープロフィールを保存する関数
+ * ユーザーを認証済みにマークする関数
  * @param {string} email - メールアドレス
  * @param {object} env - 環境変数
- * @returns {object} 保存結果
+ * @returns {object} 認証結果
  */
-async function saveUserProfile(email, env) {
+async function markUserAsVerified(email, env) {
   try {
-    console.log('ユーザープロフィールの保存を開始:', email);
+    console.log('ユーザーの認証を開始:', email);
 
-    // 一時保存されたローカルデータを取得
-    const tempData = await env.DB.prepare(`
-      SELECT registration_info FROM user_profiles 
-      WHERE user_id = ? 
-      ORDER BY created_at DESC 
-      LIMIT 1
-    `).bind(email).first();
-
-    if (!tempData || !tempData.registration_info) {
-      console.error('一時保存されたデータが見つかりません');
-      return { success: false, error: 'ユーザーデータが見つかりません' };
-    }
-
-    const localData = JSON.parse(tempData.registration_info);
-    console.log('取得したローカルデータ:', localData);
-
-    // 生年月日の分解
-    let birthYear = null, birthMonth = null, birthDay = null;
-    if (localData.birthYear && localData.birthMonth && localData.birthDay) {
-      birthYear = localData.birthYear;
-      birthMonth = localData.birthMonth;
-      birthDay = localData.birthDay;
-    }
-
-    // ユーザープロフィールを更新
+    // ユーザープロフィールを認証済みにマーク（データは既に保存済み）
     const result = await env.DB.prepare(`
       UPDATE user_profiles SET
-        birth_year = ?,
-        birth_month = ?,
-        birth_day = ?,
-        guardian_key = ?,
-        guardian_name = ?,
-        worry_type = ?,
         created_at = datetime('now')
       WHERE user_id = ?
-    `).bind(
-      birthYear,
-      birthMonth,
-      birthDay,
-      localData.guardianKey || null,
-      localData.guardianName || null,
-      localData.worryType || null,
-      email
-    ).run();
+    `).bind(email).run();
 
-    console.log('ユーザープロフィールの保存完了:', result);
+    console.log('ユーザーの認証完了:', result);
 
     return { success: true };
 
   } catch (error) {
-    console.error('ユーザープロフィール保存エラー:', error);
+    console.error('ユーザー認証エラー:', error);
     return { success: false, error: error.message };
   }
 }
