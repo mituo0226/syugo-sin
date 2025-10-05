@@ -457,14 +457,65 @@
     // ページ読み込み時の処理
     window.addEventListener("load", function() {
       try {
-        // localStorageからuserDataを取得
+        console.log("=== explain.html ページ読み込み開始 ===");
+        
+        // 1. まずURLパラメータを確認
+        const urlParams = new URLSearchParams(window.location.search);
+        console.log("explain.html - URLパラメータ:", urlParams.toString());
+        console.log("explain.html - 現在のURL:", window.location.href);
+        
+        // 2. localStorageからuserDataを取得
         const rawUserData = localStorage.getItem("userData");
         console.log("explain.html - localStorageから取得したrawUserData:", rawUserData);
         
-        const userData = JSON.parse(rawUserData || "{}");
-        console.log("explain.html - パースされたuserData:", userData);
+        // 3. localStorageの全内容を確認
+        console.log("explain.html - localStorage全体の内容:");
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          const value = localStorage.getItem(key);
+          console.log(`  ${key}:`, value);
+        }
         
-        // 守護神の画像を設定
+        let userData;
+        if (rawUserData) {
+          try {
+            userData = JSON.parse(rawUserData);
+            console.log("explain.html - パースされたuserData:", userData);
+          } catch (parseError) {
+            console.error("explain.html - JSONパースエラー:", parseError);
+            userData = {};
+          }
+        } else {
+          console.log("explain.html - localStorageにuserDataが見つかりません");
+          userData = {};
+        }
+        
+        // 4. URLパラメータから情報を取得（フォールバック用）
+        const nickname = urlParams.get('nickname');
+        const birthYear = urlParams.get('birthYear');
+        const birthMonth = urlParams.get('birthMonth');
+        const birthDay = urlParams.get('birthDay');
+        const guardianKey = urlParams.get('guardianKey');
+        
+        console.log("explain.html - URLパラメータから取得したデータ:", {
+          nickname, birthYear, birthMonth, birthDay, guardianKey
+        });
+        
+        // 5. userDataが不完全な場合、URLパラメータで補完
+        if (!userData.nickname && nickname) {
+          console.log("explain.html - localStorageのnicknameが不足、URLパラメータから補完");
+          userData.nickname = nickname;
+        }
+        if (!userData.guardianKey && guardianKey) {
+          console.log("explain.html - localStorageのguardianKeyが不足、URLパラメータから補完");
+          userData.guardianKey = guardianKey;
+          userData.guardian = guardians[guardianKey] || { name: "守護神", image: "photo/ryu.png" };
+        }
+        
+        // 6. 最終的なuserDataを確認
+        console.log("explain.html - 最終的なuserData:", userData);
+        
+        // 7. 守護神の画像を設定
         const guardianImage = document.getElementById('guardianImage');
         if (userData.guardianKey && userData.guardian) {
           guardianImage.src = `photo/${userData.guardianKey}.png`;
@@ -476,11 +527,12 @@
           console.log("デフォルト守護神画像を設定");
         }
         
-        // 初期表示開始
+        // 8. 初期表示開始
         startInitialDisplay();
         
       } catch (error) {
         console.error("explain.html - ページ読み込みエラー:", error);
+        console.error("エラーの詳細:", error.stack);
         // エラーが発生した場合のデフォルト表示
         startInitialDisplay();
       }

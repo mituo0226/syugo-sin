@@ -748,10 +748,16 @@
         console.error("localStorage保存エラー:", e);
       }
 
-      // 確実に保存完了後にページ遷移
+      // 確実に保存完了後にページ遷移（URLパラメータを保持）
       setTimeout(() => {
         console.log("ページ遷移開始: explain.html");
-        window.location.href = 'explain.html';
+        
+        // URLパラメータを保持して遷移
+        const urlParams = new URLSearchParams(window.location.search);
+        const explainUrl = `explain.html${urlParams.toString() ? '?' + urlParams.toString() : ''}`;
+        console.log("遷移先URL:", explainUrl);
+        
+        window.location.href = explainUrl;
       }, 200);
     });
   </script>
