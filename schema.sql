@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS user_profiles (
     birth_day TEXT,                           -- 生日
     guardian_key TEXT,                        -- 守護神キー
     guardian_name TEXT,                       -- 守護神名
-    worry_type TEXT,                          -- 悩みの種類
+    worry TEXT,                               -- 悩みの種類
     registration_info TEXT,                   -- ローカルストレージの全データ（JSON形式）
     magic_link_token TEXT,                    -- マジックリンクトークン（一時的）
     magic_link_created_at TEXT,               -- マジックリンク作成日時

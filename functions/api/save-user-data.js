@@ -67,7 +67,7 @@ export async function onRequestPost(context) {
           birth_day = ?,
           guardian_key = ?,
           guardian_name = ?,
-          worry_type = ?,
+          worry = ?,
           registration_info = ?,
           magic_link_token = NULL,
           magic_link_created_at = NULL,
@@ -83,7 +83,7 @@ export async function onRequestPost(context) {
         userData.birthDay || '',
         userData.guardianKey || '',
         userData.guardian ? userData.guardian.name : '',
-        userData.worry || '',
+        userData.worry || '',  // worry → worry_type にマッピング
         JSON.stringify(userData),
         email
       ).run();
@@ -96,7 +96,7 @@ export async function onRequestPost(context) {
       await env.DB.prepare(`
         INSERT INTO user_profiles (
           user_id, nickname, birth_year, birth_month, birth_day,
-          guardian_key, guardian_name, worry_type, registration_info,
+          guardian_key, guardian_name, worry, registration_info,
           magic_link_token, magic_link_created_at, magic_link_used,
           is_verified, is_active, created_at
         )
@@ -109,7 +109,7 @@ export async function onRequestPost(context) {
         userData.birthDay || '',
         userData.guardianKey || '',
         userData.guardian ? userData.guardian.name : '',
-        userData.worry || '',
+        userData.worry || '',  // worry → worry_type にマッピング
         JSON.stringify(userData)
       ).run();
 

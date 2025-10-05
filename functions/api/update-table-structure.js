@@ -26,6 +26,21 @@ export async function onRequestPost(context) {
       "ALTER TABLE user_profiles ADD COLUMN is_active INTEGER DEFAULT 1"
     ];
 
+    // 既存カラムの名前変更（worry_type → worry）
+    try {
+      console.log("worry_typeカラムをworryに変更中...");
+      await env.DB.prepare(`
+        ALTER TABLE user_profiles RENAME COLUMN worry_type TO worry
+      `).run();
+      console.log("worry_typeカラムをworryに変更しました");
+    } catch (error) {
+      if (error.message.includes("no such column")) {
+        console.log("worry_typeカラムが存在しないか、既にworryに変更済みです");
+      } else {
+        console.error("worry_typeカラムの変更エラー:", error);
+      }
+    }
+
     const results = [];
 
     for (const query of alterQueries) {
