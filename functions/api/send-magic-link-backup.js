@@ -1,20 +1,13 @@
 /**
- * マジックリンク送信API（完全版）
- * ローカルストレージのデータを受け取り、D1にINSERTし、Resendでマジックリンクを送信する
- * 
- * 動作の流れ:
- * 1. リクエストからemailとlocalDataを取得
- * 2. ランダムUUIDトークンを生成
- * 3. D1データベースにユーザーデータをINSERT/UPDATE
- * 4. Resendでマジックリンクメールを送信
- * 5. 成功レスポンスを返却
+ * マジックリンク送信API（新構造対応）
+ * ユーザーデータを新規作成し、マジックリンクを送信します
  */
 
 export async function onRequestPost(context) {
   const { request, env } = context;
 
   try {
-    console.log('=== マジックリンク送信API開始 ===');
+    console.log('=== マジックリンク送信APIが呼び出されました ===');
     
     // リクエストボディを取得
     const requestBody = await request.json();
@@ -66,12 +59,26 @@ export async function onRequestPost(context) {
     const magicLinkUrl = `${baseUrl}/api/verify-magic-link?token=${token}`;
     console.log('生成されたマジックリンク:', magicLinkUrl);
 
-    // D1データベースにユーザーデータを保存
+    // 新規レコードを作成（UPSERT方式）
     try {
-      console.log('=== D1データベース保存開始 ===');
+      console.log('=== データベース保存開始 ===');
       console.log('email:', email);
       console.log('token:', token);
       console.log('localData:', localData);
+      
+      // データベース接続確認
+      if (!env.DB) {
+        console.error('データベース接続が見つかりません');
+        return new Response(JSON.stringify({
+          success: false,
+          error: 'データベース接続エラー'
+        }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+      
+      console.log('データベース接続確認完了');
       
       const result = await env.DB.prepare(`
         INSERT INTO user_profiles (
@@ -97,22 +104,22 @@ export async function onRequestPost(context) {
           is_active = 1,
           created_at = excluded.created_at
       `).bind(
-        email,                                    // user_id
-        localData.nickname || '',                // nickname
-        localData.birthYear || '',               // birth_year
-        localData.birthMonth || '',              // birth_month
-        localData.birthDay || '',                // birth_day
-        localData.guardianKey || '',             // guardian_key
-        localData.guardian ? localData.guardian.name : '', // guardian_name
-        localData.worry || '',                   // worry
-        JSON.stringify(localData),               // registration_info
-        token                                     // magic_link_token
+        email,
+        localData.nickname || '',
+        localData.birthYear || '',
+        localData.birthMonth || '',
+        localData.birthDay || '',
+        localData.guardianKey || '',
+        localData.guardian ? localData.guardian.name : '',
+        localData.worry || '',
+        JSON.stringify(localData),
+        token
       ).run();
       
-      console.log('D1データベース保存結果:', result);
-      console.log('✅ ユーザーデータをD1に保存しました');
+      console.log('データベース保存結果:', result);
+      console.log('ユーザーデータとマジックリンク情報をデータベースに保存しました');
     } catch (dbError) {
-      console.error('=== D1データベース保存エラー ===');
+      console.error('=== データベース保存エラー ===');
       console.error('エラー詳細:', dbError);
       console.error('エラーメッセージ:', dbError.message);
       console.error('エラースタック:', dbError.stack);
@@ -127,13 +134,13 @@ export async function onRequestPost(context) {
       });
     }
 
-    // Resendでマジックリンクメールを送信
-    console.log('=== Resendメール送信開始 ===');
+    // メール送信処理
+    console.log('=== メール送信開始 ===');
     try {
       const emailSent = await sendMagicLinkEmail(email, magicLinkUrl, env);
       
       if (emailSent) {
-        console.log('✅ マジックリンクメールの送信が完了しました');
+        console.log('マジックリンクメールの送信が完了しました');
         
         return new Response(JSON.stringify({
           success: true,
@@ -144,7 +151,7 @@ export async function onRequestPost(context) {
           headers: { 'Content-Type': 'application/json' }
         });
       } else {
-        console.error('❌ メール送信に失敗しました');
+        console.error('メール送信に失敗しました');
         return new Response(JSON.stringify({
           success: false,
           error: 'メール送信に失敗しました'
@@ -167,8 +174,7 @@ export async function onRequestPost(context) {
     }
 
   } catch (error) {
-    console.error('=== マジックリンク送信APIエラー ===');
-    console.error('エラー詳細:', error);
+    console.error('マジックリンク送信APIエラー:', error);
     return new Response(JSON.stringify({
       success: false,
       error: 'サーバーエラーが発生しました',
@@ -181,7 +187,7 @@ export async function onRequestPost(context) {
 }
 
 /**
- * Resendでマジックリンクメールを送信する関数
+ * マジックリンクメールを送信する関数
  * @param {string} email - 送信先メールアドレス
  * @param {string} magicLinkUrl - マジックリンクのURL
  * @param {object} env - 環境変数
@@ -204,25 +210,25 @@ async function sendMagicLinkEmail(email, magicLinkUrl, env) {
     const emailData = {
       from: 'AI鑑定師 龍 <noreply@syugo-sin.com>',
       to: [email],
-      subject: '【守護神占い】メール認証のご案内',
+      subject: '【AI鑑定師 龍】会員登録の認証をお願いします',
       html: `
         <div style="font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="color: #66ccff; font-size: 24px; margin: 0;">守護神占い</h1>
-            <p style="color: #666; font-size: 14px; margin: 10px 0 0 0;">AI鑑定師 龍</p>
+            <h1 style="color: #66ccff; font-size: 24px; margin: 0;">AI鑑定師 龍</h1>
+            <p style="color: #666; font-size: 14px; margin: 10px 0 0 0;">守護神占い</p>
           </div>
           
           <div style="background: #f8f9fa; padding: 30px; border-radius: 10px; margin-bottom: 20px;">
-            <h2 style="color: #333; font-size: 20px; margin: 0 0 20px 0;">メール認証のご案内</h2>
+            <h2 style="color: #333; font-size: 20px; margin: 0 0 20px 0;">会員登録の認証をお願いします</h2>
             <p style="color: #666; line-height: 1.6; margin: 0 0 20px 0;">
-              守護神占いの会員登録にお申し込みいただき、ありがとうございます。<br>
-              会員登録を完了するため、下記のリンクをクリックしてメール認証を行ってください。
+              ご登録いただき、ありがとうございます。<br>
+              会員登録を完了するため、下記のリンクをクリックして認証を行ってください。
             </p>
             
             <div style="text-align: center; margin: 30px 0;">
               <a href="${magicLinkUrl}" 
                  style="display: inline-block; background: #66ccff; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">
-                メール認証を完了する
+                認証を完了する
               </a>
             </div>
             
@@ -233,7 +239,7 @@ async function sendMagicLinkEmail(email, magicLinkUrl, env) {
           </div>
           
           <div style="text-align: center; color: #999; font-size: 12px;">
-            <p>守護神占い - AI鑑定師 龍</p>
+            <p>AI鑑定師 龍 - 守護神占い</p>
             <p>このメールに返信はできません。</p>
           </div>
         </div>
