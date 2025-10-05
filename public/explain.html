@@ -512,7 +512,15 @@
           userData.guardian = guardians[guardianKey] || { name: "守護神", image: "photo/ryu.png" };
         }
         
-        // 6. 最終的なuserDataを確認
+        // 6. 相談内容（カテゴリー）の確認
+        console.log("explain.html - 相談内容（worry）:", userData.worry);
+        if (userData.worry) {
+          console.log("explain.html - 相談カテゴリーが設定されています:", userData.worry);
+        } else {
+          console.log("explain.html - 相談カテゴリーが設定されていません");
+        }
+        
+        // 7. 最終的なuserDataを確認
         console.log("explain.html - 最終的なuserData:", userData);
         
         // 7. 守護神の画像を設定
@@ -555,18 +563,63 @@
         
         // 画像表示後、メッセージを表示
         setTimeout(() => {
-          const originalMessage = `……ここから先は守護神とつながるための正式な儀式となる。
-
-そのために、まずは「会員登録」が必要だ。
-メールアドレスと名前を伝えることで、守護神はあなたの存在を正しく受け止め、絆を深めることができる。
-
-もちろん、あなたの大切な情報は私が守る。安心して進んでくれ。`;
+          const userData = getCurrentUserData();
+          const originalMessage = createPersonalizedMessage(userData);
           
           // ニックネーム変換機能を適用
           const message = replaceYouWithNickname(originalMessage);
           showDragonMessage(message);
         }, 2000);
       }, 500);
+    }
+
+    // 現在のuserDataを取得する関数
+    function getCurrentUserData() {
+      try {
+        const rawUserData = localStorage.getItem("userData");
+        if (rawUserData) {
+          return JSON.parse(rawUserData);
+        }
+      } catch (error) {
+        console.error("getCurrentUserData エラー:", error);
+      }
+      return {};
+    }
+
+    // 相談内容に応じたパーソナライズされたメッセージを作成
+    function createPersonalizedMessage(userData) {
+      console.log("createPersonalizedMessage - userData:", userData);
+      
+      const worry = userData.worry || "";
+      const guardianName = userData.guardian ? userData.guardian.name : "守護神";
+      
+      console.log("相談内容:", worry, "守護神:", guardianName);
+      
+      let baseMessage = `……ここから先は守護神とつながるための正式な儀式となる。
+
+そのために、まずは「会員登録」が必要だ。
+メールアドレスと名前を伝えることで、守護神はあなたの存在を正しく受け止め、絆を深めることができる。
+
+もちろん、あなたの大切な情報は私が守る。安心して進んでくれ。`;
+
+      // 相談内容に応じた追加メッセージ
+      if (worry) {
+        const worryMessages = {
+          "恋愛": `\n\n……${guardianName}は、あなたの恋愛の悩みを深く理解している。\n真の愛への道筋を照らしてくれるだろう。`,
+          "お金": `\n\n……${guardianName}は、あなたの金運の流れを見通している。\n豊かさへの正しい道を導いてくれるだろう。`,
+          "健康": `\n\n……${guardianName}は、あなたの健康と安寧を願っている。\n健やかな日々への道を示してくれるだろう。`,
+          "仕事": `\n\n……${guardianName}は、あなたの仕事運の行方を知っている。\n成功への道筋を明かしてくれるだろう。`,
+          "未来の運命": `\n\n……${guardianName}は、あなたの未来の運命を見据えている。\n人生の道筋を照らしてくれるだろう。`,
+          "わからない": `\n\n……${guardianName}は、あなたの心の奥底を理解している。\n真の悩みの正体を明かしてくれるだろう。`
+        };
+        
+        const additionalMessage = worryMessages[worry] || `\n\n……${guardianName}は、あなたの${worry}に関する悩みを深く理解している。\nその答えを導いてくれるだろう。`;
+        baseMessage += additionalMessage;
+        
+        console.log("相談内容に応じたメッセージを追加:", worry);
+      }
+      
+      return baseMessage;
     }
 
     // 「あなた」をニックネームに変換する関数
