@@ -292,29 +292,39 @@
             
             // テーブル作成フォーム
             document.getElementById('createTableForm').addEventListener('submit', function(e) {
-                e.preventDefault();
+                if (e && e.preventDefault) {
+                    e.preventDefault();
+                }
                 console.log('フォーム送信が防止されました');
             });
             
             // テーブル作成
             createTableBtn.addEventListener('click', function(e) {
-                e.preventDefault();
                 console.log('=== テーブル作成ボタンがクリックされました ===');
                 console.log('Event:', e);
                 console.log('Button element:', this);
+                
+                if (e && e.preventDefault) {
+                    e.preventDefault();
+                }
+                
                 createTable();
             });
             
             // カテゴリー追加
             document.getElementById('addCategoryBtn').addEventListener('click', function(e) {
-                e.preventDefault();
+                if (e && e.preventDefault) {
+                    e.preventDefault();
+                }
                 console.log('カテゴリー追加ボタンがクリックされました');
                 addCategory();
             });
             
             // テーブル作成完了
             document.getElementById('finishTableBtn').addEventListener('click', function(e) {
-                e.preventDefault();
+                if (e && e.preventDefault) {
+                    e.preventDefault();
+                }
                 console.log('テーブル作成完了ボタンがクリックされました');
                 finishTableCreation();
             });
@@ -651,8 +661,18 @@
         
         // 上級者向けフォームの表示切り替え
         function toggleAdvancedForm() {
+            console.log('toggleAdvancedForm function called');
+            
             const advancedForm = document.getElementById('advancedTableForm');
             const toggleBtn = document.getElementById('toggleAdvancedBtn');
+            
+            console.log('advancedForm:', advancedForm);
+            console.log('toggleBtn:', toggleBtn);
+            
+            if (!advancedForm || !toggleBtn) {
+                console.error('Required elements not found in toggleAdvancedForm');
+                return;
+            }
             
             if (advancedForm.classList.contains('hidden')) {
                 advancedForm.classList.remove('hidden');
@@ -663,41 +683,6 @@
             }
         }
 
-        async function createTable(e) {
-            e.preventDefault();
-            
-            const tableName = document.getElementById('tableName').value;
-            const tableSchema = document.getElementById('tableSchema').value;
-            
-            if (!tableName || !tableSchema) {
-                alert('テーブル名とスキーマの両方を入力してください');
-                return;
-            }
-            
-            try {
-                const response = await fetch('/api/database-create-table', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        tableName: tableName,
-                        schema: tableSchema
-                    })
-                });
-                
-                const data = await response.json();
-                if (data.success) {
-                    showResult('テーブル "' + tableName + '" を作成しました', 'success');
-                    loadTables(); // テーブル一覧を更新
-                    document.getElementById('createTableForm').reset();
-                } else {
-                    showResult('エラー: ' + data.error, 'error');
-                }
-            } catch (error) {
-                showResult('エラー: ' + error.message, 'error');
-            }
-        }
 
         async function executeQuery() {
             const query = document.getElementById('sqlQuery').value.trim();
