@@ -571,8 +571,23 @@
     </footer>
   </div>
   
-  <script type="module">
-    import { guardians } from './js/guardians.js';
+  <script>
+    // グローバルスコープでuserDataを明示的に初期化
+    window.userData = {};
+    console.log("userDataを初期化:", window.userData);
+
+    // 守護神データを直接定義（importの代わり）
+    const guardians = {
+      "amida": { name: "阿弥陀如来", image: "photo/amida.png" },
+      "dainichi": { name: "大日如来", image: "photo/dainichi.png" },
+      "fudo": { name: "不動明王", image: "photo/fudo.png" },
+      "fugen": { name: "普賢菩薩", image: "photo/fugen.png" },
+      "kokuzo": { name: "虚空蔵菩薩", image: "photo/kokuzo.png" },
+      "monju": { name: "文殊菩薩", image: "photo/monju.png" },
+      "seishi": { name: "勢至菩薩", image: "photo/seishi.png" },
+      "senju": { name: "千手観音", image: "photo/senju.png" },
+      "yakushi": { name: "薬師如来", image: "photo/yakushi.png" }
+    };
 
     // ページ読み込み時の処理
     window.addEventListener("load", function() {
@@ -604,6 +619,8 @@
           worry: "" // 相談内容（後で設定）
         };
         
+        console.log("userDataを設定完了:", window.userData);
+        
         // 初期表示開始
         startInitialDisplay();
         
@@ -619,6 +636,7 @@
           guardian: { name: "守護神", image: "photo/ryu.png" },
           worry: ""
         };
+        console.log("エラー時のデフォルトuserData:", window.userData);
         // デフォルト表示開始
         startInitialDisplay();
       }
@@ -696,12 +714,17 @@
 
     // 鑑定開始ボタンのクリックイベント
     document.getElementById("startConsultationButton").addEventListener("click", function() {
+      console.log("鑑定開始ボタンがクリックされました");
+      console.log("現在のwindow.userData:", window.userData);
+      
       const selectedWorry = document.querySelector('input[name="worryType"]:checked');
       
       if (!selectedWorry) {
         alert("相談内容を選択してください。");
         return;
       }
+
+      console.log("選択された相談内容:", selectedWorry.value);
 
       if (!window.userData) {
         console.error("userDataが初期化されていません");
@@ -711,17 +734,23 @@
 
       // 相談内容を保存
       window.userData.worry = selectedWorry.value;
+      console.log("相談内容をuserDataに保存:", window.userData);
 
       // localStorageに保存
       try {
         localStorage.setItem("userData", JSON.stringify(window.userData));
         console.log("userDataをlocalStorageに保存:", window.userData);
+        
+        // 保存確認のための読み込みテスト
+        const savedData = localStorage.getItem("userData");
+        console.log("保存確認 - localStorageから読み込み:", savedData);
       } catch (e) {
         console.error("localStorage保存エラー:", e);
       }
 
       // 確実に保存完了後にページ遷移
       setTimeout(() => {
+        console.log("ページ遷移開始: explain.html");
         window.location.href = 'explain.html';
       }, 200);
     });
