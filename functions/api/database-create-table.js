@@ -31,12 +31,18 @@ export async function onRequestPost(context) {
       });
     }
 
+    // データベース接続確認
+    console.log("DB binding exists:", !!env.DB);
+    
     // CREATE TABLE文を実行
-    await env.DB.prepare(schema).run();
+    console.log("Executing SQL:", schema);
+    const result = await env.DB.prepare(schema).run();
+    console.log("SQL execution result:", result);
 
     return new Response(JSON.stringify({
       success: true,
-      message: `テーブル "${tableName}" を作成しました`
+      message: `テーブル "${tableName}" を作成しました`,
+      result: result
     }), {
       headers: { "Content-Type": "application/json" }
     });

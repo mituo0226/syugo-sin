@@ -16,16 +16,27 @@ export async function onRequestGet(context) {
 
     const tables = [];
     
-    for (const table of tablesResult.results) {
-      // 各行のテーブルの行数を取得
-      const countResult = await env.DB.prepare(`
-        SELECT COUNT(*) as count FROM ${table.name}
-      `).first();
-      
-      tables.push({
-        name: table.name,
-        rowCount: countResult.count || 0
-      });
+    if (tablesResult.results && tablesResult.results.length > 0) {
+      for (const table of tablesResult.results) {
+        try {
+          // 各行のテーブルの行数を取得
+          const countResult = await env.DB.prepare(`
+            SELECT COUNT(*) as count FROM ${table.name}
+          `).first();
+          
+          tables.push({
+            name: table.name,
+            rowCount: countResult ? countResult.count || 0 : 0
+          });
+        } catch (countError) {
+          console.error(`Error counting rows for table ${table.name}:`, countError);
+          // 行数取得に失敗してもテーブル名は追加
+          tables.push({
+            name: table.name,
+            rowCount: 0
+          });
+        }
+      }
     }
 
     return new Response(JSON.stringify({
