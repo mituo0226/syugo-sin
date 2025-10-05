@@ -702,26 +702,28 @@
         alert("相談内容を選択してください。");
         return;
       }
-      
-      // userDataが初期化されているかチェック
+
       if (!window.userData) {
         console.error("userDataが初期化されていません");
         alert("エラーが発生しました。ページを再読み込みしてください。");
         return;
       }
-      
+
       // 相談内容を保存
       window.userData.worry = selectedWorry.value;
-      
-      // localStorageにuserDataを保存
-      localStorage.setItem("userData", JSON.stringify(window.userData));
-      
-      console.log("鑑定開始ボタンがクリックされました");
-      console.log("相談内容:", selectedWorry.value);
-      console.log("userDataをlocalStorageに保存:", window.userData);
-      
-      // explain.htmlに遷移
-      window.location.href = 'explain.html';
+
+      // localStorageに保存
+      try {
+        localStorage.setItem("userData", JSON.stringify(window.userData));
+        console.log("userDataをlocalStorageに保存:", window.userData);
+      } catch (e) {
+        console.error("localStorage保存エラー:", e);
+      }
+
+      // 確実に保存完了後にページ遷移
+      setTimeout(() => {
+        window.location.href = 'explain.html';
+      }, 200);
     });
   </script>
 </body>
