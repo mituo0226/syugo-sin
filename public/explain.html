@@ -496,9 +496,10 @@
         const birthMonth = urlParams.get('birthMonth');
         const birthDay = urlParams.get('birthDay');
         const guardianKey = urlParams.get('guardianKey');
+        const worry = urlParams.get('worry');
         
         console.log("explain.html - URLパラメータから取得したデータ:", {
-          nickname, birthYear, birthMonth, birthDay, guardianKey
+          nickname, birthYear, birthMonth, birthDay, guardianKey, worry
         });
         
         // 5. userDataが不完全な場合、URLパラメータで補完
@@ -510,6 +511,10 @@
           console.log("explain.html - localStorageのguardianKeyが不足、URLパラメータから補完");
           userData.guardianKey = guardianKey;
           userData.guardian = guardians[guardianKey] || { name: "守護神", image: "photo/ryu.png" };
+        }
+        if (!userData.worry && worry) {
+          console.log("explain.html - localStorageのworryが不足、URLパラメータから補完");
+          userData.worry = worry;
         }
         
         // 6. 相談内容（カテゴリー）の確認

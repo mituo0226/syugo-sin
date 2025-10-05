@@ -748,13 +748,19 @@
         console.error("localStorage保存エラー:", e);
       }
 
-      // 確実に保存完了後にページ遷移（URLパラメータを保持）
+      // 確実に保存完了後にページ遷移（URLパラメータを保持し、相談内容を追加）
       setTimeout(() => {
         console.log("ページ遷移開始: explain.html");
         
-        // URLパラメータを保持して遷移
+        // URLパラメータを保持し、相談内容を追加
         const urlParams = new URLSearchParams(window.location.search);
-        const explainUrl = `explain.html${urlParams.toString() ? '?' + urlParams.toString() : ''}`;
+        
+        // 相談内容をURLパラメータに追加
+        urlParams.set('worry', selectedWorry.value);
+        console.log("相談内容をURLパラメータに追加:", selectedWorry.value);
+        console.log("更新されたURLパラメータ:", urlParams.toString());
+        
+        const explainUrl = `explain.html?${urlParams.toString()}`;
         console.log("遷移先URL:", explainUrl);
         
         window.location.href = explainUrl;
