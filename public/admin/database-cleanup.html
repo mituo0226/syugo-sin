@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>データベース整理 - 守護神占い</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: white;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 30px;
+      border-radius: 15px;
+      border: 1px solid rgba(102, 204, 255, 0.3);
+    }
+    
+    h1 {
+      color: #66ccff;
+      text-align: center;
+      margin-bottom: 30px;
+      text-shadow: 0 0 20px rgba(102, 204, 255, 0.6);
+    }
+    
+    .section {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(102, 204, 255, 0.2);
+    }
+    
+    .section-title {
+      color: #66ccff;
+      font-size: 18px;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+    
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .info-card {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 4px solid #66ccff;
+    }
+    
+    .info-label {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+    
+    .info-value {
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    
+    button {
+      background: #66ccff;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 5px;
+      transition: all 0.3s ease;
+    }
+    
+    button:hover {
+      background: #4db8ff;
+      transform: translateY(-2px);
+    }
+    
+    button.danger {
+      background: #ff4444;
+    }
+    
+    button.danger:hover {
+      background: #ff6666;
+    }
+    
+    button:disabled {
+      background: #555;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .log {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border-radius: 5px;
+      max-height: 400px;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      margin-top: 15px;
+    }
+    
+    .log-entry {
+      margin-bottom: 5px;
+      padding: 5px;
+      border-left: 3px solid transparent;
+    }
+    
+    .log-info {
+      border-left-color: #66ccff;
+      color: #66ccff;
+    }
+    
+    .log-success {
+      border-left-color: #00ff00;
+      color: #00ff00;
+    }
+    
+    .log-error {
+      border-left-color: #ff0000;
+      color: #ff0000;
+    }
+    
+    .log-warning {
+      border-left-color: #ffaa00;
+      color: #ffaa00;
+    }
+    
+    .data-display {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .status-active {
+      color: #00ff00;
+    }
+    
+    .status-inactive {
+      color: #ffaa00;
+    }
+    
+    .status-empty {
+      color: #ff4444;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🗄️ データベース整理・管理</h1>
+    
+    <!-- 現在のデータベース状況 -->
+    <div class="section">
+      <div class="section-title">📊 現在のデータベース状況</div>
+      <div id="databaseInfo" class="info-grid">
+        <div class="info-card">
+          <div class="info-label">データベース名</div>
+          <div class="info-value">読み込み中...</div>
+        </div>
+        <div class="info-card">
+          <div class="info-label">環境</div>
+          <div class="info-value">読み込み中...</div>
+        </div>
+        <div class="info-card">
+          <div class="info-label">テーブル数</div>
+          <div class="info-value">読み込み中...</div>
+        </div>
+        <div class="info-card">
+          <div class="info-label">総行数</div>
+          <div class="info-value">読み込み中...</div>
+        </div>
+      </div>
+      <button onclick="loadDatabaseStatus()">データベース状況を更新</button>
+    </div>
+    
+    <!-- テーブル詳細 -->
+    <div class="section">
+      <div class="section-title">📋 テーブル詳細</div>
+      <div id="tableDetails"></div>
+    </div>
+    
+    <!-- ユーザーデータ管理 -->
+    <div class="section">
+      <div class="section-title">👥 ユーザーデータ管理</div>
+      <div id="userDataInfo"></div>
+      <button onclick="viewUserData()">ユーザーデータを表示</button>
+      <button onclick="clearTestData()" class="danger">テストデータを削除</button>
+    </div>
+    
+    <!-- ログ表示 -->
+    <div class="section">
+      <div class="section-title">📋 実行ログ</div>
+      <div id="logDisplay" class="log"></div>
+      <button onclick="clearLog()">ログをクリア</button>
+    </div>
+  </div>
+  
+  <script>
+    function log(message, type = 'info') {
+      const logDisplay = document.getElementById('logDisplay');
+      const entry = document.createElement('div');
+      entry.className = `log-entry log-${type}`;
+      const timestamp = new Date().toLocaleTimeString('ja-JP');
+      entry.textContent = `[${timestamp}] ${message}`;
+      logDisplay.appendChild(entry);
+      logDisplay.scrollTop = logDisplay.scrollHeight;
+      console.log(message);
+    }
+    
+    function clearLog() {
+      document.getElementById('logDisplay').innerHTML = '';
+      log('ログをクリアしました', 'info');
+    }
+    
+    async function loadDatabaseStatus() {
+      try {
+        log('=== データベース状況を読み込み中 ===', 'info');
+        
+        const response = await fetch('/api/database-status');
+        const result = await response.json();
+        
+        if (result.success) {
+          log('✅ データベース状況を取得しました', 'success');
+          
+          // データベース基本情報を更新
+          const infoCards = document.querySelectorAll('#databaseInfo .info-value');
+          infoCards[0].textContent = result.database.databaseName;
+          infoCards[1].textContent = result.database.environment;
+          infoCards[2].textContent = result.summary.totalTables;
+          infoCards[3].textContent = result.summary.totalRows;
+          
+          // テーブル詳細を表示
+          displayTableDetails(result.tableStats);
+          
+          // ユーザーデータ情報を表示
+          displayUserDataInfo(result.userProfiles);
+          
+          log(`データベース: ${result.database.databaseName}`, 'info');
+          log(`環境: ${result.database.environment}`, 'info');
+          log(`テーブル数: ${result.summary.totalTables}`, 'info');
+          log(`総行数: ${result.summary.totalRows}`, 'info');
+          
+        } else {
+          log('❌ エラー: ' + result.error, 'error');
+        }
+        
+      } catch (error) {
+        log('❌ 例外エラー: ' + error.message, 'error');
+      }
+    }
+    
+    function displayTableDetails(tableStats) {
+      const container = document.getElementById('tableDetails');
+      let html = '<div class="info-grid">';
+      
+      tableStats.forEach(table => {
+        const statusClass = table.rowCount > 0 ? 'status-active' : 'status-empty';
+        html += `
+          <div class="info-card">
+            <div class="info-label">${table.name}</div>
+            <div class="info-value ${statusClass}">${table.rowCount} 行</div>
+          </div>
+        `;
+      });
+      
+      html += '</div>';
+      container.innerHTML = html;
+    }
+    
+    function displayUserDataInfo(userProfiles) {
+      const container = document.getElementById('userDataInfo');
+      
+      if (userProfiles && !userProfiles.error) {
+        container.innerHTML = `
+          <div class="info-grid">
+            <div class="info-card">
+              <div class="info-label">総ユーザー数</div>
+              <div class="info-value">${userProfiles.totalUsers}</div>
+            </div>
+            <div class="info-card">
+              <div class="info-label">認証済みユーザー</div>
+              <div class="info-value status-active">${userProfiles.verifiedUsers}</div>
+            </div>
+            <div class="info-card">
+              <div class="info-label">アクティブユーザー</div>
+              <div class="info-value status-active">${userProfiles.activeUsers}</div>
+            </div>
+          </div>
+        `;
+      } else {
+        container.innerHTML = '<p class="status-empty">ユーザーデータが見つかりません</p>';
+      }
+    }
+    
+    async function viewUserData() {
+      try {
+        log('=== ユーザーデータを表示中 ===', 'info');
+        
+        const response = await fetch('/api/database-execute', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            query: 'SELECT * FROM user_profiles ORDER BY created_at DESC LIMIT 10'
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          log('✅ ユーザーデータを取得しました', 'success');
+          
+          const display = document.createElement('div');
+          display.className = 'data-display';
+          display.textContent = JSON.stringify(result.results, null, 2);
+          
+          // 既存の表示を削除して新しい表示を追加
+          const existing = document.getElementById('userDataDisplay');
+          if (existing) existing.remove();
+          
+          display.id = 'userDataDisplay';
+          document.getElementById('userDataInfo').appendChild(display);
+          
+        } else {
+          log('❌ エラー: ' + result.error, 'error');
+        }
+        
+      } catch (error) {
+        log('❌ 例外エラー: ' + error.message, 'error');
+      }
+    }
+    
+    async function clearTestData() {
+      if (!confirm('テストデータを削除しますか？この操作は取り消せません。')) {
+        return;
+      }
+      
+      try {
+        log('=== テストデータ削除開始 ===', 'warning');
+        
+        const response = await fetch('/api/database-execute', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            query: "DELETE FROM user_profiles WHERE user_id LIKE '%test%' OR user_id LIKE '%example%'"
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          log('✅ テストデータを削除しました', 'success');
+          log(`削除された行数: ${result.changes}`, 'info');
+          loadDatabaseStatus(); // 状況を更新
+        } else {
+          log('❌ エラー: ' + result.error, 'error');
+        }
+        
+      } catch (error) {
+        log('❌ 例外エラー: ' + error.message, 'error');
+      }
+    }
+    
+    // 初期表示
+    window.addEventListener('load', function() {
+      log('🗄️ データベース管理ページが読み込まれました', 'info');
+      loadDatabaseStatus();
+    });
+  </script>
+</body>
+</html>
