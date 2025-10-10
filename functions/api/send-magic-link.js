@@ -73,41 +73,68 @@ export async function onRequestPost(context) {
       console.log('token:', token);
       console.log('localData:', localData);
       
-      const result = await env.DB.prepare(`
-        INSERT INTO user_profiles (
-          user_id, nickname, birth_year, birth_month, birth_day,
-          guardian_key, guardian_name, worry, registration_info,
-          magic_link_token, magic_link_created_at, magic_link_used,
-          is_verified, is_active, created_at
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), 0, 0, 1, datetime('now'))
-        ON CONFLICT(user_id) DO UPDATE SET
-          nickname = excluded.nickname,
-          birth_year = excluded.birth_year,
-          birth_month = excluded.birth_month,
-          birth_day = excluded.birth_day,
-          guardian_key = excluded.guardian_key,
-          guardian_name = excluded.guardian_name,
-          worry = excluded.worry,
-          registration_info = excluded.registration_info,
-          magic_link_token = excluded.magic_link_token,
-          magic_link_created_at = excluded.magic_link_created_at,
-          magic_link_used = 0,
-          is_verified = 0,
-          is_active = 1,
-          created_at = excluded.created_at
-      `).bind(
-        email,                                    // user_id
-        localData.nickname || '',                // nickname
-        localData.birthYear || '',               // birth_year
-        localData.birthMonth || '',              // birth_month
-        localData.birthDay || '',                // birth_day
-        localData.guardianKey || '',             // guardian_key
-        localData.guardian ? localData.guardian.name : '', // guardian_name
-        localData.worry || '',                   // worry
-        JSON.stringify(localData),               // registration_info
-        token                                     // magic_link_token
-      ).run();
+      // 既存ユーザーの確認
+      const existingUser = await env.DB.prepare(`
+        SELECT id FROM user_profiles WHERE user_id = ?
+      `).bind(email).first();
+
+      let result;
+      if (existingUser) {
+        console.log('既存ユーザーが見つかりました、更新処理を実行');
+        // 既存ユーザーの更新
+        result = await env.DB.prepare(`
+          UPDATE user_profiles SET
+            nickname = ?,
+            birth_year = ?,
+            birth_month = ?,
+            birth_day = ?,
+            guardian_key = ?,
+            guardian_name = ?,
+            worry = ?,
+            registration_info = ?,
+            magic_link_token = ?,
+            magic_link_created_at = datetime('now'),
+            magic_link_used = 0,
+            is_verified = 0,
+            is_active = 1,
+            created_at = datetime('now')
+          WHERE user_id = ?
+        `).bind(
+          localData.nickname || '',
+          localData.birthYear || '',
+          localData.birthMonth || '',
+          localData.birthDay || '',
+          localData.guardianKey || '',
+          localData.guardian ? localData.guardian.name : '',
+          localData.worry || '',
+          JSON.stringify(localData),
+          token,
+          email
+        ).run();
+      } else {
+        console.log('新規ユーザーとして登録処理を実行');
+        // 新規ユーザーの挿入
+        result = await env.DB.prepare(`
+          INSERT INTO user_profiles (
+            user_id, nickname, birth_year, birth_month, birth_day,
+            guardian_key, guardian_name, worry, registration_info,
+            magic_link_token, magic_link_created_at, magic_link_used,
+            is_verified, is_active, created_at
+          )
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), 0, 0, 1, datetime('now'))
+        `).bind(
+          email,
+          localData.nickname || '',
+          localData.birthYear || '',
+          localData.birthMonth || '',
+          localData.birthDay || '',
+          localData.guardianKey || '',
+          localData.guardian ? localData.guardian.name : '',
+          localData.worry || '',
+          JSON.stringify(localData),
+          token
+        ).run();
+      }
       
       console.log('D1データベース保存結果:', result);
       console.log('✅ ユーザーデータをD1に保存しました');
