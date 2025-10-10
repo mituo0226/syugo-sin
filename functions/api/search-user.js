@@ -45,21 +45,21 @@ export async function onRequestPost(context) {
     let query;
     let bindParams = [];
 
-    // 検索タイプに応じてクエリを構築
+    // 検索タイプに応じてクエリを構築（user_profilesテーブルを使用）
     if (searchType === "email" && email) {
-      query = "SELECT * FROM users WHERE email = ?";
+      query = "SELECT * FROM user_profiles WHERE user_id = ?";
       bindParams = [email];
     } else if (searchType === "nickname" && nickname) {
-      query = "SELECT * FROM users WHERE nickname LIKE ?";
+      query = "SELECT * FROM user_profiles WHERE nickname LIKE ?";
       bindParams = [`%${nickname}%`];
     } else if (searchType === "birthdate" && birthdate) {
-      query = "SELECT * FROM users WHERE birthdate = ?";
+      query = "SELECT * FROM user_profiles WHERE birth_year || '/' || birth_month || '/' || birth_day = ?";
       bindParams = [birthdate];
     } else {
       // 複数条件検索
       let conditions = [];
       if (email) {
-        conditions.push("email = ?");
+        conditions.push("user_id = ?");
         bindParams.push(email);
       }
       if (nickname) {
@@ -67,10 +67,10 @@ export async function onRequestPost(context) {
         bindParams.push(`%${nickname}%`);
       }
       if (birthdate) {
-        conditions.push("birthdate = ?");
+        conditions.push("birth_year || '/' || birth_month || '/' || birth_day = ?");
         bindParams.push(birthdate);
       }
-      query = `SELECT * FROM users WHERE ${conditions.join(" AND ")}`;
+      query = `SELECT * FROM user_profiles WHERE ${conditions.join(" AND ")}`;
     }
 
     console.log("Executing query:", query, "with params:", bindParams);
@@ -103,59 +103,27 @@ export async function onRequestPost(context) {
       return guardianMap[guardianKey] || '守護神';
     }
 
-    // ユーザーデータを整形（守護神情報を含む）
-    const formattedUsers = await Promise.all(users.results.map(async (user) => {
-      let guardianName = '未設定';
-      let guardianKey = null;
-      let birthdate = user.birthdate;
-      let worryType = user.theme;
+    // ユーザーデータを整形（user_profilesテーブルから直接取得）
+    const formattedUsers = users.results.map((user) => {
+      let guardianName = user.guardian_name || '未設定';
+      let guardianKey = user.guardian_key;
+      let birthdate = '';
+      let worryType = user.worry || '未設定';
       
-      // user_profilesテーブルから詳細情報を取得
-      try {
-        const userProfile = await env.DB.prepare(`
-          SELECT * FROM user_profiles WHERE user_id = ?
-        `).bind(user.id).first();
-        
-        if (userProfile) {
-          console.log(`User profile found for user ${user.id}:`, userProfile);
-          
-          // 守護神情報を取得
-          guardianKey = userProfile.guardian_key;
-          guardianName = userProfile.guardian_name || '未設定';
-          
-          // 生年月日を組み立て
-          if (userProfile.birth_year && userProfile.birth_month && userProfile.birth_day) {
-            birthdate = `${userProfile.birth_year}/${userProfile.birth_month}/${userProfile.birth_day}`;
-          }
-          
-          // 悩みの相談内容を取得
-          worryType = userProfile.worry_type || user.theme;
-          
-          // guardian_keyがオブジェクト形式の場合の処理
-          if (typeof guardianKey === 'object' && guardianKey !== null) {
-            console.log("guardian_keyがオブジェクト形式です:", guardianKey);
-            guardianKey = guardianKey.name || guardianKey.key || guardianKey.guardian_key || null;
-            console.log("変換後のguardian_key:", guardianKey);
-          }
-          
-          // guardian_nameが無い場合は、guardian_keyから変換
-          if (!guardianName || guardianName === '未設定') {
-            if (guardianKey && typeof guardianKey === 'string') {
-              guardianName = getGuardianName(guardianKey);
-            }
-          }
-        } else {
-          console.log(`No user profile found for user ${user.id}`);
-          // user_profilesテーブルにデータがない場合は、usersテーブルのguardian_idを使用
-          guardianKey = user.guardian_id;
-          if (guardianKey && typeof guardianKey === 'string') {
-            guardianName = getGuardianName(guardianKey);
-          }
-        }
-      } catch (profileError) {
-        console.error(`Error fetching user profile for user ${user.id}:`, profileError);
-        // エラーの場合は、usersテーブルのguardian_idを使用
-        guardianKey = user.guardian_id;
+      // 生年月日を組み立て
+      if (user.birth_year && user.birth_month && user.birth_day) {
+        birthdate = `${user.birth_year}/${user.birth_month}/${user.birth_day}`;
+      }
+      
+      // guardian_keyがオブジェクト形式の場合の処理
+      if (typeof guardianKey === 'object' && guardianKey !== null) {
+        console.log("guardian_keyがオブジェクト形式です:", guardianKey);
+        guardianKey = guardianKey.name || guardianKey.key || guardianKey.guardian_key || null;
+        console.log("変換後のguardian_key:", guardianKey);
+      }
+      
+      // guardian_nameが無い場合は、guardian_keyから変換
+      if (!guardianName || guardianName === '未設定') {
         if (guardianKey && typeof guardianKey === 'string') {
           guardianName = getGuardianName(guardianKey);
         }
@@ -163,16 +131,17 @@ export async function onRequestPost(context) {
       
       return {
         id: user.id,
-        email: user.email,
+        email: user.user_id, // user_profilesテーブルではuser_idがメールアドレス
         nickname: user.nickname,
         birthdate: birthdate,
-        guardian_id: user.guardian_id,
         guardian_key: guardianKey,
         guardian_name: guardianName,
-        theme: worryType,
+        worry: worryType,
+        is_verified: user.is_verified,
+        is_active: user.is_active,
         created_at: user.created_at
       };
-    }));
+    });
 
     console.log("Formatted users:", formattedUsers);
 
