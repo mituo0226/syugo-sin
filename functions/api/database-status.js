@@ -46,11 +46,23 @@ export async function onRequestGet(context) {
           rowCount: countResult ? countResult.count : 0
         });
       } catch (error) {
-        tableStats.push({
-          name: tableName,
-          rowCount: 0,
-          error: error.message
-        });
+        // システムテーブルのアクセス制限エラーを特別処理
+        if (error.message.includes('SQLITE_AUTH') && (tableName.startsWith('_cf_') || tableName.startsWith('sqlite_'))) {
+          tableStats.push({
+            name: tableName,
+            rowCount: '制限',
+            isSystemTable: true,
+            accessRestricted: true,
+            message: 'システムテーブル（アクセス制限）'
+          });
+          console.log(`システムテーブル ${tableName} はアクセス制限されています（正常）`);
+        } else {
+          tableStats.push({
+            name: tableName,
+            rowCount: 0,
+            error: error.message
+          });
+        }
       }
     }
 

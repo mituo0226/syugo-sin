@@ -171,6 +171,10 @@
       color: #ff4444;
     }
     
+    .status-restricted {
+      color: #ffaa00;
+    }
+    
     .table-structure-card {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(102, 204, 255, 0.3);
@@ -451,11 +455,23 @@
       let html = '<div class="info-grid">';
       
       tableStats.forEach(table => {
-        const statusClass = table.rowCount > 0 ? 'status-active' : 'status-empty';
+        let statusClass, displayText;
+        
+        if (table.accessRestricted) {
+          statusClass = 'status-restricted';
+          displayText = 'アクセス制限';
+        } else if (table.rowCount > 0) {
+          statusClass = 'status-active';
+          displayText = `${table.rowCount} 行`;
+        } else {
+          statusClass = 'status-empty';
+          displayText = `${table.rowCount} 行`;
+        }
+        
         html += `
           <div class="info-card">
             <div class="info-label">${table.name}</div>
-            <div class="info-value ${statusClass}">${table.rowCount} 行</div>
+            <div class="info-value ${statusClass}">${displayText}</div>
           </div>
         `;
       });
