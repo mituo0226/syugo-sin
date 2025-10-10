@@ -16,8 +16,8 @@ async function deleteRelatedData(user, db) {
     for (const table of tables.results || []) {
       const tableName = table.name;
       
-      // usersテーブル自体は最後に削除するのでスキップ
-      if (tableName === 'users') {
+      // user_profilesテーブル自体は最後に削除するのでスキップ
+      if (tableName === 'user_profiles') {
         continue;
       }
       
@@ -114,10 +114,10 @@ export async function onRequestPost(context) {
 
     if (userId) {
       console.log("Searching user by ID:", userId);
-      // ユーザーIDでユーザーを検索
+      // ユーザーIDでユーザーを検索（user_profilesテーブルを使用）
       try {
         user = await env.DB.prepare(`
-          SELECT * FROM users WHERE id = ?
+          SELECT * FROM user_profiles WHERE id = ?
         `).bind(userId).first();
         console.log("User found by ID:", user);
       } catch (dbError) {
@@ -130,14 +130,14 @@ export async function onRequestPost(context) {
       }
 
       // ユーザーを削除（退会処理）
-      deleteQuery = `DELETE FROM users WHERE id = ?`;
+      deleteQuery = `DELETE FROM user_profiles WHERE id = ?`;
       bindParams = [userId];
     } else {
       console.log("Searching user by email:", email);
-      // メールアドレスでユーザーを検索
+      // メールアドレスでユーザーを検索（user_profilesテーブルを使用）
       try {
         user = await env.DB.prepare(`
-          SELECT * FROM users WHERE email = ?
+          SELECT * FROM user_profiles WHERE user_id = ?
         `).bind(email).first();
         console.log("User found by email:", user);
       } catch (dbError) {
@@ -150,7 +150,7 @@ export async function onRequestPost(context) {
       }
 
       // ユーザーを削除（退会処理）
-      deleteQuery = `DELETE FROM users WHERE email = ?`;
+      deleteQuery = `DELETE FROM user_profiles WHERE user_id = ?`;
       bindParams = [email];
     }
 
@@ -175,11 +175,11 @@ export async function onRequestPost(context) {
     return createSuccessResponse({ 
       success: true,
       message: "退会処理が完了しました",
-      email: user.email,
+      email: user.user_id, // user_profilesテーブルではuser_idがメールアドレス
       deleted_user: {
         id: user.id,
         nickname: user.nickname,
-        email: user.email
+        email: user.user_id // user_profilesテーブルではuser_idがメールアドレス
       }
     }, corsHeaders);
 
