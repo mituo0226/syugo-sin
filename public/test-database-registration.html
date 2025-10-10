@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>データベース登録テスト - 守護神占い</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: white;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 30px;
+      border-radius: 15px;
+      border: 1px solid rgba(102, 204, 255, 0.3);
+    }
+    
+    h1 {
+      color: #66ccff;
+      text-align: center;
+      margin-bottom: 30px;
+      text-shadow: 0 0 20px rgba(102, 204, 255, 0.6);
+    }
+    
+    .section {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(102, 204, 255, 0.2);
+    }
+    
+    .section-title {
+      color: #66ccff;
+      font-size: 18px;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid rgba(102, 204, 255, 0.3);
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 14px;
+    }
+    
+    button {
+      background: #66ccff;
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+    }
+    
+    button:hover {
+      background: #4db8ff;
+      transform: translateY(-2px);
+    }
+    
+    button:disabled {
+      background: #555;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .log {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border-radius: 5px;
+      max-height: 400px;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      margin-top: 15px;
+    }
+    
+    .log-entry {
+      margin-bottom: 5px;
+      padding: 5px;
+      border-left: 3px solid transparent;
+    }
+    
+    .log-info {
+      border-left-color: #66ccff;
+      color: #66ccff;
+    }
+    
+    .log-success {
+      border-left-color: #00ff00;
+      color: #00ff00;
+    }
+    
+    .log-error {
+      border-left-color: #ff0000;
+      color: #ff0000;
+    }
+    
+    .log-warning {
+      border-left-color: #ffaa00;
+      color: #ffaa00;
+    }
+    
+    .data-display {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 データベース登録テスト</h1>
+    
+    <!-- テストデータ入力セクション -->
+    <div class="section">
+      <div class="section-title">📝 テストデータ入力</div>
+      <div class="form-group">
+        <label>ニックネーム</label>
+        <input type="text" id="nickname" value="テスト太郎">
+      </div>
+      <div class="form-group">
+        <label>生年</label>
+        <input type="number" id="birthYear" value="1990">
+      </div>
+      <div class="form-group">
+        <label>生月</label>
+        <input type="number" id="birthMonth" value="5" min="1" max="12">
+      </div>
+      <div class="form-group">
+        <label>生日</label>
+        <input type="number" id="birthDay" value="15" min="1" max="31">
+      </div>
+      <div class="form-group">
+        <label>守護神キー</label>
+        <select id="guardianKey">
+          <option value="senju">千手観音</option>
+          <option value="kokuzo">虚空蔵菩薩</option>
+          <option value="monju">文殊菩薩</option>
+          <option value="fugen">普賢菩薩</option>
+          <option value="seishi">勢至菩薩</option>
+          <option value="dainichi">大日如来</option>
+          <option value="fudo">不動明王</option>
+          <option value="amida">阿弥陀如来</option>
+          <option value="yakushi">薬師如来</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>相談内容</label>
+        <select id="worry">
+          <option value="恋愛">恋愛</option>
+          <option value="お金">お金</option>
+          <option value="健康">健康</option>
+          <option value="仕事">仕事</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>メールアドレス</label>
+        <input type="email" id="email" value="test@example.com">
+      </div>
+      <button onclick="setTestData()">このデータをlocalStorageにセット</button>
+      <button onclick="sendToDatabase()">データベースに登録してマジックリンク送信</button>
+    </div>
+    
+    <!-- localStorage表示セクション -->
+    <div class="section">
+      <div class="section-title">💾 localStorage内容</div>
+      <div id="localStorageDisplay" class="data-display">
+        （まだデータがありません）
+      </div>
+      <button onclick="displayLocalStorage()">localStorageを表示</button>
+      <button onclick="clearLocalStorage()">localStorageをクリア</button>
+    </div>
+    
+    <!-- ログ表示セクション -->
+    <div class="section">
+      <div class="section-title">📋 実行ログ</div>
+      <div id="logDisplay" class="log"></div>
+      <button onclick="clearLog()">ログをクリア</button>
+    </div>
+  </div>
+  
+  <script>
+    const guardianNames = {
+      'senju': '千手観音',
+      'kokuzo': '虚空蔵菩薩',
+      'monju': '文殊菩薩',
+      'fugen': '普賢菩薩',
+      'seishi': '勢至菩薩',
+      'dainichi': '大日如来',
+      'fudo': '不動明王',
+      'amida': '阿弥陀如来',
+      'yakushi': '薬師如来'
+    };
+    
+    function log(message, type = 'info') {
+      const logDisplay = document.getElementById('logDisplay');
+      const entry = document.createElement('div');
+      entry.className = `log-entry log-${type}`;
+      const timestamp = new Date().toLocaleTimeString('ja-JP');
+      entry.textContent = `[${timestamp}] ${message}`;
+      logDisplay.appendChild(entry);
+      logDisplay.scrollTop = logDisplay.scrollHeight;
+      console.log(message);
+    }
+    
+    function clearLog() {
+      document.getElementById('logDisplay').innerHTML = '';
+      log('ログをクリアしました', 'info');
+    }
+    
+    function setTestData() {
+      try {
+        const nickname = document.getElementById('nickname').value;
+        const birthYear = document.getElementById('birthYear').value;
+        const birthMonth = document.getElementById('birthMonth').value;
+        const birthDay = document.getElementById('birthDay').value;
+        const guardianKey = document.getElementById('guardianKey').value;
+        const worry = document.getElementById('worry').value;
+        const email = document.getElementById('email').value;
+        
+        const userData = {
+          nickname: nickname,
+          birthYear: birthYear,
+          birthMonth: birthMonth,
+          birthDay: birthDay,
+          guardianKey: guardianKey,
+          guardian: {
+            name: guardianNames[guardianKey],
+            image: `photo/${guardianKey}.png`
+          },
+          worry: worry,
+          email: email
+        };
+        
+        localStorage.setItem('userData', JSON.stringify(userData));
+        log('✅ localStorageにデータをセットしました', 'success');
+        log(JSON.stringify(userData, null, 2), 'info');
+        displayLocalStorage();
+      } catch (error) {
+        log('❌ エラー: ' + error.message, 'error');
+      }
+    }
+    
+    function displayLocalStorage() {
+      try {
+        const userData = localStorage.getItem('userData');
+        const display = document.getElementById('localStorageDisplay');
+        
+        if (userData) {
+          const parsed = JSON.parse(userData);
+          display.textContent = JSON.stringify(parsed, null, 2);
+          log('localStorageの内容を表示しました', 'info');
+        } else {
+          display.textContent = '（まだデータがありません）';
+          log('localStorageにデータがありません', 'warning');
+        }
+      } catch (error) {
+        log('❌ エラー: ' + error.message, 'error');
+      }
+    }
+    
+    function clearLocalStorage() {
+      localStorage.removeItem('userData');
+      document.getElementById('localStorageDisplay').textContent = '（まだデータがありません）';
+      log('localStorageをクリアしました', 'info');
+    }
+    
+    async function sendToDatabase() {
+      try {
+        log('=== データベース登録処理開始 ===', 'info');
+        
+        const email = document.getElementById('email').value;
+        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        
+        if (!userData.nickname) {
+          log('❌ エラー: 先にlocalStorageにデータをセットしてください', 'error');
+          return;
+        }
+        
+        log('送信データ:', 'info');
+        log('email: ' + email, 'info');
+        log('localData: ' + JSON.stringify(userData, null, 2), 'info');
+        
+        log('API呼び出し中...', 'info');
+        const response = await fetch('/api/send-magic-link', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            localData: userData
+          })
+        });
+        
+        log('API応答ステータス: ' + response.status + ' ' + response.statusText, 'info');
+        
+        const result = await response.json();
+        log('API応答結果: ' + JSON.stringify(result, null, 2), 'info');
+        
+        if (response.ok && result.success) {
+          log('✅ データベース登録とマジックリンク送信に成功しました', 'success');
+          log('生成されたトークン: ' + result.token, 'success');
+          alert('成功！メールを確認してください。');
+        } else {
+          log('❌ エラー: ' + (result.error || '不明なエラー'), 'error');
+          if (result.details) {
+            log('詳細: ' + result.details, 'error');
+          }
+          if (result.stack) {
+            log('スタック: ' + result.stack, 'error');
+          }
+          alert('エラー: ' + (result.error || '不明なエラー'));
+        }
+        
+      } catch (error) {
+        log('❌ 例外エラー: ' + error.message, 'error');
+        log('スタック: ' + error.stack, 'error');
+        alert('エラー: ' + error.message);
+      }
+    }
+    
+    // 初期表示
+    window.addEventListener('load', function() {
+      log('🧪 テストページが読み込まれました', 'info');
+      displayLocalStorage();
+    });
+  </script>
+</body>
+</html>
