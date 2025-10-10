@@ -76,6 +76,13 @@
       font-weight: bold;
     }
     
+    .info-description {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 12px;
+      margin-top: 5px;
+      line-height: 1.4;
+    }
+    
     button {
       background: #66ccff;
       color: white;
@@ -379,14 +386,6 @@
       <div id="tableStructureDetails"></div>
     </div>
     
-    <!-- ユーザーデータ管理 -->
-    <div class="section">
-      <div class="section-title">👥 ユーザーデータ管理</div>
-      <div id="userDataInfo"></div>
-      <button onclick="viewUserData()">ユーザーデータを表示</button>
-      <button onclick="clearTestData()" class="danger">テストデータを削除</button>
-      <button onclick="deleteSpecificTestUser()" class="danger">test@example.comを削除</button>
-    </div>
     
     <!-- ログ表示 -->
     <div class="section">
@@ -433,9 +432,6 @@
           // テーブル詳細を表示
           displayTableDetails(result.tableStats);
           
-          // ユーザーデータ情報を表示
-          displayUserDataInfo(result.userProfiles);
-          
           log(`データベース: ${result.database.databaseName}`, 'info');
           log(`環境: ${result.database.environment}`, 'info');
           log(`テーブル数: ${result.summary.totalTables}`, 'info');
@@ -455,7 +451,18 @@
       let html = '<div class="info-grid">';
       
       tableStats.forEach(table => {
-        let statusClass, displayText;
+        let statusClass, displayText, description;
+        
+        // テーブル説明の設定
+        if (table.name === '_cf_KV') {
+          description = 'Cloudflare内部システムテーブル（KV連携用）';
+        } else if (table.name === 'sqlite_sequence') {
+          description = 'SQLite自動採番管理テーブル（AUTOINCREMENT用）';
+        } else if (table.name === 'user_profiles') {
+          description = 'ユーザー情報保存テーブル（アプリケーション用）';
+        } else {
+          description = 'データベーステーブル';
+        }
         
         if (table.accessRestricted) {
           statusClass = 'status-restricted';
@@ -472,6 +479,7 @@
           <div class="info-card">
             <div class="info-label">${table.name}</div>
             <div class="info-value ${statusClass}">${displayText}</div>
+            <div class="info-description">${description}</div>
           </div>
         `;
       });
@@ -480,69 +488,7 @@
       container.innerHTML = html;
     }
     
-    function displayUserDataInfo(userProfiles) {
-      const container = document.getElementById('userDataInfo');
-      
-      if (userProfiles && !userProfiles.error) {
-        container.innerHTML = `
-          <div class="info-grid">
-            <div class="info-card">
-              <div class="info-label">総ユーザー数</div>
-              <div class="info-value">${userProfiles.totalUsers}</div>
-            </div>
-            <div class="info-card">
-              <div class="info-label">認証済みユーザー</div>
-              <div class="info-value status-active">${userProfiles.verifiedUsers}</div>
-            </div>
-            <div class="info-card">
-              <div class="info-label">アクティブユーザー</div>
-              <div class="info-value status-active">${userProfiles.activeUsers}</div>
-            </div>
-          </div>
-        `;
-      } else {
-        container.innerHTML = '<p class="status-empty">ユーザーデータが見つかりません</p>';
-      }
-    }
     
-    async function viewUserData() {
-      try {
-        log('=== ユーザーデータを表示中 ===', 'info');
-        
-        const response = await fetch('/api/database-execute', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            query: 'SELECT * FROM user_profiles ORDER BY created_at DESC LIMIT 10'
-          })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-          log('✅ ユーザーデータを取得しました', 'success');
-          
-          const display = document.createElement('div');
-          display.className = 'data-display';
-          display.textContent = JSON.stringify(result.results, null, 2);
-          
-          // 既存の表示を削除して新しい表示を追加
-          const existing = document.getElementById('userDataDisplay');
-          if (existing) existing.remove();
-          
-          display.id = 'userDataDisplay';
-          document.getElementById('userDataInfo').appendChild(display);
-          
-        } else {
-          log('❌ エラー: ' + result.error, 'error');
-        }
-        
-      } catch (error) {
-        log('❌ 例外エラー: ' + error.message, 'error');
-      }
-    }
     
     async function loadDetailedTableInfo() {
       try {
@@ -637,69 +583,6 @@
       container.innerHTML = html;
     }
     
-    async function deleteSpecificTestUser() {
-      if (!confirm('test@example.comのユーザーを削除しますか？この操作は取り消せません。')) {
-        return;
-      }
-      
-      try {
-        log('=== test@example.com削除開始 ===', 'warning');
-        
-        const response = await fetch('/api/delete-test-user', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-          log('✅ test@example.comを削除しました', 'success');
-          log(`削除されたユーザー: ${result.deletedUser.nickname} (${result.deletedUser.email})`, 'info');
-          log(`残りのユーザー数: ${result.deleteResult.remainingUsers}`, 'info');
-          loadDatabaseStatus(); // 状況を更新
-        } else {
-          log('❌ エラー: ' + result.message, 'error');
-        }
-        
-      } catch (error) {
-        log('❌ 例外エラー: ' + error.message, 'error');
-      }
-    }
-    
-    async function clearTestData() {
-      if (!confirm('テストデータを削除しますか？この操作は取り消せません。')) {
-        return;
-      }
-      
-      try {
-        log('=== テストデータ削除開始 ===', 'warning');
-        
-        const response = await fetch('/api/database-execute', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            query: "DELETE FROM user_profiles WHERE user_id LIKE '%test%' OR user_id LIKE '%example%'"
-          })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-          log('✅ テストデータを削除しました', 'success');
-          log(`削除された行数: ${result.changes}`, 'info');
-          loadDatabaseStatus(); // 状況を更新
-        } else {
-          log('❌ エラー: ' + result.error, 'error');
-        }
-        
-      } catch (error) {
-        log('❌ 例外エラー: ' + error.message, 'error');
-      }
-    }
     
     // 初期表示
     window.addEventListener('load', function() {
