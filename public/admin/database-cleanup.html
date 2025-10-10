@@ -170,6 +170,168 @@
     .status-empty {
       color: #ff4444;
     }
+    
+    .table-structure-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(102, 204, 255, 0.3);
+      border-radius: 10px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    
+    .table-structure-card.user-table {
+      border-left: 4px solid #66ccff;
+    }
+    
+    .table-structure-card.system-table {
+      border-left: 4px solid #ffaa00;
+      opacity: 0.8;
+    }
+    
+    .table-header {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 15px;
+      border-bottom: 1px solid rgba(102, 204, 255, 0.2);
+    }
+    
+    .table-header h3 {
+      margin: 0 0 10px 0;
+      color: #66ccff;
+      font-size: 18px;
+    }
+    
+    .table-meta {
+      display: flex;
+      gap: 15px;
+      font-size: 14px;
+    }
+    
+    .table-type {
+      background: #66ccff;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    
+    .row-count, .column-count {
+      color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .table-content {
+      padding: 20px;
+    }
+    
+    .columns-section h4 {
+      color: #66ccff;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    
+    .columns-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .column-info {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 12px;
+      border-radius: 6px;
+      border-left: 3px solid #66ccff;
+    }
+    
+    .column-name {
+      font-weight: bold;
+      color: white;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+    
+    .column-type {
+      color: #66ccff;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+    
+    .column-attributes {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+    
+    .primary-key {
+      background: #ff4444;
+      color: white;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-size: 10px;
+    }
+    
+    .not-null {
+      background: #ffaa00;
+      color: white;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-size: 10px;
+    }
+    
+    .default {
+      background: #00ff00;
+      color: black;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-size: 10px;
+    }
+    
+    .sample-data-section h4 {
+      color: #66ccff;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    
+    .sample-data-table {
+      overflow-x: auto;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 6px;
+    }
+    
+    .sample-data-table table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    
+    .sample-data-table th {
+      background: rgba(102, 204, 255, 0.2);
+      color: #66ccff;
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid rgba(102, 204, 255, 0.3);
+    }
+    
+    .sample-data-table td {
+      padding: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.9);
+      word-break: break-all;
+    }
+    
+    .no-data {
+      color: rgba(255, 255, 255, 0.6);
+      font-style: italic;
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .table-error {
+      color: #ff4444;
+      background: rgba(255, 68, 68, 0.1);
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 15px;
+    }
   </style>
 </head>
 <body>
@@ -204,6 +366,13 @@
     <div class="section">
       <div class="section-title">📋 テーブル詳細</div>
       <div id="tableDetails"></div>
+      <button onclick="loadDetailedTableInfo()">テーブル構造を詳細表示</button>
+    </div>
+    
+    <!-- テーブル構造詳細 -->
+    <div class="section">
+      <div class="section-title">🏗️ テーブル構造詳細</div>
+      <div id="tableStructureDetails"></div>
     </div>
     
     <!-- ユーザーデータ管理 -->
@@ -356,6 +525,99 @@
       } catch (error) {
         log('❌ 例外エラー: ' + error.message, 'error');
       }
+    }
+    
+    async function loadDetailedTableInfo() {
+      try {
+        log('=== テーブル構造詳細を読み込み中 ===', 'info');
+        
+        const response = await fetch('/api/debug-database-status');
+        const result = await response.json();
+        
+        if (result.success) {
+          log('✅ テーブル構造詳細を取得しました', 'success');
+          displayTableStructureDetails(result);
+        } else {
+          log('❌ エラー: ' + result.error, 'error');
+        }
+        
+      } catch (error) {
+        log('❌ 例外エラー: ' + error.message, 'error');
+      }
+    }
+    
+    function displayTableStructureDetails(data) {
+      const container = document.getElementById('tableStructureDetails');
+      let html = '';
+      
+      if (data.detailedStats && data.detailedStats.length > 0) {
+        data.detailedStats.forEach(table => {
+          const isSystemTable = table.name.startsWith('sqlite_') || table.name.startsWith('_cf_');
+          const tableClass = isSystemTable ? 'system-table' : 'user-table';
+          
+          html += `
+            <div class="table-structure-card ${tableClass}">
+              <div class="table-header">
+                <h3>${table.name}</h3>
+                <div class="table-meta">
+                  <span class="table-type">${table.type}</span>
+                  <span class="row-count">${table.rowCount} 行</span>
+                  <span class="column-count">${table.columns.length} カラム</span>
+                </div>
+              </div>
+              
+              <div class="table-content">
+                <div class="columns-section">
+                  <h4>カラム構造:</h4>
+                  <div class="columns-grid">
+                    ${table.columns.map(col => `
+                      <div class="column-info">
+                        <div class="column-name">${col.name}</div>
+                        <div class="column-type">${col.type || 'TEXT'}</div>
+                        <div class="column-attributes">
+                          ${col.pk ? '<span class="primary-key">PK</span>' : ''}
+                          ${col.notnull ? '<span class="not-null">NOT NULL</span>' : ''}
+                          ${col.dflt_value ? `<span class="default">DEFAULT: ${col.dflt_value}</span>` : ''}
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+                
+                ${table.sampleData && table.sampleData.length > 0 ? `
+                  <div class="sample-data-section">
+                    <h4>サンプルデータ (最大3行):</h4>
+                    <div class="sample-data-table">
+                      <table>
+                        <thead>
+                          <tr>
+                            ${Object.keys(table.sampleData[0]).map(key => `<th>${key}</th>`).join('')}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          ${table.sampleData.map(row => `
+                            <tr>
+                              ${Object.values(row).map(value => `
+                                <td>${value !== null ? (typeof value === 'object' ? JSON.stringify(value) : String(value)) : 'NULL'}</td>
+                              `).join('')}
+                            </tr>
+                          `).join('')}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                ` : '<div class="no-data">データなし</div>'}
+                
+                ${table.error ? `<div class="table-error">エラー: ${table.error}</div>` : ''}
+              </div>
+            </div>
+          `;
+        });
+      } else {
+        html = '<div class="no-data">テーブル情報が見つかりません</div>';
+      }
+      
+      container.innerHTML = html;
     }
     
     async function clearTestData() {
