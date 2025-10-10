@@ -99,6 +99,18 @@
                                 </a>
                             </li>
                             <li>
+                                <a href="database-cleanup.html" class="flex items-center px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-tools mr-3"></i>
+                                    データベース整理
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../test-database-registration.html" class="flex items-center px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-flask mr-3"></i>
+                                    データベーステスト
+                                </a>
+                            </li>
+                            <li>
                                 <a href="#" onclick="showSection('db-reset')" class="flex items-center px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
                                     <i class="fas fa-trash mr-3"></i>
                                     DBリセット
@@ -173,7 +185,7 @@
                         <h3 class="text-lg font-semibold text-gray-900">クイックアクセス</h3>
                     </div>
                     <div class="p-6">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <button onclick="showSection('member-search')" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                                 <i class="fas fa-search text-blue-600 mr-3"></i>
                                 <div class="text-left">
@@ -181,20 +193,47 @@
                                     <p class="text-sm text-gray-600">メールアドレスで会員を検索</p>
                                 </div>
                             </button>
+                            <a href="database-cleanup.html" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <i class="fas fa-tools text-purple-600 mr-3"></i>
+                                <div class="text-left">
+                                    <p class="font-medium text-gray-900">データベース整理</p>
+                                    <p class="text-sm text-gray-600">DB状況確認・テストデータ削除</p>
+                                </div>
+                            </a>
+                            <a href="../test-database-registration.html" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <i class="fas fa-flask text-green-600 mr-3"></i>
+                                <div class="text-left">
+                                    <p class="font-medium text-gray-900">データベーステスト</p>
+                                    <p class="text-sm text-gray-600">登録機能をテスト</p>
+                                </div>
+                            </a>
                             <a href="magic-link-test.html" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                                <i class="fas fa-link text-green-600 mr-3"></i>
+                                <i class="fas fa-link text-orange-600 mr-3"></i>
                                 <div class="text-left">
                                     <p class="font-medium text-gray-900">マジックリンクテスト</p>
                                     <p class="text-sm text-gray-600">メール送信機能をテスト</p>
                                 </div>
                             </a>
-                            <button onclick="showSection('env-check')" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                                <i class="fas fa-cog text-orange-600 mr-3"></i>
-                                <div class="text-left">
-                                    <p class="font-medium text-gray-900">環境変数チェック</p>
-                                    <p class="text-sm text-gray-600">API設定を確認</p>
-                                </div>
-                            </button>
+                        </div>
+                        
+                        <div class="mt-6 pt-6 border-t border-gray-200">
+                            <h4 class="text-md font-semibold text-gray-900 mb-4">データベース管理</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <a href="database-manager.html" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <i class="fas fa-database text-blue-600 mr-3"></i>
+                                    <div class="text-left">
+                                        <p class="font-medium text-gray-900">データベース管理</p>
+                                        <p class="text-sm text-gray-600">テーブル作成・SQL実行</p>
+                                    </div>
+                                </a>
+                                <button onclick="showSection('env-check')" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <i class="fas fa-cog text-gray-600 mr-3"></i>
+                                    <div class="text-left">
+                                        <p class="font-medium text-gray-900">環境変数チェック</p>
+                                        <p class="text-sm text-gray-600">API設定を確認</p>
+                                    </div>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
