@@ -381,6 +381,7 @@
       <div id="userDataInfo"></div>
       <button onclick="viewUserData()">ユーザーデータを表示</button>
       <button onclick="clearTestData()" class="danger">テストデータを削除</button>
+      <button onclick="deleteSpecificTestUser()" class="danger">test@example.comを削除</button>
     </div>
     
     <!-- ログ表示 -->
@@ -618,6 +619,37 @@
       }
       
       container.innerHTML = html;
+    }
+    
+    async function deleteSpecificTestUser() {
+      if (!confirm('test@example.comのユーザーを削除しますか？この操作は取り消せません。')) {
+        return;
+      }
+      
+      try {
+        log('=== test@example.com削除開始 ===', 'warning');
+        
+        const response = await fetch('/api/delete-test-user', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          log('✅ test@example.comを削除しました', 'success');
+          log(`削除されたユーザー: ${result.deletedUser.nickname} (${result.deletedUser.email})`, 'info');
+          log(`残りのユーザー数: ${result.deleteResult.remainingUsers}`, 'info');
+          loadDatabaseStatus(); // 状況を更新
+        } else {
+          log('❌ エラー: ' + result.message, 'error');
+        }
+        
+      } catch (error) {
+        log('❌ 例外エラー: ' + error.message, 'error');
+      }
     }
     
     async function clearTestData() {
