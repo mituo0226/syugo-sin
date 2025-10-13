@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS user_profiles (
     magic_link_used INTEGER DEFAULT 0,        -- マジックリンク使用済みフラグ
     is_verified INTEGER DEFAULT 0,            -- メール認証済みフラグ（0:未認証, 1:認証済み）
     is_active INTEGER DEFAULT 1,              -- アカウント有効フラグ（0:無効, 1:有効）
+    guardian_passphrase TEXT,                 -- 守護神の合言葉（ログイン用）
     created_at TEXT DEFAULT CURRENT_TIMESTAMP -- 登録日時
 );
 

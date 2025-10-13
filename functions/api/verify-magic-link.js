@@ -159,7 +159,16 @@ export async function onRequestGet(context) {
       console.log('認証更新結果:', updateResult);
       console.log('✅ ユーザー認証が完了しました:', userResult.user_id);
 
-      // 認証完了HTMLレスポンス
+      // ユーザー詳細情報を取得
+      const userDetails = await env.DB.prepare(`
+        SELECT user_id, nickname, guardian_name, guardian_key
+        FROM user_profiles 
+        WHERE magic_link_token = ?
+      `).bind(token).first();
+
+      // registration-success.htmlへリダイレクト（ユーザー情報をパラメータで渡す）
+      const redirectUrl = `/registration-success.html?email=${encodeURIComponent(userDetails.user_id)}&nickname=${encodeURIComponent(userDetails.nickname || '')}&guardianName=${encodeURIComponent(userDetails.guardian_name || '')}&guardianKey=${encodeURIComponent(userDetails.guardian_key || '')}`;
+      
       return new Response(`
         <!DOCTYPE html>
         <html lang="ja">
@@ -229,6 +238,12 @@ export async function onRequestGet(context) {
               transform: translateY(-2px);
             }
           </style>
+          <script>
+            // 3秒後に登録完了画面へ自動リダイレクト
+            setTimeout(() => {
+              window.location.href = '${redirectUrl}';
+            }, 3000);
+          </script>
         </head>
         <body>
           <div class="container">
@@ -236,14 +251,14 @@ export async function onRequestGet(context) {
             <div class="success">
               <div class="message">
                 <p><strong>メール認証が正常に完了しました！</strong></p>
-                <p>守護神占いの会員登録が完了いたします。</p>
+                <p>まもなく次の画面に移動します...</p>
               </div>
               <div class="user-info">
-                <p>登録ユーザー: <strong>${userResult.nickname || userResult.user_id}</strong></p>
-                <p>メールアドレス: <strong>${userResult.user_id}</strong></p>
+                <p>登録ユーザー: <strong>${userDetails.nickname || 'あなた'}</strong></p>
+                <p>メールアドレス: <strong>${userDetails.user_id}</strong></p>
               </div>
             </div>
-            <p>これで守護神占いのすべての機能をご利用いただけます。</p>
+            <p><a href="${redirectUrl}" class="button">今すぐ進む</a></p>
             <div style="margin-top: 30px;">
               <a href="https://syugo-sin.com" class="button">ホームページへ</a>
               <a href="https://syugo-sin.com/consult/chat.html" class="button">鑑定を開始する</a>

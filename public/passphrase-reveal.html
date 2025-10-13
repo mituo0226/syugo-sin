@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>守護神からの授かりもの - 守護神占い</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "游明朝", YuMincho, "Hiragino Mincho ProN", serif;
+      background: #000;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      overflow: hidden;
+    }
+
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 3s infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      max-width: 800px;
+      width: 100%;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .guardian-image {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      border: 3px solid gold;
+      margin: 0 auto 30px;
+      opacity: 0;
+      animation: fadeInImage 2s ease-in forwards;
+      box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
+    }
+
+    @keyframes fadeInImage {
+      to { opacity: 1; }
+    }
+
+    .guardian-name {
+      font-size: 36px;
+      color: #FFD700;
+      margin-bottom: 40px;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+      opacity: 0;
+      animation: fadeIn 2s ease-in 1s forwards;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .message-container {
+      background: rgba(0, 0, 0, 0.7);
+      border: 2px solid rgba(255, 215, 0, 0.3);
+      border-radius: 15px;
+      padding: 40px;
+      margin: 30px 0;
+      opacity: 0;
+      animation: fadeIn 1s ease-in 2s forwards;
+    }
+
+    .typewriter-text {
+      font-size: 20px;
+      line-height: 2;
+      min-height: 200px;
+      text-align: left;
+    }
+
+    .passphrase-reveal {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px;
+      border-radius: 15px;
+      margin: 30px 0;
+      display: none;
+      animation: slideIn 1s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .passphrase-label {
+      font-size: 18px;
+      color: #FFD700;
+      margin-bottom: 15px;
+    }
+
+    .passphrase-word {
+      font-size: 42px;
+      font-weight: bold;
+      color: #FFD700;
+      text-shadow: 0 0 30px rgba(255, 215, 0, 1);
+      padding: 20px;
+      letter-spacing: 8px;
+      margin: 20px 0;
+    }
+
+    .warning {
+      font-size: 14px;
+      color: #ffc107;
+      margin-top: 20px;
+      line-height: 1.8;
+    }
+
+    .remember-button {
+      background: linear-gradient(45deg, #FFD700, #FFA500);
+      color: #333;
+      padding: 18px 60px;
+      border: none;
+      border-radius: 50px;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5);
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: none;
+      margin: 30px auto 0;
+    }
+
+    .remember-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(255, 215, 0, 0.7);
+    }
+
+    .loading {
+      font-size: 18px;
+      color: #888;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 星空背景 -->
+  <div class="stars" id="stars"></div>
+
+  <div class="container">
+    <img id="guardianImage" class="guardian-image" src="" alt="守護神">
+    
+    <div id="guardianName" class="guardian-name"></div>
+
+    <div class="message-container">
+      <div id="typewriterText" class="typewriter-text"></div>
+    </div>
+
+    <div id="passphraseReveal" class="passphrase-reveal">
+      <div class="passphrase-label">📿 あなたの合言葉</div>
+      <div id="passphraseWord" class="passphrase-word"></div>
+      <div class="warning">
+        ⚠️ この言葉を心に刻み、決して忘れないでください<br>
+        次回、私に会う時に必ず伝えなさい<br>
+        （スクリーンショットでの保存を推奨します）
+      </div>
+    </div>
+
+    <button id="rememberButton" class="remember-button" onclick="goToLogin()">
+      ✨ 合言葉を覚えた
+    </button>
+
+    <div id="loading" class="loading">守護神の声を待っています...</div>
+  </div>
+
+  <script>
+    // 星空生成
+    function createStars() {
+      const starsContainer = document.getElementById('stars');
+      for (let i = 0; i < 200; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.animationDelay = Math.random() * 3 + 's';
+        starsContainer.appendChild(star);
+      }
+    }
+
+    // 合言葉リスト
+    const guardianPassphrases = [
+      "星降る夜", "銀河の道", "月の光", "朝焼けの空", "彗星の尾", "天の川",
+      "桜吹雪", "秋の紅葉", "春の息吹", "冬の静寂", "夏の風", "雪解けの音",
+      "心の鏡", "魂の声", "運命の糸", "永遠の誓い", "光の道標", "静かな祈り",
+      "守護の盾", "慈悲の心", "希望の光", "勇気の剣", "智慧の泉", "平安の鐘"
+    ];
+
+    // ランダムに合言葉を選択
+    function selectRandomPassphrase() {
+      const randomIndex = Math.floor(Math.random() * guardianPassphrases.length);
+      return guardianPassphrases[randomIndex];
+    }
+
+    // タイプライター効果
+    function typeWriter(text, element, speed = 50) {
+      let i = 0;
+      element.innerHTML = '';
+      
+      return new Promise((resolve) => {
+        function type() {
+          if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(type, speed);
+          } else {
+            resolve();
+          }
+        }
+        type();
+      });
+    }
+
+    // URLパラメータから情報を取得
+    function getUserDataFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      
+      // まずURLパラメータを確認
+      let email = urlParams.get('email');
+      let nickname = urlParams.get('nickname');
+      let guardianName = urlParams.get('guardianName');
+      let guardianKey = urlParams.get('guardianKey');
+
+      // URLパラメータになければlocalStorageから取得
+      if (!email) email = localStorage.getItem('registeredEmail') || localStorage.getItem('userEmail');
+      if (!nickname) {
+        nickname = localStorage.getItem('registeredNickname');
+        if (!nickname) {
+          const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+          nickname = userData.nickname;
+        }
+      }
+      if (!guardianName) {
+        guardianName = localStorage.getItem('registeredGuardianName');
+        if (!guardianName) {
+          const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+          guardianName = userData.guardian ? userData.guardian.name : '';
+        }
+      }
+      if (!guardianKey) {
+        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        guardianKey = userData.guardianKey || userData.guardian?.key || '';
+      }
+
+      return { email, nickname, guardianName, guardianKey };
+    }
+
+    // 合言葉をデータベースに保存
+    async function savePassphraseToDatabase(email, passphrase) {
+      try {
+        const response = await fetch('/api/save-passphrase', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, passphrase })
+        });
+
+        const result = await response.json();
+        console.log('合言葉保存結果:', result);
+        return result.success;
+      } catch (error) {
+        console.error('合言葉保存エラー:', error);
+        return false;
+      }
+    }
+
+    // メイン処理
+    async function main() {
+      const userData = getUserDataFromUrl();
+      console.log('ユーザーデータ:', userData);
+
+      // 守護神情報を表示
+      const guardianNameElement = document.getElementById('guardianName');
+      const guardianImageElement = document.getElementById('guardianImage');
+      
+      guardianNameElement.textContent = userData.guardianName || '守護神';
+      guardianImageElement.src = `/photo/${userData.guardianKey || 'amida'}.png`;
+
+      // ローディング非表示
+      setTimeout(() => {
+        document.getElementById('loading').style.display = 'none';
+      }, 3000);
+
+      // タイプライターメッセージ
+      const typewriterElement = document.getElementById('typewriterText');
+      const message = `これより私と${userData.nickname || 'あなた'}だけの秘密の合言葉を伝える。\n\n決して忘れず、次に私に会う時に必ず伝えなさい。\n\nまた、この言葉は決して他に伝えてはならぬ。\n\n家族や友人にも伝えてはならぬ、心にしっかり刻み、秘密としなさい。\n\nもし忘れてしまったら、また伝えられるから安心しなさい。`;
+
+      // 3秒待機後、タイプライター開始
+      setTimeout(async () => {
+        await typeWriter(message, typewriterElement, 50);
+
+        // タイプライター終了後、フェードアウト
+        setTimeout(() => {
+          typewriterElement.style.transition = 'opacity 1s';
+          typewriterElement.style.opacity = '0';
+
+          // フェードアウト後、合言葉を表示
+          setTimeout(async () => {
+            const selectedPassphrase = selectRandomPassphrase();
+            
+            // 合言葉をデータベースに保存
+            await savePassphraseToDatabase(userData.email, selectedPassphrase);
+
+            typewriterElement.innerHTML = `合言葉は<br><span style="font-size: 48px; color: #FFD700; text-shadow: 0 0 30px rgba(255,215,0,1); display: block; margin: 30px 0; letter-spacing: 8px;">${selectedPassphrase}</span>である`;
+            typewriterElement.style.opacity = '1';
+            typewriterElement.style.fontSize = '28px';
+            typewriterElement.style.textAlign = 'center';
+
+            // 合言葉表示エリアにも表示
+            document.getElementById('passphraseWord').textContent = selectedPassphrase;
+            document.getElementById('passphraseReveal').style.display = 'block';
+            document.getElementById('rememberButton').style.display = 'block';
+
+            // localStorageに保存
+            localStorage.setItem('userPassphrase', selectedPassphrase);
+          }, 1000);
+        }, 2000);
+      }, 3000);
+    }
+
+    // ログイン画面へ遷移
+    function goToLogin() {
+      window.location.href = '/login.html';
+    }
+
+    // 初期化
+    window.addEventListener('load', () => {
+      createStars();
+      main();
+    });
+  </script>
+</body>
+</html>
+

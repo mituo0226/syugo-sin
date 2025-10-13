@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>会員登録完了 - 守護神占い</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .success-container {
+      background: white;
+      padding: 50px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .success-icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      animation: bounce 1s ease-in-out;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-20px);
+      }
+      60% {
+        transform: translateY(-10px);
+      }
+    }
+
+    h1 {
+      color: #667eea;
+      margin-bottom: 20px;
+      font-size: 32px;
+    }
+
+    .message {
+      color: #555;
+      font-size: 18px;
+      line-height: 1.8;
+      margin-bottom: 30px;
+    }
+
+    .user-info {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      text-align: left;
+    }
+
+    .user-info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .user-info-item:last-child {
+      border-bottom: none;
+    }
+
+    .user-info-label {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .user-info-value {
+      color: #333;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .next-button {
+      background: linear-gradient(45deg, #FFD700, #FFA500);
+      color: #333;
+      padding: 18px 50px;
+      border: none;
+      border-radius: 50px;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 5px 20px rgba(255, 215, 0, 0.5);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .next-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(255, 215, 0, 0.7);
+    }
+
+    .note {
+      margin-top: 30px;
+      padding: 15px;
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 8px;
+      color: #856404;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="success-container">
+    <div class="success-icon">✨</div>
+    
+    <h1>会員登録が完了しました</h1>
+    
+    <p class="message">
+      おめでとうございます！<br>
+      あなたの守護神との繋がりが確立されました。
+    </p>
+
+    <div class="user-info" id="userInfo">
+      <!-- JavaScriptで動的に生成 -->
+    </div>
+
+    <button class="next-button" onclick="goToPassphraseReveal()">
+      🔮 次に進む
+    </button>
+
+    <div class="note">
+      💡 この後、あなたの守護神から特別な合言葉が授けられます。<br>
+      この合言葉は次回ログイン時に必要となりますので、必ず覚えておいてください。
+    </div>
+  </div>
+
+  <script>
+    // URLパラメータから情報を取得
+    function getUserDataFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return {
+        email: urlParams.get('email') || localStorage.getItem('userEmail'),
+        nickname: urlParams.get('nickname') || '',
+        guardianName: urlParams.get('guardianName') || ''
+      };
+    }
+
+    // ユーザー情報を表示
+    function displayUserInfo() {
+      const userData = getUserDataFromUrl();
+      const userInfoDiv = document.getElementById('userInfo');
+
+      userInfoDiv.innerHTML = `
+        <div class="user-info-item">
+          <span class="user-info-label">👤 ニックネーム</span>
+          <span class="user-info-value">${userData.nickname || '取得中...'}</span>
+        </div>
+        <div class="user-info-item">
+          <span class="user-info-label">📧 メールアドレス</span>
+          <span class="user-info-value">${userData.email || '取得中...'}</span>
+        </div>
+        <div class="user-info-item">
+          <span class="user-info-label">🛡️ 守護神</span>
+          <span class="user-info-value">${userData.guardianName || '取得中...'}</span>
+        </div>
+      `;
+
+      // localStorageに保存
+      if (userData.email) {
+        localStorage.setItem('registeredEmail', userData.email);
+      }
+      if (userData.nickname) {
+        localStorage.setItem('registeredNickname', userData.nickname);
+      }
+      if (userData.guardianName) {
+        localStorage.setItem('registeredGuardianName', userData.guardianName);
+      }
+    }
+
+    // 合言葉伝授画面へ遷移
+    function goToPassphraseReveal() {
+      const userData = getUserDataFromUrl();
+      const params = new URLSearchParams({
+        email: userData.email || '',
+        nickname: userData.nickname || '',
+        guardianName: userData.guardianName || ''
+      });
+      window.location.href = `/passphrase-reveal.html?${params.toString()}`;
+    }
+
+    // 初期化
+    window.addEventListener('load', () => {
+      displayUserInfo();
+    });
+  </script>
+</body>
+</html>
+

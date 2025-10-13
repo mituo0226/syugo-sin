@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>合言葉の再発行 - 守護神占い</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .recovery-container {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .date-inputs {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .date-inputs select {
+      flex: 1;
+    }
+
+    .recovery-button {
+      width: 100%;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      padding: 15px;
+      border: none;
+      border-radius: 50px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      margin-top: 20px;
+    }
+
+    .recovery-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    .recovery-button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .message {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      display: none;
+    }
+
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      display: block;
+    }
+
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      display: block;
+    }
+
+    .message.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+      display: block;
+    }
+
+    .back-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .back-link a {
+      color: #667eea;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+
+    .info-box {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border-left: 4px solid #667eea;
+    }
+
+    .info-box p {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="recovery-container">
+    <h1>🔮 合言葉の再発行</h1>
+    <p class="subtitle">守護神があなたを確認します</p>
+
+    <div class="info-box">
+      <p>
+        📧 ご登録のメールアドレスに確認メールを送信いたします。<br>
+        メール内のリンクから新しい合言葉を選択できます。
+      </p>
+    </div>
+
+    <form id="recoveryForm">
+      <div class="input-group">
+        <label>👤 ニックネーム</label>
+        <input type="text" id="nickname" placeholder="例: みつお" required>
+      </div>
+
+      <div class="input-group">
+        <label>📅 生年月日</label>
+        <div class="date-inputs">
+          <select id="birthYear" required>
+            <option value="">年</option>
+          </select>
+          <select id="birthMonth" required>
+            <option value="">月</option>
+          </select>
+          <select id="birthDay" required>
+            <option value="">日</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>📧 登録メールアドレス</label>
+        <input type="email" id="email" placeholder="example@email.com" required>
+      </div>
+
+      <button type="submit" class="recovery-button" id="submitBtn">
+        📩 確認メールを送信
+      </button>
+    </form>
+
+    <div id="message" class="message"></div>
+
+    <p class="back-link">
+      <a href="/login.html">← ログイン画面に戻る</a>
+    </p>
+  </div>
+
+  <script>
+    // 生年月日セレクトボックスの初期化
+    function initializeDateSelects() {
+      const yearSelect = document.getElementById('birthYear');
+      const monthSelect = document.getElementById('birthMonth');
+      const daySelect = document.getElementById('birthDay');
+
+      // 年（1940年〜2024年）
+      for (let year = 2024; year >= 1940; year--) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year + '年';
+        yearSelect.appendChild(option);
+      }
+
+      // 月（1〜12月）
+      for (let month = 1; month <= 12; month++) {
+        const option = document.createElement('option');
+        option.value = month;
+        option.textContent = month + '月';
+        monthSelect.appendChild(option);
+      }
+
+      // 日（1〜31日）
+      for (let day = 1; day <= 31; day++) {
+        const option = document.createElement('option');
+        option.value = day;
+        option.textContent = day + '日';
+        daySelect.appendChild(option);
+      }
+    }
+
+    // メッセージ表示
+    function showMessage(text, type) {
+      const messageDiv = document.getElementById('message');
+      messageDiv.textContent = text;
+      messageDiv.className = 'message ' + type;
+    }
+
+    // フォーム送信処理
+    document.getElementById('recoveryForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = '送信中...';
+
+      const recoveryData = {
+        nickname: document.getElementById('nickname').value,
+        birthYear: document.getElementById('birthYear').value,
+        birthMonth: document.getElementById('birthMonth').value,
+        birthDay: document.getElementById('birthDay').value,
+        email: document.getElementById('email').value
+      };
+
+      try {
+        console.log('=== 合言葉リカバリーリクエスト送信 ===');
+        console.log('データ:', recoveryData);
+
+        const response = await fetch('/api/passphrase-recovery', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(recoveryData)
+        });
+
+        const result = await response.json();
+        console.log('結果:', result);
+
+        if (result.success) {
+          showMessage('✅ 確認メールを送信しました。メールボックスをご確認ください。', 'success');
+          document.getElementById('recoveryForm').reset();
+        } else {
+          showMessage('❌ ' + (result.message || 'エラーが発生しました'), 'error');
+        }
+
+      } catch (error) {
+        console.error('エラー:', error);
+        showMessage('❌ 通信エラーが発生しました。しばらくしてから再度お試しください。', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '📩 確認メールを送信';
+      }
+    });
+
+    // 初期化
+    window.addEventListener('load', () => {
+      initializeDateSelects();
+    });
+  </script>
+</body>
+</html>
+

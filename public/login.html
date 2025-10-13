@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>会員ログイン - 守護神占い</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .login-container {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .date-inputs {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .date-inputs select {
+      flex: 1;
+    }
+
+    .passphrase-group {
+      background: rgba(102, 126, 234, 0.05);
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid rgba(102, 126, 234, 0.2);
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #666;
+      margin-top: 8px;
+    }
+
+    .login-button {
+      width: 100%;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      padding: 15px;
+      border: none;
+      border-radius: 50px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      margin-top: 20px;
+    }
+
+    .login-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    .error-message {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8d7da;
+      color: #721c24;
+      border-radius: 8px;
+      border: 1px solid #f5c6cb;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    .forgot-link {
+      text-align: center;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .forgot-link a {
+      color: #667eea;
+      text-decoration: none;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .forgot-link a:hover {
+      text-decoration: underline;
+    }
+
+    .back-to-home {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .back-to-home a {
+      color: #999;
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .back-to-home a:hover {
+      color: #667eea;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>🔮 守護神への参拝</h1>
+    <p class="subtitle">守護神があなたを待っています</p>
+
+    <form id="loginForm">
+      <div class="input-group">
+        <label>👤 ニックネーム</label>
+        <input type="text" id="nickname" placeholder="例: みつお" required>
+      </div>
+
+      <div class="input-group">
+        <label>📅 生年月日</label>
+        <div class="date-inputs">
+          <select id="birthYear" required>
+            <option value="">年</option>
+          </select>
+          <select id="birthMonth" required>
+            <option value="">月</option>
+          </select>
+          <select id="birthDay" required>
+            <option value="">日</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="input-group passphrase-group">
+        <label>📿 守護神の合言葉</label>
+        <select id="passphrase" required>
+          <option value="">合言葉を選択してください</option>
+          <option value="星降る夜">星降る夜</option>
+          <option value="銀河の道">銀河の道</option>
+          <option value="月の光">月の光</option>
+          <option value="朝焼けの空">朝焼けの空</option>
+          <option value="彗星の尾">彗星の尾</option>
+          <option value="天の川">天の川</option>
+          <option value="桜吹雪">桜吹雪</option>
+          <option value="秋の紅葉">秋の紅葉</option>
+          <option value="春の息吹">春の息吹</option>
+          <option value="冬の静寂">冬の静寂</option>
+          <option value="夏の風">夏の風</option>
+          <option value="雪解けの音">雪解けの音</option>
+          <option value="心の鏡">心の鏡</option>
+          <option value="魂の声">魂の声</option>
+          <option value="運命の糸">運命の糸</option>
+          <option value="永遠の誓い">永遠の誓い</option>
+          <option value="光の道標">光の道標</option>
+          <option value="静かな祈り">静かな祈り</option>
+          <option value="守護の盾">守護の盾</option>
+          <option value="慈悲の心">慈悲の心</option>
+          <option value="希望の光">希望の光</option>
+          <option value="勇気の剣">勇気の剣</option>
+          <option value="智慧の泉">智慧の泉</option>
+          <option value="平安の鐘">平安の鐘</option>
+        </select>
+        <p class="hint">※ 初回登録時に守護神から授かった言葉を選んでください</p>
+      </div>
+
+      <button type="submit" class="login-button">
+        ✨ 守護神のもとへ
+      </button>
+    </form>
+
+    <div id="errorMessage" class="error-message"></div>
+
+    <p class="forgot-link">
+      <a href="/passphrase-recovery.html">
+        🔑 合言葉を忘れた方はこちら
+      </a>
+    </p>
+
+    <p class="back-to-home">
+      <a href="/index.html">← トップページに戻る</a>
+    </p>
+  </div>
+
+  <script>
+    // 生年月日セレクトボックスの初期化
+    function initializeDateSelects() {
+      const yearSelect = document.getElementById('birthYear');
+      const monthSelect = document.getElementById('birthMonth');
+      const daySelect = document.getElementById('birthDay');
+
+      // 年（1940年〜2024年）
+      for (let year = 2024; year >= 1940; year--) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year + '年';
+        yearSelect.appendChild(option);
+      }
+
+      // 月（1〜12月）
+      for (let month = 1; month <= 12; month++) {
+        const option = document.createElement('option');
+        option.value = month;
+        option.textContent = month + '月';
+        monthSelect.appendChild(option);
+      }
+
+      // 日（1〜31日）
+      for (let day = 1; day <= 31; day++) {
+        const option = document.createElement('option');
+        option.value = day;
+        option.textContent = day + '日';
+        daySelect.appendChild(option);
+      }
+    }
+
+    // エラーメッセージ表示
+    function showError(message) {
+      const errorDiv = document.getElementById('errorMessage');
+      errorDiv.textContent = message;
+      errorDiv.classList.add('show');
+    }
+
+    function hideError() {
+      const errorDiv = document.getElementById('errorMessage');
+      errorDiv.classList.remove('show');
+    }
+
+    // ログインフォーム送信
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideError();
+
+      const loginData = {
+        nickname: document.getElementById('nickname').value,
+        birthYear: document.getElementById('birthYear').value,
+        birthMonth: document.getElementById('birthMonth').value,
+        birthDay: document.getElementById('birthDay').value,
+        passphrase: document.getElementById('passphrase').value
+      };
+
+      console.log('=== ログイン試行 ===');
+      console.log('データ:', loginData);
+
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(loginData)
+        });
+
+        const result = await response.json();
+        console.log('結果:', result);
+
+        if (result.success) {
+          // ログイン成功
+          localStorage.setItem('userData', JSON.stringify(result.userData));
+          window.location.href = '/login-success.html'; // ログイン成功画面へ遷移
+        } else {
+          showError(result.message || 'ログインに失敗しました');
+        }
+
+      } catch (error) {
+        console.error('エラー:', error);
+        showError('エラーが発生しました。もう一度お試しください。');
+      }
+    });
+
+    // 初期化
+    window.addEventListener('load', () => {
+      initializeDateSelects();
+    });
+  </script>
+</body>
+</html>
+
