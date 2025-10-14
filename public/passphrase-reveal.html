@@ -158,8 +158,15 @@
     }
 
     .remember-button:hover {
-      transform: translateY(-3px);
+      transform: translateY(-3px) scale(1.02);
       box-shadow: 0 15px 40px rgba(255, 215, 0, 0.7);
+      animation: pulse 0.5s ease-in-out;
+    }
+
+    @keyframes pulse {
+      0% { transform: translateY(-3px) scale(1.02); }
+      50% { transform: translateY(-3px) scale(1.05); }
+      100% { transform: translateY(-3px) scale(1.02); }
     }
 
     .loading {
@@ -195,6 +202,15 @@
     <button id="rememberButton" class="remember-button" onclick="goToLogin()">
       ✨ 合言葉を覚えた
     </button>
+    
+    <div id="nextStepGuide" style="display: none; margin-top: 30px; padding: 20px; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 10px; color: #FFD700;">
+      <p style="font-size: 16px; margin-bottom: 15px;">🔮 次のステップ</p>
+      <p style="font-size: 14px; line-height: 1.6;">
+        合言葉を覚えたら、上記のボタンをクリックしてログイン画面に進んでください。<br>
+        ログイン画面では、ニックネーム・生年月日・合言葉を入力して<br>
+        「龍と守護神の世界」へ繋がることができます。
+      </p>
+    </div>
 
     <div id="loading" class="loading">守護神の声を待っています...</div>
   </div>
@@ -346,6 +362,11 @@
             document.getElementById('passphraseWord').textContent = selectedPassphrase;
             document.getElementById('passphraseReveal').style.display = 'block';
             document.getElementById('rememberButton').style.display = 'block';
+            
+            // 誘導メッセージも表示
+            setTimeout(() => {
+              document.getElementById('nextStepGuide').style.display = 'block';
+            }, 2000); // 2秒後に表示
 
             // localStorageに保存
             localStorage.setItem('userPassphrase', selectedPassphrase);
@@ -356,7 +377,15 @@
 
     // ログイン画面へ遷移
     function goToLogin() {
-      window.location.href = '/login.html';
+      const button = document.getElementById('rememberButton');
+      
+      // ボタンのフィードバック
+      button.style.transform = 'scale(0.95)';
+      button.innerHTML = '✨ 合言葉を覚えた - 移動中...';
+      
+      setTimeout(() => {
+        window.location.href = '/login.html';
+      }, 500);
     }
 
     // 初期化
