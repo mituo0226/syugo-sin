@@ -208,9 +208,10 @@
       const params = new URLSearchParams({
         email: userData.email || '',
         nickname: userData.nickname || '',
-        guardianName: userData.guardianName || ''
+        guardianName: userData.guardianName || '',
+        guardianKey: userData.guardianKey || ''
       });
-      window.location.href = `/passphrase-reveal.html?${params.toString()}`;
+      window.location.href = `/passphrase-message.html?${params.toString()}`;
     }
 
     // 初期化

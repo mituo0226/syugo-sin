@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>守護神からの授かりもの - 守護神占い</title>
+  <title>あなたの合言葉 - 守護神占い</title>
   <style>
     * {
       margin: 0;
@@ -55,16 +55,16 @@
     }
 
     .guardian-image {
-      width: 200px;
-      height: 200px;
-      object-fit: contain; /* 画像の縦横比を保持 */
-      border-radius: 20px; /* 角を少し丸く */
+      width: 150px;
+      height: 150px;
+      object-fit: contain;
+      border-radius: 20px;
       border: 3px solid gold;
-      margin: 0 auto 30px;
+      margin: 0 auto 20px;
       opacity: 0;
-      animation: fadeInImage 2s ease-in forwards;
+      animation: fadeInImage 1s ease-in forwards;
       box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
-      background: rgba(0, 0, 0, 0.3); /* 背景を少し暗くして画像を引き立てる */
+      background: rgba(0, 0, 0, 0.3);
     }
 
     @keyframes fadeInImage {
@@ -72,50 +72,32 @@
     }
 
     .guardian-name {
-      font-size: 36px;
+      font-size: 28px;
       color: #FFD700;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
       text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
       opacity: 0;
-      animation: fadeIn 2s ease-in 1s forwards;
+      animation: fadeIn 1s ease-in 0.5s forwards;
     }
 
     @keyframes fadeIn {
       to { opacity: 1; }
     }
 
-    .message-container {
-      background: rgba(0, 0, 0, 0.7);
-      border: 2px solid rgba(255, 215, 0, 0.3);
-      border-radius: 15px;
-      padding: 40px;
+    .passphrase-container {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 50px;
+      border-radius: 20px;
       margin: 30px 0;
       opacity: 0;
-      animation: fadeIn 1s ease-in 2s forwards;
-    }
-
-    .typewriter-text {
-      font-size: 20px;
-      line-height: 2;
-      min-height: 200px;
-      text-align: left;
-    }
-
-    .passphrase-reveal {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 40px;
-      border-radius: 15px;
-      margin: 30px 0;
-      display: none;
-      animation: slideIn 1s ease-out;
-      position: relative;
-      z-index: 5; /* ボタンより下に配置 */
+      animation: slideIn 1s ease-out 1s forwards;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     }
 
     @keyframes slideIn {
       from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(50px);
       }
       to {
         opacity: 1;
@@ -124,29 +106,49 @@
     }
 
     .passphrase-label {
-      font-size: 18px;
+      font-size: 24px;
       color: #FFD700;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
+      font-weight: bold;
     }
 
     .passphrase-word {
-      font-size: 42px;
+      font-size: 48px;
       font-weight: bold;
       color: #FFD700;
       text-shadow: 0 0 30px rgba(255, 215, 0, 1);
-      padding: 20px;
+      padding: 30px;
       letter-spacing: 8px;
       margin: 20px 0;
+      border: 2px solid rgba(255, 215, 0, 0.5);
+      border-radius: 15px;
+      background: rgba(0, 0, 0, 0.3);
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      0% {
+        text-shadow: 0 0 30px rgba(255, 215, 0, 1);
+        border-color: rgba(255, 215, 0, 0.5);
+      }
+      100% {
+        text-shadow: 0 0 50px rgba(255, 215, 0, 1), 0 0 80px rgba(255, 215, 0, 0.8);
+        border-color: rgba(255, 215, 0, 0.8);
+      }
     }
 
     .warning {
-      font-size: 14px;
+      font-size: 16px;
       color: #ffc107;
-      margin-top: 20px;
+      margin-top: 30px;
       line-height: 1.8;
+      background: rgba(255, 193, 7, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 193, 7, 0.3);
     }
 
-    .remember-button {
+    .login-button {
       background: linear-gradient(45deg, #FFD700, #FFA500);
       color: #333;
       padding: 18px 60px;
@@ -156,18 +158,13 @@
       font-weight: bold;
       cursor: pointer;
       box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5);
-      transition: all 0.5s ease;
+      transition: all 0.3s ease;
       opacity: 0;
       transform: translateY(30px);
-      margin: 30px auto 0;
+      margin: 40px auto 0;
       position: relative;
-      z-index: 10; /* 合言葉の上に表示されるように */
-      display: block; /* 確実に表示されるように */
-    }
-
-    .remember-button.show {
-      opacity: 1;
-      transform: translateY(0);
+      z-index: 10;
+      display: block;
       animation: buttonGlow 2s ease-in-out infinite alternate;
     }
 
@@ -180,16 +177,14 @@
       }
     }
 
-    .remember-button:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 15px 40px rgba(255, 215, 0, 0.7);
-      animation: pulse 0.5s ease-in-out;
+    .login-button.show {
+      opacity: 1;
+      transform: translateY(0);
     }
 
-    @keyframes pulse {
-      0% { transform: translateY(-3px) scale(1.02); }
-      50% { transform: translateY(-3px) scale(1.05); }
-      100% { transform: translateY(-3px) scale(1.02); }
+    .login-button:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 15px 40px rgba(255, 215, 0, 0.7);
     }
 
     .loading {
@@ -208,13 +203,9 @@
     
     <div id="guardianName" class="guardian-name"></div>
 
-    <div class="message-container">
-      <div id="typewriterText" class="typewriter-text"></div>
-    </div>
-
-    <div id="passphraseReveal" class="passphrase-reveal">
+    <div class="passphrase-container">
       <div class="passphrase-label">📿 あなたの合言葉</div>
-      <div id="passphraseWord" class="passphrase-word"></div>
+      <div id="passphraseWord" class="passphrase-word">読み込み中...</div>
       <div class="warning">
         ⚠️ この言葉を心に刻み、決して忘れないでください<br>
         次回、私に会う時に必ず伝えなさい<br>
@@ -222,20 +213,11 @@
       </div>
     </div>
 
-    <button id="rememberButton" class="remember-button" onclick="goToLogin()">
-      ✨ 合言葉を覚えた
+    <button id="loginButton" class="login-button" onclick="goToLogin()">
+      ✨ 合言葉を覚えた - ログイン画面へ
     </button>
-    
-    <div id="nextStepGuide" style="display: none; margin-top: 30px; padding: 20px; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 10px; color: #FFD700; position: relative; z-index: 8;">
-      <p style="font-size: 16px; margin-bottom: 15px;">🔮 次のステップ</p>
-      <p style="font-size: 14px; line-height: 1.6;">
-        合言葉を覚えたら、上記のボタンをクリックしてログイン画面に進んでください。<br>
-        ログイン画面では、ニックネーム・生年月日・合言葉を入力して<br>
-        「龍と守護神の世界」へ繋がることができます。
-      </p>
-    </div>
 
-    <div id="loading" class="loading">守護神の声を待っています...</div>
+    <div id="loading" class="loading">合言葉を準備しています...</div>
   </div>
 
   <script>
@@ -266,30 +248,10 @@
       return guardianPassphrases[randomIndex];
     }
 
-    // タイプライター効果
-    function typeWriter(text, element, speed = 50) {
-      let i = 0;
-      element.innerHTML = '';
-      
-      return new Promise((resolve) => {
-        function type() {
-          if (i < text.length) {
-            element.innerHTML += text.charAt(i);
-            i++;
-            setTimeout(type, speed);
-          } else {
-            resolve();
-          }
-        }
-        type();
-      });
-    }
-
     // URLパラメータから情報を取得
     function getUserDataFromUrl() {
       const urlParams = new URLSearchParams(window.location.search);
       
-      // まずURLパラメータを確認
       let email = urlParams.get('email');
       let nickname = urlParams.get('nickname');
       let guardianName = urlParams.get('guardianName');
@@ -339,6 +301,21 @@
       }
     }
 
+    // ログイン画面へ遷移
+    function goToLogin() {
+      console.log('=== ログイン画面へ遷移 ===');
+      
+      const button = document.getElementById('loginButton');
+      
+      // ボタンのフィードバック
+      button.style.transform = 'scale(0.95)';
+      button.innerHTML = '✨ 移動中...';
+      
+      setTimeout(() => {
+        window.location.href = '/login.html';
+      }, 500);
+    }
+
     // メイン処理
     async function main() {
       const userData = getUserDataFromUrl();
@@ -354,76 +331,31 @@
       // ローディング非表示
       setTimeout(() => {
         document.getElementById('loading').style.display = 'none';
-      }, 3000);
+      }, 2000);
 
-      // タイプライターメッセージ
-      const typewriterElement = document.getElementById('typewriterText');
-      const message = `これより私と${userData.nickname || 'あなた'}だけの秘密の合言葉を伝える。\n\n決して忘れず、次に私に会う時に必ず伝えなさい。\n\nまた、この言葉は決して他に伝えてはならぬ。\n\n家族や友人にも伝えてはならぬ、心にしっかり刻み、秘密としなさい。\n\nもし忘れてしまったら、また伝えられるから安心しなさい。`;
-
-      // 3秒待機後、タイプライター開始
+      // 合言葉を選択して表示
       setTimeout(async () => {
-        await typeWriter(message, typewriterElement, 50);
-
-        // タイプライター終了後、フェードアウト
+        const selectedPassphrase = selectRandomPassphrase();
+        
+        // 合言葉を表示
+        document.getElementById('passphraseWord').textContent = selectedPassphrase;
+        
+        // データベースに保存
+        await savePassphraseToDatabase(userData.email, selectedPassphrase);
+        
+        // localStorageに保存
+        localStorage.setItem('userPassphrase', selectedPassphrase);
+        
+        // ログインボタンを表示
         setTimeout(() => {
-          typewriterElement.style.transition = 'opacity 1s';
-          typewriterElement.style.opacity = '0';
-
-          // フェードアウト後、合言葉を表示
-          setTimeout(async () => {
-            const selectedPassphrase = selectRandomPassphrase();
-            
-            // 合言葉をデータベースに保存
-            await savePassphraseToDatabase(userData.email, selectedPassphrase);
-
-            typewriterElement.innerHTML = `合言葉は<br><span style="font-size: 48px; color: #FFD700; text-shadow: 0 0 30px rgba(255,215,0,1); display: block; margin: 30px 0; letter-spacing: 8px;">${selectedPassphrase}</span>である`;
-            typewriterElement.style.opacity = '1';
-            typewriterElement.style.fontSize = '28px';
-            typewriterElement.style.textAlign = 'center';
-
-            // 合言葉表示エリアにも表示
-            document.getElementById('passphraseWord').textContent = selectedPassphrase;
-            document.getElementById('passphraseReveal').style.display = 'block';
-            
-            // ボタンをフェードインで表示
-            setTimeout(() => {
-              const button = document.getElementById('rememberButton');
-              if (button) {
-                button.classList.add('show');
-                console.log('✅ ボタンを表示しました');
-              } else {
-                console.error('❌ ボタン要素が見つかりません');
-              }
-            }, 1000); // 1秒後にフェードイン
-            
-            // 誘導メッセージも表示
-            setTimeout(() => {
-              document.getElementById('nextStepGuide').style.display = 'block';
-            }, 3000); // 3秒後に表示
-
-            // localStorageに保存
-            localStorage.setItem('userPassphrase', selectedPassphrase);
-          }, 1000);
-        }, 2000);
-      }, 3000);
-    }
-
-    // ログイン画面へ遷移
-    function goToLogin() {
-      console.log('=== goToLogin関数が呼び出されました ===');
-      
-      const button = document.getElementById('rememberButton');
-      
-      // ボタンのフィードバック
-      button.style.transform = 'scale(0.95)';
-      button.innerHTML = '✨ 合言葉を覚えた - 移動中...';
-      
-      console.log('ログイン画面への遷移を開始します...');
-      
-      setTimeout(() => {
-        console.log('window.location.href = /login.html を実行');
-        window.location.href = '/login.html';
-      }, 500);
+          const button = document.getElementById('loginButton');
+          if (button) {
+            button.classList.add('show');
+            console.log('✅ ログインボタンを表示しました');
+          }
+        }, 1000);
+        
+      }, 2000);
     }
 
     // 初期化
@@ -434,4 +366,3 @@
   </script>
 </body>
 </html>
-
