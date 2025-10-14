@@ -162,6 +162,7 @@
       margin: 30px auto 0;
       position: relative;
       z-index: 10; /* 合言葉の上に表示されるように */
+      display: block; /* 確実に表示されるように */
     }
 
     .remember-button.show {
@@ -386,7 +387,13 @@
             
             // ボタンをフェードインで表示
             setTimeout(() => {
-              document.getElementById('rememberButton').classList.add('show');
+              const button = document.getElementById('rememberButton');
+              if (button) {
+                button.classList.add('show');
+                console.log('✅ ボタンを表示しました');
+              } else {
+                console.error('❌ ボタン要素が見つかりません');
+              }
             }, 1000); // 1秒後にフェードイン
             
             // 誘導メッセージも表示
