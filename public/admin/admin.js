@@ -434,7 +434,8 @@ async function checkDatabaseStatus() {
     resultDiv.classList.remove('hidden');
     
     try {
-        const response = await fetch('/api/search-user', {
+        // データベース状態確認用のAPIを使用
+        const response = await fetch('/api/database-status', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -447,11 +448,35 @@ async function checkDatabaseStatus() {
         if (response.ok) {
             resultDiv.innerHTML = showMessage(
                 `✅ データベース接続正常<br>
-                現在の会員数: ${data.users ? data.users.length : 0} 名`, 
+                テーブル数: ${data.tables ? data.tables.length : 0}個<br>
+                ユーザー数: ${data.user_count || 0}名<br>
+                システム状態: 正常`, 
                 'success'
             );
         } else {
-            resultDiv.innerHTML = showMessage(`❌ データベースエラー: ${data.error}`, 'error');
+            // フォールバック: search-user APIを試す（検索条件付き）
+            const fallbackResponse = await fetch('/api/search-user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: 'test@example.com',
+                    searchType: 'email'
+                })
+            });
+            
+            const fallbackData = await fallbackResponse.json();
+            
+            if (fallbackResponse.ok) {
+                resultDiv.innerHTML = showMessage(
+                    `✅ データベース接続正常<br>
+                    現在の会員数: ${fallbackData.users ? fallbackData.users.length : 0} 名`, 
+                    'success'
+                );
+            } else {
+                resultDiv.innerHTML = showMessage(`❌ データベースエラー: ${fallbackData.error}`, 'error');
+            }
         }
     } catch (error) {
         resultDiv.innerHTML = showMessage(`⚠️ 通信エラー: ${error.message}`, 'warning');
@@ -467,7 +492,8 @@ async function checkDatabaseStatusForReset() {
     resultDiv.classList.remove('hidden');
     
     try {
-        const response = await fetch('/api/search-user', {
+        // データベース状態確認用のAPIを使用
+        const response = await fetch('/api/database-status', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -480,11 +506,35 @@ async function checkDatabaseStatusForReset() {
         if (response.ok) {
             resultDiv.innerHTML = showMessage(
                 `✅ データベース接続正常<br>
-                現在の会員数: ${data.users ? data.users.length : 0} 名`, 
+                テーブル数: ${data.tables ? data.tables.length : 0}個<br>
+                ユーザー数: ${data.user_count || 0}名<br>
+                システム状態: 正常`, 
                 'success'
             );
         } else {
-            resultDiv.innerHTML = showMessage(`❌ データベースエラー: ${data.error}`, 'error');
+            // フォールバック: search-user APIを試す（検索条件付き）
+            const fallbackResponse = await fetch('/api/search-user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: 'test@example.com',
+                    searchType: 'email'
+                })
+            });
+            
+            const fallbackData = await fallbackResponse.json();
+            
+            if (fallbackResponse.ok) {
+                resultDiv.innerHTML = showMessage(
+                    `✅ データベース接続正常<br>
+                    現在の会員数: ${fallbackData.users ? fallbackData.users.length : 0} 名`, 
+                    'success'
+                );
+            } else {
+                resultDiv.innerHTML = showMessage(`❌ データベースエラー: ${fallbackData.error}`, 'error');
+            }
         }
     } catch (error) {
         resultDiv.innerHTML = showMessage(`⚠️ 通信エラー: ${error.message}`, 'warning');
