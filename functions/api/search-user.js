@@ -104,7 +104,7 @@ export async function onRequestPost(context) {
     }
 
     // ユーザーデータを整形（user_profilesテーブルから直接取得）
-    const formattedUsers = users.results.map((user) => {
+    const formattedUsers = await Promise.all(users.results.map(async (user) => {
       let guardianName = user.guardian_name || '未設定';
       let guardianKey = user.guardian_key;
       let birthdate = '';
@@ -128,20 +128,37 @@ export async function onRequestPost(context) {
           guardianName = getGuardianName(guardianKey);
         }
       }
+
+      // 会話履歴を取得
+      let chatHistory = [];
+      try {
+        const chatQuery = "SELECT * FROM chat_messages WHERE user_id = ? ORDER BY timestamp DESC LIMIT 10";
+        const chatResult = await env.DB.prepare(chatQuery).bind(user.user_id).all();
+        chatHistory = chatResult.results || [];
+      } catch (chatError) {
+        console.error("会話履歴取得エラー:", chatError);
+        chatHistory = [];
+      }
       
       return {
         id: user.id,
         email: user.user_id, // user_profilesテーブルではuser_idがメールアドレス
         nickname: user.nickname,
         birthdate: birthdate,
+        birth_year: user.birth_year,
+        birth_month: user.birth_month,
+        birth_day: user.birth_day,
         guardian_key: guardianKey,
         guardian_name: guardianName,
         worry: worryType,
+        passphrase: user.guardian_passphrase || '未設定', // guardian_passphraseフィールドを使用
+        last_access: user.last_access || null,
         is_verified: user.is_verified,
         is_active: user.is_active,
-        created_at: user.created_at
+        created_at: user.created_at,
+        chat_history: chatHistory // 会話履歴を追加
       };
-    });
+    }));
 
     console.log("Formatted users:", formattedUsers);
 

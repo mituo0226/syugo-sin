@@ -157,8 +157,8 @@ function setupMemberSearch() {
                                             </div>
                                             <div>
                                                 <p class="text-sm text-gray-600">生年月日</p>
-                                                <p class="font-medium">${user.birth_year && user.birth_month && user.birth_day ? 
-                                                    `${user.birth_year}年${user.birth_month}月${user.birth_day}日` : '未設定'}</p>
+                                                <p class="font-medium">${user.birthdate || (user.birth_year && user.birth_month && user.birth_day ? 
+                                                    `${user.birth_year}年${user.birth_month}月${user.birth_day}日` : '未設定')}</p>
                                             </div>
                                             <div>
                                                 <p class="text-sm text-gray-600">合言葉</p>
@@ -172,7 +172,35 @@ function setupMemberSearch() {
                                                 <p class="text-sm text-gray-600">最終アクセス</p>
                                                 <p class="font-medium">${user.last_access ? new Date(user.last_access).toLocaleString('ja-JP') : '未記録'}</p>
                                             </div>
+                                            <div>
+                                                <p class="text-sm text-gray-600">守護神</p>
+                                                <p class="font-medium">${user.guardian_name || '未設定'}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm text-gray-600">悩みの種類</p>
+                                                <p class="font-medium">${user.worry || '未設定'}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm text-gray-600">会話履歴件数</p>
+                                                <p class="font-medium">${user.chat_history ? user.chat_history.length : 0}件</p>
+                                            </div>
                                         </div>
+                                        ${user.chat_history && user.chat_history.length > 0 ? `
+                                        <div class="mt-4 pt-4 border-t border-gray-200">
+                                            <h5 class="text-sm font-medium text-gray-700 mb-3">最新の会話履歴 (最新${user.chat_history.length}件)</h5>
+                                            <div class="space-y-2 max-h-48 overflow-y-auto bg-gray-50 p-3 rounded-lg">
+                                                ${user.chat_history.slice(0, 5).map(chat => `
+                                                    <div class="flex items-start space-x-2 text-sm">
+                                                        <span class="font-medium ${chat.sender === 'user' ? 'text-blue-600' : 'text-green-600'}">
+                                                            ${chat.sender === 'user' ? '👤 ユーザー' : '🐉 龍'}:
+                                                        </span>
+                                                        <span class="text-gray-700 flex-1">${chat.content.length > 100 ? chat.content.substring(0, 100) + '...' : chat.content}</span>
+                                                        <span class="text-xs text-gray-500">${new Date(chat.timestamp).toLocaleString('ja-JP')}</span>
+                                                    </div>
+                                                `).join('')}
+                                            </div>
+                                        </div>
+                                        ` : ''}
                                     </div>
                                 `).join('')}
                             </div>

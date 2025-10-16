@@ -28,3 +28,20 @@ CREATE INDEX IF NOT EXISTS idx_user_profiles_magic_link_token ON user_profiles(m
 
 -- マジックリンクテーブルを削除（不要になったため）
 DROP TABLE IF EXISTS magic_links;
+
+-- 会話履歴テーブル（チャットメッセージを保存）
+CREATE TABLE IF NOT EXISTS chat_messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT NOT NULL,                    -- ユーザーID（メールアドレス）
+    sender TEXT NOT NULL,                     -- 送信者（'user' または 'assistant'）
+    content TEXT NOT NULL,                    -- メッセージ内容
+    timestamp TEXT DEFAULT CURRENT_TIMESTAMP, -- 送信日時
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP -- 作成日時
+);
+
+-- 会話履歴テーブルのインデックス
+CREATE INDEX IF NOT EXISTS idx_chat_messages_user_id ON chat_messages(user_id);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_timestamp ON chat_messages(timestamp);
+
+-- user_profilesテーブルに最終アクセス日時カラムを追加
+ALTER TABLE user_profiles ADD COLUMN last_access TEXT;

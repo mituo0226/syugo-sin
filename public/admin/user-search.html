@@ -575,13 +575,31 @@
               <div class="user-info-value">${user.guardian_key || '未設定'}</div>
             </div>
             <div class="user-info-item">
-              <div class="user-info-label">鑑定してほしいカテゴリー</div>
-              <div class="user-info-value">${user.theme || '未設定'}</div>
+              <div class="user-info-label">合言葉</div>
+              <div class="user-info-value">${user.passphrase || '未設定'}</div>
+            </div>
+            <div class="user-info-item">
+              <div class="user-info-label">悩みの種類</div>
+              <div class="user-info-value">${user.worry || '未設定'}</div>
             </div>
             <div class="user-info-item">
               <div class="user-info-label">登録日時</div>
               <div class="user-info-value">${user.created_at}</div>
             </div>
+            ${user.chat_history && user.chat_history.length > 0 ? `
+            <div class="user-info-item" style="grid-column: 1 / -1; border-top: 2px solid #66ccff; margin-top: 10px; padding-top: 10px;">
+              <div class="user-info-label" style="color: #66ccff; font-weight: bold;">会話履歴 (最新${user.chat_history.length}件)</div>
+              <div class="user-info-value" style="max-height: 200px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin-top: 5px;">
+                ${user.chat_history.map(chat => `
+                  <div style="margin-bottom: 8px; padding: 5px; background: rgba(102, 204, 255, 0.1); border-radius: 3px;">
+                    <strong style="color: #66ccff;">${chat.sender === 'user' ? 'ユーザー' : 'AI鑑定師'}:</strong> 
+                    <span style="color: #fff;">${chat.content}</span>
+                    <div style="font-size: 0.8em; color: #999; margin-top: 2px;">${new Date(chat.timestamp).toLocaleString('ja-JP')}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+            ` : ''}
             ${localStorageInfo ? `
             <div class="user-info-item" style="border-top: 2px solid #66ccff; margin-top: 10px; padding-top: 10px;">
               <div class="user-info-label" style="color: #66ccff; font-weight: bold;">ローカルストレージ情報</div>
