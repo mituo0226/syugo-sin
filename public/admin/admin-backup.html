@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>統合管理画面 | AI鑑定師 龍</title>
+    <title>管理画面 | AI鑑定師 龍</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -16,6 +16,22 @@
         .mobile-sidebar.show {
             transform: translateX(0);
         }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        @media (max-width: 768px) {
+            .table-responsive table {
+                display: none;
+            }
+            .card-view {
+                display: block;
+            }
+        }
+        @media (min-width: 769px) {
+            .card-view {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -26,10 +42,10 @@
                 <button id="menuToggle" class="md:hidden text-gray-600 hover:text-gray-900 mr-3">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
-                <h1 class="text-xl font-bold text-gray-900">統合管理画面</h1>
+                <h1 class="text-xl font-bold text-gray-900">管理画面</h1>
             </div>
             <div class="text-sm text-gray-500">
-                AI鑑定師 龍 - 全機能統合版
+                AI鑑定師 龍
             </div>
         </div>
     </header>
@@ -112,7 +128,7 @@
         </nav>
 
         <!-- メインコンテンツ -->
-        <main class="flex-1 p-6 md:ml-0">
+        <main class="flex-1 p-6">
             <!-- ダッシュボード -->
             <section id="dashboard" class="section">
                 <div class="mb-6">
@@ -123,34 +139,36 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     <div class="bg-white rounded-lg shadow p-6">
                         <div class="flex items-center">
-                            <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
-                                <i class="fas fa-users text-xl"></i>
+                            <div class="p-3 bg-blue-100 rounded-full">
+                                <i class="fas fa-users text-blue-600 text-xl"></i>
                             </div>
-                            <div>
+                            <div class="ml-4">
                                 <p class="text-sm font-medium text-gray-600">総会員数</p>
-                                <p class="text-2xl font-bold text-gray-900" id="totalMembers">-</p>
+                                <p id="totalMembers" class="text-2xl font-bold text-gray-900">-</p>
                             </div>
                         </div>
                     </div>
+
                     <div class="bg-white rounded-lg shadow p-6">
                         <div class="flex items-center">
-                            <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
-                                <i class="fas fa-user-plus text-xl"></i>
+                            <div class="p-3 bg-green-100 rounded-full">
+                                <i class="fas fa-check-circle text-green-600 text-xl"></i>
                             </div>
-                            <div>
+                            <div class="ml-4">
                                 <p class="text-sm font-medium text-gray-600">今日の登録</p>
-                                <p class="text-2xl font-bold text-gray-900" id="todayRegistrations">-</p>
+                                <p id="todayRegistrations" class="text-2xl font-bold text-gray-900">-</p>
                             </div>
                         </div>
                     </div>
+
                     <div class="bg-white rounded-lg shadow p-6">
                         <div class="flex items-center">
-                            <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
-                                <i class="fas fa-check-circle text-xl"></i>
+                            <div class="p-3 bg-yellow-100 rounded-full">
+                                <i class="fas fa-exclamation-triangle text-yellow-600 text-xl"></i>
                             </div>
-                            <div>
+                            <div class="ml-4">
                                 <p class="text-sm font-medium text-gray-600">システム状態</p>
-                                <p class="text-2xl font-bold text-green-600">正常</p>
+                                <p id="systemStatus" class="text-2xl font-bold text-green-600">正常</p>
                             </div>
                         </div>
                     </div>
@@ -169,27 +187,33 @@
                                     <p class="text-sm text-gray-600">メールアドレスで会員を検索</p>
                                 </div>
                             </button>
-                            <button onclick="showSection('database-cleanup')" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                            <a href="database-cleanup.html" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                                 <i class="fas fa-tools text-purple-600 mr-3"></i>
                                 <div class="text-left">
                                     <p class="font-medium text-gray-900">データベース整理</p>
                                     <p class="text-sm text-gray-600">DB状況確認・テストデータ削除</p>
                                 </div>
-                            </button>
-                            <button onclick="showSection('magic-link-test')" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                            </a>
+                            <a href="magic-link-test.html" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                                 <i class="fas fa-link text-orange-600 mr-3"></i>
                                 <div class="text-left">
                                     <p class="font-medium text-gray-900">マジックリンクテスト</p>
                                     <p class="text-sm text-gray-600">メール送信機能をテスト</p>
                                 </div>
-                            </button>
-                            <button onclick="showSection('env-check')" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                                <i class="fas fa-cog text-gray-600 mr-3"></i>
-                                <div class="text-left">
-                                    <p class="font-medium text-gray-900">環境変数チェック</p>
-                                    <p class="text-sm text-gray-600">API設定を確認</p>
-                                </div>
-                            </button>
+                            </a>
+                        </div>
+                        
+                        <div class="mt-6 pt-6 border-t border-gray-200">
+                            <h4 class="text-md font-semibold text-gray-900 mb-4">システム管理</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
+                                <button onclick="showSection('env-check')" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <i class="fas fa-cog text-gray-600 mr-3"></i>
+                                    <div class="text-left">
+                                        <p class="font-medium text-gray-900">環境変数チェック</p>
+                                        <p class="text-sm text-gray-600">API設定を確認</p>
+                                    </div>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -237,195 +261,18 @@
                                 </button>
                             </div>
                         </form>
+                    </div>
 
-                        <div id="searchResults" class="border-t border-gray-200 p-6 hidden">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-4">検索結果</h3>
-                            <div id="searchResultContent"></div>
-                        </div>
+                    <div id="searchResults" class="border-t border-gray-200 p-6 hidden">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">検索結果</h3>
+                        <div id="searchResultContent"></div>
                     </div>
                 </div>
             </section>
 
-            <!-- マジックリンクテスト -->
-            <section id="magic-link-test" class="section hidden">
-                <div class="mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-2">マジックリンクテスト</h2>
-                    <p class="text-gray-600">Resend.com APIを使ったマジックリンクの送信と動作をテストします</p>
-                </div>
 
-                <div class="bg-white rounded-lg shadow">
-                    <div class="p-6">
-                        <form id="magicLinkTestForm" class="space-y-4">
-                            <div>
-                                <label for="testEmail" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-envelope mr-2"></i>メールアドレス
-                                </label>
-                                <input type="email" id="testEmail" name="email" required
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                       placeholder="test@example.com">
-                            </div>
-                            <div>
-                                <label for="testNickname" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-user mr-2"></i>ニックネーム
-                                </label>
-                                <input type="text" id="testNickname" name="nickname" required
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                       placeholder="テストユーザー">
-                            </div>
-                            <div class="flex flex-col sm:flex-row gap-3">
-                                <button type="submit" 
-                                        class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center">
-                                    <i class="fas fa-link mr-2"></i>
-                                    マジックリンクを送信
-                                </button>
-                            </div>
-                        </form>
 
-                        <div id="magicLinkResult" class="mt-6 hidden"></div>
 
-                        <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                            <h3 class="text-sm font-medium text-blue-900 mb-2">
-                                <i class="fas fa-info-circle mr-1"></i>テスト手順
-                            </h3>
-                            <ol class="text-sm text-blue-800 space-y-1">
-                                <li>1. 実際に受信可能なメールアドレスを入力してください</li>
-                                <li>2. 「マジックリンクを送信」でResend.com経由のメール送信テスト</li>
-                                <li>3. 受信したメールのリンクをクリックして登録フローを確認</li>
-                                <li>4. 迷惑メールフォルダも確認してください</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 会員登録テスト -->
-            <section id="registration-test" class="section hidden">
-                <div class="mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-2">会員登録テスト</h2>
-                    <p class="text-gray-600">会員登録機能の動作をテストします</p>
-                </div>
-
-                <div class="bg-white rounded-lg shadow">
-                    <div class="p-6">
-                        <form id="registrationTestForm" class="space-y-4">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label for="regEmail" class="block text-sm font-medium text-gray-700 mb-2">メールアドレス</label>
-                                    <input type="email" id="regEmail" name="email" required
-                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                           placeholder="test@example.com">
-                                </div>
-                                <div>
-                                    <label for="regNickname" class="block text-sm font-medium text-gray-700 mb-2">ニックネーム</label>
-                                    <input type="text" id="regNickname" name="nickname" required
-                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                           placeholder="テストユーザー">
-                                </div>
-                                <div>
-                                    <label for="regBirthdate" class="block text-sm font-medium text-gray-700 mb-2">生年月日</label>
-                                    <input type="date" id="regBirthdate" name="birthdate" required
-                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                </div>
-                                <div>
-                                    <label for="regGuardian" class="block text-sm font-medium text-gray-700 mb-2">守護神</label>
-                                    <select id="regGuardian" name="guardian_id" required
-                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="">選択してください</option>
-                                        <option value="senju">千手観音</option>
-                                        <option value="yakushi">薬師如来</option>
-                                        <option value="amida">阿弥陀如来</option>
-                                        <option value="kokuzo">虚空蔵菩薩</option>
-                                        <option value="monju">文殊菩薩</option>
-                                        <option value="fugen">普賢菩薩</option>
-                                        <option value="seishi">勢至菩薩</option>
-                                        <option value="dainichi">大日如来</option>
-                                        <option value="fudo">不動明王</option>
-                                    </select>
-                                </div>
-                                <div class="md:col-span-2">
-                                    <label for="regTheme" class="block text-sm font-medium text-gray-700 mb-2">鑑定してほしいカテゴリー</label>
-                                    <select id="regTheme" name="theme" required
-                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="">選択してください</option>
-                                        <option value="love">恋愛</option>
-                                        <option value="work">仕事</option>
-                                        <option value="health">健康</option>
-                                        <option value="money">金運</option>
-                                        <option value="family">家族</option>
-                                        <option value="other">その他</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="flex flex-col sm:flex-row gap-3">
-                                <button type="submit" 
-                                        class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center">
-                                    <i class="fas fa-user-plus mr-2"></i>
-                                    会員登録をテスト
-                                </button>
-                            </div>
-                        </form>
-
-                        <div id="registrationResult" class="mt-6 hidden"></div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 購入履歴確認 -->
-            <section id="purchase-history" class="section hidden">
-                <div class="mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-2">購入履歴確認</h2>
-                    <p class="text-gray-600">ユーザーの購入履歴を確認します</p>
-                </div>
-
-                <div class="bg-white rounded-lg shadow">
-                    <div class="p-6">
-                        <form id="purchaseHistoryForm" class="space-y-4">
-                            <div>
-                                <label for="historyEmail" class="block text-sm font-medium text-gray-700 mb-2">メールアドレス</label>
-                                <input type="email" id="historyEmail" name="email" required
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                       placeholder="user@example.com">
-                            </div>
-                            <div class="flex flex-col sm:flex-row gap-3">
-                                <button type="submit" 
-                                        class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center">
-                                    <i class="fas fa-shopping-cart mr-2"></i>
-                                    購入履歴を取得
-                                </button>
-                            </div>
-                        </form>
-
-                        <div id="purchaseHistoryResult" class="mt-6 hidden"></div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- データベース整理 -->
-            <section id="database-cleanup" class="section hidden">
-                <div class="mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-2">データベース整理</h2>
-                    <p class="text-gray-600">データベースの状況確認とテストデータの削除</p>
-                </div>
-
-                <div class="bg-white rounded-lg shadow">
-                    <div class="p-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <button onclick="checkDatabaseStatus()" 
-                                    class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center">
-                                <i class="fas fa-database mr-2"></i>
-                                データベース状態確認
-                            </button>
-                            <button onclick="resetTestData()" 
-                                    class="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center">
-                                <i class="fas fa-trash mr-2"></i>
-                                テストデータを削除
-                            </button>
-                        </div>
-
-                        <div id="dbCleanupResult" class="mt-6 hidden"></div>
-                    </div>
-                </div>
-            </section>
 
             <!-- DBリセット -->
             <section id="db-reset" class="section hidden">
@@ -464,6 +311,8 @@
                 </div>
             </section>
 
+
+
             <!-- 環境変数チェック -->
             <section id="env-check" class="section hidden">
                 <div class="mb-6">
@@ -473,26 +322,24 @@
 
                 <div class="bg-white rounded-lg shadow">
                     <div class="p-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-900 mb-4">API設定</h3>
-                                <div id="apiStatus"></div>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-900 mb-4">データベース設定</h3>
-                                <div id="dbStatus"></div>
+                        <button onclick="checkEnvironmentVariables()" 
+                                class="w-full md:w-auto bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center mb-6">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            環境変数をチェック
+                        </button>
+
+                        <div id="envCheckResult" class="hidden">
+                            <div class="space-y-4">
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <h3 class="font-semibold text-gray-900 mb-2">API設定</h3>
+                                    <div id="apiStatus" class="space-y-2"></div>
+                                </div>
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <h3 class="font-semibold text-gray-900 mb-2">データベース設定</h3>
+                                    <div id="dbStatus" class="space-y-2"></div>
+                                </div>
                             </div>
                         </div>
-
-                        <div class="mt-6">
-                            <button onclick="checkEnvironmentVariables()" 
-                                    class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center">
-                                <i class="fas fa-cog mr-2"></i>
-                                環境変数をチェック
-                            </button>
-                        </div>
-
-                        <div id="envCheckResult" class="mt-6 hidden"></div>
                     </div>
                 </div>
             </section>
