@@ -425,8 +425,41 @@ async function resetTestData() {
     }
 }
 
-// データベース状態確認
+// データベース状態確認（データベース整理セクション用）
 async function checkDatabaseStatus() {
+    const resultDiv = document.getElementById('dbCleanupResult');
+    if (!resultDiv) return;
+    
+    resultDiv.innerHTML = showLoading();
+    resultDiv.classList.remove('hidden');
+    
+    try {
+        const response = await fetch('/api/search-user', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({})
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            resultDiv.innerHTML = showMessage(
+                `✅ データベース接続正常<br>
+                現在の会員数: ${data.users ? data.users.length : 0} 名`, 
+                'success'
+            );
+        } else {
+            resultDiv.innerHTML = showMessage(`❌ データベースエラー: ${data.error}`, 'error');
+        }
+    } catch (error) {
+        resultDiv.innerHTML = showMessage(`⚠️ 通信エラー: ${error.message}`, 'warning');
+    }
+}
+
+// データベース状態確認（DBリセットセクション用）
+async function checkDatabaseStatusForReset() {
     const resultDiv = document.getElementById('dbResetResult');
     if (!resultDiv) return;
     
