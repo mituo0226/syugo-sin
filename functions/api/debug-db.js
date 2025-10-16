@@ -23,23 +23,23 @@ export async function onRequestPost(context) {
       return createErrorResponse(`テーブル一覧取得エラー: ${error.message}`, 500, corsHeaders);
     }
 
-    // usersテーブルの構造を確認
+    // user_profilesテーブルの構造を確認
     let tableInfo;
     try {
       tableInfo = await env.DB.prepare(`
-        PRAGMA table_info(users)
+        PRAGMA table_info(user_profiles)
       `).all();
-      console.log("Users table info:", tableInfo);
+      console.log("User profiles table info:", tableInfo);
     } catch (error) {
       console.error("Table info error:", error);
       return createErrorResponse(`テーブル構造取得エラー: ${error.message}`, 500, corsHeaders);
     }
 
-    // usersテーブルのレコード数を確認
+    // user_profilesテーブルのレコード数を確認
     let userCount;
     try {
       const countResult = await env.DB.prepare(`
-        SELECT COUNT(*) as count FROM users
+        SELECT COUNT(*) as count FROM user_profiles
       `).first();
       userCount = countResult.count;
       console.log("User count:", userCount);
@@ -52,7 +52,7 @@ export async function onRequestPost(context) {
     let testUser;
     try {
       testUser = await env.DB.prepare(`
-        SELECT * FROM users WHERE email = ?
+        SELECT * FROM user_profiles WHERE user_id = ?
       `).bind('mituo0226@gmail.com').first();
       console.log("Test user found:", testUser);
     } catch (error) {
@@ -73,13 +73,13 @@ export async function onRequestPost(context) {
       foreignKeysEnabled = null;
     }
 
-    // 他のテーブルでusersテーブルを参照している可能性をチェック
+    // 他のテーブルでuser_profilesテーブルを参照している可能性をチェック
     let foreignKeyInfo;
     try {
       foreignKeyInfo = await env.DB.prepare(`
-        PRAGMA foreign_key_list(users)
+        PRAGMA foreign_key_list(user_profiles)
       `).all();
-      console.log("Foreign key info for users table:", foreignKeyInfo);
+      console.log("Foreign key info for user_profiles table:", foreignKeyInfo);
     } catch (error) {
       console.error("Foreign key info error:", error);
       foreignKeyInfo = null;
