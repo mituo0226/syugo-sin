@@ -482,17 +482,17 @@
               localStorage.setItem("userData", JSON.stringify(userData));
               
               // 守護神の儀式ページに遷移
-              window.location.href = 'ritual-guardian.html';
+              window.location.href = '../ritual/ritual-guardian.html';
             }
           })
           .catch(error => {
             console.error("データ保存エラー:", error);
             // エラー時も儀式ページに遷移
-            window.location.href = 'ritual-guardian.html';
+            window.location.href = '../ritual/ritual-guardian.html';
           });
       } else {
         // メールアドレスがない場合は直接遷移
-        window.location.href = 'ritual-guardian.html';
+        window.location.href = '../ritual/ritual-guardian.html';
       }
     }
     

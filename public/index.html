@@ -45,39 +45,38 @@
       z-index: 1;
     }
     
-    /* PC向けコンテナ調整 - 横並びレイアウト */
+    /* PC向けコンテナ調整 - 縦並びレイアウト */
     @media (min-width: 768px) {
       .container {
         padding: 40px 40px 120px;
-        justify-content: center;
+        justify-content: flex-start;
       }
       
       .main-content {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        gap: 80px;
+        justify-content: flex-start;
+        gap: 40px;
         width: 100%;
-        max-width: 1400px;
-        margin-top: -40px;
+        max-width: 800px;
+        margin-top: 20px;
       }
       
       .content-left {
-        flex: 1;
-        max-width: 600px;
+        width: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
       }
       
       .content-right {
-        flex: 1;
+        width: 100%;
         max-width: 600px;
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        text-align: left;
+        align-items: center;
+        text-align: center;
       }
     }
 
@@ -343,33 +342,35 @@
     /* PC向けレイアウト調整 */
     @media (min-width: 768px) {
       .main-content {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 60px;
+        display: flex;
+        flex-direction: column;
         align-items: center;
-        max-width: 1200px;
+        max-width: 800px;
         width: 100%;
       }
 
       .logo {
-        margin-bottom: 0;
-        max-width: 450px;
-        max-height: 450px;
-        justify-self: center;
+        margin-bottom: 30px;
+        max-width: 350px;
+        max-height: 350px;
       }
 
       .content-right {
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
         justify-content: center;
+        width: 100%;
       }
 
       .intro-text {
+        margin-top: 40px;
         margin-bottom: 30px;
         padding: 35px;
-        text-align: left;
+        text-align: center;
         width: 100%;
+        max-width: 700px;
+        order: 2;
       }
 
       .intro-text h2 {
@@ -401,8 +402,9 @@
         width: 100%;
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
         gap: 15px;
+        order: 1;
       }
     }
 
@@ -480,10 +482,10 @@
 
         <!-- ログイン選択ボタン -->
         <div class="login-options">
-          <a href="login.html" class="main-button">
+          <a href="auth/login.html" class="main-button">
             🔮 神界に進む
           </a>
-          <a href="dragon-intro.html" class="sub-button" id="startButton">
+          <a href="ritual/dragon-intro.html" class="sub-button" id="startButton">
             ✨ 初めての方
           </a>
         </div>

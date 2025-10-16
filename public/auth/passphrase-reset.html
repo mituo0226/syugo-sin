@@ -336,7 +336,7 @@
         if (result.success) {
           showMessage('✅ 合言葉を更新しました！3秒後にログイン画面に移動します...', 'success');
           setTimeout(() => {
-            window.location.href = '/login.html';
+            window.location.href = 'login.html';
           }, 3000);
         } else {
           showMessage('❌ ' + (result.message || '更新に失敗しました'), 'error');
@@ -359,7 +359,7 @@
       if (!currentToken) {
         document.getElementById('loadingSection').innerHTML = `
           <p style="color: red;">❌ 無効なリンクです</p>
-          <p><a href="/login.html">ログイン画面へ</a></p>
+          <p><a href="login.html">ログイン画面へ</a></p>
         `;
         return;
       }
@@ -378,7 +378,7 @@
       } catch (error) {
         document.getElementById('loadingSection').innerHTML = `
           <p style="color: red;">❌ ${error.message}</p>
-          <p><a href="/passphrase-recovery.html">再度リカバリーをリクエスト</a></p>
+          <p><a href="passphrase-recovery.html">再度リカバリーをリクエスト</a></p>
         `;
       }
     });

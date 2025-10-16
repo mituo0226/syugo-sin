@@ -94,11 +94,14 @@ function setupMemberSearch() {
             e.preventDefault();
             
             const email = document.getElementById('searchEmail').value;
+            const nickname = document.getElementById('searchNickname').value;
+            const birthdate = document.getElementById('searchBirthdate').value;
             const resultsDiv = document.getElementById('searchResults');
             const contentDiv = document.getElementById('searchResultContent');
             
-            if (!email) {
-                contentDiv.innerHTML = showMessage('メールアドレスを入力してください', 'error');
+            // 少なくとも一つの検索条件が必要
+            if (!email && !nickname && !birthdate) {
+                contentDiv.innerHTML = showMessage('少なくとも一つの検索条件を入力してください', 'error');
                 resultsDiv.classList.remove('hidden');
                 return;
             }
@@ -114,7 +117,8 @@ function setupMemberSearch() {
                     },
                     body: JSON.stringify({ 
                         email: email,
-                        searchType: 'email'
+                        nickname: nickname,
+                        birthdate: birthdate
                     })
                 });
                 
@@ -122,42 +126,55 @@ function setupMemberSearch() {
                 
                 if (response.ok) {
                     if (data.users && data.users.length > 0) {
-                        const user = data.users[0];
                         contentDiv.innerHTML = `
-                            <div class="bg-white border border-gray-200 rounded-lg p-4">
-                                <h4 class="font-semibold text-gray-900 mb-2">会員情報</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <p class="text-sm text-gray-600">メールアドレス</p>
-                                        <p class="font-medium">${user.email}</p>
+                            <div class="mb-4">
+                                <p class="text-sm text-gray-600">検索結果: ${data.users.length} 名の会員が見つかりました</p>
+                            </div>
+                            <div class="space-y-4">
+                                ${data.users.map(user => `
+                                    <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                        <div class="flex justify-between items-start mb-4">
+                                            <h4 class="font-semibold text-gray-900">会員情報 #${user.id}</h4>
+                                            <div class="flex gap-2">
+                                                <button onclick="viewChatHistory(${user.id}, '${user.email}')" 
+                                                        class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 transition-colors">
+                                                    <i class="fas fa-comments mr-1"></i>会話履歴
+                                                </button>
+                                                <button onclick="withdrawUser(${user.id}, '${user.email}')" 
+                                                        class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition-colors">
+                                                    <i class="fas fa-user-times mr-1"></i>退会処理
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            <div>
+                                                <p class="text-sm text-gray-600">メールアドレス</p>
+                                                <p class="font-medium break-all">${user.email}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm text-gray-600">ニックネーム</p>
+                                                <p class="font-medium">${user.nickname || '未設定'}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm text-gray-600">生年月日</p>
+                                                <p class="font-medium">${user.birth_year && user.birth_month && user.birth_day ? 
+                                                    `${user.birth_year}年${user.birth_month}月${user.birth_day}日` : '未設定'}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm text-gray-600">合言葉</p>
+                                                <p class="font-medium">${user.passphrase || '未設定'}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm text-gray-600">登録日</p>
+                                                <p class="font-medium">${new Date(user.created_at).toLocaleString('ja-JP')}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm text-gray-600">最終アクセス</p>
+                                                <p class="font-medium">${user.last_access ? new Date(user.last_access).toLocaleString('ja-JP') : '未記録'}</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p class="text-sm text-gray-600">ニックネーム</p>
-                                        <p class="font-medium">${user.nickname || '未設定'}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm text-gray-600">登録日</p>
-                                        <p class="font-medium">${new Date(user.created_at).toLocaleString('ja-JP')}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm text-gray-600">ID</p>
-                                        <p class="font-medium">${user.id}</p>
-                                    </div>
-                                </div>
-                                <div class="mt-6 pt-4 border-t border-gray-200">
-                                    <div class="flex flex-col sm:flex-row gap-3">
-                                        <button onclick="withdrawUser(${user.id}, '${user.email}')" 
-                                                class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center">
-                                            <i class="fas fa-user-times mr-2"></i>
-                                            退会処理
-                                        </button>
-                                        <button onclick="refreshSearchResult('${user.email}')" 
-                                                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center">
-                                            <i class="fas fa-refresh mr-2"></i>
-                                            情報更新
-                                        </button>
-                                    </div>
-                                </div>
+                                `).join('')}
                             </div>
                         `;
                     } else {
@@ -170,6 +187,104 @@ function setupMemberSearch() {
                 contentDiv.innerHTML = showMessage(`通信エラー: ${error.message}`, 'error');
             }
         });
+    }
+}
+
+// 検索フォームクリア
+function clearSearchForm() {
+    document.getElementById('searchEmail').value = '';
+    document.getElementById('searchNickname').value = '';
+    document.getElementById('searchBirthdate').value = '';
+    document.getElementById('searchResults').classList.add('hidden');
+}
+
+// 会話履歴表示
+async function viewChatHistory(userId, userEmail) {
+    const contentDiv = document.getElementById('searchResultContent');
+    if (!contentDiv) return;
+    
+    // 会話履歴表示中の表示
+    contentDiv.innerHTML = `
+        <div class="bg-white border border-gray-200 rounded-lg p-4">
+            <div class="flex items-center justify-center py-8">
+                <i class="fas fa-spinner fa-spin text-blue-600 mr-2"></i>
+                <span class="text-gray-600">会話履歴を読み込み中...</span>
+            </div>
+        </div>
+    `;
+    
+    try {
+        const response = await fetch('/api/get-chat-history', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userId: userId })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            if (data.messages && data.messages.length > 0) {
+                contentDiv.innerHTML = `
+                    <div class="bg-white border border-gray-200 rounded-lg p-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-semibold text-gray-900">会話履歴 - ${userEmail}</h4>
+                            <button onclick="refreshSearchResult('${userEmail}')" 
+                                    class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-arrow-left mr-1"></i>検索結果に戻る
+                            </button>
+                        </div>
+                        <div class="space-y-3 max-h-96 overflow-y-auto">
+                            ${data.messages.map(message => `
+                                <div class="border-l-4 ${message.sender === 'user' ? 'border-blue-500 bg-blue-50' : 'border-green-500 bg-green-50'} p-3 rounded">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex-1">
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <span class="text-xs font-medium ${message.sender === 'user' ? 'text-blue-700' : 'text-green-700'}">
+                                                    ${message.sender === 'user' ? '👤 ユーザー' : '🐉 龍'}
+                                                </span>
+                                                <span class="text-xs text-gray-500">
+                                                    ${new Date(message.timestamp).toLocaleString('ja-JP')}
+                                                </span>
+                                            </div>
+                                            <p class="text-sm ${message.sender === 'user' ? 'text-blue-900' : 'text-green-900'}">
+                                                ${message.content}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <p class="text-sm text-gray-600">
+                                総メッセージ数: ${data.messages.length} 件
+                            </p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                contentDiv.innerHTML = `
+                    <div class="bg-white border border-gray-200 rounded-lg p-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-semibold text-gray-900">会話履歴 - ${userEmail}</h4>
+                            <button onclick="refreshSearchResult('${userEmail}')" 
+                                    class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-arrow-left mr-1"></i>検索結果に戻る
+                            </button>
+                        </div>
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-comments text-4xl mb-4"></i>
+                            <p>会話履歴がありません</p>
+                        </div>
+                    </div>
+                `;
+            }
+        } else {
+            contentDiv.innerHTML = showMessage(`会話履歴の取得エラー: ${data.error}`, 'error');
+        }
+    } catch (error) {
+        contentDiv.innerHTML = showMessage(`通信エラー: ${error.message}`, 'error');
     }
 }
 
@@ -208,105 +323,6 @@ async function loadDashboardStats() {
     }
 }
 
-// 会員一覧読み込み
-async function loadMemberList() {
-    const contentDiv = document.getElementById('memberListContent');
-    if (!contentDiv) return;
-    
-    contentDiv.innerHTML = showLoading();
-    
-    try {
-        // 全ユーザーを取得するため、空の条件で検索
-        const response = await fetch('/api/search-user', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({})
-        });
-        
-        const data = await response.json();
-        
-        if (response.ok && data.users && data.users.length > 0) {
-            // PC用テーブル表示
-            const tableHTML = `
-                <div class="table-responsive">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">メールアドレス</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ニックネーム</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">登録日</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            ${data.users.map(user => `
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${user.id}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${user.email}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${user.nickname || '-'}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${new Date(user.created_at).toLocaleString('ja-JP')}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        <button onclick="withdrawUserFromList(${user.id}, '${user.email}')" 
-                                                class="text-red-600 hover:text-red-900">
-                                            <i class="fas fa-user-times"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- モバイル用カード表示 -->
-                <div class="card-view space-y-4">
-                    ${data.users.map(user => `
-                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <p class="text-xs text-gray-500">ID</p>
-                                    <p class="text-sm font-medium">${user.id}</p>
-                                </div>
-                                <div>
-                                    <p class="text-xs text-gray-500">登録日</p>
-                                    <p class="text-sm font-medium">${new Date(user.created_at).toLocaleDateString('ja-JP')}</p>
-                                </div>
-                            </div>
-                            <div class="mt-2">
-                                <p class="text-xs text-gray-500">メールアドレス</p>
-                                <p class="text-sm font-medium break-all">${user.email}</p>
-                            </div>
-                            <div class="mt-1">
-                                <p class="text-xs text-gray-500">ニックネーム</p>
-                                <p class="text-sm font-medium">${user.nickname || '-'}</p>
-                            </div>
-                            <div class="mt-3 pt-3 border-t border-gray-300">
-                                <button onclick="withdrawUserFromList(${user.id}, '${user.email}')" 
-                                        class="w-full bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center">
-                                    <i class="fas fa-user-times mr-2"></i>
-                                    退会処理
-                                </button>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-            
-            contentDiv.innerHTML = `
-                <div class="mb-4">
-                    <p class="text-sm text-gray-600">合計 ${data.users.length} 名の会員</p>
-                </div>
-                ${tableHTML}
-            `;
-        } else {
-            contentDiv.innerHTML = showMessage('会員データが見つかりませんでした', 'warning');
-        }
-    } catch (error) {
-        contentDiv.innerHTML = showMessage(`通信エラー: ${error.message}`, 'error');
-    }
-}
 
 // マジックリンクテスト
 function setupMagicLinkTest() {
@@ -470,46 +486,6 @@ async function withdrawUser(userId, userEmail) {
     }
 }
 
-// 会員一覧からの退会処理
-async function withdrawUserFromList(userId, userEmail) {
-    // 確認ダイアログを表示
-    const confirmed = confirm(
-        `以下の会員を退会させますか？\n\n` +
-        `ID: ${userId}\n` +
-        `メールアドレス: ${userEmail}\n\n` +
-        `この操作は取り消せません。`
-    );
-    
-    if (!confirmed) {
-        return;
-    }
-    
-    try {
-        const response = await fetch('/api/withdraw', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ userId: userId })
-        });
-        
-        const data = await response.json();
-        
-        if (response.ok) {
-            alert(`✅ 退会処理が完了しました\nID: ${userId}\nメールアドレス: ${userEmail}`);
-            
-            // 会員一覧を再読み込み
-            loadMemberList();
-            
-            // ダッシュボードの統計も更新
-            loadDashboardStats();
-        } else {
-            alert(`❌ 退会処理エラー: ${data.error}`);
-        }
-    } catch (error) {
-        alert(`⚠️ 通信エラー: ${error.message}`);
-    }
-}
 
 // 検索結果の情報更新
 async function refreshSearchResult(email) {

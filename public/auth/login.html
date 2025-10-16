@@ -230,13 +230,13 @@
     <div id="errorMessage" class="error-message"></div>
 
     <p class="forgot-link">
-      <a href="/passphrase-recovery.html">
+      <a href="passphrase-recovery.html">
         🔑 合言葉を忘れた方はこちら
       </a>
     </p>
 
     <p class="back-to-home">
-      <a href="/index.html">← トップページに戻る</a>
+      <a href="../index.html">← トップページに戻る</a>
     </p>
   </div>
 
@@ -315,7 +315,7 @@
         if (result.success) {
           // ログイン成功
           localStorage.setItem('userData', JSON.stringify(result.userData));
-          window.location.href = '/login-success.html'; // ログイン成功画面へ遷移
+          window.location.href = 'login-success.html'; // ログイン成功画面へ遷移
         } else {
           showError(result.message || 'ログインに失敗しました');
         }
