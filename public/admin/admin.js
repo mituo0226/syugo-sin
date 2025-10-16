@@ -434,8 +434,8 @@ async function checkDatabaseStatus() {
     resultDiv.classList.remove('hidden');
     
     try {
-        // データベース状態確認用のAPIを使用
-        const response = await fetch('/api/database-status', {
+        // 既存のdebug-db APIを使用してデータベース状態を確認
+        const response = await fetch('/api/debug-db', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -448,35 +448,15 @@ async function checkDatabaseStatus() {
         if (response.ok) {
             resultDiv.innerHTML = showMessage(
                 `✅ データベース接続正常<br>
+                データベースバインド: ${data.database_bound ? 'OK' : 'NG'}<br>
                 テーブル数: ${data.tables ? data.tables.length : 0}個<br>
                 ユーザー数: ${data.user_count || 0}名<br>
+                外部キー制約: ${data.foreign_keys_enabled ? '有効' : '無効'}<br>
                 システム状態: 正常`, 
                 'success'
             );
         } else {
-            // フォールバック: search-user APIを試す（検索条件付き）
-            const fallbackResponse = await fetch('/api/search-user', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: 'test@example.com',
-                    searchType: 'email'
-                })
-            });
-            
-            const fallbackData = await fallbackResponse.json();
-            
-            if (fallbackResponse.ok) {
-                resultDiv.innerHTML = showMessage(
-                    `✅ データベース接続正常<br>
-                    現在の会員数: ${fallbackData.users ? fallbackData.users.length : 0} 名`, 
-                    'success'
-                );
-            } else {
-                resultDiv.innerHTML = showMessage(`❌ データベースエラー: ${fallbackData.error}`, 'error');
-            }
+            resultDiv.innerHTML = showMessage(`❌ データベースエラー: ${data.error}`, 'error');
         }
     } catch (error) {
         resultDiv.innerHTML = showMessage(`⚠️ 通信エラー: ${error.message}`, 'warning');
@@ -492,8 +472,8 @@ async function checkDatabaseStatusForReset() {
     resultDiv.classList.remove('hidden');
     
     try {
-        // データベース状態確認用のAPIを使用
-        const response = await fetch('/api/database-status', {
+        // 既存のdebug-db APIを使用してデータベース状態を確認
+        const response = await fetch('/api/debug-db', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -506,35 +486,15 @@ async function checkDatabaseStatusForReset() {
         if (response.ok) {
             resultDiv.innerHTML = showMessage(
                 `✅ データベース接続正常<br>
+                データベースバインド: ${data.database_bound ? 'OK' : 'NG'}<br>
                 テーブル数: ${data.tables ? data.tables.length : 0}個<br>
                 ユーザー数: ${data.user_count || 0}名<br>
+                外部キー制約: ${data.foreign_keys_enabled ? '有効' : '無効'}<br>
                 システム状態: 正常`, 
                 'success'
             );
         } else {
-            // フォールバック: search-user APIを試す（検索条件付き）
-            const fallbackResponse = await fetch('/api/search-user', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: 'test@example.com',
-                    searchType: 'email'
-                })
-            });
-            
-            const fallbackData = await fallbackResponse.json();
-            
-            if (fallbackResponse.ok) {
-                resultDiv.innerHTML = showMessage(
-                    `✅ データベース接続正常<br>
-                    現在の会員数: ${fallbackData.users ? fallbackData.users.length : 0} 名`, 
-                    'success'
-                );
-            } else {
-                resultDiv.innerHTML = showMessage(`❌ データベースエラー: ${fallbackData.error}`, 'error');
-            }
+            resultDiv.innerHTML = showMessage(`❌ データベースエラー: ${data.error}`, 'error');
         }
     } catch (error) {
         resultDiv.innerHTML = showMessage(`⚠️ 通信エラー: ${error.message}`, 'warning');
