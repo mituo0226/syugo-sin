@@ -343,8 +343,8 @@
         animation: descriptionFadeIn 1s ease-in-out forwards;
       }
       
-      .intro-description.fade-out {
-        animation: descriptionFadeOut 1s ease-in-out forwards;
+      .intro-description.move-to-top {
+        animation: descriptionMoveToTop 1s ease-in-out forwards;
       }
       
       @keyframes descriptionFadeIn {
@@ -358,14 +358,18 @@
         }
       }
       
-      @keyframes descriptionFadeOut {
+      @keyframes descriptionMoveToTop {
         0% {
           opacity: 1;
           transform: translate(-50%, -50%) scale(1);
+          top: 50%;
         }
         100% {
-          opacity: 0;
-          transform: translate(-50%, -50%) scale(0.8);
+          opacity: 1;
+          transform: translate(-50%, 0) scale(0.8);
+          top: 80px;
+          width: 70%;
+          max-width: 500px;
         }
       }
       
@@ -708,15 +712,15 @@
           introDescription.classList.add('fade-in');
         }, 5500);
         
-        // 5. 説明文がフェードアウト
+        // 5. 説明文が画面上部に移動
         setTimeout(() => {
-          introDescription.classList.add('fade-out');
+          introDescription.classList.add('move-to-top');
         }, 9000);
         
-        // 6. ボタンが表示（説明文フェードアウト後）
+        // 6. ボタンが表示（説明文移動後）
         setTimeout(() => {
           loginOptions.classList.add('show');
-        }, 11000);
+        }, 10000);
         
         // 7. スキップリンクが表示
         setTimeout(() => {
