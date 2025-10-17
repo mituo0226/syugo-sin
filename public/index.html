@@ -70,7 +70,7 @@
       }
       
       .content-left {
-        width: 50%;
+        width: 40%;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -79,13 +79,13 @@
       }
       
       .content-right {
-        width: 50%;
+        width: 60%;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         text-align: center;
-        max-width: 600px;
+        max-width: none;
       }
     }
 
@@ -258,30 +258,32 @@
       
       /* PC向けロゴ調整 */
       .logo {
-        max-width: 160px;
-        max-height: 160px;
-        margin-bottom: 15px;
+        max-width: 220px;
+        max-height: 220px;
+        margin-bottom: 20px;
       }
       
       /* PC向けテキスト調整 */
       .intro-text {
-        padding: 15px;
-        margin-bottom: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
         text-align: left;
-        max-height: 200px;
+        max-height: 250px;
         overflow-y: auto;
+        width: 100%;
+        box-sizing: border-box;
       }
       
       .intro-text h2 {
-        font-size: 0.9em;
-        margin-bottom: 8px;
+        font-size: 1.0em;
+        margin-bottom: 10px;
         text-align: center;
       }
       
       .intro-text p {
-        font-size: 0.7em;
-        margin: 4px 0;
-        line-height: 1.4;
+        font-size: 0.8em;
+        margin: 5px 0;
+        line-height: 1.5;
         text-align: left;
       }
     }
@@ -519,8 +521,10 @@
   <div class="container">
     <!-- メインコンテンツ -->
     <div class="main-content">
-      <!-- ロゴマーク -->
-      <img src="photo/rogo2.png" alt="AI鑑定師 龍" class="logo" id="logo">
+      <!-- 左側コンテンツ（ロゴ） -->
+      <div class="content-left">
+        <img src="photo/rogo2.png" alt="AI鑑定師 龍" class="logo" id="logo">
+      </div>
 
       <!-- 右側コンテンツ -->
       <div class="content-right">
