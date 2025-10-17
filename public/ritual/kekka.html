@@ -482,6 +482,8 @@
   
   <script type="module">
     import { guardians } from '../assets/js/guardians.js';
+    
+    console.log('guardians.js 読み込み完了:', guardians);
     // 守護神の言葉ページに移動する関数
     function goToGuardianMessage(guardianName, zodiacSign) {
       // 十二支から守護神のキーを取得
@@ -613,8 +615,8 @@
         </div>
         <div class="guardian-reveal" style="opacity: 0;">
           <img class="guardian" src="${guardian.image}" alt="${guardian.name}" 
-               onload="this.style.opacity = '1';" 
-               onerror="console.error('守護神画像読み込みエラー:', this.src); this.src = '../photo/ryu.png';">
+               onload="console.log('守護神画像読み込み成功:', this.src); this.style.opacity = '1';" 
+               onerror="console.error('守護神画像読み込みエラー:', this.src); console.log('エラー時の完全URL:', new URL(this.src, window.location.href).href); this.src = '../photo/ryu.png';">
           <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
           <div>${guardian.catch}</div>
         </div>
@@ -680,8 +682,15 @@
 
     // メイン処理
     function startProcess() {
+      console.log('=== kekka.html デバッグ開始 ===');
+      console.log('現在のURL:', window.location.href);
+      console.log('URLパラメータ:', window.location.search);
+      
       const birthDate = getBirthDateFromURL();
+      console.log('取得された生年月日:', birthDate);
+      
       if (!birthDate) {
+        console.error('生年月日のパラメータが無効です');
         alert('生年月日のパラメータが無効です。');
         return;
       }
@@ -710,10 +719,19 @@
           
           // 十二支を計算
           const zodiac = getZodiac(birthDate.year, birthDate.month, birthDate.day);
+          console.log('計算された十二支:', zodiac);
+          
           const guardianKey = zodiacToGuardianKey[zodiac];
+          console.log('守護神キー:', guardianKey);
+          
+          console.log('guardians オブジェクト:', guardians);
+          console.log('利用可能なキー:', Object.keys(guardians));
+          
           const guardian = guardians[guardianKey];
+          console.log('取得された守護神:', guardian);
           
           if (!guardian) {
+            console.error('守護神データが見つかりません。guardianKey:', guardianKey);
             throw new Error("守護神データが見つかりません");
           }
           
