@@ -385,18 +385,22 @@
         opacity: 0;
         transform: translateY(30px);
         transition: all 1.5s ease-in-out;
-        position: relative;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) translateY(30px);
         z-index: 50;
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 15px;
         width: 100%;
+        max-width: 400px;
       }
       
       .login-options.show {
-        opacity: 1;
-        transform: translateY(0);
+        opacity: 1 !important;
+        transform: translate(-50%, -50%) translateY(0) !important;
         animation: buttonsMysticalAppear 2s ease-in-out forwards;
       }
       
@@ -650,6 +654,14 @@
         align-items: center;
         gap: 15px;
         order: 1;
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 1.5s ease-in-out;
+      }
+      
+      .login-options.show {
+        opacity: 1;
+        transform: translateY(0);
       }
     }
 
@@ -754,7 +766,7 @@
       const loginOptions = document.querySelector('.login-options');
       const skipLogin = document.getElementById("skipLogin");
       
-      // PC画面のみのアニメーション
+      // PC画面のアニメーション
       if (window.innerWidth >= 768) {
         // 1. ロゴが中央に大きくフェードイン
         setTimeout(() => {
@@ -766,7 +778,7 @@
           logo.classList.add('shrink-away');
         }, 3000);
         
-        // 3. ロゴが画面上部右に小さく再表示
+        // 3. ロゴが画面上部左に小さく再表示
         setTimeout(() => {
           logo.classList.add('reappear');
         }, 4500);
@@ -781,29 +793,38 @@
           introDescription.classList.add('move-to-top');
         }, 9000);
         
-        // 6. ボタンが表示（説明文移動後）
+        // 6. ボタンが表示（説明文移動完了後）
         setTimeout(() => {
-          console.log('ボタン表示開始');
+          console.log('PC画面: ボタン表示開始');
           console.log('loginOptions要素:', loginOptions);
           console.log('loginOptionsの現在のクラス:', loginOptions.className);
           loginOptions.classList.add('show');
           console.log('ボタンクラス追加完了:', loginOptions.classList.contains('show'));
           console.log('loginOptionsの最終クラス:', loginOptions.className);
-        }, 5000);
+        }, 10000);
         
         // 7. スキップリンクが表示
         setTimeout(() => {
           skipLogin.classList.add('show');
         }, 500);
       } else {
-        // モバイル画面は従来のアニメーション
+        // モバイル画面のアニメーション
+        console.log('モバイル画面: アニメーション開始');
+        
+        // 1. ロゴが中央にフェードイン
         setTimeout(() => {
-          logo.classList.add('show');
+          logo.classList.add('fade-in');
         }, 500);
         
+        // 2. ボタンが表示（モバイルでは即座に）
         setTimeout(() => {
+          console.log('モバイル画面: ボタン表示開始');
+          console.log('loginOptions要素:', loginOptions);
+          console.log('loginOptionsの現在のクラス:', loginOptions.className);
           loginOptions.classList.add('show');
-        }, 2500);
+          console.log('ボタンクラス追加完了:', loginOptions.classList.contains('show'));
+          console.log('loginOptionsの最終クラス:', loginOptions.className);
+        }, 2000);
       }
     });
   </script>
