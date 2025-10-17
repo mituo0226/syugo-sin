@@ -15,7 +15,7 @@ export const guardians = {
       personality: "柔らかく落ち着いた雰囲気で母や姉のように寄り添う。ただし諦めることだけは許さない芯の強さを持つ。"
     },
     message: "……泣いてもよい。悲しみを隠さず、我のもとに委ねなさい。汝の痛みを幾千の手で受け止めよう。けれど、この手はただ抱くだけではない。汝が再び歩み出すための力を授けるためにあるのだ。",
-    image: "photo/senju.png"
+    image: "../../photo/senju.png"
   },
 
   yakushi: {
