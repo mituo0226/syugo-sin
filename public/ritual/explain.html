@@ -443,15 +443,15 @@
   <script>
     // 守護神データを直接定義（importの代わり）
     const guardians = {
-      "amida": { name: "阿弥陀如来", image: "photo/amida.png" },
-      "dainichi": { name: "大日如来", image: "photo/dainichi.png" },
-      "fudo": { name: "不動明王", image: "photo/fudo.png" },
-      "fugen": { name: "普賢菩薩", image: "photo/fugen.png" },
-      "kokuzo": { name: "虚空蔵菩薩", image: "photo/kokuzo.png" },
-      "monju": { name: "文殊菩薩", image: "photo/monju.png" },
-      "seishi": { name: "勢至菩薩", image: "photo/seishi.png" },
-      "senju": { name: "千手観音", image: "photo/senju.png" },
-      "yakushi": { name: "薬師如来", image: "photo/yakushi.png" }
+      "amida": { name: "阿弥陀如来", image: "../photo/amida.png" },
+      "dainichi": { name: "大日如来", image: "../photo/dainichi.png" },
+      "fudo": { name: "不動明王", image: "../photo/fudo.png" },
+      "fugen": { name: "普賢菩薩", image: "../photo/fugen.png" },
+      "kokuzo": { name: "虚空蔵菩薩", image: "../photo/kokuzo.png" },
+      "monju": { name: "文殊菩薩", image: "../photo/monju.png" },
+      "seishi": { name: "勢至菩薩", image: "../photo/seishi.png" },
+      "senju": { name: "千手観音", image: "../photo/senju.png" },
+      "yakushi": { name: "薬師如来", image: "../photo/yakushi.png" }
     };
 
     // ページ読み込み時の処理
@@ -510,7 +510,7 @@
         if (!userData.guardianKey && guardianKey) {
           console.log("explain.html - localStorageのguardianKeyが不足、URLパラメータから補完");
           userData.guardianKey = guardianKey;
-          userData.guardian = guardians[guardianKey] || { name: "守護神", image: "photo/ryu.png" };
+          userData.guardian = guardians[guardianKey] || { name: "守護神", image: "../photo/ryu.png" };
         }
         if (!userData.worry && worry) {
           console.log("explain.html - localStorageのworryが不足、URLパラメータから補完");
@@ -531,11 +531,11 @@
         // 7. 守護神の画像を設定
         const guardianImage = document.getElementById('guardianImage');
         if (userData.guardianKey && userData.guardian) {
-          guardianImage.src = `photo/${userData.guardianKey}.png`;
+          guardianImage.src = `../photo/${userData.guardianKey}.png`;
           guardianImage.alt = userData.guardian.name;
           console.log("守護神画像を設定:", userData.guardianKey, userData.guardian.name);
         } else {
-          guardianImage.src = 'photo/ryu.png';
+          guardianImage.src = '../photo/ryu.png';
           guardianImage.alt = '守護神';
           console.log("デフォルト守護神画像を設定");
         }
