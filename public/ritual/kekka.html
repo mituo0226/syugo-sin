@@ -1,8 +1,3 @@
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -266,15 +261,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .oracle-text.fade-in {
-      animation: textGlow 3s ease-in-out infinite, fadeInText 0.5s ease-in-out;
-    }
-
-    @keyframes fadeInText {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes textGlow {
@@ -549,9 +535,6 @@
       const zodiacYear = year - 4;
       const zodiacIndex = zodiacYear % 12;
       const zodiac = zodiacSigns[zodiacIndex];
-      
-      console.log(`十二支計算: ${year}年 → ${zodiacYear} → ${zodiacIndex} → ${zodiac}`);
-      
       return zodiac;
     }
 
@@ -583,14 +566,10 @@
         return false;
       }
       
-      console.log('フルスクリーン画像設定:', guardian.image);
       fullscreenImg.src = guardian.image;
-      fullscreenImg.onload = function() { console.log('フルスクリーン画像読み込み完了:', this.src); };
       fullscreenImg.onerror = function() { console.error('フルスクリーン画像読み込みエラー:', this.src); };
       fullscreenName.textContent = `そなたを守護するは ${guardian.name}`;
       fullscreenDesc.textContent = guardian.catch;
-      
-
       
       // ボタンのイベントリスナーを設定
       fullscreenBtn.setAttribute('data-guardian-name', guardian.name);
@@ -618,45 +597,28 @@
 
     // 結果表示処理
     function displayResults(guardian, zodiac) {
-      console.log("displayResults開始:", { guardian, zodiac });
-      
       const guardianElement = document.getElementById("guardian");
       const resultBox = document.getElementById("resultBox");
       
       if (!guardianElement || !resultBox) {
-        console.error("要素が見つかりません:", { guardianElement, resultBox });
+        console.error("要素が見つかりません");
         return;
       }
       
-      console.log("守護神画像パス (displayResults内):", guardian.image);
-      console.log("innerHTMLに設定する内容を準備中...");
-      
-      // テンプレートリテラルの内容を事前に確認
-      const templateContent = `
+      // 龍と守護神を表示
+      guardianElement.innerHTML = `
         <div class="dragon-reveal">
           <img class="dragon-image" src="../photo/ryu.png" alt="AI鑑定師 龍" 
-               onload="console.log('龍画像読み込み完了:', this.src);" 
                onerror="console.error('龍画像読み込みエラー:', this.src);">
         </div>
         <div class="guardian-reveal" style="opacity: 0;">
           <img class="guardian" src="${guardian.image}" alt="${guardian.name}" 
-               onload="console.log('守護神画像読み込み完了:', this.src); this.style.opacity = '1';" 
-               onerror="console.error('守護神画像読み込みエラー:', this.src); console.log('現在のURL:', window.location.href); console.log('画像の完全パス:', new URL(this.src, window.location.href).href); this.src = '../photo/ryu.png'; console.log('フォールバック後のsrc:', this.src);">
+               onload="this.style.opacity = '1';" 
+               onerror="console.error('守護神画像読み込みエラー:', this.src); this.src = '../photo/ryu.png';">
           <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
           <div>${guardian.catch}</div>
         </div>
       `;
-      
-      console.log("生成されたテンプレート内容:", templateContent);
-      console.log("guardian.imageの実際の値:", JSON.stringify(guardian.image));
-      
-      // 龍と守護神を表示
-      guardianElement.innerHTML = templateContent;
-      
-      console.log("innerHTML設定完了");
-      console.log("設定されたHTML:", guardianElement.innerHTML);
-      
-      // ボタンはフルスクリーン表示内に移動済み
       
       // 結果を表示
       resultBox.style.display = "block";
@@ -667,10 +629,6 @@
         const guardianReveal = document.querySelector('.guardian-reveal');
         const guardianImg = document.querySelector('.guardian');
         if (guardianReveal && guardianImg) {
-          console.log("守護神表示開始:", guardianReveal);
-          console.log("守護神画像要素:", guardianImg);
-          console.log("守護神画像src:", guardianImg.src);
-          
           // 直接styleで表示（より確実）
           guardianReveal.style.opacity = '1';
           guardianReveal.style.transform = 'scale(1) translateY(0)';
@@ -678,9 +636,8 @@
           
           // CSSアニメーションも適用
           guardianReveal.style.animation = 'guardianAppear 2s ease-in-out 0.5s both';
-          console.log("守護神表示完了");
         } else {
-          console.error("守護神要素が見つかりません:", { guardianReveal, guardianImg });
+          console.error("守護神要素が見つかりません");
         }
         
         // フルスクリーン表示
@@ -753,19 +710,8 @@
           
           // 十二支を計算
           const zodiac = getZodiac(birthDate.year, birthDate.month, birthDate.day);
-          console.log("生年月日:", birthDate);
-          console.log("計算された十二支:", zodiac);
-          
           const guardianKey = zodiacToGuardianKey[zodiac];
-          console.log("十二支:", zodiac, "→ 守護神キー:", guardianKey);
-          
           const guardian = guardians[guardianKey];
-          console.log("取得された守護神データ:", guardian);
-          console.log("守護神画像パス:", guardian ? guardian.image : "undefined");
-          console.log("守護神名:", guardian ? guardian.name : "undefined");
-          console.log("利用可能な守護神キー:", Object.keys(guardians));
-          console.log("現在のページURL:", window.location.href);
-          console.log("画像の絶対パス:", guardian ? new URL(guardian.image, window.location.href).href : "undefined");
           
           if (!guardian) {
             throw new Error("守護神データが見つかりません");
