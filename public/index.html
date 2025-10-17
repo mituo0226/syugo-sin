@@ -264,9 +264,148 @@
         max-width: 180px;
         max-height: 180px;
         margin-bottom: 10px;
+        opacity: 0;
+        transform: scale(1);
+        transition: all 1s ease-in-out;
       }
       
+      .logo.fade-in {
+        opacity: 1;
+        animation: logoFadeIn 2s ease-in-out forwards;
+      }
       
+      .logo.shrink-away {
+        animation: logoShrinkAway 1.5s ease-in-out forwards;
+      }
+      
+      .logo.reappear {
+        max-width: 120px;
+        max-height: 120px;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        opacity: 1;
+        animation: logoReappear 1s ease-in-out forwards;
+      }
+      
+      @keyframes logoFadeIn {
+        0% {
+          opacity: 0;
+          transform: scale(0.5);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      
+      @keyframes logoShrinkAway {
+        0% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(0.1);
+        }
+      }
+      
+      @keyframes logoReappear {
+        0% {
+          opacity: 0;
+          transform: scale(0.1);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      
+      /* PC向け説明文 */
+      .intro-description {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        max-width: 600px;
+        padding: 30px;
+        background: rgba(13, 13, 26, 0.95);
+        border: 2px solid rgba(102, 204, 255, 0.5);
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        text-align: center;
+        opacity: 0;
+        z-index: 100;
+      }
+      
+      .intro-description.fade-in {
+        animation: descriptionFadeIn 1s ease-in-out forwards;
+      }
+      
+      .intro-description.fade-out {
+        animation: descriptionFadeOut 1s ease-in-out forwards;
+      }
+      
+      @keyframes descriptionFadeIn {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.8);
+        }
+        100% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+        }
+      }
+      
+      @keyframes descriptionFadeOut {
+        0% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.8);
+        }
+      }
+      
+      .intro-description p {
+        font-size: 0.9em;
+        line-height: 1.6;
+        color: #fff;
+        margin: 0;
+      }
+      
+      /* PC向けボタン初期状態 */
+      .login-options {
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+      }
+      
+      .login-options.show {
+        opacity: 1;
+      }
+      
+      /* PC向けスキップリンク */
+      .skip-login {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(13, 13, 26, 0.8);
+        border: 1px solid rgba(102, 204, 255, 0.3);
+        border-radius: 8px;
+        padding: 8px 15px;
+        text-decoration: none;
+        color: #66ccff;
+        font-size: 0.8em;
+        z-index: 200;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+      }
+      
+      .skip-login.show {
+        opacity: 1;
+      }
     }
 
     /* 神秘的な光のアニメーション */
@@ -499,6 +638,9 @@
   </style>
 </head>
 <body>
+  <!-- スキップリンク（PC画面のみ） -->
+  <a href="auth/login.html" class="skip-login" id="skipLogin">Skipしてログイン</a>
+
   <div class="container">
     <!-- メインコンテンツ -->
     <div class="main-content">
@@ -509,6 +651,10 @@
 
       <!-- 右側コンテンツ -->
       <div class="content-right">
+        <!-- 説明文（PC画面のみ） -->
+        <div class="intro-description" id="introDescription">
+          <p>本サービスはAIによる架空のキャラクターが会話を行い、カウンセリング、鑑定をする番組です。実在する人間は存在しておりません。また占いや未来予知などの要素ではなく、あくまでエンターテインメントとしてセルフケアを提供することを目的としています。</p>
+        </div>
 
         <!-- ログイン選択ボタン -->
         <div class="login-options">
@@ -536,29 +682,56 @@
     // ページロード後のアニメーション
     window.addEventListener("load", () => {
       const logo = document.getElementById("logo");
-      const introText = document.getElementById("introText");
-      const mainButton = document.querySelector('.main-button');
-      const subButton = document.querySelector('.sub-button');
+      const introDescription = document.getElementById("introDescription");
+      const loginOptions = document.querySelector('.login-options');
+      const skipLogin = document.getElementById("skipLogin");
       
-      // 1. ロゴが大きく浮かび上がる
-      setTimeout(() => {
-        logo.classList.add('show');
-      }, 500);
-      
-      // 2. ロゴに被さるように文字が浮かび上がる
-      setTimeout(() => {
-        introText.classList.add('show');
-      }, 2500);
-      
-      // 3. 文字が全て表示されたらメインボタンがフェードイン
-      setTimeout(() => {
-        mainButton.classList.add('show');
-      }, 4000);
-      
-      // 4. メインボタンの後にサブボタンがフェードイン
-      setTimeout(() => {
-        subButton.classList.add('show');
-      }, 4300);
+      // PC画面のみのアニメーション
+      if (window.innerWidth >= 768) {
+        // 1. ロゴが中央に大きくフェードイン
+        setTimeout(() => {
+          logo.classList.add('fade-in');
+        }, 500);
+        
+        // 2. ロゴが遠くに消える
+        setTimeout(() => {
+          logo.classList.add('shrink-away');
+        }, 3000);
+        
+        // 3. ロゴが画面上部右に小さく再表示
+        setTimeout(() => {
+          logo.classList.add('reappear');
+        }, 4500);
+        
+        // 4. 説明文がフェードイン
+        setTimeout(() => {
+          introDescription.classList.add('fade-in');
+        }, 5500);
+        
+        // 5. 説明文がフェードアウト
+        setTimeout(() => {
+          introDescription.classList.add('fade-out');
+        }, 9000);
+        
+        // 6. ボタンが表示
+        setTimeout(() => {
+          loginOptions.classList.add('show');
+        }, 10000);
+        
+        // 7. スキップリンクが表示
+        setTimeout(() => {
+          skipLogin.classList.add('show');
+        }, 500);
+      } else {
+        // モバイル画面は従来のアニメーション
+        setTimeout(() => {
+          logo.classList.add('show');
+        }, 500);
+        
+        setTimeout(() => {
+          loginOptions.classList.add('show');
+        }, 2500);
+      }
     });
   </script>
 </body>
