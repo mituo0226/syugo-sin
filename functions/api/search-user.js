@@ -45,32 +45,39 @@ export async function onRequestPost(context) {
     let query;
     let bindParams = [];
 
-    // 検索タイプに応じてクエリを構築（user_profilesテーブルを使用）
-    if (searchType === "email" && email) {
-      query = "SELECT * FROM user_profiles WHERE user_id = ?";
-      bindParams = [email];
-    } else if (searchType === "nickname" && nickname) {
-      query = "SELECT * FROM user_profiles WHERE nickname LIKE ?";
-      bindParams = [`%${nickname}%`];
-    } else if (searchType === "birthdate" && birthdate) {
-      query = "SELECT * FROM user_profiles WHERE birth_year || '/' || birth_month || '/' || birth_day = ?";
-      bindParams = [birthdate];
-    } else {
-      // 複数条件検索
-      let conditions = [];
-      if (email) {
-        conditions.push("user_id = ?");
-        bindParams.push(email);
+    // 入力された検索条件に基づいてクエリを構築
+    let conditions = [];
+    
+    // メールアドレス検索
+    if (email && email.trim() !== '') {
+      conditions.push("user_id = ?");
+      bindParams.push(email.trim());
+    }
+    
+    // ニックネーム検索（部分一致）
+    if (nickname && nickname.trim() !== '') {
+      conditions.push("nickname LIKE ?");
+      bindParams.push(`%${nickname.trim()}%`);
+    }
+    
+    // 生年月日検索
+    if (birthdate && birthdate.trim() !== '') {
+      // 生年月日の形式を確認（YYYY-MM-DD形式またはYYYY/MM/DD形式に対応）
+      let formattedBirthdate = birthdate.trim();
+      if (birthdate.includes('-')) {
+        // YYYY-MM-DD形式をYYYY/MM/DD形式に変換
+        const parts = birthdate.split('-');
+        formattedBirthdate = `${parts[0]}/${parts[1]}/${parts[2]}`;
       }
-      if (nickname) {
-        conditions.push("nickname LIKE ?");
-        bindParams.push(`%${nickname}%`);
-      }
-      if (birthdate) {
-        conditions.push("birth_year || '/' || birth_month || '/' || birth_day = ?");
-        bindParams.push(birthdate);
-      }
+      conditions.push("birth_year || '/' || birth_month || '/' || birth_day = ?");
+      bindParams.push(formattedBirthdate);
+    }
+    
+    // 条件が1つでもあれば検索を実行
+    if (conditions.length > 0) {
       query = `SELECT * FROM user_profiles WHERE ${conditions.join(" AND ")}`;
+    } else {
+      return createErrorResponse("検索条件を少なくとも1つ入力してください", 400, corsHeaders);
     }
 
     console.log("Executing query:", query, "with params:", bindParams);
