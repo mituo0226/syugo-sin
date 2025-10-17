@@ -31,6 +31,54 @@
       padding: 20px;
     }
 
+    /* ロゴマーク */
+    .logo {
+      max-width: 200px;
+      max-height: 200px;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 1s ease-in-out;
+    }
+
+    .logo.fade-in {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .logo.shrink-away {
+      opacity: 0;
+      transform: scale(0.1);
+      transition: all 1.5s ease-in-out;
+    }
+
+    .logo.reappear {
+      max-width: 80px;
+      max-height: 80px;
+      opacity: 1;
+      transform: scale(1);
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      transition: all 1s ease-in-out;
+    }
+
+    /* ボタンコンテナ */
+    .login-options {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      width: 100%;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 1s ease-in-out;
+    }
+
+    .login-options.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     .main-button {
       padding: 16px 42px;
       background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
@@ -78,12 +126,46 @@
 </head>
 <body>
   <div class="container">
-    <a href="auth/login.html" class="main-button">
-      🔮 神界に進む
-    </a>
-    <a href="ritual/dragon-intro.html" class="sub-button">
-      ✨ 初めての方
-    </a>
+    <!-- ロゴマーク -->
+    <img src="photo/rogo2.png" alt="AI鑑定師 龍" class="logo" id="logo">
+    
+    <!-- ボタンコンテナ -->
+    <div class="login-options">
+      <a href="auth/login.html" class="main-button">
+        🔮 神界に進む
+      </a>
+      <a href="ritual/dragon-intro.html" class="sub-button">
+        ✨ 初めての方
+      </a>
+    </div>
   </div>
+
+  <script>
+    // ページロード後のアニメーション
+    window.addEventListener("load", () => {
+      const logo = document.getElementById("logo");
+      const loginOptions = document.querySelector('.login-options');
+      
+      // 1. ロゴが中央に大きくフェードイン
+      setTimeout(() => {
+        logo.classList.add('fade-in');
+      }, 500);
+      
+      // 2. ロゴが遠くに消える
+      setTimeout(() => {
+        logo.classList.add('shrink-away');
+      }, 3000);
+      
+      // 3. ロゴが画面上部左に小さく再表示
+      setTimeout(() => {
+        logo.classList.add('reappear');
+      }, 4500);
+      
+      // 4. ボタンが表示
+      setTimeout(() => {
+        loginOptions.classList.add('show');
+      }, 6000);
+    });
+  </script>
 </body>
 </html>
