@@ -48,14 +48,16 @@
     /* PC向けコンテナ調整 - 横並びレイアウト */
     @media (min-width: 768px) {
       .container {
-        padding: 20px 60px;
+        padding: 10px 40px 80px 40px;
         justify-content: center;
         flex-direction: row;
         align-items: center;
-        gap: 40px;
+        gap: 30px;
         max-width: 1200px;
         margin: 0 auto;
-        min-height: calc(100vh - 40px);
+        min-height: calc(100vh - 90px);
+        max-height: calc(100vh - 90px);
+        overflow: hidden;
       }
       
       .main-content {
@@ -63,10 +65,11 @@
         flex-direction: row;
         align-items: center;
         justify-content: center;
-        gap: 40px;
+        gap: 30px;
         width: 100%;
         max-width: none;
         margin-top: 0;
+        height: 100%;
       }
       
       .content-left {
@@ -243,47 +246,47 @@
       /* PC向けボタン調整 */
       @media (min-width: 768px) {
         .main-button {
-          font-size: 1.2em;
-          padding: 15px 40px;
-          margin: 6px 0 15px 0;
-          min-width: 240px;
+          font-size: 1.1em;
+          padding: 12px 35px;
+          margin: 4px 0 10px 0;
+          min-width: 220px;
         }
         
         .sub-button {
-          font-size: 1.0em;
-          padding: 12px 30px;
-          margin: 6px 0 15px 0;
-          min-width: 200px;
+          font-size: 0.95em;
+          padding: 10px 25px;
+          margin: 4px 0 10px 0;
+          min-width: 180px;
         }
       
       /* PC向けロゴ調整 */
       .logo {
-        max-width: 220px;
-        max-height: 220px;
-        margin-bottom: 20px;
+        max-width: 180px;
+        max-height: 180px;
+        margin-bottom: 10px;
       }
       
       /* PC向けテキスト調整 */
       .intro-text {
-        padding: 20px;
-        margin-bottom: 20px;
+        padding: 15px;
+        margin-bottom: 15px;
         text-align: left;
-        max-height: 250px;
+        max-height: 180px;
         overflow-y: auto;
         width: 100%;
         box-sizing: border-box;
       }
       
       .intro-text h2 {
-        font-size: 1.0em;
-        margin-bottom: 10px;
+        font-size: 0.9em;
+        margin-bottom: 8px;
         text-align: center;
       }
       
       .intro-text p {
-        font-size: 0.8em;
-        margin: 5px 0;
-        line-height: 1.5;
+        font-size: 0.75em;
+        margin: 4px 0;
+        line-height: 1.4;
         text-align: left;
       }
     }
