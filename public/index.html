@@ -45,38 +45,46 @@
       z-index: 1;
     }
     
-    /* PC向けコンテナ調整 - 縦並びレイアウト */
+    /* PC向けコンテナ調整 - 横並びレイアウト */
     @media (min-width: 768px) {
       .container {
-        padding: 40px 40px 120px;
-        justify-content: flex-start;
+        padding: 40px 60px;
+        justify-content: center;
+        flex-direction: row;
+        align-items: center;
+        gap: 60px;
+        max-width: 1200px;
+        margin: 0 auto;
       }
       
       .main-content {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
-        justify-content: flex-start;
-        gap: 40px;
+        justify-content: center;
+        gap: 60px;
         width: 100%;
-        max-width: 800px;
-        margin-top: 20px;
+        max-width: none;
+        margin-top: 0;
       }
       
       .content-left {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      
-      .content-right {
-        width: 100%;
-        max-width: 600px;
+        width: 50%;
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: center;
         text-align: center;
+      }
+      
+      .content-right {
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        max-width: 600px;
       }
     }
 
@@ -229,6 +237,50 @@
 
     .main-button.show {
       animation: mysticalGlow 3s ease-in-out infinite;
+    }
+
+    /* PC向けボタン調整 */
+    @media (min-width: 768px) {
+      .main-button {
+        font-size: 1.4em;
+        padding: 18px 50px;
+        margin: 8px 0 20px 0;
+        min-width: 280px;
+      }
+      
+      .sub-button {
+        font-size: 1.2em;
+        padding: 16px 40px;
+        margin: 8px 0 20px 0;
+        min-width: 240px;
+      }
+      
+      /* PC向けロゴ調整 */
+      .logo {
+        max-width: 200px;
+        max-height: 200px;
+        margin-bottom: 20px;
+      }
+      
+      /* PC向けテキスト調整 */
+      .intro-text {
+        padding: 20px;
+        margin-bottom: 20px;
+        text-align: left;
+      }
+      
+      .intro-text h2 {
+        font-size: 1.2em;
+        margin-bottom: 12px;
+        text-align: center;
+      }
+      
+      .intro-text p {
+        font-size: 0.9em;
+        margin: 8px 0;
+        line-height: 1.6;
+        text-align: left;
+      }
     }
 
     /* 神秘的な光のアニメーション */
