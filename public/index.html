@@ -266,37 +266,6 @@
         margin-bottom: 10px;
       }
       
-      /* PC向け説明文をフッター上に流れるアニメーション表示 */
-      .intro-text {
-        position: fixed !important;
-        bottom: 95px !important;
-        left: 100% !important;
-        width: auto !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        background: none !important;
-        border: none !important;
-        backdrop-filter: none !important;
-        z-index: 10 !important;
-        white-space: nowrap !important;
-        animation: scrollText 25s linear infinite !important;
-        font-size: 0.5em !important;
-        color: #66ccff !important;
-        font-weight: normal !important;
-        height: auto !important;
-        line-height: 1 !important;
-        display: block !important;
-        visibility: visible !important;
-      }
-      
-      @keyframes scrollText {
-        0% {
-          left: 100%;
-        }
-        100% {
-          left: -100%;
-        }
-      }
       
     }
 
@@ -540,10 +509,6 @@
 
       <!-- 右側コンテンツ -->
       <div class="content-right">
-        <!-- 番組説明 -->
-        <div class="intro-text" id="introText">
-          AI Judgment とは - 本サービスはAIによる会話・カウンセリング体験を提供する番組です。架空のキャラクターを通じてAIがあなたの気持ちを受け止め、日常の不安や悩みに寄り添います。占いや未来予知ではなく、エンターテインメントとセルフケアを目的としています。
-        </div>
 
         <!-- ログイン選択ボタン -->
         <div class="login-options">
