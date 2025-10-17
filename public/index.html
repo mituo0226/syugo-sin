@@ -383,11 +383,69 @@
       /* PC向けボタン初期状態 */
       .login-options {
         opacity: 0;
-        transition: opacity 1s ease-in-out;
+        transform: translateY(30px);
+        transition: all 1.5s ease-in-out;
+        position: relative;
       }
       
       .login-options.show {
         opacity: 1;
+        transform: translateY(0);
+        animation: buttonsMysticalAppear 2s ease-in-out forwards;
+      }
+      
+      @keyframes buttonsMysticalAppear {
+        0% {
+          opacity: 0;
+          transform: translateY(30px) scale(0.8);
+          filter: blur(5px);
+        }
+        50% {
+          opacity: 0.7;
+          transform: translateY(15px) scale(0.9);
+          filter: blur(2px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+          filter: blur(0);
+        }
+      }
+      
+      /* PC向けボタン個別アニメーション */
+      .login-options .main-button {
+        animation: mysticalGlow 3s ease-in-out infinite;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .login-options .main-button::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, 
+          transparent 30%, 
+          rgba(255, 255, 255, 0.3) 50%, 
+          transparent 70%);
+        background-size: 200% 200%;
+        border-radius: 50px;
+        opacity: 0;
+        animation: shimmer 4s ease-in-out infinite;
+        z-index: -1;
+      }
+      
+      @keyframes shimmer {
+        0%, 100% {
+          background-position: 200% 50%;
+          opacity: 0;
+        }
+        50% {
+          background-position: -200% 50%;
+          opacity: 0.5;
+        }
       }
       
       /* PC向けスキップリンク */
@@ -719,7 +777,9 @@
         
         // 6. ボタンが表示（説明文移動後）
         setTimeout(() => {
+          console.log('ボタン表示開始');
           loginOptions.classList.add('show');
+          console.log('ボタンクラス追加完了:', loginOptions.classList.contains('show'));
         }, 10000);
         
         // 7. スキップリンクが表示
