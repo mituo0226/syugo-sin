@@ -434,7 +434,7 @@
 
   <div class="container">
     <!-- 龍の画像 -->
-    <img id="dragonImage" class="dragon-image" src="photo/ryu.png" alt="AI鑑定師 龍">
+    <img id="dragonImage" class="dragon-image" src="../photo/ryu.png" alt="AI鑑定師 龍">
 
     <!-- 龍の言葉 -->
     <div id="dragonMessage"></div>
@@ -467,7 +467,7 @@
   </div>
   
   <script type="module">
-    import { guardians } from './js/guardians.js';
+    import { guardians } from '../assets/js/guardians.js';
 
     // ページ読み込み時の処理
     window.addEventListener("load", function() {
@@ -550,7 +550,7 @@
       document.getElementById("displayName").textContent = userData.nickname;
       document.getElementById("displayBirthDate").textContent = `${userData.birthYear}年${userData.birthMonth}月${userData.birthDay}日`;
       document.getElementById("displayGuardianName").textContent = userData.guardian.name;
-      document.getElementById("displayGuardianImage").src = `photo/${userData.guardianKey}.png`;
+      document.getElementById("displayGuardianImage").src = `../photo/${userData.guardianKey}.png`;
       document.getElementById("displayGuardianImage").alt = userData.guardian.name;
       
       // 情報確認画面を表示

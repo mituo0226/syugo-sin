@@ -578,15 +578,15 @@
 
     // 守護神データを直接定義（importの代わり）
     const guardians = {
-      "amida": { name: "阿弥陀如来", image: "photo/amida.png" },
-      "dainichi": { name: "大日如来", image: "photo/dainichi.png" },
-      "fudo": { name: "不動明王", image: "photo/fudo.png" },
-      "fugen": { name: "普賢菩薩", image: "photo/fugen.png" },
-      "kokuzo": { name: "虚空蔵菩薩", image: "photo/kokuzo.png" },
-      "monju": { name: "文殊菩薩", image: "photo/monju.png" },
-      "seishi": { name: "勢至菩薩", image: "photo/seishi.png" },
-      "senju": { name: "千手観音", image: "photo/senju.png" },
-      "yakushi": { name: "薬師如来", image: "photo/yakushi.png" }
+      "amida": { name: "阿弥陀如来", image: "../photo/amida.png" },
+      "dainichi": { name: "大日如来", image: "../photo/dainichi.png" },
+      "fudo": { name: "不動明王", image: "../photo/fudo.png" },
+      "fugen": { name: "普賢菩薩", image: "../photo/fugen.png" },
+      "kokuzo": { name: "虚空蔵菩薩", image: "../photo/kokuzo.png" },
+      "monju": { name: "文殊菩薩", image: "../photo/monju.png" },
+      "seishi": { name: "勢至菩薩", image: "../photo/seishi.png" },
+      "senju": { name: "千手観音", image: "../photo/senju.png" },
+      "yakushi": { name: "薬師如来", image: "../photo/yakushi.png" }
     };
 
     // ページ読み込み時の処理
@@ -606,7 +606,7 @@
         console.log("取得したデータ:", { nickname, birthYear, birthMonth, birthDay, guardianKey });
         
         // 守護神を安全に取得
-        const guardian = guardians[guardianKey] || { name: "守護神", image: "photo/ryu.png" };
+        const guardian = guardians[guardianKey] || { name: "守護神", image: "../photo/ryu.png" };
         
         // データを保存（デフォルト値を設定）
         window.userData = {
@@ -615,7 +615,7 @@
           birthMonth: birthMonth || "",
           birthDay: birthDay || "",
           guardianKey: guardianKey || "",
-          guardian: guardian || { name: "守護神", image: "photo/ryu.png" },
+          guardian: guardian || { name: "守護神", image: "../photo/ryu.png" },
           worry: "" // 相談内容（後で設定）
         };
         
@@ -633,7 +633,7 @@
           birthMonth: "",
           birthDay: "",
           guardianKey: "",
-          guardian: { name: "守護神", image: "photo/ryu.png" },
+          guardian: { name: "守護神", image: "../photo/ryu.png" },
           worry: ""
         };
         console.log("エラー時のデフォルトuserData:", window.userData);
@@ -647,10 +647,10 @@
       // 守護神の画像を安全に設定
       const guardianImage = document.getElementById('guardianImage');
       if (window.userData.guardianKey && window.userData.guardian) {
-        guardianImage.src = `photo/${window.userData.guardianKey}.png`;
+        guardianImage.src = `../photo/${window.userData.guardianKey}.png`;
         guardianImage.alt = window.userData.guardian.name;
       } else {
-        guardianImage.src = 'photo/ryu.png';
+        guardianImage.src = '../photo/ryu.png';
         guardianImage.alt = '守護神';
       }
       
