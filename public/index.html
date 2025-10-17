@@ -192,11 +192,6 @@
       width: 100%;
       max-width: 400px;
       align-items: center;
-      opacity: 0;
-      transition: opacity 1s ease-in-out;
-    }
-    
-    .login-options.show {
       opacity: 1;
     }
 
@@ -387,26 +382,6 @@
       }
       
       
-      /* PC向けスキップリンク */
-      .skip-login {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: rgba(13, 13, 26, 0.8);
-        border: 1px solid rgba(102, 204, 255, 0.3);
-        border-radius: 8px;
-        padding: 8px 15px;
-        text-decoration: none;
-        color: #66ccff;
-        font-size: 0.8em;
-        z-index: 200;
-        opacity: 0;
-        transition: opacity 0.5s ease-in-out;
-      }
-      
-      .skip-login.show {
-        opacity: 1;
-      }
     }
 
     /* 神秘的な光のアニメーション */
@@ -631,8 +606,6 @@
   </style>
 </head>
 <body>
-  <!-- スキップリンク（PC画面のみ） -->
-  <a href="auth/login.html" class="skip-login" id="skipLogin">Skipしてログイン</a>
 
   <div class="container">
     <!-- メインコンテンツ -->
@@ -676,8 +649,6 @@
     window.addEventListener("load", () => {
       const logo = document.getElementById("logo");
       const introDescription = document.getElementById("introDescription");
-      const loginOptions = document.querySelector('.login-options');
-      const skipLogin = document.getElementById("skipLogin");
       
       // PC画面のアニメーション
       if (window.innerWidth >= 768) {
@@ -706,29 +677,12 @@
           introDescription.classList.add('move-to-top');
         }, 9000);
         
-        // 6. スキップリンクが表示
-        setTimeout(() => {
-          skipLogin.classList.add('show');
-        }, 500);
         
-        // 7. ボタンが表示（説明文移動後）
-        setTimeout(() => {
-          console.log('PC画面: ボタン表示開始');
-          loginOptions.classList.add('show');
-          console.log('ボタン表示完了');
-        }, 10000);
       } else {
         // モバイル画面のアニメーション
         setTimeout(() => {
           logo.classList.add('fade-in');
         }, 500);
-        
-        // モバイル画面でもボタンを表示
-        setTimeout(() => {
-          console.log('モバイル画面: ボタン表示開始');
-          loginOptions.classList.add('show');
-          console.log('ボタン表示完了');
-        }, 2000);
       }
     });
   </script>
