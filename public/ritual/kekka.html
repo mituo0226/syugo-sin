@@ -597,7 +597,10 @@
         return false;
       }
       
+      console.log('フルスクリーン画像設定:', guardian.image);
       fullscreenImg.src = guardian.image;
+      fullscreenImg.onload = function() { console.log('フルスクリーン画像読み込み完了:', this.src); };
+      fullscreenImg.onerror = function() { console.error('フルスクリーン画像読み込みエラー:', this.src); };
       fullscreenName.textContent = `そなたを守護するは ${guardian.name}`;
       fullscreenDesc.textContent = guardian.desc;
       
@@ -645,12 +648,14 @@
       // テンプレートリテラルの内容を事前に確認
       const templateContent = `
         <div class="dragon-reveal">
-          <img class="dragon-image" src="../photo/ryu.png" alt="AI鑑定師 龍">
+          <img class="dragon-image" src="../photo/ryu.png" alt="AI鑑定師 龍" 
+               onload="console.log('龍画像読み込み完了:', this.src);" 
+               onerror="console.error('龍画像読み込みエラー:', this.src);">
         </div>
         <div class="guardian-reveal" style="opacity: 0;">
           <img class="guardian" src="${guardian.image}" alt="${guardian.name}" 
                onload="console.log('守護神画像読み込み完了:', this.src); this.style.opacity = '1';" 
-               onerror="console.error('守護神画像読み込みエラー:', this.src); console.log('フォールバック前のsrc:', this.src); this.src = '../photo/ryu.png'; console.log('フォールバック後のsrc:', this.src);">
+               onerror="console.error('守護神画像読み込みエラー:', this.src); console.log('現在のURL:', window.location.href); console.log('画像の完全パス:', new URL(this.src, window.location.href).href); this.src = '../photo/ryu.png'; console.log('フォールバック後のsrc:', this.src);">
           <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
           <div>${guardian.desc}</div>
         </div>
@@ -770,6 +775,8 @@
           console.log("守護神画像パス:", guardian ? guardian.image : "undefined");
           console.log("守護神名:", guardian ? guardian.name : "undefined");
           console.log("利用可能な守護神キー:", Object.keys(guardians));
+          console.log("現在のページURL:", window.location.href);
+          console.log("画像の絶対パス:", guardian ? new URL(guardian.image, window.location.href).href : "undefined");
           
           if (!guardian) {
             throw new Error("守護神データが見つかりません");

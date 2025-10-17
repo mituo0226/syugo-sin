@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>画像パステスト</title>
+</head>
+<body>
+  <h1>画像パステスト</h1>
+  
+  <h2>龍の画像</h2>
+  <img src="../photo/ryu.png" alt="龍" style="max-width: 200px;" 
+       onload="console.log('龍画像読み込み成功:', this.src);" 
+       onerror="console.error('龍画像読み込み失敗:', this.src);">
+  
+  <h2>守護神画像テスト</h2>
+  <img src="../photo/senju.png" alt="千手観音" style="max-width: 200px;" 
+       onload="console.log('千手観音読み込み成功:', this.src);" 
+       onerror="console.error('千手観音読み込み失敗:', this.src);">
+  
+  <img src="../photo/kokuzo.png" alt="虚空蔵菩薩" style="max-width: 200px;" 
+       onload="console.log('虚空蔵菩薩読み込み成功:', this.src);" 
+       onerror="console.error('虚空蔵菩薩読み込み失敗:', this.src);">
+  
+  <img src="../photo/monju.png" alt="文殊菩薩" style="max-width: 200px;" 
+       onload="console.log('文殊菩薩読み込み成功:', this.src);" 
+       onerror="console.error('文殊菩薩読み込み失敗:', this.src);">
+  
+  <h2>現在のURL情報</h2>
+  <p>現在のURL: <span id="currentUrl"></span></p>
+  <p>相対パス ../photo/ryu.png の絶対パス: <span id="absolutePath"></span></p>
+  
+  <script>
+    document.getElementById('currentUrl').textContent = window.location.href;
+    document.getElementById('absolutePath').textContent = new URL('../photo/ryu.png', window.location.href).href;
+  </script>
+</body>
+</html>
