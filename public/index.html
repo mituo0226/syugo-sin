@@ -272,32 +272,27 @@
         bottom: 95px;
         left: 100%;
         width: auto;
-        padding: 4px 8px;
+        padding: 0;
         margin: 0;
-        background: rgba(13, 13, 26, 0.9);
-        border: 1px solid rgba(102, 204, 255, 0.2);
-        border-radius: 4px;
-        backdrop-filter: blur(6px);
+        background: none;
+        border: none;
+        backdrop-filter: none;
         z-index: 10;
         white-space: nowrap;
-        animation: scrollText 20s linear infinite;
-        font-size: 0.6em;
+        animation: scrollText 25s linear infinite;
+        font-size: 0.5em;
         color: #66ccff;
         font-weight: normal;
+        height: auto;
+        line-height: 1;
       }
       
       @keyframes scrollText {
         0% {
           left: 100%;
-          opacity: 1;
-        }
-        95% {
-          left: -100%;
-          opacity: 1;
         }
         100% {
           left: -100%;
-          opacity: 0;
         }
       }
       
