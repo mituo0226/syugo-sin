@@ -1,690 +1,89 @@
-
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI鑑定師 龍 | 守護神アドバイス</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
   <style>
-    body {
+    * {
       margin: 0;
-      background: #0d0d1a;
-      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
-      color: #fff;
-      overflow-x: hidden;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      touch-action: pan-y;
-      position: relative;
-      min-height: 100vh;
-      -webkit-text-size-adjust: 100%;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+      padding: 0;
+      box-sizing: border-box;
     }
-    
-    /* PC向け調整 */
-    @media (min-width: 768px) {
-      body {
-        position: relative;
-        min-height: 100vh;
-        overflow-y: auto;
-      }
+
+    body {
+      background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Hiragino Sans', 'Yu Gothic UI', 'Meiryo UI', sans-serif;
+      color: #fff;
     }
 
     .container {
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 30px 20px 100px;
-      padding-top: max(30px, env(safe-area-inset-top) + 20px);
-      position: relative;
-      z-index: 1;
-    }
-    
-    /* PC向けコンテナ調整 - 横並びレイアウト */
-    @media (min-width: 768px) {
-      .container {
-        padding: 10px 40px 80px 40px;
-        justify-content: center;
-        flex-direction: row;
-        align-items: center;
-        gap: 30px;
-        max-width: 1200px;
-        margin: 0 auto;
-        min-height: calc(100vh - 90px);
-        max-height: calc(100vh - 90px);
-        overflow: hidden;
-      }
-      
-      .main-content {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        gap: 30px;
-        width: 100%;
-        max-width: none;
-        margin-top: 0;
-        height: 100%;
-      }
-      
-      .content-left {
-        width: 40%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-      }
-      
-      .content-right {
-        width: 60%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        max-width: none;
-      }
-    }
-
-    /* ロゴマーク */
-    .logo {
-      max-width: 160px;
-      max-height: 160px;
-      margin-bottom: 15px;
-      margin-top: 10px;
-      opacity: 0;
-      transform: scale(0.5);
-      transition: all 2.5s ease;
-      position: relative;
-      z-index: 2;
-      border-radius: 20px;
-      box-shadow: 0 0 60px rgba(100,150,255,0.8);
-    }
-    
-    .logo.show {
-      opacity: 1;
-      transform: scale(1);
-      animation: logoGlow 4s ease-in-out infinite alternate;
-    }
-    
-    @keyframes logoGlow {
-      0% {
-        filter: brightness(1) drop-shadow(0 0 20px rgba(102, 204, 255, 0.8));
-        transform: scale(1);
-        box-shadow: 0 0 60px rgba(100,150,255,0.8);
-      }
-      100% {
-        filter: brightness(1.3) drop-shadow(0 0 30px rgba(102, 204, 255, 1));
-        transform: scale(1.05);
-        box-shadow: 0 0 80px rgba(100,150,255,1), 0 0 120px rgba(102,204,255,0.4);
-      }
-    }
-    
-    /* PC向けロゴ調整 */
-    @media (min-width: 768px) {
-      .logo {
-        max-width: 500px;
-        max-height: 500px;
-        margin-bottom: 0;
-      }
-    }
-
-    /* 番組説明 */
-    .intro-text {
-      max-width: 700px;
-      color: #fff;
-      line-height: 1.5;
-      padding: 15px;
-      margin-bottom: 15px;
-      background: rgba(13, 13, 26, 0.9);
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-      border-radius: 12px;
-      border: 2px solid rgba(102, 204, 255, 0.4);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(102, 204, 255, 0.2);
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-      opacity: 0;
-      transform: translateY(30px);
-      transition: all 1.5s ease;
-      position: relative;
-      z-index: 1;
-    }
-    
-    .intro-text.show {
-      opacity: 1;
-      transform: translateY(0);
-      animation: textGlow 3s ease-in-out infinite alternate;
-    }
-    
-    @keyframes textGlow {
-      0% {
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(102, 204, 255, 0.2);
-        border-color: rgba(102, 204, 255, 0.4);
-      }
-      100% {
-        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(102, 204, 255, 0.4);
-        border-color: rgba(102, 204, 255, 0.6);
-      }
-    }
-    
-    .intro-text h2 { 
-      color: #66ccff; 
-      margin-bottom: 8px; 
-      font-size: 0.95em;
-    }
-    
-    .intro-text p {
-      margin: 8px 0;
-      font-size: 0.75em;
-    }
-
-    /* ボタンコンテナ */
-    .login-options {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
+      gap: 20px;
       width: 100%;
       max-width: 400px;
-      align-items: center;
-      opacity: 1;
+      padding: 20px;
     }
 
-    /* メインボタン（神界に進む） */
     .main-button {
-      margin: 15px 0 10px 0;
       padding: 16px 42px;
-      font-size: 1.25em;
-      background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-      border: none;
+      background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+      color: #1a1a2e;
+      text-decoration: none;
       border-radius: 50px;
       font-weight: bold;
-      cursor: pointer;
-      color: #333;
+      font-size: 1.2em;
+      text-align: center;
       box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
       transition: all 0.3s ease;
-      text-decoration: none;
-      display: inline-block;
-      opacity: 0;
-      transform: translateY(20px);
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* サブボタン（初めての方） */
-    .sub-button {
-      margin: 6px 0 15px 0;
-      padding: 13px 36px;
-      font-size: 1.05em;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       border: none;
-      border-radius: 50px;
-      font-weight: bold;
       cursor: pointer;
-      color: white;
-      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-      transition: all 0.3s ease;
-      text-decoration: none;
-      display: inline-block;
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    
-    .main-button.show, .sub-button.show {
-      opacity: 1;
-      transform: translateY(0);
+      width: 100%;
+      max-width: 300px;
     }
 
-    .main-button.show {
-      animation: mysticalGlow 3s ease-in-out infinite;
-    }
-
-      /* PC向けボタン調整 */
-      @media (min-width: 768px) {
-        .main-button {
-          font-size: 1.1em;
-          padding: 12px 35px;
-          margin: 4px 0 10px 0;
-          min-width: 220px;
-        }
-        
-        .sub-button {
-          font-size: 0.95em;
-          padding: 10px 25px;
-          margin: 4px 0 10px 0;
-          min-width: 180px;
-        }
-      
-      /* PC向けロゴ調整 */
-      .logo {
-        max-width: 180px;
-        max-height: 180px;
-        margin-bottom: 10px;
-        opacity: 0;
-        transform: scale(1);
-        transition: all 1s ease-in-out;
-      }
-      
-      .logo.fade-in {
-        opacity: 1;
-        animation: logoFadeIn 2s ease-in-out forwards;
-      }
-      
-      .logo.shrink-away {
-        animation: logoShrinkAway 1.5s ease-in-out forwards;
-      }
-      
-      .logo.reappear {
-        max-width: 120px;
-        max-height: 120px;
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        opacity: 1;
-        animation: logoReappear 1s ease-in-out forwards;
-      }
-      
-      @keyframes logoFadeIn {
-        0% {
-          opacity: 0;
-          transform: scale(0.5);
-        }
-        100% {
-          opacity: 1;
-          transform: scale(1);
-        }
-      }
-      
-      @keyframes logoShrinkAway {
-        0% {
-          opacity: 1;
-          transform: scale(1);
-        }
-        100% {
-          opacity: 0;
-          transform: scale(0.1);
-        }
-      }
-      
-      @keyframes logoReappear {
-        0% {
-          opacity: 0;
-          transform: scale(0.1);
-        }
-        100% {
-          opacity: 1;
-          transform: scale(1);
-        }
-      }
-      
-      /* PC向け説明文 */
-      .intro-description {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 80%;
-        max-width: 600px;
-        padding: 30px;
-        background: rgba(13, 13, 26, 0.95);
-        border: 2px solid rgba(102, 204, 255, 0.5);
-        border-radius: 15px;
-        backdrop-filter: blur(10px);
-        text-align: center;
-        opacity: 0;
-        z-index: 100;
-      }
-      
-      .intro-description.fade-in {
-        animation: descriptionFadeIn 1s ease-in-out forwards;
-      }
-      
-      .intro-description.move-to-top {
-        animation: descriptionMoveToTop 1s ease-in-out forwards;
-      }
-      
-      @keyframes descriptionFadeIn {
-        0% {
-          opacity: 0;
-          transform: translate(-50%, -50%) scale(0.8);
-        }
-        100% {
-          opacity: 1;
-          transform: translate(-50%, -50%) scale(1);
-        }
-      }
-      
-      @keyframes descriptionMoveToTop {
-        0% {
-          opacity: 1;
-          transform: translate(-50%, -50%) scale(1);
-          top: 50%;
-        }
-        100% {
-          opacity: 1;
-          transform: translate(-50%, 0) scale(0.8);
-          top: 80px;
-          width: 70%;
-          max-width: 500px;
-        }
-      }
-      
-      .intro-description p {
-        font-size: 0.9em;
-        line-height: 1.6;
-        color: #fff;
-        margin: 0;
-      }
-      
-      
-    }
-
-    /* 神秘的な光のアニメーション */
-    @keyframes mysticalGlow {
-      0% {
-        box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4), 
-                    0 0 20px rgba(255, 215, 0, 0.3),
-                    inset 0 0 20px rgba(255, 255, 255, 0);
-        filter: brightness(1);
-      }
-      25% {
-        box-shadow: 0 12px 35px rgba(255, 215, 0, 0.5), 
-                    0 0 30px rgba(255, 215, 0, 0.4),
-                    inset 0 0 30px rgba(255, 255, 255, 0.1);
-        filter: brightness(1.1);
-      }
-      50% {
-        box-shadow: 0 15px 40px rgba(255, 215, 0, 0.6), 
-                    0 0 40px rgba(255, 215, 0, 0.5),
-                    0 0 60px rgba(255, 215, 0, 0.3),
-                    inset 0 0 40px rgba(255, 255, 255, 0.15);
-        filter: brightness(1.15);
-      }
-      75% {
-        box-shadow: 0 12px 35px rgba(255, 215, 0, 0.5), 
-                    0 0 30px rgba(255, 215, 0, 0.4),
-                    inset 0 0 30px rgba(255, 255, 255, 0.1);
-        filter: brightness(1.1);
-      }
-      100% {
-        box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4), 
-                    0 0 20px rgba(255, 215, 0, 0.3),
-                    inset 0 0 20px rgba(255, 255, 255, 0);
-        filter: brightness(1);
-      }
-    }
-
-    /* 光の粒子エフェクト */
-    .main-button::before {
-      content: '';
-      position: absolute;
-      top: -2px;
-      left: -2px;
-      right: -2px;
-      bottom: -2px;
-      background: linear-gradient(45deg, 
-        transparent 30%, 
-        rgba(255, 255, 255, 0.3) 50%, 
-        transparent 70%);
-      background-size: 200% 200%;
-      border-radius: 50px;
-      opacity: 0;
-      animation: shimmer 4s ease-in-out infinite;
-      z-index: -1;
-    }
-
-    @keyframes shimmer {
-      0%, 100% {
-        background-position: 200% 50%;
-        opacity: 0;
-      }
-      50% {
-        background-position: -200% 50%;
-        opacity: 0.5;
-      }
-    }
-
-    /* キラキラエフェクト */
-    .main-button::after {
-      content: '✨';
-      position: absolute;
-      top: 50%;
-      left: 10%;
-      transform: translate(-50%, -50%) scale(0);
-      font-size: 16px;
-      animation: sparkle 3s ease-in-out infinite;
-      pointer-events: none;
-    }
-
-    @keyframes sparkle {
-      0%, 100% {
-        transform: translate(-50%, -50%) scale(0) rotate(0deg);
-        opacity: 0;
-      }
-      10% {
-        transform: translate(-50%, -50%) scale(1) rotate(45deg);
-        opacity: 1;
-      }
-      20% {
-        transform: translate(-50%, -50%) scale(0) rotate(90deg);
-        opacity: 0;
-      }
-    }
-    
     .main-button:hover {
-      background: linear-gradient(135deg, #FFA500 0%, #FFD700 100%);
       transform: translateY(-3px);
       box-shadow: 0 15px 40px rgba(255, 215, 0, 0.6);
     }
 
+    .sub-button {
+      padding: 14px 35px;
+      background: linear-gradient(135deg, #66ccff 0%, #4da6ff 100%);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: bold;
+      font-size: 1.1em;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(102, 204, 255, 0.3);
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      max-width: 300px;
+    }
+
     .sub-button:hover {
-      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
       transform: translateY(-3px);
-      box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5);
-    }
-    
-    .main-button:active, .sub-button:active {
-      transform: translateY(-1px);
-    }
-
-    /* PC向けレイアウト調整 */
-    @media (min-width: 768px) {
-      .main-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        max-width: 800px;
-        width: 100%;
-      }
-
-      .logo {
-        margin-bottom: 30px;
-        max-width: 350px;
-        max-height: 350px;
-      }
-
-      .content-right {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-      }
-
-      .intro-text {
-        margin-top: 40px;
-        margin-bottom: 30px;
-        padding: 35px;
-        text-align: center;
-        width: 100%;
-        max-width: 700px;
-        order: 2;
-      }
-
-      .intro-text h2 {
-        font-size: 1.5em;
-        margin-bottom: 15px;
-      }
-
-      .intro-text p {
-        font-size: 1em;
-        margin: 15px 0;
-        line-height: 1.8;
-      }
-      
-      .main-button {
-        padding: 22px 70px;
-        font-size: 1.6em;
-        margin: 20px 0 15px 0;
-        width: auto;
-      }
-
-      .sub-button {
-        padding: 18px 55px;
-        font-size: 1.3em;
-        margin: 10px 0 20px 0;
-        width: auto;
-      }
-
-    }
-
-    /* 小画面向け調整 */
-    @media (max-width: 480px) {
-      .container {
-        padding: 10px 15px 85px;
-        padding-top: max(10px, env(safe-area-inset-top) + 5px);
-      }
-      
-      .logo {
-        max-width: 140px;
-        max-height: 140px;
-        margin-bottom: 10px;
-        margin-top: 5px;
-      }
-      
-      .intro-text {
-        padding: 12px;
-        margin-bottom: 12px;
-      }
-      
-      .intro-text h2 {
-        font-size: 0.85em;
-        margin-bottom: 6px;
-      }
-      
-      .intro-text p {
-        font-size: 0.7em;
-        margin: 6px 0;
-        line-height: 1.4;
-      }
-      
-      .main-button {
-        padding: 14px 36px;
-        font-size: 1.15em;
-        margin: 12px 0 8px 0;
-      }
-
-      .sub-button {
-        padding: 11px 30px;
-        font-size: 0.95em;
-        margin: 6px 0 12px 0;
-      }
-    }
-
-    /* iPhone X以降のノッチ対応 */
-    @supports (padding: max(0px)) {
-      .container {
-        padding-top: max(40px, env(safe-area-inset-top));
-        padding-bottom: max(140px, env(safe-area-inset-bottom) + 80px);
-      }
+      box-shadow: 0 12px 35px rgba(102, 204, 255, 0.5);
     }
   </style>
 </head>
 <body>
-
   <div class="container">
-    <!-- メインコンテンツ -->
-    <div class="main-content">
-      <!-- 左側コンテンツ（ロゴ） -->
-      <div class="content-left">
-        <img src="photo/rogo2.png" alt="AI鑑定師 龍" class="logo" id="logo">
-      </div>
-
-      <!-- 右側コンテンツ -->
-      <div class="content-right">
-        <!-- 説明文（PC画面のみ） -->
-        <div class="intro-description" id="introDescription">
-          <p>本サービスはAIによる架空のキャラクターが会話を行い、カウンセリング、鑑定をする番組です。実在する人間は存在しておりません。また占いや未来予知などの要素ではなく、あくまでエンターテインメントとしてセルフケアを提供することを目的としています。</p>
-        </div>
-
-        <!-- ログイン選択ボタン -->
-        <div class="login-options">
-          <a href="auth/login.html" class="main-button">
-            🔮 神界に進む
-          </a>
-          <a href="ritual/dragon-intro.html" class="sub-button" id="startButton">
-            ✨ 初めての方
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- フッター -->
-    <footer style="position: fixed !important; bottom: 0; left: 0; right: 0; background: rgba(13, 13, 26, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid rgba(102, 204, 255, 0.3); z-index: 100; padding: 15px 10px; padding-bottom: max(15px, env(safe-area-inset-bottom)); box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5); text-align:center; font-size:0.9em; color:#ccc;">
-      <a href="./rule/disclaimer.html" style="color:#66ccff; margin:0 8px;">免責事項</a> |
-      <a href="./rule/terms.html" style="color:#66ccff; margin:0 8px;">利用規約</a> |
-      <a href="./rule/privacy.html" style="color:#66ccff; margin:0 8px;">プライバシーポリシー</a> |
-      <a href="./rule/tokusho.html" style="color:#66ccff; margin:0 8px;">特定商取引法</a> |
-      <a href="./rule/contact.html" style="color:#66ccff; margin:0 8px;">お問い合わせ</a> |
-    </footer>
+    <a href="auth/login.html" class="main-button">
+      🔮 神界に進む
+    </a>
+    <a href="ritual/dragon-intro.html" class="sub-button">
+      ✨ 初めての方
+    </a>
   </div>
-
-  <script>
-    // ページロード後のシンプルなアニメーション
-    window.addEventListener("load", () => {
-      const logo = document.getElementById("logo");
-      const introDescription = document.getElementById("introDescription");
-      
-      // PC画面のアニメーション
-      if (window.innerWidth >= 768) {
-        // 1. ロゴが中央に大きくフェードイン
-        setTimeout(() => {
-          logo.classList.add('fade-in');
-        }, 500);
-        
-        // 2. ロゴが遠くに消える
-        setTimeout(() => {
-          logo.classList.add('shrink-away');
-        }, 3000);
-        
-        // 3. ロゴが画面上部左に小さく再表示
-        setTimeout(() => {
-          logo.classList.add('reappear');
-        }, 4500);
-        
-        // 4. 説明文がフェードイン
-        setTimeout(() => {
-          introDescription.classList.add('fade-in');
-        }, 5500);
-        
-        // 5. 説明文が画面上部に移動
-        setTimeout(() => {
-          introDescription.classList.add('move-to-top');
-        }, 9000);
-        
-        
-      } else {
-        // モバイル画面のアニメーション
-        setTimeout(() => {
-          logo.classList.add('fade-in');
-        }, 500);
-      }
-    });
-  </script>
 </body>
 </html>
