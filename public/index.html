@@ -386,6 +386,12 @@
         transform: translateY(30px);
         transition: all 1.5s ease-in-out;
         position: relative;
+        z-index: 50;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        width: 100%;
       }
       
       .login-options.show {
@@ -778,9 +784,12 @@
         // 6. ボタンが表示（説明文移動後）
         setTimeout(() => {
           console.log('ボタン表示開始');
+          console.log('loginOptions要素:', loginOptions);
+          console.log('loginOptionsの現在のクラス:', loginOptions.className);
           loginOptions.classList.add('show');
           console.log('ボタンクラス追加完了:', loginOptions.classList.contains('show'));
-        }, 10000);
+          console.log('loginOptionsの最終クラス:', loginOptions.className);
+        }, 5000);
         
         // 7. スキップリンクが表示
         setTimeout(() => {
