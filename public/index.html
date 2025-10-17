@@ -29,7 +29,7 @@
       width: 100%;
       max-width: 400px;
       padding: 20px;
-      margin-top: -50px;
+      margin-top: -80px;
     }
 
     /* ロゴマーク */
@@ -76,6 +76,24 @@
     }
 
     .login-options.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* 説明文 */
+    .disclaimer {
+      font-size: 0.7em;
+      color: #ccc;
+      text-align: center;
+      line-height: 1.4;
+      max-width: 350px;
+      margin-top: 10px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 1s ease-in-out;
+    }
+
+    .disclaimer.show {
       opacity: 1;
       transform: translateY(0);
     }
@@ -139,6 +157,11 @@
         ✨ 初めての方
       </a>
     </div>
+    
+    <!-- 説明文 -->
+    <div class="disclaimer" id="disclaimer">
+      この番組は、AIで制作された架空のキャラクターが会話を行い、楽しむために設定されていた番組であり、実在する人間が鑑定を行う占いや未来予知のような類のものではありません。あくまでエンターテインメントとしてお楽しみください。
+    </div>
   </div>
 
   <script>
@@ -146,6 +169,7 @@
     window.addEventListener("load", () => {
       const logo = document.getElementById("logo");
       const loginOptions = document.querySelector('.login-options');
+      const disclaimer = document.getElementById("disclaimer");
       
       // 1. ロゴが中央に大きくフェードイン
       setTimeout(() => {
@@ -166,6 +190,11 @@
       setTimeout(() => {
         loginOptions.classList.add('show');
       }, 6000);
+      
+      // 5. 説明文が表示
+      setTimeout(() => {
+        disclaimer.classList.add('show');
+      }, 7000);
     });
   </script>
 </body>
