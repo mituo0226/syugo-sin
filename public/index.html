@@ -266,37 +266,47 @@
         margin-bottom: 10px;
       }
       
-      /* PC向け説明文をフッター上に固定表示 */
+      /* PC向け説明文をフッター上に流れるアニメーション表示 */
       .intro-text {
         position: fixed;
-        bottom: 110px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 85%;
-        max-width: 500px;
-        padding: 4px 6px;
+        bottom: 95px;
+        left: 100%;
+        width: auto;
+        padding: 4px 8px;
         margin: 0;
-        background: rgba(13, 13, 26, 0.95);
-        border: 1px solid rgba(102, 204, 255, 0.15);
+        background: rgba(13, 13, 26, 0.9);
+        border: 1px solid rgba(102, 204, 255, 0.2);
         border-radius: 4px;
         backdrop-filter: blur(6px);
         z-index: 10;
-      }
-      
-      .intro-text h2 {
-        font-size: 0.5em;
-        margin-bottom: 3px;
-        text-align: center;
+        white-space: nowrap;
+        animation: scrollText 20s linear infinite;
+        font-size: 0.6em;
         color: #66ccff;
         font-weight: normal;
       }
       
+      @keyframes scrollText {
+        0% {
+          left: 100%;
+          opacity: 1;
+        }
+        95% {
+          left: -100%;
+          opacity: 1;
+        }
+        100% {
+          left: -100%;
+          opacity: 0;
+        }
+      }
+      
+      .intro-text h2 {
+        display: none;
+      }
+      
       .intro-text p {
-        font-size: 0.4em;
-        margin: 2px 0;
-        line-height: 1.2;
-        text-align: center;
-        color: #aaa;
+        display: none;
       }
     }
 
@@ -542,13 +552,7 @@
       <div class="content-right">
         <!-- 番組説明 -->
         <div class="intro-text" id="introText">
-          <h2>AI Judgment とは</h2>
-          <p>
-            本サービスは<strong>AIによる会話・カウンセリング体験</strong>を提供する番組です。<br>
-            架空のキャラクターを通じてAIがあなたの気持ちを受け止め、<br>
-            日常の不安や悩みに寄り添います。<br>
-            占いや未来予知ではなく、<strong>エンターテインメントとセルフケア</strong>を目的としています。
-          </p>
+          AI Judgment とは - 本サービスはAIによる会話・カウンセリング体験を提供する番組です。架空のキャラクターを通じてAIがあなたの気持ちを受け止め、日常の不安や悩みに寄り添います。占いや未来予知ではなく、エンターテインメントとセルフケアを目的としています。
         </div>
 
         <!-- ログイン選択ボタン -->
