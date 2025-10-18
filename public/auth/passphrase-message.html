@@ -244,7 +244,7 @@
         guardianKey: userData.guardianKey || ''
       });
       
-      window.location.href = `/passphrase-display.html?${params.toString()}`;
+      window.location.href = `passphrase-display.html?${params.toString()}`;
     }
 
     // メイン処理
@@ -257,7 +257,7 @@
       const guardianImageElement = document.getElementById('guardianImage');
       
       guardianNameElement.textContent = userData.guardianName || '守護神';
-      guardianImageElement.src = `/photo/${userData.guardianKey || 'amida'}.png`;
+      guardianImageElement.src = `../photo/${userData.guardianKey || 'amida'}.png`;
 
       // ローディング非表示
       setTimeout(() => {

@@ -166,7 +166,8 @@
       return {
         email: urlParams.get('email') || localStorage.getItem('userEmail'),
         nickname: urlParams.get('nickname') || '',
-        guardianName: urlParams.get('guardianName') || ''
+        guardianName: urlParams.get('guardianName') || '',
+        guardianKey: urlParams.get('guardianKey') || ''
       };
     }
 
@@ -211,7 +212,7 @@
         guardianName: userData.guardianName || '',
         guardianKey: userData.guardianKey || ''
       });
-      window.location.href = `/passphrase-message.html?${params.toString()}`;
+      window.location.href = `passphrase-message.html?${params.toString()}`;
     }
 
     // 初期化

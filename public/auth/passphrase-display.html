@@ -326,7 +326,7 @@
       const guardianImageElement = document.getElementById('guardianImage');
       
       guardianNameElement.textContent = userData.guardianName || '守護神';
-      guardianImageElement.src = `/photo/${userData.guardianKey || 'amida'}.png`;
+      guardianImageElement.src = `../photo/${userData.guardianKey || 'amida'}.png`;
 
       // ローディング非表示
       setTimeout(() => {
