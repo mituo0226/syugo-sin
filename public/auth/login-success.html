@@ -28,14 +28,10 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: radial-gradient(ellipse at center, #1a1a2e 0%, #000000 100%);
-      animation: pulse 8s ease-in-out infinite;
+      object-fit: cover;
+      z-index: -1;
     }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 0.8; }
-      50% { opacity: 1; }
-    }
 
     .container {
       position: relative;
@@ -45,88 +41,83 @@
       padding: 20px;
     }
 
-    .dragon-circle {
-      width: 300px;
-      height: 300px;
-      margin: 0 auto 30px;
-      position: relative;
-      animation: rotate 20s linear infinite;
+    .image-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 80px;
+      margin-bottom: 50px;
+      opacity: 0;
+      animation: fadeInUp 2s ease-in-out 1s forwards;
     }
 
-    @keyframes rotate {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    .dragon-circle::before {
-      content: '🐉';
-      font-size: 150px;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
+    .dragon-image {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      border: 3px solid #FFD700;
+      box-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
+      animation: float 3s ease-in-out infinite;
     }
 
     .guardian-image {
-      width: 100px;
-      height: 100px;
+      width: 200px;
+      height: 200px;
       border-radius: 50%;
-      border: 2px solid gold;
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+      border: 3px solid #FFD700;
+      box-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
+      animation: float 3s ease-in-out infinite 1.5s;
     }
 
-    h1 {
-      font-size: 48px;
-      background: linear-gradient(45deg, #FFD700, #FFA500, #FFD700);
-      background-size: 200% 200%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      animation: shimmer 3s ease-in-out infinite;
-      margin-bottom: 20px;
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
-    @keyframes shimmer {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-20px);
+      }
     }
 
-    .subtitle {
-      font-size: 24px;
-      color: #FFD700;
-      margin-bottom: 40px;
-      text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-    }
 
     .message {
-      font-size: 20px;
+      font-size: 24px;
       line-height: 2;
-      color: #ddd;
+      color: #FFD700;
       margin-bottom: 50px;
-      padding: 30px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 15px;
-      border: 1px solid rgba(255, 215, 0, 0.3);
+      padding: 40px;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 20px;
+      border: 2px solid rgba(255, 215, 0, 0.5);
+      opacity: 0;
+      animation: fadeInUp 2s ease-in-out 2s forwards;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
     }
 
     .start-button {
       background: linear-gradient(45deg, #FFD700, #FFA500);
       color: #333;
-      padding: 20px 70px;
+      padding: 25px 80px;
       border: none;
       border-radius: 50px;
-      font-size: 24px;
+      font-size: 28px;
       font-weight: bold;
       cursor: pointer;
       box-shadow: 0 10px 40px rgba(255, 215, 0, 0.6);
       transition: all 0.3s;
-      animation: glow 2s ease-in-out infinite;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 2s ease-in-out 3s forwards, glow 2s ease-in-out infinite 5s;
     }
 
     @keyframes glow {
@@ -180,27 +171,24 @@
   </style>
 </head>
 <body>
-  <div class="cosmic-bg"></div>
+  <video class="cosmic-bg" autoplay muted loop>
+    <source src="../photo/cosmo.mp4" type="video/mp4">
+  </video>
   <div class="particles" id="particles"></div>
 
   <div class="container">
-    <div class="dragon-circle">
+    <div class="image-container">
+      <img class="dragon-image" src="../photo/ryu.png" alt="龍">
       <img id="guardianImage" class="guardian-image" src="" alt="守護神">
     </div>
 
-    <h1>龍と守護神の世界と繋がった</h1>
-    
-    <p class="subtitle" id="welcomeMessage"></p>
-
     <div class="message">
-      いにしえより伝わる<br>
-      龍神と守護神の加護のもと<br>
-      あなたの運命が今、明らかになる<br><br>
-      心を開き、真実を受け入れる準備はよいか
+      運命が導かれる時が来た。<br>
+      準備はよいか?
     </div>
 
     <button class="start-button" onclick="startConsultation()">
-      🔮 鑑定を開始する
+      更新を開始する
     </button>
   </div>
 
@@ -231,22 +219,24 @@
       return {};
     }
 
-    // ウェルカムメッセージ表示
-    function displayWelcome() {
+    // 守護神画像設定
+    function setGuardianImage() {
       const userData = getUserData();
-      const welcomeMsg = document.getElementById('welcomeMessage');
       const guardianImage = document.getElementById('guardianImage');
 
-      if (userData.nickname && userData.guardianName) {
-        welcomeMsg.textContent = `${userData.nickname}よ、${userData.guardianName}が汝を導く`;
-        guardianImage.src = `/photo/${userData.guardianKey || 'amida'}.png`;
+      if (userData.guardianKey) {
+        guardianImage.src = `../photo/${userData.guardianKey}.png`;
       } else {
-        welcomeMsg.textContent = '守護神が汝を導く';
-        guardianImage.src = '/photo/amida.png';
+        guardianImage.src = '../photo/amida.png';
       }
+      
+      // エラーハンドリング
+      guardianImage.onerror = function() {
+        this.src = '../photo/ryu.png';
+      };
     }
 
-    // 鑑定開始
+    // 更新開始
     function startConsultation() {
       // chat.htmlへ遷移
       window.location.href = '../consult/chat.html';
@@ -255,7 +245,7 @@
     // 初期化
     window.addEventListener('load', () => {
       createParticles();
-      displayWelcome();
+      setGuardianImage();
     });
   </script>
 </body>
