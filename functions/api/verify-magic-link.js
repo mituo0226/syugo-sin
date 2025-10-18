@@ -166,109 +166,15 @@ export async function onRequestGet(context) {
         WHERE magic_link_token = ?
       `).bind(token).first();
 
-      // registration-success.htmlへリダイレクト（ユーザー情報をパラメータで渡す）
+      // registration-success.htmlに直接リダイレクト（ユーザー情報をパラメータで渡す）
       const redirectUrl = `/registration-success.html?email=${encodeURIComponent(userDetails.user_id)}&nickname=${encodeURIComponent(userDetails.nickname || '')}&guardianName=${encodeURIComponent(userDetails.guardian_name || '')}&guardianKey=${encodeURIComponent(userDetails.guardian_key || '')}`;
       
-      return new Response(`
-        <!DOCTYPE html>
-        <html lang="ja">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>認証完了 - 守護神占い</title>
-          <style>
-            body { 
-              font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif; 
-              text-align: center; 
-              padding: 50px; 
-              background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-              color: white; 
-              margin: 0;
-              min-height: 100vh;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-            }
-            .container {
-              max-width: 600px;
-              padding: 40px;
-              background: rgba(255, 255, 255, 0.05);
-              border-radius: 20px;
-              border: 1px solid rgba(102, 204, 255, 0.3);
-              box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            }
-            .success { 
-              background: rgba(0, 255, 0, 0.1); 
-              padding: 30px; 
-              border-radius: 15px; 
-              border: 1px solid #00ff00;
-              margin-bottom: 30px;
-            }
-            .title {
-              color: #66ccff;
-              font-size: 28px;
-              margin-bottom: 20px;
-              text-shadow: 0 0 20px rgba(102, 204, 255, 0.6);
-            }
-            .message {
-              font-size: 18px;
-              line-height: 1.6;
-              margin-bottom: 20px;
-            }
-            .user-info {
-              background: rgba(102, 204, 255, 0.1);
-              padding: 20px;
-              border-radius: 10px;
-              margin: 20px 0;
-              border: 1px solid rgba(102, 204, 255, 0.3);
-            }
-            .button {
-              display: inline-block;
-              background: #66ccff;
-              color: white;
-              padding: 15px 30px;
-              text-decoration: none;
-              border-radius: 10px;
-              font-weight: bold;
-              margin: 10px;
-              transition: all 0.3s ease;
-            }
-            .button:hover {
-              background: #4db8ff;
-              transform: translateY(-2px);
-            }
-          </style>
-          <script>
-            // 3秒後に登録完了画面へ自動リダイレクト
-            setTimeout(() => {
-              window.location.href = '${redirectUrl}';
-            }, 3000);
-          </script>
-        </head>
-        <body>
-          <div class="container">
-            <h1 class="title">🎉 認証完了！</h1>
-            <div class="success">
-              <div class="message">
-                <p><strong>メール認証が正常に完了しました！</strong></p>
-                <p>まもなく次の画面に移動します...</p>
-              </div>
-              <div class="user-info">
-                <p>登録ユーザー: <strong>${userDetails.nickname || 'あなた'}</strong></p>
-                <p>メールアドレス: <strong>${userDetails.user_id}</strong></p>
-              </div>
-            </div>
-            <p><a href="${redirectUrl}" class="button">今すぐ進む</a></p>
-            <div style="margin-top: 30px;">
-              <a href="https://syugo-sin.com" class="button">ホームページへ</a>
-              <a href="https://syugo-sin.com/consult/chat.html" class="button">鑑定を開始する</a>
-            </div>
-          </div>
-        </body>
-        </html>
-      `, {
-        status: 200,
-        headers: { 'Content-Type': 'text/html; charset=utf-8' }
+      // 直接リダイレクトレスポンスを返す
+      return new Response(null, {
+        status: 302,
+        headers: {
+          'Location': redirectUrl
+        }
       });
 
     } catch (dbError) {
