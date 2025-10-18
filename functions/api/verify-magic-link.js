@@ -122,29 +122,21 @@ export async function onRequestGet(context) {
       // トークンが既に使用済みかチェック
       if (userResult.magic_link_used === 1) {
         console.error('トークンが既に使用済みです:', token);
-        return new Response(`
-          <!DOCTYPE html>
-          <html lang="ja">
-          <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>認証済み - 守護神占い</title>
-            <style>
-              body { font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif; text-align: center; padding: 50px; background: #1a1a2e; color: white; }
-              .success { background: rgba(0, 255, 0, 0.1); padding: 20px; border-radius: 10px; border: 1px solid #00ff00; }
-            </style>
-          </head>
-          <body>
-            <h1>既に認証済み</h1>
-            <div class="success">
-              <p>このメールアドレスは既に認証済みです。</p>
-              <p>会員登録が完了しています。</p>
-            </div>
-          </body>
-          </html>
-        `, {
-          status: 200,
-          headers: { 'Content-Type': 'text/html; charset=utf-8' }
+        
+        // 既に認証済みの場合も、ユーザー詳細情報を取得してregistration-success.htmlにリダイレクト
+        const userDetails = await env.DB.prepare(`
+          SELECT user_id, nickname, guardian_name, guardian_key
+          FROM user_profiles 
+          WHERE magic_link_token = ?
+        `).bind(token).first();
+        
+        const redirectUrl = `/auth/registration-success.html?email=${encodeURIComponent(userDetails.user_id)}&nickname=${encodeURIComponent(userDetails.nickname || '')}&guardianName=${encodeURIComponent(userDetails.guardian_name || '')}&guardianKey=${encodeURIComponent(userDetails.guardian_key || '')}`;
+        
+        return new Response(null, {
+          status: 302,
+          headers: {
+            'Location': redirectUrl
+          }
         });
       }
 
@@ -167,7 +159,7 @@ export async function onRequestGet(context) {
       `).bind(token).first();
 
       // registration-success.htmlに直接リダイレクト（ユーザー情報をパラメータで渡す）
-      const redirectUrl = `/registration-success.html?email=${encodeURIComponent(userDetails.user_id)}&nickname=${encodeURIComponent(userDetails.nickname || '')}&guardianName=${encodeURIComponent(userDetails.guardian_name || '')}&guardianKey=${encodeURIComponent(userDetails.guardian_key || '')}`;
+      const redirectUrl = `/auth/registration-success.html?email=${encodeURIComponent(userDetails.user_id)}&nickname=${encodeURIComponent(userDetails.nickname || '')}&guardianName=${encodeURIComponent(userDetails.guardian_name || '')}&guardianKey=${encodeURIComponent(userDetails.guardian_key || '')}`;
       
       // 直接リダイレクトレスポンスを返す
       return new Response(null, {
