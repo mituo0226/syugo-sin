@@ -52,9 +52,19 @@
       top: 0;
       left: 0;
       z-index: 1;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
       /* iOS Safari対応 */
       -webkit-playsinline: true;
       playsinline: true;
+    }
+
+    .guardian-video.active {
+      opacity: 1;
+    }
+
+    .guardian-video.overlapping {
+      opacity: 0.8;
     }
 
     .guardian-fallback-image {
@@ -193,9 +203,23 @@
 </head>
 <body>
   <div class="guardian-animation-container">
-    <video id="guardianVideo" class="guardian-video" muted preload="auto" playsinline webkit-playsinline>
-      <source src="../photo/god.mp4" type="video/mp4">
+    <!-- 5つの動画シーケンス -->
+    <video id="guardianVideo1" class="guardian-video" muted preload="auto" playsinline webkit-playsinline>
+      <source src="../photo/god1.mp4" type="video/mp4">
     </video>
+    <video id="guardianVideo2" class="guardian-video" muted preload="auto" playsinline webkit-playsinline>
+      <source src="../photo/god2.mp4" type="video/mp4">
+    </video>
+    <video id="guardianVideo3" class="guardian-video" muted preload="auto" playsinline webkit-playsinline>
+      <source src="../photo/god3.mp4" type="video/mp4">
+    </video>
+    <video id="guardianVideo4" class="guardian-video" muted preload="auto" playsinline webkit-playsinline>
+      <source src="../photo/god4.mp4" type="video/mp4">
+    </video>
+    <video id="guardianVideo5" class="guardian-video" muted preload="auto" playsinline webkit-playsinline>
+      <source src="../photo/god5.mp4" type="video/mp4">
+    </video>
+    
     <img id="guardianFallbackImage" class="guardian-fallback-image" src="../photo/ryu.png" alt="守護神導出">
     
     <!-- ローディング表示 -->
@@ -242,268 +266,183 @@
              (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     }
 
-    // 守護神導出アニメーション処理
+    // 5つの動画シーケンス処理
     function startGuardianAnimation() {
-      const guardianVideo = document.getElementById('guardianVideo');
+      console.log('=== 守護神導出動画シーケンス開始 ===');
+      
       const loadingIndicator = document.getElementById('loadingIndicator');
       const progressBar = document.getElementById('loadingProgressBar');
-      let hasStartedPlaying = false; // 動画再生開始フラグ
-      let loadTimeout; // タイムアウト用変数
       
-      if (!guardianVideo || !loadingIndicator) {
+      if (!loadingIndicator) {
         console.error('Required elements not found');
         redirectToKekka();
         return;
       }
 
-      console.log('=== 守護神導出アニメーション開始 ===');
-      console.log('動画パス:', guardianVideo.querySelector('source').src);
-      console.log('iOS環境:', isIOS());
-      
       // ローディング表示を開始
       loadingIndicator.classList.add('show');
       console.log('ローディング表示開始');
 
-      // iOS用の設定
-      if (isIOS()) {
-        guardianVideo.playsInline = true;
-        guardianVideo.setAttribute('playsinline', '');
-        guardianVideo.setAttribute('webkit-playsinline', '');
-      }
-      
-      // 動画の読み込み状態を監視
-      guardianVideo.addEventListener('loadstart', () => {
-        console.log('動画読み込み開始');
-        if (progressBar) {
-          progressBar.style.width = '10%';
-        }
-      });
-
-      guardianVideo.addEventListener('progress', () => {
-        if (guardianVideo.buffered.length > 0) {
-          const bufferedEnd = guardianVideo.buffered.end(guardianVideo.buffered.length - 1);
-          const duration = guardianVideo.duration;
-          if (duration > 0) {
-            const progress = (bufferedEnd / duration) * 100;
-            if (progressBar) {
-              progressBar.style.width = Math.min(progress, 90) + '%';
-            }
-            console.log('読み込み進捗:', Math.round(progress) + '%');
+      // 5つの動画を取得
+      const videos = [];
+      for (let i = 1; i <= 5; i++) {
+        const video = document.getElementById(`guardianVideo${i}`);
+        if (video) {
+          // iOS用の設定
+          if (isIOS()) {
+            video.playsInline = true;
+            video.setAttribute('playsinline', '');
+            video.setAttribute('webkit-playsinline', '');
           }
+          videos.push(video);
         }
-      });
-
-      guardianVideo.addEventListener('loadeddata', () => {
-        console.log('動画データ読み込み完了');
-        if (progressBar) {
-          progressBar.style.width = '95%';
-        }
-      });
-
-      guardianVideo.addEventListener('canplay', () => {
-        console.log('動画再生可能');
-        // ローディング表示を非表示
-        loadingIndicator.classList.remove('show');
-        console.log('ローディング表示終了');
-      });
-
-      guardianVideo.addEventListener('playing', () => {
-        console.log('動画再生中');
-        // プログレスバーを100%にしてから非表示
-        if (progressBar) {
-          progressBar.style.width = '100%';
-        }
-        // ローディング表示を非表示
-        loadingIndicator.classList.remove('show');
-        console.log('ローディング表示終了');
-      });
-      
-      // 動画の再生完了を監視（iOS対応強化）
-      let videoEnded = false;
-      
-      guardianVideo.addEventListener('ended', () => {
-        if (videoEnded) return;
-        videoEnded = true;
-        console.log('Guardian video ended, transitioning to kekka.html');
-        
-        // フェードアウト
-        document.querySelector('.guardian-animation-container').classList.add('fade-out');
-        
-        // iOSでは遷移を少し遅らせる
-        const delay = isIOS() ? 1500 : 1000;
-        setTimeout(() => {
-          redirectToKekka();
-        }, delay);
-      });
-
-      // iOS用: 動画の時間進行を監視してより確実な遷移
-      if (isIOS()) {
-        guardianVideo.addEventListener('timeupdate', () => {
-          if (guardianVideo.duration && guardianVideo.currentTime >= guardianVideo.duration - 0.5) {
-            // 動画終了の0.5秒前にも遷移準備
-            if (!videoEnded) {
-              videoEnded = true;
-              console.log('IOS: Video near end, preparing transition');
-            }
-          }
-        });
       }
 
-      // 動画のエラーハンドリング
-      guardianVideo.addEventListener('error', (e) => {
-        console.error('Video error:', e);
-        console.error('動画エラー詳細:', guardianVideo.error);
-        
-        // ローディング表示を非表示
-        loadingIndicator.classList.remove('show');
-        
-        // フォールバック画像を表示
-        const fallbackImage = document.getElementById('guardianFallbackImage');
-        if (fallbackImage) {
-          guardianVideo.style.display = 'none';
-          fallbackImage.style.display = 'block';
-          console.log('フォールバック画像を表示');
-        }
-        
-        // 3秒後に遷移
-        setTimeout(() => {
-          redirectToKekka();
-        }, 3000);
-      });
+      if (videos.length === 0) {
+        console.error('No videos found');
+        redirectToKekka();
+        return;
+      }
 
-      // 動画の読み込み完了を待ってから再生（iOS対応強化）
-      const playVideo = () => {
-        console.log('動画再生を開始します...');
-        
-        // 読み込み状態をチェック
-        console.log('動画読み込み状態:', guardianVideo.readyState);
-        console.log('動画継続時間:', guardianVideo.duration);
-        
-        // iOSではより確実な再生のため、少し長めの遅延
-        if (isIOS()) {
-          setTimeout(() => {
-            startVideoPlayback();
-          }, 500);
-        } else {
-          setTimeout(() => {
-            startVideoPlayback();
-          }, 100);
+      let currentVideoIndex = 0;
+      let currentVideo = null;
+      let nextVideo = null;
+      let eventListeners = new Map(); // イベントリスナーを管理
+
+      const cleanupListeners = (video) => {
+        if (eventListeners.has(video)) {
+          const listeners = eventListeners.get(video);
+          listeners.ended && video.removeEventListener('ended', listeners.ended);
+          listeners.error && video.removeEventListener('error', listeners.error);
+          listeners.timeupdate && video.removeEventListener('timeupdate', listeners.timeupdate);
+          listeners.timeout && clearTimeout(listeners.timeout);
+          eventListeners.delete(video);
         }
       };
 
-      const startVideoPlayback = () => {
-        console.log('動画再生実行中...');
-        const playPromise = guardianVideo.play();
+      const startVideoSequence = () => {
+        if (currentVideoIndex >= videos.length) {
+          // 全ての動画が終了したらkekka.htmlに遷移
+          console.log('All videos completed, transitioning to kekka.html');
+          document.querySelector('.guardian-animation-container').classList.add('fade-out');
+          setTimeout(() => {
+            redirectToKekka();
+          }, isIOS() ? 1500 : 1000);
+          return;
+        }
+
+        currentVideo = videos[currentVideoIndex];
         
+        // 次の動画を準備（最後の動画でない場合）
+        if (currentVideoIndex + 1 < videos.length) {
+          nextVideo = videos[currentVideoIndex + 1];
+          nextVideo.currentTime = 0;
+        }
+
+        console.log(`Starting video ${currentVideoIndex + 1}/5`);
+
+        // 現在の動画を表示・再生
+        currentVideo.classList.add('active');
+        
+        // 動画の長さを取得して重なり合いタイミングを計算
+        const setupOverlapTransition = () => {
+          if (!currentVideo.duration || !nextVideo) return;
+
+          const duration = currentVideo.duration;
+          const overlapDuration = 1.0; // 重なり合い時間（秒）
+          const transitionStartTime = duration - overlapDuration;
+          
+          console.log(`Video ${currentVideoIndex + 1} duration: ${duration}s, transition starts at: ${transitionStartTime}s`);
+
+          // 動画が終了間近になったら次の動画を開始
+          const onTimeUpdate = () => {
+            if (currentVideo.currentTime >= transitionStartTime && nextVideo) {
+              console.log(`Starting overlap transition from video ${currentVideoIndex + 1} to ${currentVideoIndex + 2}`);
+              
+              // 次の動画を重なり合い状態で開始
+              nextVideo.classList.add('active', 'overlapping');
+              nextVideo.play().catch(error => {
+                console.error(`Next video ${currentVideoIndex + 2} play failed:`, error);
+              });
+              
+              // 時間更新イベントを削除（一度だけ実行）
+              currentVideo.removeEventListener('timeupdate', onTimeUpdate);
+            }
+          };
+
+          currentVideo.addEventListener('timeupdate', onTimeUpdate);
+          
+          // 既存のリスナーを更新
+          const existingListeners = eventListeners.get(currentVideo) || {};
+          existingListeners.timeupdate = onTimeUpdate;
+          eventListeners.set(currentVideo, existingListeners);
+        };
+
+        // 動画エラーハンドリング
+        const onVideoError = () => {
+          console.error(`Video ${currentVideoIndex + 1} error, skipping to next`);
+          cleanupListeners(currentVideo);
+          currentVideoIndex++;
+          setTimeout(startVideoSequence, 1000);
+        };
+
+        // 動画終了を監視
+        const onVideoEnded = () => {
+          console.log(`Video ${currentVideoIndex + 1} ended`);
+          cleanupListeners(currentVideo);
+          
+          // 現在の動画を非表示にする
+          currentVideo.classList.remove('active', 'overlapping');
+          
+          // 次の動画があれば重なり合い状態を解除して完全表示
+          if (nextVideo && currentVideoIndex + 1 < videos.length) {
+            nextVideo.classList.remove('overlapping');
+            currentVideoIndex++;
+            setTimeout(startVideoSequence, 200); // 短い間隔で次の動画へ
+          } else {
+            // 最後の動画の場合は遷移
+            currentVideoIndex++;
+            setTimeout(startVideoSequence, 500);
+          }
+        };
+
+        // イベントリスナーを設定
+        currentVideo.addEventListener('error', onVideoError);
+        currentVideo.addEventListener('ended', onVideoEnded);
+        
+        const timeoutId = setTimeout(() => {
+          console.log(`Video ${currentVideoIndex + 1} timeout, moving to next`);
+          onVideoEnded();
+        }, 10000);
+        
+        eventListeners.set(currentVideo, { 
+          ended: onVideoEnded, 
+          error: onVideoError,
+          timeout: timeoutId
+        });
+
+        // 動画を再生
+        const playPromise = currentVideo.play();
         if (playPromise !== undefined) {
           playPromise.then(() => {
-            console.log('動画再生成功');
-            hasStartedPlaying = true;
+            console.log(`Video ${currentVideoIndex + 1} started playing`);
             // ローディング表示を非表示
-            loadingIndicator.classList.remove('show');
-          }).catch(error => {
-            console.error('Video play failed:', error);
-            console.log('再生失敗、フォールバック画像を表示');
-            
-            // フォールバック画像を表示
-            const fallbackImage = document.getElementById('guardianFallbackImage');
-            if (fallbackImage) {
-              guardianVideo.style.display = 'none';
-              fallbackImage.style.display = 'block';
+            if (currentVideoIndex === 0) {
               loadingIndicator.classList.remove('show');
             }
-            
-            // 3秒後に遷移
-            setTimeout(() => {
-              redirectToKekka();
-            }, 3000);
+            // 動画が開始されたら重なり合いタイミングを設定
+            setTimeout(setupOverlapTransition, 100);
+          }).catch(error => {
+            console.error(`Video ${currentVideoIndex + 1} play failed:`, error);
+            onVideoError();
           });
-        } else {
-          console.log('動画再生Promise未対応ブラウザ');
-          hasStartedPlaying = true;
         }
       };
 
-      // 動画読み込み状態をチェックして再生開始
-      const checkAndPlayVideo = () => {
-        if (guardianVideo.readyState >= 2) { // HAVE_CURRENT_DATA以上
-          console.log('動画データ読み込み完了、再生開始');
-          playVideo();
-        } else {
-          console.log('動画読み込み待機中...');
-        }
-      };
-
-      // 複数のイベントで再生を試行
-      guardianVideo.addEventListener('loadstart', () => {
-        console.log('動画読み込み開始検知');
-      });
-
-      guardianVideo.addEventListener('loadeddata', () => {
-        console.log('動画データ読み込み完了検知');
-        checkAndPlayVideo();
-      });
-
-      guardianVideo.addEventListener('canplay', () => {
-        console.log('動画再生可能検知');
-        checkAndPlayVideo();
-        // タイムアウトクリア
-        if (loadTimeout) {
-          clearTimeout(loadTimeout);
-          console.log('タイムアウトクリア（canplay）');
-        }
-      });
-
-      guardianVideo.addEventListener('canplaythrough', () => {
-        console.log('動画完全読み込み検知');
-        checkAndPlayVideo();
-        // タイムアウトクリア
-        if (loadTimeout) {
-          clearTimeout(loadTimeout);
-          console.log('タイムアウトクリア（canplaythrough）');
-        }
-      });
-
-      guardianVideo.addEventListener('playing', () => {
-        hasStartedPlaying = true;
-        console.log('動画再生開始検知、タイムアウトクリア');
-        if (loadTimeout) {
-          clearTimeout(loadTimeout);
-        }
-      });
-
-      // 初期チェック
-      setTimeout(checkAndPlayVideo, 1000);
-
-      // 動画読み込みタイムアウト処理（iOS対応強化）
-      
-      // より長いタイムアウト時間を設定（動画再生開始まで）
-      const timeoutDuration = isIOS() ? 15000 : 8000;
-      
-      loadTimeout = setTimeout(() => {
-        // 動画再生が開始されていない場合のみフォールバック実行
-        if (!hasStartedPlaying) {
-          console.log('動画読み込みタイムアウト（再生未開始）、フォールバック画像を表示');
-          
-          // ローディング表示を非表示
-          loadingIndicator.classList.remove('show');
-          
-          const fallbackImage = document.getElementById('guardianFallbackImage');
-          if (fallbackImage) {
-            guardianVideo.style.display = 'none';
-            fallbackImage.style.display = 'block';
-          }
-        }
-      }, timeoutDuration);
-
-      // フォールバック: iOSでは少し長めに設定
-      const fallbackDuration = isIOS() ? 15000 : 10000;
+      // 最初の動画再生を開始
       setTimeout(() => {
-        console.log('フォールバック: ' + (fallbackDuration/1000) + '秒経過、強制遷移');
-        if (!videoEnded) {
-          redirectToKekka();
-        }
-      }, fallbackDuration);
+        startVideoSequence();
+      }, 500);
     }
 
     // ページ読み込み時にアニメーション開始
