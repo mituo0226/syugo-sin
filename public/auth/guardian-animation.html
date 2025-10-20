@@ -54,9 +54,6 @@
       z-index: 1;
       opacity: 0;
       transition: opacity 0.5s ease-in-out;
-      /* iOS Safari対応 */
-      -webkit-playsinline: true;
-      playsinline: true;
     }
 
     .guardian-video.active {
@@ -122,22 +119,6 @@
       50% { opacity: 1; }
     }
 
-    .loading-progress {
-      width: 200px;
-      height: 4px;
-      background: rgba(255, 215, 0, 0.2);
-      border-radius: 2px;
-      margin: 10px auto;
-      overflow: hidden;
-    }
-
-    .loading-progress-bar {
-      height: 100%;
-      background: linear-gradient(90deg, #FFD700, #FFA500);
-      width: 0%;
-      transition: width 0.3s ease;
-      border-radius: 2px;
-    }
 
     .guardian-text-overlay {
       position: relative;
@@ -194,10 +175,6 @@
       .loading-text {
         font-size: 14px;
       }
-      
-      .loading-progress {
-        width: 150px;
-      }
     }
   </style>
 </head>
@@ -226,9 +203,6 @@
     <div id="loadingIndicator" class="loading-indicator">
       <div class="loading-spinner"></div>
       <div class="loading-text">守護神の力を呼び出しています...</div>
-      <div class="loading-progress">
-        <div id="loadingProgressBar" class="loading-progress-bar"></div>
-      </div>
     </div>
     
     <div class="guardian-text-overlay">
@@ -260,18 +234,12 @@
       }
     }
 
-    // iPhone/iOS検出
-    function isIOS() {
-      return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-             (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    }
 
     // 5つの動画シーケンス処理
     function startGuardianAnimation() {
       console.log('=== 守護神導出動画シーケンス開始 ===');
       
       const loadingIndicator = document.getElementById('loadingIndicator');
-      const progressBar = document.getElementById('loadingProgressBar');
       
       if (!loadingIndicator) {
         console.error('Required elements not found');
@@ -288,12 +256,6 @@
       for (let i = 1; i <= 5; i++) {
         const video = document.getElementById(`guardianVideo${i}`);
         if (video) {
-          // iOS用の設定
-          if (isIOS()) {
-            video.playsInline = true;
-            video.setAttribute('playsinline', '');
-            video.setAttribute('webkit-playsinline', '');
-          }
           videos.push(video);
         }
       }
@@ -327,7 +289,7 @@
           document.querySelector('.guardian-animation-container').classList.add('fade-out');
           setTimeout(() => {
             redirectToKekka();
-          }, isIOS() ? 1500 : 1000);
+          }, 1000);
           return;
         }
 
