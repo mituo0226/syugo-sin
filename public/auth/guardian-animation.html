@@ -135,44 +135,6 @@
       50% { opacity: 1; }
     }
 
-
-    .guardian-text-overlay {
-      position: relative;
-      z-index: 10;
-      text-align: center;
-      color: #fff;
-      max-width: 800px;
-      padding: 20px;
-    }
-
-    .guardian-text {
-      font-size: clamp(24px, 5vw, 36px);
-      font-weight: bold;
-      margin-bottom: 20px;
-      text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
-      opacity: 0;
-      animation: fadeInText 1s ease-in-out 2s forwards;
-    }
-
-    .guardian-subtitle {
-      font-size: clamp(18px, 3vw, 24px);
-      color: #FFD700;
-      text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
-      opacity: 0;
-      animation: fadeInText 1s ease-in-out 3s forwards;
-    }
-
-    @keyframes fadeInText {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
     .fade-out {
       animation: fadeOut 1s ease-in-out forwards;
     }
@@ -226,10 +188,6 @@
       <div class="loading-text">守護神の力を呼び出しています...</div>
     </div>
     
-    <div class="guardian-text-overlay">
-      <div class="guardian-text">守護神が導き出される</div>
-      <div class="guardian-subtitle">運命の扉が開かれる...</div>
-    </div>
   </div>
 
   <script>
