@@ -158,11 +158,15 @@
       height: 100%;
       object-fit: cover;
       opacity: 0;
-      transition: opacity 1s ease-in-out;
+      transition: opacity 0.5s ease-in-out;
     }
 
     .guardian-sequence-video.active {
       opacity: 1;
+    }
+
+    .guardian-sequence-video.overlapping {
+      opacity: 0.8;
     }
 
     .guardian-sequence-text {
@@ -266,23 +270,18 @@
   <div id="guardianSequenceOverlay" class="guardian-sequence-overlay">
     <video id="guardianVideo1" class="guardian-sequence-video" muted preload="auto" playsinline webkit-playsinline>
       <source src="../photo/god1.mp4" type="video/mp4">
-      <source src="../photo/god.mp4" type="video/mp4">
     </video>
     <video id="guardianVideo2" class="guardian-sequence-video" muted preload="auto" playsinline webkit-playsinline>
       <source src="../photo/god2.mp4" type="video/mp4">
-      <source src="../photo/god.mp4" type="video/mp4">
     </video>
     <video id="guardianVideo3" class="guardian-sequence-video" muted preload="auto" playsinline webkit-playsinline>
       <source src="../photo/god3.mp4" type="video/mp4">
-      <source src="../photo/god.mp4" type="video/mp4">
     </video>
     <video id="guardianVideo4" class="guardian-sequence-video" muted preload="auto" playsinline webkit-playsinline>
       <source src="../photo/god4.mp4" type="video/mp4">
-      <source src="../photo/god.mp4" type="video/mp4">
     </video>
     <video id="guardianVideo5" class="guardian-sequence-video" muted preload="auto" playsinline webkit-playsinline>
       <source src="../photo/god5.mp4" type="video/mp4">
-      <source src="../photo/god.mp4" type="video/mp4">
     </video>
     
     <div class="guardian-sequence-text">
@@ -593,15 +592,22 @@
       }
 
       let currentVideoIndex = 0;
+      let currentVideo = null;
+      let nextVideo = null;
+      let eventListeners = new Map(); // イベントリスナーを管理
 
-      const playNextVideo = () => {
-        // 全ての動画を非表示にする
-        videos.forEach(video => {
-          video.classList.remove('active');
-          video.pause();
-          video.currentTime = 0;
-        });
+      const cleanupListeners = (video) => {
+        if (eventListeners.has(video)) {
+          const listeners = eventListeners.get(video);
+          listeners.ended && video.removeEventListener('ended', listeners.ended);
+          listeners.error && video.removeEventListener('error', listeners.error);
+          listeners.timeupdate && video.removeEventListener('timeupdate', listeners.timeupdate);
+          listeners.timeout && clearTimeout(listeners.timeout);
+          eventListeners.delete(video);
+        }
+      };
 
+      const startVideoSequence = () => {
         if (currentVideoIndex >= videos.length) {
           // 全ての動画が終了したら遷移
           console.log('All videos completed, transitioning...');
@@ -609,69 +615,113 @@
           return;
         }
 
-        const currentVideo = videos[currentVideoIndex];
-        console.log(`Playing video ${currentVideoIndex + 1}/5`);
+        currentVideo = videos[currentVideoIndex];
+        
+        // 次の動画を準備（最後の動画でない場合）
+        if (currentVideoIndex + 1 < videos.length) {
+          nextVideo = videos[currentVideoIndex + 1];
+          nextVideo.currentTime = 0;
+        }
+
+        console.log(`Starting video ${currentVideoIndex + 1}/5`);
 
         // 現在の動画を表示・再生
         currentVideo.classList.add('active');
         
-        let timeoutId; // タイムアウトIDを先に宣言
-        
+        // 動画の長さを取得して重なり合いタイミングを計算
+        const setupOverlapTransition = () => {
+          if (!currentVideo.duration || !nextVideo) return;
+
+          const duration = currentVideo.duration;
+          const overlapDuration = 1.0; // 重なり合い時間（秒）
+          const transitionStartTime = duration - overlapDuration;
+          
+          console.log(`Video ${currentVideoIndex + 1} duration: ${duration}s, transition starts at: ${transitionStartTime}s`);
+
+          // 動画が終了間近になったら次の動画を開始
+          const onTimeUpdate = () => {
+            if (currentVideo.currentTime >= transitionStartTime && nextVideo) {
+              console.log(`Starting overlap transition from video ${currentVideoIndex + 1} to ${currentVideoIndex + 2}`);
+              
+              // 次の動画を重なり合い状態で開始
+              nextVideo.classList.add('active', 'overlapping');
+              nextVideo.play().catch(error => {
+                console.error(`Next video ${currentVideoIndex + 2} play failed:`, error);
+              });
+              
+              // 時間更新イベントを削除（一度だけ実行）
+              currentVideo.removeEventListener('timeupdate', onTimeUpdate);
+            }
+          };
+
+          currentVideo.addEventListener('timeupdate', onTimeUpdate);
+          
+          // 既存のリスナーを更新
+          const existingListeners = eventListeners.get(currentVideo) || {};
+          existingListeners.timeupdate = onTimeUpdate;
+          eventListeners.set(currentVideo, existingListeners);
+        };
+
         // 動画エラーハンドリング
         const onVideoError = () => {
           console.error(`Video ${currentVideoIndex + 1} error, skipping to next`);
-          currentVideo.removeEventListener('error', onVideoError);
-          setTimeout(() => {
-            currentVideoIndex++;
-            playNextVideo();
-          }, 1000);
+          cleanupListeners(currentVideo);
+          currentVideoIndex++;
+          setTimeout(startVideoSequence, 1000);
         };
 
         // 動画終了を監視
-        const cleanupAndNext = () => {
-          currentVideo.removeEventListener('ended', onVideoEnded);
-          currentVideo.removeEventListener('error', onVideoError);
-          if (timeoutId) clearTimeout(timeoutId);
-          currentVideoIndex++;
-          // 次の動画に移る前に少し待機（フェードアウト時間）
-          setTimeout(() => {
-            playNextVideo();
-          }, 500);
-        };
-
         const onVideoEnded = () => {
           console.log(`Video ${currentVideoIndex + 1} ended`);
-          cleanupAndNext();
+          cleanupListeners(currentVideo);
+          
+          // 現在の動画を非表示にする
+          currentVideo.classList.remove('active', 'overlapping');
+          
+          // 次の動画があれば重なり合い状態を解除して完全表示
+          if (nextVideo && currentVideoIndex + 1 < videos.length) {
+            nextVideo.classList.remove('overlapping');
+            currentVideoIndex++;
+            setTimeout(startVideoSequence, 200); // 短い間隔で次の動画へ
+          } else {
+            // 最後の動画の場合は遷移
+            currentVideoIndex++;
+            setTimeout(startVideoSequence, 500);
+          }
         };
 
+        // イベントリスナーを設定
         currentVideo.addEventListener('error', onVideoError);
         currentVideo.addEventListener('ended', onVideoEnded);
-
-        // フォールバック: 10秒で次の動画に進む（動画が終了イベントを発火しない場合）
-        timeoutId = setTimeout(() => {
+        
+        const timeoutId = setTimeout(() => {
           console.log(`Video ${currentVideoIndex + 1} timeout, moving to next`);
-          cleanupAndNext();
+          onVideoEnded();
         }, 10000);
         
+        eventListeners.set(currentVideo, { 
+          ended: onVideoEnded, 
+          error: onVideoError,
+          timeout: timeoutId
+        });
+
+        // 動画を再生
         const playPromise = currentVideo.play();
         if (playPromise !== undefined) {
           playPromise.then(() => {
             console.log(`Video ${currentVideoIndex + 1} started playing`);
+            // 動画が開始されたら重なり合いタイミングを設定
+            setTimeout(setupOverlapTransition, 100);
           }).catch(error => {
             console.error(`Video ${currentVideoIndex + 1} play failed:`, error);
-            // この動画の再生に失敗しても次の動画に進む
-            currentVideo.removeEventListener('error', onVideoError);
-            setTimeout(() => {
-              currentVideoIndex++;
-              playNextVideo();
-            }, 1000);
+            onVideoError();
           });
         }
       };
 
       // 最初の動画再生を開始
       setTimeout(() => {
-        playNextVideo();
+        startVideoSequence();
       }, 500);
     }
 
