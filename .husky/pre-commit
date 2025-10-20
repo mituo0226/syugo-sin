@@ -1,4 +1,12 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-bash scripts/precommit-check.sh
+# Windows環境でのbashパス対応
+if command -v bash >/dev/null 2>&1; then
+  bash scripts/precommit-check.sh
+elif command -v sh >/dev/null 2>&1; then
+  sh scripts/precommit-check.sh
+else
+  echo "⚠️ Warning: Cannot find bash/sh for pre-commit check"
+  echo "Running without security check..."
+fi
