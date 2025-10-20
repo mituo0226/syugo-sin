@@ -135,8 +135,70 @@
       text-align: center;
     }
 
+    /* 守護神導出動画表示用スタイル */
+    .guardian-sequence-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      z-index: 9999;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
 
+    .guardian-sequence-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
 
+    .guardian-sequence-video.active {
+      opacity: 1;
+    }
+
+    .guardian-sequence-text {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      color: #fff;
+      max-width: 800px;
+      padding: 20px;
+      opacity: 0;
+      animation: fadeInText 1s ease-in-out 2s forwards;
+    }
+
+    .guardian-sequence-text .guardian-text {
+      font-size: clamp(24px, 5vw, 36px);
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    }
+
+    .guardian-sequence-text .guardian-subtitle {
+      font-size: clamp(18px, 3vw, 24px);
+      color: #FFD700;
+      text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+    }
+
+    @keyframes fadeInText {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
     @media (max-width: 600px) {
       .container {
@@ -200,6 +262,34 @@
     </form>
   </div>
 
+  <!-- 守護神導出動画シーケンス表示 -->
+  <div id="guardianSequenceOverlay" class="guardian-sequence-overlay">
+    <video id="guardianVideo1" class="guardian-sequence-video" muted preload="auto" playsinline webkit-playsinline>
+      <source src="../photo/god1.mp4" type="video/mp4">
+      <source src="../photo/god.mp4" type="video/mp4">
+    </video>
+    <video id="guardianVideo2" class="guardian-sequence-video" muted preload="auto" playsinline webkit-playsinline>
+      <source src="../photo/god2.mp4" type="video/mp4">
+      <source src="../photo/god.mp4" type="video/mp4">
+    </video>
+    <video id="guardianVideo3" class="guardian-sequence-video" muted preload="auto" playsinline webkit-playsinline>
+      <source src="../photo/god3.mp4" type="video/mp4">
+      <source src="../photo/god.mp4" type="video/mp4">
+    </video>
+    <video id="guardianVideo4" class="guardian-sequence-video" muted preload="auto" playsinline webkit-playsinline>
+      <source src="../photo/god4.mp4" type="video/mp4">
+      <source src="../photo/god.mp4" type="video/mp4">
+    </video>
+    <video id="guardianVideo5" class="guardian-sequence-video" muted preload="auto" playsinline webkit-playsinline>
+      <source src="../photo/god5.mp4" type="video/mp4">
+      <source src="../photo/god.mp4" type="video/mp4">
+    </video>
+    
+    <div class="guardian-sequence-text">
+      <div class="guardian-text">守護神が導き出される</div>
+      <div class="guardian-subtitle">運命の扉が開かれる...</div>
+    </div>
+  </div>
 
   <script>
     // 初期化フラグ
@@ -468,16 +558,131 @@
           submitBtn.textContent = "処理中...";
         }
         
-        // 守護神導出アニメーションページにリダイレクト
-        const params = new URLSearchParams({
-          year: year,
-          month: month,
-          day: day
-        });
-        window.location.href = `guardian-animation.html?${params.toString()}`;
+        // 守護神導出動画シーケンスを開始
+        showGuardianVideoSequence(year, month, day);
       });
       
       console.log('Form submission handler added');
+    }
+
+    // 守護神導出動画シーケンス表示関数
+    function showGuardianVideoSequence(year, month, day) {
+      console.log('=== 守護神導出動画シーケンス開始 ===');
+      
+      const overlay = document.getElementById('guardianSequenceOverlay');
+      if (!overlay) {
+        console.error('Guardian sequence overlay not found');
+        redirectToGuardianAnimation(year, month, day);
+        return;
+      }
+
+      overlay.style.display = 'flex';
+      
+      const videos = [];
+      for (let i = 1; i <= 5; i++) {
+        const video = document.getElementById(`guardianVideo${i}`);
+        if (video) {
+          videos.push(video);
+        }
+      }
+
+      if (videos.length === 0) {
+        console.error('No videos found');
+        redirectToGuardianAnimation(year, month, day);
+        return;
+      }
+
+      let currentVideoIndex = 0;
+
+      const playNextVideo = () => {
+        // 全ての動画を非表示にする
+        videos.forEach(video => {
+          video.classList.remove('active');
+          video.pause();
+          video.currentTime = 0;
+        });
+
+        if (currentVideoIndex >= videos.length) {
+          // 全ての動画が終了したら遷移
+          console.log('All videos completed, transitioning...');
+          redirectToGuardianAnimation(year, month, day);
+          return;
+        }
+
+        const currentVideo = videos[currentVideoIndex];
+        console.log(`Playing video ${currentVideoIndex + 1}/5`);
+
+        // 現在の動画を表示・再生
+        currentVideo.classList.add('active');
+        
+        let timeoutId; // タイムアウトIDを先に宣言
+        
+        // 動画エラーハンドリング
+        const onVideoError = () => {
+          console.error(`Video ${currentVideoIndex + 1} error, skipping to next`);
+          currentVideo.removeEventListener('error', onVideoError);
+          setTimeout(() => {
+            currentVideoIndex++;
+            playNextVideo();
+          }, 1000);
+        };
+
+        // 動画終了を監視
+        const cleanupAndNext = () => {
+          currentVideo.removeEventListener('ended', onVideoEnded);
+          currentVideo.removeEventListener('error', onVideoError);
+          if (timeoutId) clearTimeout(timeoutId);
+          currentVideoIndex++;
+          // 次の動画に移る前に少し待機（フェードアウト時間）
+          setTimeout(() => {
+            playNextVideo();
+          }, 500);
+        };
+
+        const onVideoEnded = () => {
+          console.log(`Video ${currentVideoIndex + 1} ended`);
+          cleanupAndNext();
+        };
+
+        currentVideo.addEventListener('error', onVideoError);
+        currentVideo.addEventListener('ended', onVideoEnded);
+
+        // フォールバック: 10秒で次の動画に進む（動画が終了イベントを発火しない場合）
+        timeoutId = setTimeout(() => {
+          console.log(`Video ${currentVideoIndex + 1} timeout, moving to next`);
+          cleanupAndNext();
+        }, 10000);
+        
+        const playPromise = currentVideo.play();
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            console.log(`Video ${currentVideoIndex + 1} started playing`);
+          }).catch(error => {
+            console.error(`Video ${currentVideoIndex + 1} play failed:`, error);
+            // この動画の再生に失敗しても次の動画に進む
+            currentVideo.removeEventListener('error', onVideoError);
+            setTimeout(() => {
+              currentVideoIndex++;
+              playNextVideo();
+            }, 1000);
+          });
+        }
+      };
+
+      // 最初の動画再生を開始
+      setTimeout(() => {
+        playNextVideo();
+      }, 500);
+    }
+
+    // guardian-animation.htmlに遷移する関数
+    function redirectToGuardianAnimation(year, month, day) {
+      const params = new URLSearchParams({
+        year: year,
+        month: month,
+        day: day
+      });
+      window.location.href = `guardian-animation.html?${params.toString()}`;
     }
 
     // 初期化処理
