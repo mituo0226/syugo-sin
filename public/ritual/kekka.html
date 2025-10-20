@@ -31,11 +31,16 @@
       object-fit: cover;
       z-index: -1;
       opacity: 0;
-      transition: opacity 0.5s ease-in-out;
+      transition: opacity 0.2s ease-in-out;
     }
     
     .cosmo2-background.show {
       opacity: 1;
+    }
+
+    .cosmo2-background.immediate-show {
+      opacity: 1;
+      transition: none;
     }
 
     .container {
@@ -474,15 +479,16 @@
         
         if (cosmo2Time && !isNaN(parseFloat(cosmo2Time))) {
           console.log('Resuming cosmo2.mp4 from time:', cosmo2Time);
+          // 連続再生の場合は即座に表示（遷移時間なし）
+          cosmo2Video.classList.add("immediate-show");
           // 動画が読み込まれてから時間を設定
           cosmo2Video.addEventListener('loadedmetadata', () => {
             cosmo2Video.currentTime = parseFloat(cosmo2Time);
           });
         } else {
           console.log('Starting cosmo2.mp4 from beginning');
+          cosmo2Video.classList.add("show");
         }
-        
-        cosmo2Video.classList.add("show");
         cosmo2Video.play().catch(error => {
           console.error('cosmo2.mp4 play failed:', error);
         });
@@ -517,8 +523,22 @@
       }
     }
 
-    // ページ読み込み時に処理開始
-    document.addEventListener("DOMContentLoaded", startProcess);
+    // ページ読み込み時に即座にcosmo2背景を確認
+    document.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const cosmo2Time = urlParams.get('cosmo2Time');
+      
+      // 連続再生の場合は即座に背景を表示
+      if (cosmo2Time && !isNaN(parseFloat(cosmo2Time))) {
+        const cosmo2Video = document.getElementById("cosmo2Background");
+        if (cosmo2Video) {
+          cosmo2Video.classList.add("immediate-show");
+          console.log('Pre-setting cosmo2 background for seamless transition');
+        }
+      }
+      
+      startProcess();
+    });
   </script>
 </body>
 </html>

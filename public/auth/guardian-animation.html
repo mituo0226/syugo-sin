@@ -79,12 +79,12 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
-      z-index: 0;
+      z-index: 10000;
       opacity: 0;
-      transition: opacity 1s ease-in-out;
+      transition: opacity 0.3s ease-in-out;
     }
 
     .cosmo2-preview.show {
@@ -392,19 +392,32 @@
             if (cosmo2Preview) {
               cosmo2Preview.currentTime = 0;
               cosmo2Preview.classList.add('show');
+              
+              // cosmo2Previewが確実に表示されてから遷移
+              cosmo2Preview.addEventListener('playing', () => {
+                console.log('cosmo2Preview started playing, transitioning immediately');
+                // 背景を保持したまま即座に遷移
+                setTimeout(() => {
+                  redirectToKekka();
+                }, 100);
+              }, { once: true });
+              
               cosmo2Preview.play().catch(error => {
                 console.error('cosmo2Preview play failed:', error);
+                // エラー時もフォールバック遷移
+                setTimeout(() => {
+                  redirectToKekka();
+                }, 100);
               });
+            } else {
+              // cosmo2Previewが見つからない場合のフォールバック
+              currentVideoIndex++;
+              setTimeout(() => {
+                redirectToKekka();
+              }, 100);
             }
             
             currentVideoIndex++;
-            setTimeout(() => {
-              console.log('All videos completed, transitioning to kekka.html');
-              document.querySelector('.guardian-animation-container').classList.add('fade-out');
-              setTimeout(() => {
-                redirectToKekka();
-              }, 500); // より短い遷移時間
-            }, 200);
           }
         };
 
