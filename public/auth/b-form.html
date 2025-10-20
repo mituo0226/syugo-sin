@@ -160,6 +160,17 @@
       z-index: 1;
     }
 
+    .guardian-fallback-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      display: none;
+    }
+
     .guardian-text-overlay {
       position: relative;
       z-index: 10;
@@ -276,9 +287,10 @@
 
   <!-- 守護神導出アニメーション -->
   <div id="guardianAnimation" class="guardian-animation-overlay">
-    <video id="guardianVideo" class="guardian-video" autoplay muted>
+    <video id="guardianVideo" class="guardian-video" autoplay muted preload="auto">
       <source src="../photo/god.mp4" type="video/mp4">
     </video>
+    <img id="guardianFallbackImage" class="guardian-fallback-image" src="../photo/ryu.png" alt="守護神導出">
     <div class="guardian-text-overlay">
       <div class="guardian-text">守護神が導き出される</div>
       <div class="guardian-subtitle">運命の扉が開かれる...</div>
@@ -582,8 +594,29 @@
         return;
       }
 
+      console.log('=== 守護神導出アニメーション開始 ===');
+      console.log('動画パス:', guardianVideo.querySelector('source').src);
+      console.log('動画要素:', guardianVideo);
+
       // アニメーション表示
       animationOverlay.style.display = 'flex';
+      
+      // 動画の読み込み状態を監視
+      guardianVideo.addEventListener('loadstart', () => {
+        console.log('動画読み込み開始');
+      });
+
+      guardianVideo.addEventListener('loadeddata', () => {
+        console.log('動画データ読み込み完了');
+      });
+
+      guardianVideo.addEventListener('canplay', () => {
+        console.log('動画再生可能');
+      });
+
+      guardianVideo.addEventListener('playing', () => {
+        console.log('動画再生中');
+      });
       
       // 動画の再生完了を監視
       guardianVideo.addEventListener('ended', () => {
@@ -606,7 +639,17 @@
       // 動画のエラーハンドリング
       guardianVideo.addEventListener('error', (e) => {
         console.error('Video error:', e);
-        // 動画エラーの場合は直接遷移
+        console.error('動画エラー詳細:', guardianVideo.error);
+        
+        // フォールバック画像を表示
+        const fallbackImage = document.getElementById('guardianFallbackImage');
+        if (fallbackImage) {
+          guardianVideo.style.display = 'none';
+          fallbackImage.style.display = 'block';
+          console.log('フォールバック画像を表示');
+        }
+        
+        // 3秒後に遷移
         setTimeout(() => {
           const params = new URLSearchParams({
             year: year,
@@ -614,22 +657,59 @@
             day: day
           });
           window.location.href = `../ritual/kekka.html?${params.toString()}`;
-        }, 2000);
+        }, 3000);
       });
 
-      // 動画の再生開始
-      guardianVideo.play().catch(error => {
-        console.error('Video play failed:', error);
-        // 再生失敗の場合は直接遷移
-        setTimeout(() => {
-          const params = new URLSearchParams({
-            year: year,
-            month: month,
-            day: day
-          });
-          window.location.href = `../ritual/kekka.html?${params.toString()}`;
-        }, 2000);
+      // 動画の読み込み完了を待ってから再生
+      const playVideo = () => {
+        console.log('動画再生を開始します...');
+        guardianVideo.play().catch(error => {
+          console.error('Video play failed:', error);
+          // 再生失敗の場合は直接遷移
+          setTimeout(() => {
+            const params = new URLSearchParams({
+              year: year,
+              month: month,
+              day: day
+            });
+            window.location.href = `../ritual/kekka.html?${params.toString()}`;
+          }, 2000);
+        });
+      };
+
+      // 動画が既に読み込み済みの場合は即座に再生
+      if (guardianVideo.readyState >= 3) {
+        playVideo();
+      } else {
+        // 読み込み完了を待つ
+        guardianVideo.addEventListener('canplay', playVideo, { once: true });
+      }
+
+      // 動画読み込みタイムアウト処理
+      const loadTimeout = setTimeout(() => {
+        console.log('動画読み込みタイムアウト、フォールバック画像を表示');
+        const fallbackImage = document.getElementById('guardianFallbackImage');
+        if (fallbackImage) {
+          guardianVideo.style.display = 'none';
+          fallbackImage.style.display = 'block';
+        }
+      }, 5000);
+
+      // 動画読み込み成功時にタイムアウトをクリア
+      guardianVideo.addEventListener('canplay', () => {
+        clearTimeout(loadTimeout);
       });
+
+      // フォールバック: 10秒後に強制遷移
+      setTimeout(() => {
+        console.log('フォールバック: 10秒経過、強制遷移');
+        const params = new URLSearchParams({
+          year: year,
+          month: month,
+          day: day
+        });
+        window.location.href = `../ritual/kekka.html?${params.toString()}`;
+      }, 10000);
     }
 
     // 既にDOMが読み込まれている場合の対応
