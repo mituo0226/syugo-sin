@@ -108,12 +108,14 @@
       margin: 20px 0;
       position: relative;
       display: inline-block;
-      padding: 10px 20px;
-      border-radius: 15px;
+      padding: 8px 16px;
+      border-radius: 12px;
+      max-width: 100%;
+      box-sizing: border-box;
     }
 
-    /* 背景画像と重なる部分の文字に濃いグレーのぼかし背景 */
-    .glow-text::before {
+    /* 背景画像と重なる部分の文字に濃いグレーのぼかし背景（result内のglow-textのみ） */
+    .result .glow-text::before {
       content: '';
       position: absolute;
       top: 0;
@@ -121,7 +123,7 @@
       right: 0;
       bottom: 0;
       background: rgba(40, 40, 60, 0.85);
-      border-radius: 15px;
+      border-radius: 12px;
       backdrop-filter: blur(8px);
       z-index: -1;
     }
@@ -215,24 +217,6 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
       text-align: center;
-      position: relative;
-      display: inline-block;
-      padding: 12px 24px;
-      border-radius: 15px;
-    }
-
-    /* フルスクリーン守護神名に濃いグレーのぼかし背景 */
-    .guardian-fullscreen h2::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(40, 40, 60, 0.85);
-      border-radius: 15px;
-      backdrop-filter: blur(8px);
-      z-index: -1;
     }
 
     .guardian-fullscreen p {
@@ -241,23 +225,7 @@
       max-width: 500px;
       text-align: center;
       margin: 0 0 25px 0;
-      padding: 20px;
-      position: relative;
-      border-radius: 15px;
-    }
-
-    /* フルスクリーン守護神説明に濃いグレーのぼかし背景 */
-    .guardian-fullscreen p::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(40, 40, 60, 0.85);
-      border-radius: 15px;
-      backdrop-filter: blur(8px);
-      z-index: -1;
+      padding: 0 20px;
     }
 
     /* レスポンシブ対応 */
@@ -294,6 +262,12 @@
         padding: 15px;
         margin: 0 0 20px 0;
         max-width: 90vw;
+      }
+      
+      .result .glow-text {
+        font-size: 1.3em;
+        padding: 6px 12px;
+        margin: 15px 10px;
       }
     }
 
