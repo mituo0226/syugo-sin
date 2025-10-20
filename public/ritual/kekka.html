@@ -21,6 +21,23 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
+    /* cosmo2.mp4背景動画 */
+    .cosmo2-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 2s ease-in-out;
+    }
+    
+    .cosmo2-background.show {
+      opacity: 1;
+    }
+
     .container {
       max-width: 800px;
       margin: 0 auto;
@@ -433,7 +450,10 @@
   </style>
 </head>
 <body>
-
+  <!-- cosmo2.mp4背景動画 -->
+  <video id="cosmo2Background" class="cosmo2-background" autoplay muted loop>
+    <source src="../photo/cosmo2.mp4" type="video/mp4">
+  </video>
   
   <div class="container">
     <!-- 鑑定結果表示エリア -->
@@ -699,6 +719,15 @@
       const loading = document.getElementById("loadingScreen");
       if (loading) {
         loading.style.display = "flex";
+      }
+
+      // cosmo2.mp4背景動画を表示
+      const cosmo2Video = document.getElementById("cosmo2Background");
+      if (cosmo2Video) {
+        cosmo2Video.classList.add("show");
+        cosmo2Video.play().catch(error => {
+          console.error('cosmo2.mp4 play failed:', error);
+        });
       }
 
       // 神託テキストの段階的変化を開始
