@@ -2,7 +2,10 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>守護神導出 - 守護神占い</title>
   <style>
     * {
@@ -20,6 +23,11 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      /* iOS Safari対応 */
+      -webkit-overflow-scrolling: touch;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
     }
 
     .guardian-animation-container {
@@ -44,6 +52,9 @@
       top: 0;
       left: 0;
       z-index: 1;
+      /* iOS Safari対応 */
+      -webkit-playsinline: true;
+      playsinline: true;
     }
 
     .guardian-fallback-image {
@@ -182,7 +193,7 @@
 </head>
 <body>
   <div class="guardian-animation-container">
-    <video id="guardianVideo" class="guardian-video" autoplay muted preload="auto">
+    <video id="guardianVideo" class="guardian-video" muted preload="auto" playsinline webkit-playsinline>
       <source src="../photo/god.mp4" type="video/mp4">
     </video>
     <img id="guardianFallbackImage" class="guardian-fallback-image" src="../photo/ryu.png" alt="守護神導出">
@@ -225,6 +236,12 @@
       }
     }
 
+    // iPhone/iOS検出
+    function isIOS() {
+      return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+             (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    }
+
     // 守護神導出アニメーション処理
     function startGuardianAnimation() {
       const guardianVideo = document.getElementById('guardianVideo');
@@ -239,10 +256,18 @@
 
       console.log('=== 守護神導出アニメーション開始 ===');
       console.log('動画パス:', guardianVideo.querySelector('source').src);
+      console.log('iOS環境:', isIOS());
       
       // ローディング表示を開始
       loadingIndicator.classList.add('show');
       console.log('ローディング表示開始');
+
+      // iOS用の設定
+      if (isIOS()) {
+        guardianVideo.playsInline = true;
+        guardianVideo.setAttribute('playsinline', '');
+        guardianVideo.setAttribute('webkit-playsinline', '');
+      }
       
       // 動画の読み込み状態を監視
       guardianVideo.addEventListener('loadstart', () => {
@@ -291,18 +316,36 @@
         console.log('ローディング表示終了');
       });
       
-      // 動画の再生完了を監視
+      // 動画の再生完了を監視（iOS対応強化）
+      let videoEnded = false;
+      
       guardianVideo.addEventListener('ended', () => {
+        if (videoEnded) return;
+        videoEnded = true;
         console.log('Guardian video ended, transitioning to kekka.html');
         
         // フェードアウト
         document.querySelector('.guardian-animation-container').classList.add('fade-out');
         
-        // フェードアウト完了後にkekka.htmlに遷移
+        // iOSでは遷移を少し遅らせる
+        const delay = isIOS() ? 1500 : 1000;
         setTimeout(() => {
           redirectToKekka();
-        }, 1000);
+        }, delay);
       });
+
+      // iOS用: 動画の時間進行を監視してより確実な遷移
+      if (isIOS()) {
+        guardianVideo.addEventListener('timeupdate', () => {
+          if (guardianVideo.duration && guardianVideo.currentTime >= guardianVideo.duration - 0.5) {
+            // 動画終了の0.5秒前にも遷移準備
+            if (!videoEnded) {
+              videoEnded = true;
+              console.log('IOS: Video near end, preparing transition');
+            }
+          }
+        });
+      }
 
       // 動画のエラーハンドリング
       guardianVideo.addEventListener('error', (e) => {
@@ -326,16 +369,44 @@
         }, 3000);
       });
 
-      // 動画の読み込み完了を待ってから再生
+      // 動画の読み込み完了を待ってから再生（iOS対応強化）
       const playVideo = () => {
         console.log('動画再生を開始します...');
-        guardianVideo.play().catch(error => {
-          console.error('Video play failed:', error);
-          // 再生失敗の場合は直接遷移
+        
+        // iOSではユーザーインタラクションが必要な場合があるため、少し遅延
+        if (isIOS()) {
           setTimeout(() => {
-            redirectToKekka();
-          }, 2000);
-        });
+            startVideoPlayback();
+          }, 100);
+        } else {
+          startVideoPlayback();
+        }
+      };
+
+      const startVideoPlayback = () => {
+        const playPromise = guardianVideo.play();
+        
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            console.log('動画再生成功');
+          }).catch(error => {
+            console.error('Video play failed:', error);
+            console.log('フォールバック画像を表示して遷移');
+            
+            // フォールバック画像を表示
+            const fallbackImage = document.getElementById('guardianFallbackImage');
+            if (fallbackImage) {
+              guardianVideo.style.display = 'none';
+              fallbackImage.style.display = 'block';
+              loadingIndicator.classList.remove('show');
+            }
+            
+            // 3秒後に遷移
+            setTimeout(() => {
+              redirectToKekka();
+            }, 3000);
+          });
+        }
       };
 
       // 動画が既に読み込み済みの場合は即座に再生
@@ -344,9 +415,11 @@
       } else {
         // 読み込み完了を待つ
         guardianVideo.addEventListener('canplay', playVideo, { once: true });
+        guardianVideo.addEventListener('canplaythrough', playVideo, { once: true });
       }
 
-      // 動画読み込みタイムアウト処理
+      // 動画読み込みタイムアウト処理（iOS対応強化）
+      const timeoutDuration = isIOS() ? 8000 : 5000; // iOSでは少し長めに設定
       const loadTimeout = setTimeout(() => {
         console.log('動画読み込みタイムアウト、フォールバック画像を表示');
         
@@ -358,18 +431,25 @@
           guardianVideo.style.display = 'none';
           fallbackImage.style.display = 'block';
         }
-      }, 5000);
+      }, timeoutDuration);
 
       // 動画読み込み成功時にタイムアウトをクリア
       guardianVideo.addEventListener('canplay', () => {
         clearTimeout(loadTimeout);
       });
 
-      // フォールバック: 10秒後に強制遷移
+      guardianVideo.addEventListener('canplaythrough', () => {
+        clearTimeout(loadTimeout);
+      });
+
+      // フォールバック: iOSでは少し長めに設定
+      const fallbackDuration = isIOS() ? 15000 : 10000;
       setTimeout(() => {
-        console.log('フォールバック: 10秒経過、強制遷移');
-        redirectToKekka();
-      }, 10000);
+        console.log('フォールバック: ' + (fallbackDuration/1000) + '秒経過、強制遷移');
+        if (!videoEnded) {
+          redirectToKekka();
+        }
+      }, fallbackDuration);
     }
 
     // ページ読み込み時にアニメーション開始
