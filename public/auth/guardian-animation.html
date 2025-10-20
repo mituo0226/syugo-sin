@@ -75,6 +75,22 @@
       display: none;
     }
 
+    .cosmo2-preview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+
+    .cosmo2-preview.show {
+      opacity: 1;
+    }
+
     .loading-indicator {
       position: absolute;
       top: 50%;
@@ -197,6 +213,11 @@
       <source src="../photo/god/5.mp4" type="video/mp4">
     </video>
     
+    <!-- cosmo2背景動画のプリロード -->
+    <video id="cosmo2Preview" class="cosmo2-preview" muted preload="auto" playsinline webkit-playsinline>
+      <source src="../photo/cosmo2.mp4" type="video/mp4">
+    </video>
+    
     <img id="guardianFallbackImage" class="guardian-fallback-image" src="../photo/ryu.png" alt="守護神導出">
     
     <!-- ローディング表示 -->
@@ -227,6 +248,14 @@
       const birthDate = getBirthDateFromURL();
       if (birthDate.year && birthDate.month && birthDate.day) {
         const params = new URLSearchParams(birthDate);
+        
+        // cosmo2Previewの再生時間を取得して連続再生のために渡す
+        const cosmo2Preview = document.getElementById('cosmo2Preview');
+        if (cosmo2Preview && !isNaN(cosmo2Preview.currentTime)) {
+          params.append('cosmo2Time', cosmo2Preview.currentTime.toString());
+          console.log('cosmo2 currentTime to transfer:', cosmo2Preview.currentTime);
+        }
+        
         window.location.href = `../ritual/kekka.html?${params.toString()}`;
       } else {
         // パラメータがない場合はb-form.htmlに戻る
@@ -284,12 +313,7 @@
 
       const startVideoSequence = () => {
         if (currentVideoIndex >= videos.length) {
-          // 全ての動画が終了したらkekka.htmlに遷移
-          console.log('All videos completed, transitioning to kekka.html');
-          document.querySelector('.guardian-animation-container').classList.add('fade-out');
-          setTimeout(() => {
-            redirectToKekka();
-          }, 1000);
+          // この処理は最後の動画終了時に movedVideoEnded で処理される
           return;
         }
 
@@ -362,9 +386,25 @@
             currentVideoIndex++;
             setTimeout(startVideoSequence, 200); // 短い間隔で次の動画へ
           } else {
-            // 最後の動画の場合は遷移
+            // 最後の動画（5番目）の場合はcosmo2.mp4を開始してから遷移
+            console.log('Last video ended, starting cosmo2.mp4 background');
+            const cosmo2Preview = document.getElementById('cosmo2Preview');
+            if (cosmo2Preview) {
+              cosmo2Preview.currentTime = 0;
+              cosmo2Preview.classList.add('show');
+              cosmo2Preview.play().catch(error => {
+                console.error('cosmo2Preview play failed:', error);
+              });
+            }
+            
             currentVideoIndex++;
-            setTimeout(startVideoSequence, 500);
+            setTimeout(() => {
+              console.log('All videos completed, transitioning to kekka.html');
+              document.querySelector('.guardian-animation-container').classList.add('fade-out');
+              setTimeout(() => {
+                redirectToKekka();
+              }, 500); // より短い遷移時間
+            }, 200);
           }
         };
 
