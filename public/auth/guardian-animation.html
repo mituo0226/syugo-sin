@@ -247,6 +247,8 @@
       const guardianVideo = document.getElementById('guardianVideo');
       const loadingIndicator = document.getElementById('loadingIndicator');
       const progressBar = document.getElementById('loadingProgressBar');
+      let hasStartedPlaying = false; // 動画再生開始フラグ
+      let loadTimeout; // タイムアウト用変数
       
       if (!guardianVideo || !loadingIndicator) {
         console.error('Required elements not found');
@@ -373,25 +375,35 @@
       const playVideo = () => {
         console.log('動画再生を開始します...');
         
-        // iOSではユーザーインタラクションが必要な場合があるため、少し遅延
+        // 読み込み状態をチェック
+        console.log('動画読み込み状態:', guardianVideo.readyState);
+        console.log('動画継続時間:', guardianVideo.duration);
+        
+        // iOSではより確実な再生のため、少し長めの遅延
         if (isIOS()) {
           setTimeout(() => {
             startVideoPlayback();
-          }, 100);
+          }, 500);
         } else {
-          startVideoPlayback();
+          setTimeout(() => {
+            startVideoPlayback();
+          }, 100);
         }
       };
 
       const startVideoPlayback = () => {
+        console.log('動画再生実行中...');
         const playPromise = guardianVideo.play();
         
         if (playPromise !== undefined) {
           playPromise.then(() => {
             console.log('動画再生成功');
+            hasStartedPlaying = true;
+            // ローディング表示を非表示
+            loadingIndicator.classList.remove('show');
           }).catch(error => {
             console.error('Video play failed:', error);
-            console.log('フォールバック画像を表示して遷移');
+            console.log('再生失敗、フォールバック画像を表示');
             
             // フォールバック画像を表示
             const fallbackImage = document.getElementById('guardianFallbackImage');
@@ -406,41 +418,83 @@
               redirectToKekka();
             }, 3000);
           });
+        } else {
+          console.log('動画再生Promise未対応ブラウザ');
+          hasStartedPlaying = true;
         }
       };
 
-      // 動画が既に読み込み済みの場合は即座に再生
-      if (guardianVideo.readyState >= 3) {
-        playVideo();
-      } else {
-        // 読み込み完了を待つ
-        guardianVideo.addEventListener('canplay', playVideo, { once: true });
-        guardianVideo.addEventListener('canplaythrough', playVideo, { once: true });
-      }
-
-      // 動画読み込みタイムアウト処理（iOS対応強化）
-      const timeoutDuration = isIOS() ? 8000 : 5000; // iOSでは少し長めに設定
-      const loadTimeout = setTimeout(() => {
-        console.log('動画読み込みタイムアウト、フォールバック画像を表示');
-        
-        // ローディング表示を非表示
-        loadingIndicator.classList.remove('show');
-        
-        const fallbackImage = document.getElementById('guardianFallbackImage');
-        if (fallbackImage) {
-          guardianVideo.style.display = 'none';
-          fallbackImage.style.display = 'block';
+      // 動画読み込み状態をチェックして再生開始
+      const checkAndPlayVideo = () => {
+        if (guardianVideo.readyState >= 2) { // HAVE_CURRENT_DATA以上
+          console.log('動画データ読み込み完了、再生開始');
+          playVideo();
+        } else {
+          console.log('動画読み込み待機中...');
         }
-      }, timeoutDuration);
+      };
 
-      // 動画読み込み成功時にタイムアウトをクリア
+      // 複数のイベントで再生を試行
+      guardianVideo.addEventListener('loadstart', () => {
+        console.log('動画読み込み開始検知');
+      });
+
+      guardianVideo.addEventListener('loadeddata', () => {
+        console.log('動画データ読み込み完了検知');
+        checkAndPlayVideo();
+      });
+
       guardianVideo.addEventListener('canplay', () => {
-        clearTimeout(loadTimeout);
+        console.log('動画再生可能検知');
+        checkAndPlayVideo();
+        // タイムアウトクリア
+        if (loadTimeout) {
+          clearTimeout(loadTimeout);
+          console.log('タイムアウトクリア（canplay）');
+        }
       });
 
       guardianVideo.addEventListener('canplaythrough', () => {
-        clearTimeout(loadTimeout);
+        console.log('動画完全読み込み検知');
+        checkAndPlayVideo();
+        // タイムアウトクリア
+        if (loadTimeout) {
+          clearTimeout(loadTimeout);
+          console.log('タイムアウトクリア（canplaythrough）');
+        }
       });
+
+      guardianVideo.addEventListener('playing', () => {
+        hasStartedPlaying = true;
+        console.log('動画再生開始検知、タイムアウトクリア');
+        if (loadTimeout) {
+          clearTimeout(loadTimeout);
+        }
+      });
+
+      // 初期チェック
+      setTimeout(checkAndPlayVideo, 1000);
+
+      // 動画読み込みタイムアウト処理（iOS対応強化）
+      
+      // より長いタイムアウト時間を設定（動画再生開始まで）
+      const timeoutDuration = isIOS() ? 15000 : 8000;
+      
+      loadTimeout = setTimeout(() => {
+        // 動画再生が開始されていない場合のみフォールバック実行
+        if (!hasStartedPlaying) {
+          console.log('動画読み込みタイムアウト（再生未開始）、フォールバック画像を表示');
+          
+          // ローディング表示を非表示
+          loadingIndicator.classList.remove('show');
+          
+          const fallbackImage = document.getElementById('guardianFallbackImage');
+          if (fallbackImage) {
+            guardianVideo.style.display = 'none';
+            fallbackImage.style.display = 'block';
+          }
+        }
+      }, timeoutDuration);
 
       // フォールバック: iOSでは少し長めに設定
       const fallbackDuration = isIOS() ? 15000 : 10000;
