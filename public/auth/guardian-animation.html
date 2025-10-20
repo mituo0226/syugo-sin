@@ -183,18 +183,23 @@
     <!-- 5つの動画シーケンス -->
     <video id="guardianVideo1" class="guardian-video" muted preload="auto" playsinline webkit-playsinline>
       <source src="../photo/god1.mp4" type="video/mp4">
+      <source src="../photo/god.mp4" type="video/mp4">
     </video>
     <video id="guardianVideo2" class="guardian-video" muted preload="auto" playsinline webkit-playsinline>
       <source src="../photo/god2.mp4" type="video/mp4">
+      <source src="../photo/god.mp4" type="video/mp4">
     </video>
     <video id="guardianVideo3" class="guardian-video" muted preload="auto" playsinline webkit-playsinline>
       <source src="../photo/god3.mp4" type="video/mp4">
+      <source src="../photo/god.mp4" type="video/mp4">
     </video>
     <video id="guardianVideo4" class="guardian-video" muted preload="auto" playsinline webkit-playsinline>
       <source src="../photo/god4.mp4" type="video/mp4">
+      <source src="../photo/god.mp4" type="video/mp4">
     </video>
     <video id="guardianVideo5" class="guardian-video" muted preload="auto" playsinline webkit-playsinline>
       <source src="../photo/god5.mp4" type="video/mp4">
+      <source src="../photo/god.mp4" type="video/mp4">
     </video>
     
     <img id="guardianFallbackImage" class="guardian-fallback-image" src="../photo/ryu.png" alt="守護神導出">
@@ -374,8 +379,10 @@
         
         const timeoutId = setTimeout(() => {
           console.log(`Video ${currentVideoIndex + 1} timeout, moving to next`);
-          onVideoEnded();
-        }, 10000);
+          cleanupListeners(currentVideo);
+          currentVideoIndex++;
+          setTimeout(startVideoSequence, 500);
+        }, 5000);
         
         eventListeners.set(currentVideo, { 
           ended: onVideoEnded, 
@@ -405,6 +412,12 @@
       setTimeout(() => {
         startVideoSequence();
       }, 500);
+
+      // 全体のフォールバック: 30秒で強制的にkekka.htmlに遷移
+      setTimeout(() => {
+        console.log('Overall fallback: 30 seconds passed, forcing transition to kekka.html');
+        redirectToKekka();
+      }, 30000);
     }
 
     // ページ読み込み時にアニメーション開始
