@@ -441,8 +441,6 @@
           <img class="guardian" src="${guardian.image}" alt="${guardian.name}" 
                onload="console.log('守護神画像読み込み成功:', this.src); this.style.opacity = '1';" 
                onerror="console.error('守護神画像読み込みエラー:', this.src); console.log('エラー時の完全URL:', new URL(this.src, window.location.href).href); this.src = '../photo/ryu.png';">
-          <div><strong class="glow-text">そなたを守護するは ${guardian.name}</strong></div>
-          <div>${guardian.catch}</div>
         </div>
       `;
       
