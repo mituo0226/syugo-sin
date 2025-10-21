@@ -99,33 +99,11 @@
     }
 
     .glow-text {
-      background: linear-gradient(45deg, #c77dff, #9d4edd);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #ffffff;
       font-size: 1.5em;
       font-weight: bold;
       margin: 20px 0;
-      position: relative;
-      display: inline-block;
-      padding: 8px 16px;
-      border-radius: 12px;
-      max-width: 100%;
-      box-sizing: border-box;
-    }
-
-    /* 背景画像と重なる部分の文字に濃いグレーのぼかし背景（result内のglow-textのみ） */
-    .result .glow-text::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(40, 40, 60, 0.85);
-      border-radius: 12px;
-      backdrop-filter: blur(8px);
-      z-index: -1;
+      text-align: center;
     }
 
     .result {
@@ -266,7 +244,6 @@
       
       .result .glow-text {
         font-size: 1.3em;
-        padding: 6px 12px;
         margin: 15px 10px;
       }
     }
