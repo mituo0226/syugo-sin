@@ -81,97 +81,35 @@
       padding-bottom: 30px;
     }
 
-    /* 守護神画像 - 画面全体に浮かび上がる */
+    /* 守護神画像 - 上部にフェードイン */
     .guardian-image {
-      width: 80vw;
-      height: 80vh;
-      max-width: 600px;
-      max-height: 600px;
-      object-fit: contain;
-      border-radius: 30px;
-      margin: 0 auto;
-      opacity: 0;
-      animation: guardianZoomInOut 5s ease-in-out forwards;
-      box-shadow: 
-        0 0 100px rgba(157, 78, 221, 0.9),
-        0 0 200px rgba(199, 125, 255, 0.6),
-        0 0 300px rgba(102, 204, 255, 0.4);
-      background: rgba(0, 0, 0, 0.1);
-      filter: brightness(1.2) contrast(1.1);
-    }
-
-    @keyframes guardianZoomInOut {
-      0% {
-        opacity: 0;
-        transform: scale(0.2) translateY(100px);
-      }
-      20% {
-        opacity: 1;
-        transform: scale(1.2) translateY(-20px);
-      }
-      40% {
-        opacity: 1;
-        transform: scale(1.1) translateY(-10px);
-      }
-      100% {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
-    }
-
-    /* 守護神画像 - 小さくなって上部に固定 */
-    .guardian-image.small {
       width: 120px;
       height: 120px;
       max-width: 120px;
       max-height: 120px;
+      object-fit: contain;
+      border-radius: 20px;
       margin: 20px auto 30px;
-      animation: guardianShrink 2s ease-in-out 5s forwards, guardianMysticalFloat 4s ease-in-out 7s infinite;
+      opacity: 0;
+      animation: guardianFadeIn 2s ease-in 3s forwards;
       box-shadow: 
-        0 0 50px rgba(157, 78, 221, 0.8),
-        0 0 100px rgba(199, 125, 255, 0.5);
-      opacity: 1;
+        0 0 30px rgba(157, 78, 221, 0.6),
+        0 0 60px rgba(199, 125, 255, 0.4);
+      background: rgba(0, 0, 0, 0.1);
     }
 
-    @keyframes guardianMysticalFloat {
-      0%, 100% { 
-        transform: translateY(0) scale(1);
-        box-shadow: 
-          0 0 50px rgba(157, 78, 221, 0.8),
-          0 0 100px rgba(199, 125, 255, 0.5);
+    @keyframes guardianFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
       }
-      50% { 
-        transform: translateY(-5px) scale(1.02);
-        box-shadow: 
-          0 0 60px rgba(157, 78, 221, 1),
-          0 0 120px rgba(199, 125, 255, 0.7),
-          0 0 150px rgba(102, 204, 255, 0.4);
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
     }
 
-    @keyframes guardianShrink {
-      0% {
-        width: 80vw;
-        height: 80vh;
-        max-width: 600px;
-        max-height: 600px;
-        transform: scale(1) translateY(0);
-      }
-      50% {
-        width: 200px;
-        height: 200px;
-        max-width: 200px;
-        max-height: 200px;
-        transform: scale(1.1) translateY(-20px);
-      }
-      100% {
-        width: 120px;
-        height: 120px;
-        max-width: 120px;
-        max-height: 120px;
-        transform: scale(1) translateY(0);
-      }
-    }
+    /* 守護神画像の追加スタイル（削除） */
 
     /* 守護神のセリフコンテナ */
     .speech-container {
@@ -181,7 +119,7 @@
       padding: 20px;
       margin: 20px 0;
       opacity: 0;
-      animation: speechFadeIn 1s ease-out 7s forwards;
+      animation: speechFadeIn 1s ease-out 5s forwards;
       box-shadow: 
         0 10px 30px rgba(0, 0, 0, 0.9),
         0 0 20px rgba(157, 78, 221, 0.5),
@@ -235,7 +173,7 @@
       display: block;
       max-width: 300px;
       width: 100%;
-      animation: buttonFloatUp 1s ease-out 9s forwards;
+      animation: buttonFloatUp 1s ease-out 7s forwards;
     }
 
     @keyframes buttonFloatUp {
@@ -259,25 +197,6 @@
     .reveal-button.show {
       opacity: 1;
       transform: translateY(0) scale(1);
-      animation: buttonGlow 2s ease-in-out infinite alternate, buttonFloat 3s ease-in-out infinite;
-    }
-
-    @keyframes buttonGlow {
-      0% {
-        box-shadow: 
-          0 10px 30px rgba(255, 215, 0, 0.5),
-          0 0 20px rgba(255, 215, 0, 0.3);
-      }
-      100% {
-        box-shadow: 
-          0 15px 40px rgba(255, 215, 0, 0.8),
-          0 0 30px rgba(255, 215, 0, 0.6);
-      }
-    }
-
-    @keyframes buttonFloat {
-      0%, 100% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-5px) scale(1.02); }
     }
 
     /* ローディング表示を削除 */
@@ -293,13 +212,6 @@
       }
       
       .guardian-image {
-        width: 90vw;
-        height: 70vh;
-        max-width: 500px;
-        max-height: 500px;
-      }
-      
-      .guardian-image.small {
         width: 100px;
         height: 100px;
         max-width: 100px;
@@ -338,13 +250,6 @@
       }
       
       .guardian-image {
-        width: 95vw;
-        height: 60vh;
-        max-width: 400px;
-        max-height: 400px;
-      }
-      
-      .guardian-image.small {
         width: 80px;
         height: 80px;
         max-width: 80px;
@@ -491,20 +396,15 @@
 
       // ローディング表示は削除済み
 
-      // 守護神画像を小さくする
-      setTimeout(() => {
-        guardianImageElement.classList.add('small');
-      }, 5000);
-
       // タイプライターメッセージ
       const speechElement = document.getElementById('speechText');
       const message = 'これより秘密の言葉を伝える。神の世界に入るときはこの言葉を必ず入力せよ。忘れてしまったらまた伝えられるから安心せよ。他の人間がその他の代わりに神の世界に入ることを防ぐために、合言葉は誰にも教えないようにせよ';
 
-      // 7秒待機後、タイプライター開始
+      // 5秒待機後、タイプライター開始
       setTimeout(async () => {
         await typeWriter(message, speechElement, 40);
         console.log('✅ 守護神のセリフが完了しました');
-      }, 7000);
+      }, 5000);
     }
 
     // 初期化
