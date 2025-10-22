@@ -22,6 +22,24 @@
       overflow-x: hidden;
       overflow-y: auto;
       padding: 10px;
+      position: relative;
+    }
+
+    /* cosmo.mp4背景動画 */
+    .cosmo-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 2s ease-in-out;
+    }
+    
+    .cosmo-background.show {
+      opacity: 1;
     }
 
     .stars {
@@ -63,33 +81,46 @@
     }
 
     .guardian-image {
-      width: 150px;
-      height: 150px;
+      width: 200px;
+      height: 200px;
       object-fit: contain;
       border-radius: 20px;
-      border: 3px solid gold;
-      margin: 0 auto 20px;
+      margin: 0 auto 30px;
       opacity: 0;
-      animation: fadeInImage 2s ease-in forwards;
-      box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
-      background: rgba(0, 0, 0, 0.3);
+      animation: guardianFloatIn 3s ease-in-out forwards;
+      box-shadow: 0 0 60px rgba(157, 78, 221, 0.8);
+      background: rgba(0, 0, 0, 0.2);
     }
 
-    @keyframes fadeInImage {
-      to { opacity: 1; }
+    @keyframes guardianFloatIn {
+      0% {
+        opacity: 0;
+        transform: translateY(50px) scale(0.8);
+      }
+      50% {
+        opacity: 0.7;
+        transform: translateY(-10px) scale(1.05);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
+    /* 守護神名は非表示 */
     .guardian-name {
-      font-size: 1.75em;
-      color: #FFD700;
-      margin-bottom: 20px;
-      text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
-      opacity: 0;
-      animation: fadeIn 2s ease-in 1s forwards;
+      display: none;
     }
 
-    @keyframes fadeIn {
-      to { opacity: 1; }
+    @keyframes messageSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .message-container {
@@ -99,7 +130,7 @@
       padding: 20px;
       margin: 15px 0;
       opacity: 0;
-      animation: fadeIn 1s ease-in 2s forwards;
+      animation: messageSlideIn 1s ease-out 3.5s forwards;
       flex: 1;
       display: flex;
       align-items: center;
@@ -133,6 +164,18 @@
       display: block;
       max-width: 280px;
       width: 100%;
+      animation: buttonFloatUp 1s ease-out 6s forwards;
+    }
+
+    @keyframes buttonFloatUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px) scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
     .reveal-button.show {
@@ -242,6 +285,11 @@
   </style>
 </head>
 <body>
+  <!-- cosmo.mp4背景動画 -->
+  <video class="cosmo-background" autoplay muted loop>
+    <source src="../photo/cosmo.mp4" type="video/mp4">
+  </video>
+
   <!-- 星空背景 -->
   <div class="stars" id="stars"></div>
 
@@ -362,24 +410,27 @@
       const typewriterElement = document.getElementById('typewriterText');
       const message = `これより私と${userData.nickname || 'あなた'}だけの秘密の合言葉を伝える。\n\n決して忘れず、次に私に会う時に必ず伝えなさい。\n\nまた、この言葉は決して他に伝えてはならぬ。\n\n家族や友人にも伝えてはならぬ、心にしっかり刻み、秘密としなさい。\n\nもし忘れてしまったら、また伝えられるから安心しなさい。`;
 
-      // 3秒待機後、タイプライター開始
+      // 4秒待機後、タイプライター開始（守護神画像のアニメーション後）
       setTimeout(async () => {
         await typeWriter(message, typewriterElement, 50);
 
-        // タイプライター終了後、ボタンを表示
-        setTimeout(() => {
-          const button = document.getElementById('revealButton');
-          if (button) {
-            button.classList.add('show');
-            console.log('✅ 合言葉を見るボタンを表示しました');
-          }
-        }, 1000);
-      }, 3000);
+        // タイプライター終了後、ボタンを表示（自動アニメーションで表示される）
+        console.log('✅ タイプライター完了、ボタンが自動表示されます');
+      }, 4000);
     }
 
     // 初期化
     window.addEventListener('load', () => {
       createStars();
+      
+      // cosmo背景動画を表示
+      setTimeout(() => {
+        const cosmoVideo = document.querySelector('.cosmo-background');
+        if (cosmoVideo) {
+          cosmoVideo.classList.add('show');
+        }
+      }, 500);
+      
       main();
     });
   </script>
