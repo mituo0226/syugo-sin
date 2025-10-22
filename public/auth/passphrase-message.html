@@ -83,19 +83,43 @@
 
     /* 守護神画像 - 上部にフェードイン */
     .guardian-image {
-      width: 180px;
-      height: 180px;
-      max-width: 180px;
-      max-height: 180px;
+      width: 250px;
+      height: 250px;
+      max-width: 250px;
+      max-height: 250px;
       object-fit: contain;
-      border-radius: 25px;
-      margin: 15px auto 25px;
+      border-radius: 0;
+      margin: 10px auto 20px;
       opacity: 0;
       animation: guardianFadeIn 2s ease-in 3s forwards;
-      box-shadow: 
-        0 0 40px rgba(157, 78, 221, 0.7),
-        0 0 80px rgba(199, 125, 255, 0.5);
-      background: rgba(0, 0, 0, 0.1);
+      box-shadow: none;
+      background: none;
+      filter: brightness(1.1) contrast(1.1);
+      position: relative;
+    }
+
+    .guardian-image::before {
+      content: '';
+      position: absolute;
+      top: -20px;
+      left: -20px;
+      right: -20px;
+      bottom: -20px;
+      background: radial-gradient(circle, rgba(157, 78, 221, 0.3) 0%, rgba(199, 125, 255, 0.2) 30%, rgba(102, 204, 255, 0.1) 60%, transparent 100%);
+      border-radius: 50%;
+      z-index: -1;
+      animation: auraGlow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes auraGlow {
+      0% {
+        transform: scale(1);
+        opacity: 0.6;
+      }
+      100% {
+        transform: scale(1.1);
+        opacity: 0.9;
+      }
     }
 
     @keyframes guardianFadeIn {
@@ -140,13 +164,13 @@
     }
 
     .speech-text {
-      font-size: 1.2em;
-      line-height: 1.7;
+      font-size: 1.4em;
+      line-height: 1.8;
       text-align: center;
       color: #fff;
       text-shadow: 
-        0 0 10px rgba(157, 78, 221, 0.8),
-        0 0 20px rgba(199, 125, 255, 0.6);
+        0 0 15px rgba(157, 78, 221, 0.9),
+        0 0 25px rgba(199, 125, 255, 0.7);
       font-weight: 500;
       white-space: pre-line;
     }
@@ -212,11 +236,11 @@
       }
       
       .guardian-image {
-        width: 140px;
-        height: 140px;
-        max-width: 140px;
-        max-height: 140px;
-        margin: 10px auto 15px;
+        width: 180px;
+        height: 180px;
+        max-width: 180px;
+        max-height: 180px;
+        margin: 8px auto 12px;
       }
       
       .speech-container {
@@ -231,8 +255,8 @@
       }
       
       .speech-text {
-        font-size: 1em;
-        line-height: 1.6;
+        font-size: 1.2em;
+        line-height: 1.7;
       }
       
       .reveal-button {
@@ -250,11 +274,11 @@
       }
       
       .guardian-image {
-        width: 120px;
-        height: 120px;
-        max-width: 120px;
-        max-height: 120px;
-        margin: 8px auto 12px;
+        width: 150px;
+        height: 150px;
+        max-width: 150px;
+        max-height: 150px;
+        margin: 6px auto 10px;
       }
       
       .speech-container {
@@ -269,8 +293,8 @@
       }
       
       .speech-text {
-        font-size: 0.9em;
-        line-height: 1.5;
+        font-size: 1em;
+        line-height: 1.6;
       }
       
       .reveal-button {
