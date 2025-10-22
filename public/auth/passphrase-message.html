@@ -91,7 +91,7 @@
       border-radius: 30px;
       margin: 0 auto;
       opacity: 0;
-      animation: guardianFullScreen 4s ease-in-out forwards;
+      animation: guardianZoomInOut 5s ease-in-out forwards;
       box-shadow: 
         0 0 100px rgba(157, 78, 221, 0.9),
         0 0 200px rgba(199, 125, 255, 0.6),
@@ -100,12 +100,16 @@
       filter: brightness(1.2) contrast(1.1);
     }
 
-    @keyframes guardianFullScreen {
+    @keyframes guardianZoomInOut {
       0% {
         opacity: 0;
-        transform: scale(0.3) translateY(50px);
+        transform: scale(0.2) translateY(100px);
       }
-      50% {
+      20% {
+        opacity: 1;
+        transform: scale(1.2) translateY(-20px);
+      }
+      40% {
         opacity: 1;
         transform: scale(1.1) translateY(-10px);
       }
@@ -122,7 +126,7 @@
       max-width: 120px;
       max-height: 120px;
       margin: 20px auto 30px;
-      animation: guardianShrink 2s ease-in-out 4s forwards, guardianMysticalFloat 4s ease-in-out 6s infinite;
+      animation: guardianShrink 2s ease-in-out 5s forwards, guardianMysticalFloat 4s ease-in-out 7s infinite;
       box-shadow: 
         0 0 50px rgba(157, 78, 221, 0.8),
         0 0 100px rgba(199, 125, 255, 0.5);
@@ -146,19 +150,26 @@
     }
 
     @keyframes guardianShrink {
-      from {
+      0% {
         width: 80vw;
         height: 80vh;
         max-width: 600px;
         max-height: 600px;
-        transform: scale(1);
+        transform: scale(1) translateY(0);
       }
-      to {
+      50% {
+        width: 200px;
+        height: 200px;
+        max-width: 200px;
+        max-height: 200px;
+        transform: scale(1.1) translateY(-20px);
+      }
+      100% {
         width: 120px;
         height: 120px;
         max-width: 120px;
         max-height: 120px;
-        transform: scale(1);
+        transform: scale(1) translateY(0);
       }
     }
 
@@ -170,7 +181,7 @@
       padding: 20px;
       margin: 20px 0;
       opacity: 0;
-      animation: speechFadeIn 1s ease-out 6s forwards;
+      animation: speechFadeIn 1s ease-out 7s forwards;
       box-shadow: 
         0 10px 30px rgba(0, 0, 0, 0.9),
         0 0 20px rgba(157, 78, 221, 0.5),
@@ -224,7 +235,7 @@
       display: block;
       max-width: 300px;
       width: 100%;
-      animation: buttonFloatUp 1s ease-out 8s forwards;
+      animation: buttonFloatUp 1s ease-out 9s forwards;
     }
 
     @keyframes buttonFloatUp {
@@ -269,16 +280,9 @@
       50% { transform: translateY(-5px) scale(1.02); }
     }
 
+    /* ローディング表示を削除 */
     .loading {
-      font-size: 1.1em;
-      color: #888;
-      margin-top: 20px;
-      opacity: 0;
-      animation: loadingFadeIn 1s ease-in 1s forwards;
-    }
-
-    @keyframes loadingFadeIn {
-      to { opacity: 1; }
+      display: none;
     }
 
     /* レスポンシブデザイン */
@@ -485,25 +489,22 @@
       const guardianImageElement = document.getElementById('guardianImage');
       guardianImageElement.src = `../photo/${userData.guardianKey || 'amida'}.png`;
 
-      // ローディング非表示
-      setTimeout(() => {
-        document.getElementById('loading').style.display = 'none';
-      }, 2000);
+      // ローディング表示は削除済み
 
       // 守護神画像を小さくする
       setTimeout(() => {
         guardianImageElement.classList.add('small');
-      }, 4000);
+      }, 5000);
 
       // タイプライターメッセージ
       const speechElement = document.getElementById('speechText');
       const message = 'これより秘密の言葉を伝える。神の世界に入るときはこの言葉を必ず入力せよ。忘れてしまったらまた伝えられるから安心せよ。他の人間がその他の代わりに神の世界に入ることを防ぐために、合言葉は誰にも教えないようにせよ';
 
-      // 6秒待機後、タイプライター開始
+      // 7秒待機後、タイプライター開始
       setTimeout(async () => {
         await typeWriter(message, speechElement, 40);
         console.log('✅ 守護神のセリフが完了しました');
-      }, 6000);
+      }, 7000);
     }
 
     // 初期化
