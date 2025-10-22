@@ -83,18 +83,18 @@
 
     /* 守護神画像 - 上部にフェードイン */
     .guardian-image {
-      width: 120px;
-      height: 120px;
-      max-width: 120px;
-      max-height: 120px;
+      width: 180px;
+      height: 180px;
+      max-width: 180px;
+      max-height: 180px;
       object-fit: contain;
-      border-radius: 20px;
-      margin: 20px auto 30px;
+      border-radius: 25px;
+      margin: 15px auto 25px;
       opacity: 0;
       animation: guardianFadeIn 2s ease-in 3s forwards;
       box-shadow: 
-        0 0 30px rgba(157, 78, 221, 0.6),
-        0 0 60px rgba(199, 125, 255, 0.4);
+        0 0 40px rgba(157, 78, 221, 0.7),
+        0 0 80px rgba(199, 125, 255, 0.5);
       background: rgba(0, 0, 0, 0.1);
     }
 
@@ -140,8 +140,8 @@
     }
 
     .speech-text {
-      font-size: 1.3em;
-      line-height: 1.8;
+      font-size: 1.2em;
+      line-height: 1.7;
       text-align: center;
       color: #fff;
       text-shadow: 
@@ -212,11 +212,11 @@
       }
       
       .guardian-image {
-        width: 100px;
-        height: 100px;
-        max-width: 100px;
-        max-height: 100px;
-        margin: 15px auto 20px;
+        width: 140px;
+        height: 140px;
+        max-width: 140px;
+        max-height: 140px;
+        margin: 10px auto 15px;
       }
       
       .speech-container {
@@ -231,8 +231,8 @@
       }
       
       .speech-text {
-        font-size: 1.1em;
-        line-height: 1.7;
+        font-size: 1em;
+        line-height: 1.6;
       }
       
       .reveal-button {
@@ -250,11 +250,11 @@
       }
       
       .guardian-image {
-        width: 80px;
-        height: 80px;
-        max-width: 80px;
-        max-height: 80px;
-        margin: 10px auto 15px;
+        width: 120px;
+        height: 120px;
+        max-width: 120px;
+        max-height: 120px;
+        margin: 8px auto 12px;
       }
       
       .speech-container {
@@ -269,8 +269,8 @@
       }
       
       .speech-text {
-        font-size: 1em;
-        line-height: 1.6;
+        font-size: 0.9em;
+        line-height: 1.5;
       }
       
       .reveal-button {
@@ -398,7 +398,7 @@
 
       // タイプライターメッセージ
       const speechElement = document.getElementById('speechText');
-      const message = 'これより秘密の言葉を伝える。神の世界に入るときはこの言葉を必ず入力せよ。忘れてしまったらまた伝えられるから安心せよ。他の人間がその他の代わりに神の世界に入ることを防ぐために、合言葉は誰にも教えないようにせよ';
+      const message = 'これより秘密の言葉を伝える。\n\n神の世界に入るときはこの言葉を必ず入力せよ。\n\n忘れてしまったらまた伝えられるから安心せよ。\n\n他の人間がその他の代わりに神の世界に入ることを防ぐために、合言葉は誰にも教えないようにせよ。';
 
       // 5秒待機後、タイプライター開始
       setTimeout(async () => {
