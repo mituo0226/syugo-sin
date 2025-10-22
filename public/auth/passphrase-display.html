@@ -17,9 +17,11 @@
       min-height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       color: white;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
+      padding: 10px;
     }
 
     .stars {
@@ -52,15 +54,21 @@
       width: 100%;
       padding: 20px;
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      min-height: 100vh;
+      padding-bottom: 40px;
     }
 
     .guardian-image {
-      width: 150px;
-      height: 150px;
+      width: 120px;
+      height: 120px;
       object-fit: contain;
       border-radius: 20px;
       border: 3px solid gold;
-      margin: 0 auto 20px;
+      margin: 0 auto 15px;
       opacity: 0;
       animation: fadeInImage 1s ease-in forwards;
       box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
@@ -72,9 +80,9 @@
     }
 
     .guardian-name {
-      font-size: 28px;
+      font-size: 24px;
       color: #FFD700;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
       opacity: 0;
       animation: fadeIn 1s ease-in 0.5s forwards;
@@ -86,12 +94,18 @@
 
     .passphrase-container {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 50px;
+      padding: 30px;
       border-radius: 20px;
-      margin: 30px 0;
+      margin: 20px 0;
       opacity: 0;
       animation: slideIn 1s ease-out 1s forwards;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
     }
 
     @keyframes slideIn {
@@ -106,24 +120,26 @@
     }
 
     .passphrase-label {
-      font-size: 24px;
+      font-size: 20px;
       color: #FFD700;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       font-weight: bold;
     }
 
     .passphrase-word {
-      font-size: 48px;
+      font-size: 36px;
       font-weight: bold;
       color: #FFD700;
       text-shadow: 0 0 30px rgba(255, 215, 0, 1);
-      padding: 30px;
-      letter-spacing: 8px;
-      margin: 20px 0;
+      padding: 25px;
+      letter-spacing: 6px;
+      margin: 15px 0;
       border: 2px solid rgba(255, 215, 0, 0.5);
       border-radius: 15px;
       background: rgba(0, 0, 0, 0.3);
       animation: glow 2s ease-in-out infinite alternate;
+      text-align: center;
+      word-break: keep-all;
     }
 
     @keyframes glow {
@@ -138,34 +154,36 @@
     }
 
     .warning {
-      font-size: 16px;
+      font-size: 14px;
       color: #ffc107;
-      margin-top: 30px;
-      line-height: 1.8;
+      margin-top: 20px;
+      line-height: 1.6;
       background: rgba(255, 193, 7, 0.1);
-      padding: 20px;
+      padding: 15px;
       border-radius: 10px;
       border: 1px solid rgba(255, 193, 7, 0.3);
+      text-align: center;
     }
 
     .login-button {
       background: linear-gradient(45deg, #FFD700, #FFA500);
       color: #333;
-      padding: 18px 60px;
+      padding: 15px 40px;
       border: none;
       border-radius: 50px;
-      font-size: 22px;
+      font-size: 20px;
       font-weight: bold;
       cursor: pointer;
       box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5);
       transition: all 0.3s ease;
       opacity: 0;
-      transform: translateY(30px);
-      margin: 40px auto 0;
+      transform: translateY(50px) scale(0.8);
+      margin: 20px auto 0;
       position: relative;
       z-index: 10;
       display: block;
-      animation: buttonGlow 2s ease-in-out infinite alternate;
+      max-width: 280px;
+      width: 100%;
     }
 
     @keyframes buttonGlow {
@@ -179,7 +197,13 @@
 
     .login-button.show {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
+      animation: buttonGlow 2s ease-in-out infinite alternate, buttonFloat 3s ease-in-out infinite;
+    }
+
+    @keyframes buttonFloat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-5px) scale(1.02); }
     }
 
     .login-button:hover {
@@ -191,6 +215,99 @@
       font-size: 18px;
       color: #888;
       margin-top: 20px;
+    }
+
+    /* モバイル対応のレスポンシブデザイン */
+    @media (max-width: 768px) {
+      body {
+        padding: 5px;
+      }
+      
+      .container {
+        padding: 15px;
+        padding-bottom: 30px;
+      }
+      
+      .guardian-image {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 10px;
+      }
+      
+      .guardian-name {
+        font-size: 20px;
+        margin-bottom: 15px;
+      }
+      
+      .passphrase-container {
+        padding: 20px;
+        margin: 15px 0;
+      }
+      
+      .passphrase-label {
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+      
+      .passphrase-word {
+        font-size: 28px;
+        padding: 20px;
+        letter-spacing: 4px;
+        margin: 10px 0;
+      }
+      
+      .warning {
+        font-size: 13px;
+        padding: 12px;
+        margin-top: 15px;
+      }
+      
+      .login-button {
+        padding: 12px 30px;
+        font-size: 18px;
+        max-width: 250px;
+        margin: 15px auto 0;
+      }
+      
+      .loading {
+        font-size: 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .guardian-image {
+        width: 80px;
+        height: 80px;
+      }
+      
+      .guardian-name {
+        font-size: 18px;
+      }
+      
+      .passphrase-container {
+        padding: 15px;
+      }
+      
+      .passphrase-label {
+        font-size: 16px;
+      }
+      
+      .passphrase-word {
+        font-size: 24px;
+        padding: 15px;
+        letter-spacing: 3px;
+      }
+      
+      .warning {
+        font-size: 12px;
+        padding: 10px;
+      }
+      
+      .login-button {
+        padding: 10px 25px;
+        font-size: 16px;
+        max-width: 220px;
+      }
     }
   </style>
 </head>
