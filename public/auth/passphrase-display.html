@@ -63,16 +63,20 @@
     }
 
     .guardian-image {
-      width: 120px;
-      height: 120px;
+      width: 80px;
+      height: 80px;
       object-fit: contain;
-      border-radius: 20px;
-      border: 3px solid gold;
-      margin: 0 auto 15px;
+      border-radius: 15px;
+      border: 2px solid rgba(255, 215, 0, 0.7);
+      margin: 0;
       opacity: 0;
       animation: fadeInImage 1s ease-in forwards;
-      box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
-      background: rgba(0, 0, 0, 0.3);
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+      background: rgba(0, 0, 0, 0.2);
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      z-index: 10;
     }
 
     @keyframes fadeInImage {
@@ -94,9 +98,9 @@
 
     .passphrase-container {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 30px;
+      padding: 25px;
       border-radius: 20px;
-      margin: 20px 0;
+      margin: 15px 0;
       opacity: 0;
       animation: slideIn 1s ease-out 1s forwards;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
@@ -106,6 +110,7 @@
       justify-content: center;
       align-items: center;
       width: 100%;
+      position: relative;
     }
 
     @keyframes slideIn {
@@ -127,19 +132,20 @@
     }
 
     .passphrase-word {
-      font-size: 36px;
+      font-size: 32px;
       font-weight: bold;
       color: #FFD700;
       text-shadow: 0 0 30px rgba(255, 215, 0, 1);
-      padding: 25px;
-      letter-spacing: 6px;
-      margin: 15px 0;
+      padding: 20px;
+      letter-spacing: 5px;
+      margin: 10px 0;
       border: 2px solid rgba(255, 215, 0, 0.5);
       border-radius: 15px;
       background: rgba(0, 0, 0, 0.3);
       animation: glow 2s ease-in-out infinite alternate;
       text-align: center;
       word-break: keep-all;
+      max-width: 90%;
     }
 
     @keyframes glow {
@@ -229,9 +235,10 @@
       }
       
       .guardian-image {
-        width: 100px;
-        height: 100px;
-        margin-bottom: 10px;
+        width: 60px;
+        height: 60px;
+        top: 10px;
+        right: 10px;
       }
       
       .guardian-name {
@@ -240,8 +247,8 @@
       }
       
       .passphrase-container {
-        padding: 20px;
-        margin: 15px 0;
+        padding: 15px;
+        margin: 10px 0;
       }
       
       .passphrase-label {
@@ -250,10 +257,10 @@
       }
       
       .passphrase-word {
-        font-size: 28px;
-        padding: 20px;
-        letter-spacing: 4px;
-        margin: 10px 0;
+        font-size: 24px;
+        padding: 15px;
+        letter-spacing: 3px;
+        margin: 8px 0;
       }
       
       .warning {
@@ -263,10 +270,10 @@
       }
       
       .login-button {
-        padding: 12px 30px;
-        font-size: 18px;
-        max-width: 250px;
-        margin: 15px auto 0;
+        padding: 10px 25px;
+        font-size: 16px;
+        max-width: 220px;
+        margin: 10px auto 0;
       }
       
       .loading {
@@ -276,8 +283,10 @@
 
     @media (max-width: 480px) {
       .guardian-image {
-        width: 80px;
-        height: 80px;
+        width: 50px;
+        height: 50px;
+        top: 8px;
+        right: 8px;
       }
       
       .guardian-name {
@@ -285,7 +294,8 @@
       }
       
       .passphrase-container {
-        padding: 15px;
+        padding: 12px;
+        margin: 8px 0;
       }
       
       .passphrase-label {
@@ -293,9 +303,10 @@
       }
       
       .passphrase-word {
-        font-size: 24px;
-        padding: 15px;
-        letter-spacing: 3px;
+        font-size: 20px;
+        padding: 12px;
+        letter-spacing: 2px;
+        margin: 6px 0;
       }
       
       .warning {
@@ -304,9 +315,10 @@
       }
       
       .login-button {
-        padding: 10px 25px;
-        font-size: 16px;
-        max-width: 220px;
+        padding: 8px 20px;
+        font-size: 14px;
+        max-width: 200px;
+        margin: 8px auto 0;
       }
     }
   </style>
