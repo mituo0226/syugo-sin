@@ -261,7 +261,7 @@
       display: block;
       max-width: 300px;
       width: 100%;
-      animation: buttonFloatUp 1s ease-out 7s forwards;
+      animation: buttonFloatUp 1s ease-out 12s forwards;
     }
 
     @keyframes buttonFloatUp {
@@ -492,6 +492,15 @@
       setTimeout(async () => {
         await typeWriter(message, speechElement, 40);
         console.log('✅ 守護神のセリフが完了しました');
+        
+        // セリフ完了後、ボタンを表示
+        setTimeout(() => {
+          const button = document.getElementById('revealButton');
+          if (button) {
+            button.classList.add('show');
+            console.log('✅ ボタンが表示されました');
+          }
+        }, 1000);
       }, 5000);
     }
 
