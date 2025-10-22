@@ -21,11 +21,10 @@
       color: white;
       overflow-x: hidden;
       overflow-y: auto;
-      padding: 10px;
       position: relative;
     }
 
-    /* cosmo.mp4背景動画 */
+    /* cosmo3.mp4背景動画 */
     .cosmo-background {
       position: fixed;
       top: 0;
@@ -35,13 +34,14 @@
       object-fit: cover;
       z-index: -1;
       opacity: 0;
-      transition: opacity 2s ease-in-out;
+      transition: opacity 3s ease-in-out;
     }
     
     .cosmo-background.show {
       opacity: 1;
     }
 
+    /* 星空背景 */
     .stars {
       position: fixed;
       top: 0;
@@ -49,6 +49,7 @@
       width: 100%;
       height: 100%;
       pointer-events: none;
+      z-index: 0;
     }
 
     .star {
@@ -68,51 +69,99 @@
     .container {
       position: relative;
       z-index: 10;
-      max-width: 800px;
+      max-width: 1000px;
       width: 100%;
-      padding: 15px;
+      padding: 20px;
       text-align: center;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
       align-items: center;
       min-height: 100vh;
-      padding-bottom: 20px;
+      padding-bottom: 30px;
     }
 
+    /* 守護神画像 - 画面全体に浮かび上がる */
     .guardian-image {
-      width: 200px;
-      height: 200px;
+      width: 80vw;
+      height: 80vh;
+      max-width: 600px;
+      max-height: 600px;
       object-fit: contain;
-      border-radius: 20px;
-      margin: 0 auto 20px;
+      border-radius: 30px;
+      margin: 0 auto;
       opacity: 0;
-      animation: guardianFloatIn 3s ease-in-out forwards;
-      box-shadow: 0 0 60px rgba(157, 78, 221, 0.8);
-      background: rgba(0, 0, 0, 0.2);
+      animation: guardianFullScreen 4s ease-in-out forwards;
+      box-shadow: 
+        0 0 100px rgba(157, 78, 221, 0.9),
+        0 0 200px rgba(199, 125, 255, 0.6),
+        0 0 300px rgba(102, 204, 255, 0.4);
+      background: rgba(0, 0, 0, 0.1);
+      filter: brightness(1.2) contrast(1.1);
     }
 
-    @keyframes guardianFloatIn {
+    @keyframes guardianFullScreen {
       0% {
         opacity: 0;
-        transform: translateY(50px) scale(0.8);
+        transform: scale(0.3) translateY(50px);
       }
       50% {
-        opacity: 0.7;
-        transform: translateY(-10px) scale(1.05);
+        opacity: 1;
+        transform: scale(1.1) translateY(-10px);
       }
       100% {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: scale(1) translateY(0);
       }
     }
 
-    /* 守護神名は非表示 */
-    .guardian-name {
-      display: none;
+    /* 守護神画像 - 小さくなって上部に固定 */
+    .guardian-image.small {
+      width: 120px;
+      height: 120px;
+      max-width: 120px;
+      max-height: 120px;
+      margin: 20px auto 30px;
+      animation: guardianShrink 2s ease-in-out 4s forwards;
+      box-shadow: 
+        0 0 50px rgba(157, 78, 221, 0.8),
+        0 0 100px rgba(199, 125, 255, 0.5);
     }
 
-    @keyframes messageSlideIn {
+    @keyframes guardianShrink {
+      from {
+        width: 80vw;
+        height: 80vh;
+        max-width: 600px;
+        max-height: 600px;
+        transform: scale(1);
+      }
+      to {
+        width: 120px;
+        height: 120px;
+        max-width: 120px;
+        max-height: 120px;
+        transform: scale(1);
+      }
+    }
+
+    /* 守護神のセリフコンテナ */
+    .speech-container {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      padding: 20px;
+      margin: 20px 0;
+      opacity: 0;
+      animation: speechFadeIn 1s ease-out 6s forwards;
+      box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(157, 78, 221, 0.3);
+      max-width: 90vw;
+      width: 100%;
+    }
+
+    @keyframes speechFadeIn {
       from {
         opacity: 0;
         transform: translateY(30px);
@@ -123,60 +172,41 @@
       }
     }
 
-    .message-container {
-      background: rgba(13, 13, 26, 0.85);
-      border: 2px solid rgba(157, 78, 221, 0.6);
-      border-radius: 20px;
-      padding: 25px;
-      margin: 10px 0;
-      opacity: 0;
-      animation: messageSlideIn 1s ease-out 3.5s forwards;
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 
-        0 20px 60px rgba(0, 0, 0, 0.9), 
-        0 0 50px rgba(157, 78, 221, 0.5),
-        0 0 100px rgba(199, 125, 255, 0.3);
-      max-width: 90vw;
-      width: 100%;
-    }
-
-    .typewriter-text {
-      font-size: 1.4em;
-      line-height: 1.9;
-      min-height: 80px;
+    .speech-text {
+      font-size: 1.3em;
+      line-height: 1.8;
       text-align: center;
-      width: 100%;
       color: #fff;
       text-shadow: 
-        0 0 20px rgba(157, 78, 221, 0.8),
-        0 0 30px rgba(199, 125, 255, 0.6),
-        0 0 40px rgba(102, 204, 255, 0.4);
+        0 0 10px rgba(157, 78, 221, 0.8),
+        0 0 20px rgba(199, 125, 255, 0.6);
       font-weight: 500;
+      white-space: pre-line;
     }
 
+    /* 合言葉を見るボタン */
     .reveal-button {
       background: linear-gradient(45deg, #FFD700, #FFA500);
       color: #333;
-      padding: 15px 40px;
+      padding: 18px 50px;
       border: none;
       border-radius: 50px;
-      font-size: 1.25em;
+      font-size: 1.2em;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5);
+      box-shadow: 
+        0 10px 30px rgba(255, 215, 0, 0.5),
+        0 0 20px rgba(255, 215, 0, 0.3);
       transition: all 0.3s ease;
       opacity: 0;
       transform: translateY(50px) scale(0.8);
-      margin: 20px auto 0;
+      margin: 30px auto 0;
       position: relative;
       z-index: 10;
       display: block;
-      max-width: 280px;
+      max-width: 300px;
       width: 100%;
-      animation: buttonFloatUp 1s ease-out 6s forwards;
+      animation: buttonFloatUp 1s ease-out 8s forwards;
     }
 
     @keyframes buttonFloatUp {
@@ -190,10 +220,30 @@
       }
     }
 
+    .reveal-button:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 
+        0 15px 40px rgba(255, 215, 0, 0.7),
+        0 0 30px rgba(255, 215, 0, 0.5);
+    }
+
     .reveal-button.show {
       opacity: 1;
       transform: translateY(0) scale(1);
       animation: buttonGlow 2s ease-in-out infinite alternate, buttonFloat 3s ease-in-out infinite;
+    }
+
+    @keyframes buttonGlow {
+      0% {
+        box-shadow: 
+          0 10px 30px rgba(255, 215, 0, 0.5),
+          0 0 20px rgba(255, 215, 0, 0.3);
+      }
+      100% {
+        box-shadow: 
+          0 15px 40px rgba(255, 215, 0, 0.8),
+          0 0 30px rgba(255, 215, 0, 0.6);
+      }
     }
 
     @keyframes buttonFloat {
@@ -201,97 +251,94 @@
       50% { transform: translateY(-5px) scale(1.02); }
     }
 
-    @keyframes buttonGlow {
-      0% {
-        box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5);
-      }
-      100% {
-        box-shadow: 0 15px 40px rgba(255, 215, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.6);
-      }
-    }
-
-    .reveal-button:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 15px 40px rgba(255, 215, 0, 0.7);
-    }
-
     .loading {
-      font-size: 18px;
+      font-size: 1.1em;
       color: #888;
       margin-top: 20px;
+      opacity: 0;
+      animation: loadingFadeIn 1s ease-in 1s forwards;
     }
 
-    /* モバイル対応のレスポンシブデザイン */
+    @keyframes loadingFadeIn {
+      to { opacity: 1; }
+    }
+
+    /* レスポンシブデザイン */
     @media (max-width: 768px) {
-      body {
-        padding: 5px;
-      }
-      
       .container {
         padding: 15px;
-        padding-bottom: 30px;
+        padding-bottom: 25px;
       }
       
       .guardian-image {
-        width: 120px;
-        height: 120px;
-        margin-bottom: 15px;
+        width: 90vw;
+        height: 70vh;
+        max-width: 500px;
+        max-height: 500px;
       }
       
-      .guardian-name {
-        font-size: 1.5em;
-        margin-bottom: 15px;
+      .guardian-image.small {
+        width: 100px;
+        height: 100px;
+        max-width: 100px;
+        max-height: 100px;
+        margin: 15px auto 20px;
       }
       
-      .message-container {
+      .speech-container {
         padding: 15px;
-        margin: 8px 0;
+        margin: 15px 0;
       }
       
-      .typewriter-text {
-        font-size: 1.2em;
+      .speech-text {
+        font-size: 1.1em;
         line-height: 1.7;
-        min-height: 60px;
       }
       
       .reveal-button {
-        padding: 12px 30px;
+        padding: 15px 40px;
         font-size: 1.1em;
-        max-width: 250px;
-        margin: 15px auto 0;
-      }
-      
-      .loading {
-        font-size: 16px;
+        max-width: 280px;
+        margin: 25px auto 0;
       }
     }
 
     @media (max-width: 480px) {
-      .guardian-image {
-        width: 100px;
-        height: 100px;
-      }
-      
-      .guardian-name {
-        font-size: 1.25em;
-        margin-bottom: 10px;
-      }
-      
-      .message-container {
+      .container {
         padding: 10px;
-        margin: 5px 0;
+        padding-bottom: 20px;
       }
       
-      .typewriter-text {
-        font-size: 1.1em;
+      .guardian-image {
+        width: 95vw;
+        height: 60vh;
+        max-width: 400px;
+        max-height: 400px;
+      }
+      
+      .guardian-image.small {
+        width: 80px;
+        height: 80px;
+        max-width: 80px;
+        max-height: 80px;
+        margin: 10px auto 15px;
+      }
+      
+      .speech-container {
+        padding: 12px;
+        margin: 10px 0;
+      }
+      
+      .speech-text {
+        font-size: 1em;
         line-height: 1.6;
-        min-height: 50px;
       }
       
       .reveal-button {
-        padding: 10px 25px;
+        padding: 12px 35px;
         font-size: 1em;
-        max-width: 220px;
+        max-width: 250px;
+        margin: 20px auto 0;
       }
     }
   </style>
@@ -307,15 +354,13 @@
 
   <div class="container">
     <img id="guardianImage" class="guardian-image" src="" alt="守護神">
-    
-    <div id="guardianName" class="guardian-name"></div>
 
-    <div class="message-container">
-      <div id="typewriterText" class="typewriter-text"></div>
+    <div class="speech-container">
+      <div id="speechText" class="speech-text"></div>
     </div>
 
     <button id="revealButton" class="reveal-button" onclick="revealPassphrase()">
-      🔮 合言葉を見る
+      🔮 合い言葉を見る
     </button>
 
     <div id="loading" class="loading">守護神の声を待っています...</div>
@@ -325,7 +370,7 @@
     // 星空生成
     function createStars() {
       const starsContainer = document.getElementById('stars');
-      for (let i = 0; i < 200; i++) {
+      for (let i = 0; i < 150; i++) {
         const star = document.createElement('div');
         star.className = 'star';
         star.style.left = Math.random() * 100 + '%';
@@ -406,29 +451,29 @@
       const userData = getUserDataFromUrl();
       console.log('ユーザーデータ:', userData);
 
-      // 守護神情報を表示
-      const guardianNameElement = document.getElementById('guardianName');
+      // 守護神画像を表示
       const guardianImageElement = document.getElementById('guardianImage');
-      
-      guardianNameElement.textContent = userData.guardianName || '守護神';
       guardianImageElement.src = `../photo/${userData.guardianKey || 'amida'}.png`;
 
       // ローディング非表示
       setTimeout(() => {
         document.getElementById('loading').style.display = 'none';
-      }, 3000);
+      }, 2000);
+
+      // 守護神画像を小さくする
+      setTimeout(() => {
+        guardianImageElement.classList.add('small');
+      }, 4000);
 
       // タイプライターメッセージ
-      const typewriterElement = document.getElementById('typewriterText');
-      const message = `これより私と${userData.nickname || 'あなた'}だけの秘密の合言葉を伝える。\n\n決して忘れず、次に私に会う時に必ず伝えなさい。\n\nまた、この言葉は決して他に伝えてはならぬ。\n\n家族や友人にも伝えてはならぬ、心にしっかり刻み、秘密としなさい。\n\nもし忘れてしまったら、また伝えられるから安心しなさい。`;
+      const speechElement = document.getElementById('speechText');
+      const message = 'これより秘密の言葉を伝える。神の世界に入るときはこの言葉を必ず入力せよ。忘れてしまったらまた伝えられるから安心せよ。他の人間がその他の代わりに神の世界に入ることを防ぐために、合言葉は誰にも教えないようにせよ';
 
-      // 4秒待機後、タイプライター開始（守護神画像のアニメーション後）
+      // 6秒待機後、タイプライター開始
       setTimeout(async () => {
-        await typeWriter(message, typewriterElement, 50);
-
-        // タイプライター終了後、ボタンを表示（自動アニメーションで表示される）
-        console.log('✅ タイプライター完了、ボタンが自動表示されます');
-      }, 4000);
+        await typeWriter(message, speechElement, 40);
+        console.log('✅ 守護神のセリフが完了しました');
+      }, 6000);
     }
 
     // 初期化
