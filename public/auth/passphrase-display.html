@@ -63,20 +63,16 @@
     }
 
     .guardian-image {
-      width: 80px;
-      height: 80px;
+      width: 120px;
+      height: 120px;
       object-fit: contain;
-      border-radius: 15px;
-      border: 2px solid rgba(255, 215, 0, 0.7);
-      margin: 0;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 215, 0, 0.8);
+      margin: 20px 0;
       opacity: 0;
       animation: fadeInImage 1s ease-in forwards;
       box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
       background: rgba(0, 0, 0, 0.2);
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      z-index: 10;
     }
 
     @keyframes fadeInImage {
@@ -98,7 +94,7 @@
 
     .passphrase-container {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 25px;
+      padding: 15px;
       border-radius: 20px;
       margin: 15px 0;
       opacity: 0;
@@ -110,7 +106,6 @@
       justify-content: center;
       align-items: center;
       width: 100%;
-      position: relative;
     }
 
     @keyframes slideIn {
@@ -132,13 +127,13 @@
     }
 
     .passphrase-word {
-      font-size: 32px;
+      font-size: 24px;
       font-weight: bold;
       color: #FFD700;
       text-shadow: 0 0 30px rgba(255, 215, 0, 1);
-      padding: 20px;
-      letter-spacing: 5px;
-      margin: 10px 0;
+      padding: 15px;
+      letter-spacing: 3px;
+      margin: 5px 0;
       border: 2px solid rgba(255, 215, 0, 0.5);
       border-radius: 15px;
       background: rgba(0, 0, 0, 0.3);
@@ -235,10 +230,8 @@
       }
       
       .guardian-image {
-        width: 60px;
-        height: 60px;
-        top: 10px;
-        right: 10px;
+        width: 80px;
+        height: 80px;
       }
       
       .guardian-name {
@@ -257,10 +250,10 @@
       }
       
       .passphrase-word {
-        font-size: 24px;
-        padding: 15px;
-        letter-spacing: 3px;
-        margin: 8px 0;
+        font-size: 18px;
+        padding: 10px;
+        letter-spacing: 1px;
+        margin: 3px 0;
       }
       
       .warning {
@@ -283,10 +276,8 @@
 
     @media (max-width: 480px) {
       .guardian-image {
-        width: 50px;
-        height: 50px;
-        top: 8px;
-        right: 8px;
+        width: 60px;
+        height: 60px;
       }
       
       .guardian-name {
