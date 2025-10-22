@@ -100,7 +100,8 @@
       opacity: 0;
       animation: slideIn 1s ease-out 1s forwards;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-      flex: 1;
+      /* 高さを圧縮 */
+      max-height: 40vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -242,6 +243,8 @@
       .passphrase-container {
         padding: 15px;
         margin: 10px 0;
+        /* 768px以下ではさらに低く */
+        max-height: 35vh;
       }
       
       .passphrase-label {
@@ -287,6 +290,8 @@
       .passphrase-container {
         padding: 12px;
         margin: 8px 0;
+        /* 480px以下ではさらに低く */
+        max-height: 32vh;
       }
       
       .passphrase-label {
