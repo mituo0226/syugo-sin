@@ -83,42 +83,106 @@
 
     /* 守護神画像 - 上部にフェードイン */
     .guardian-image {
-      width: 250px;
-      height: 250px;
-      max-width: 250px;
-      max-height: 250px;
+      width: 300px;
+      height: 300px;
+      max-width: 300px;
+      max-height: 300px;
       object-fit: contain;
       border-radius: 0;
-      margin: 10px auto 20px;
+      margin: 8px auto 18px;
       opacity: 0;
       animation: guardianFadeIn 2s ease-in 3s forwards;
       box-shadow: none;
       background: none;
-      filter: brightness(1.1) contrast(1.1);
+      filter: brightness(1.2) contrast(1.1);
       position: relative;
     }
 
     .guardian-image::before {
       content: '';
       position: absolute;
-      top: -20px;
-      left: -20px;
-      right: -20px;
-      bottom: -20px;
-      background: radial-gradient(circle, rgba(157, 78, 221, 0.3) 0%, rgba(199, 125, 255, 0.2) 30%, rgba(102, 204, 255, 0.1) 60%, transparent 100%);
+      top: -30px;
+      left: -30px;
+      right: -30px;
+      bottom: -30px;
+      background: radial-gradient(circle, rgba(157, 78, 221, 0.4) 0%, rgba(199, 125, 255, 0.3) 25%, rgba(102, 204, 255, 0.2) 50%, rgba(255, 182, 193, 0.1) 75%, transparent 100%);
       border-radius: 50%;
       z-index: -1;
-      animation: auraGlow 3s ease-in-out infinite alternate;
+      animation: auraGlow 4s ease-in-out infinite alternate, auraFloat 6s ease-in-out infinite;
+    }
+
+    .guardian-image::after {
+      content: '';
+      position: absolute;
+      top: -40px;
+      left: -40px;
+      right: -40px;
+      bottom: -40px;
+      background: radial-gradient(circle, rgba(255, 215, 0, 0.2) 0%, rgba(255, 165, 0, 0.15) 30%, rgba(255, 69, 0, 0.1) 60%, transparent 100%);
+      border-radius: 50%;
+      z-index: -2;
+      animation: lightFlicker 3s ease-in-out infinite alternate, lightFloat 5s ease-in-out infinite;
     }
 
     @keyframes auraGlow {
       0% {
-        transform: scale(1);
-        opacity: 0.6;
+        transform: scale(1) rotate(0deg);
+        opacity: 0.5;
+      }
+      50% {
+        transform: scale(1.15) rotate(180deg);
+        opacity: 0.8;
       }
       100% {
+        transform: scale(1.3) rotate(360deg);
+        opacity: 0.6;
+      }
+    }
+
+    @keyframes auraFloat {
+      0%, 100% {
+        transform: translateY(0) scale(1);
+      }
+      50% {
+        transform: translateY(-10px) scale(1.05);
+      }
+    }
+
+    @keyframes lightFlicker {
+      0% {
+        opacity: 0.3;
+        transform: scale(0.8);
+      }
+      25% {
+        opacity: 0.7;
         transform: scale(1.1);
-        opacity: 0.9;
+      }
+      50% {
+        opacity: 0.4;
+        transform: scale(0.9);
+      }
+      75% {
+        opacity: 0.8;
+        transform: scale(1.2);
+      }
+      100% {
+        opacity: 0.5;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes lightFloat {
+      0%, 100% {
+        transform: translateX(0) translateY(0);
+      }
+      25% {
+        transform: translateX(5px) translateY(-3px);
+      }
+      50% {
+        transform: translateX(-3px) translateY(5px);
+      }
+      75% {
+        transform: translateX(3px) translateY(-2px);
       }
     }
 
@@ -236,11 +300,11 @@
       }
       
       .guardian-image {
-        width: 180px;
-        height: 180px;
-        max-width: 180px;
-        max-height: 180px;
-        margin: 8px auto 12px;
+        width: 220px;
+        height: 220px;
+        max-width: 220px;
+        max-height: 220px;
+        margin: 6px auto 10px;
       }
       
       .speech-container {
@@ -274,11 +338,11 @@
       }
       
       .guardian-image {
-        width: 150px;
-        height: 150px;
-        max-width: 150px;
-        max-height: 150px;
-        margin: 6px auto 10px;
+        width: 180px;
+        height: 180px;
+        max-width: 180px;
+        max-height: 180px;
+        margin: 4px auto 8px;
       }
       
       .speech-container {
