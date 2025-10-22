@@ -122,10 +122,27 @@
       max-width: 120px;
       max-height: 120px;
       margin: 20px auto 30px;
-      animation: guardianShrink 2s ease-in-out 4s forwards;
+      animation: guardianShrink 2s ease-in-out 4s forwards, guardianMysticalFloat 4s ease-in-out 6s infinite;
       box-shadow: 
         0 0 50px rgba(157, 78, 221, 0.8),
         0 0 100px rgba(199, 125, 255, 0.5);
+      opacity: 1;
+    }
+
+    @keyframes guardianMysticalFloat {
+      0%, 100% { 
+        transform: translateY(0) scale(1);
+        box-shadow: 
+          0 0 50px rgba(157, 78, 221, 0.8),
+          0 0 100px rgba(199, 125, 255, 0.5);
+      }
+      50% { 
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 
+          0 0 60px rgba(157, 78, 221, 1),
+          0 0 120px rgba(199, 125, 255, 0.7),
+          0 0 150px rgba(102, 204, 255, 0.4);
+      }
     }
 
     @keyframes guardianShrink {
@@ -147,16 +164,17 @@
 
     /* 守護神のセリフコンテナ */
     .speech-container {
-      background: rgba(0, 0, 0, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid rgba(157, 78, 221, 0.6);
       border-radius: 15px;
       padding: 20px;
       margin: 20px 0;
       opacity: 0;
       animation: speechFadeIn 1s ease-out 6s forwards;
       box-shadow: 
-        0 10px 30px rgba(0, 0, 0, 0.8),
-        0 0 20px rgba(157, 78, 221, 0.3);
+        0 10px 30px rgba(0, 0, 0, 0.9),
+        0 0 20px rgba(157, 78, 221, 0.5),
+        0 0 40px rgba(199, 125, 255, 0.3);
       max-width: 90vw;
       width: 100%;
     }
@@ -288,6 +306,12 @@
       .speech-container {
         padding: 15px;
         margin: 15px 0;
+        background: rgba(0, 0, 0, 0.8);
+        border: 2px solid rgba(157, 78, 221, 0.6);
+        box-shadow: 
+          0 10px 30px rgba(0, 0, 0, 0.9),
+          0 0 20px rgba(157, 78, 221, 0.5),
+          0 0 40px rgba(199, 125, 255, 0.3);
       }
       
       .speech-text {
@@ -327,6 +351,12 @@
       .speech-container {
         padding: 12px;
         margin: 10px 0;
+        background: rgba(0, 0, 0, 0.8);
+        border: 2px solid rgba(157, 78, 221, 0.6);
+        box-shadow: 
+          0 10px 30px rgba(0, 0, 0, 0.9),
+          0 0 20px rgba(157, 78, 221, 0.5),
+          0 0 40px rgba(199, 125, 255, 0.3);
       }
       
       .speech-text {
