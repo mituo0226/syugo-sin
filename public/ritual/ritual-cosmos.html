@@ -26,134 +26,28 @@
       user-select: none;
     }
     
-    /* シンプルなローディング画面 */
-    .loading-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      transition: opacity 1s ease-out;
-    }
-    
-    .loading-content {
-      text-align: center;
-      color: white;
-    }
-    
-    .loading-spinner {
-      width: 50px;
-      height: 50px;
-      border: 3px solid rgba(102, 204, 255, 0.3);
-      border-top: 3px solid #66ccff;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 20px;
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
-    .loading-text {
-      font-size: 1.2em;
-      color: #66ccff;
-      text-shadow: 0 0 10px rgba(102, 204, 255, 0.5);
-    }
-    
-    /* 動画コンテナ */
-    .video-container {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 100vw;
-      height: 100vh;
-      z-index: 1;
-    }
-    
-    .god-video {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: 0;
-      transition: opacity 1.5s ease-in-out;
-    }
-    
-    .god-video.show {
-      opacity: 1;
-    }
-    
-    .god-video.fade-in {
-      opacity: 0;
-      animation: smoothFadeIn 2s ease-in-out forwards;
-    }
-    
-    .god-video.fade-out {
-      animation: smoothFadeOut 2s ease-in-out forwards;
-    }
-    
-    @keyframes smoothFadeIn {
-      0% {
-        opacity: 0;
-      }
-      100% {
-        opacity: 1;
-      }
-    }
-    
-    @keyframes smoothFadeOut {
-      0% {
-        opacity: 1;
-      }
-      100% {
-        opacity: 0;
-      }
-    }
     
     /* 背景動画（4.mp4） */
     .background-video {
       position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 100vw;
-      height: 100vh;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
-      z-index: 0;
-      opacity: 0;
-      transition: opacity 3s ease-in-out;
-    }
-    
-    .background-video.show {
+      z-index: 1;
       opacity: 1;
     }
     
     /* 最終画像（5.png） */
     .final-image {
       position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 100vw;
-      height: 100vh;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
       z-index: 1;
-      opacity: 0;
-      transition: opacity 3s ease-in-out;
-    }
-    
-    .final-image.show {
       opacity: 1;
     }
     
@@ -557,31 +451,6 @@
   </style>
 </head>
 <body>
-  <!-- シンプルなローディング画面 -->
-  <div class="loading-screen" id="loadingScreen">
-    <div class="loading-content">
-      <div class="loading-spinner"></div>
-      <div class="loading-text">神の世界に入っていく...</div>
-    </div>
-  </div>
-  
-  <!-- 動画コンテナ -->
-  <div class="video-container">
-    <!-- 1.mp4動画 -->
-    <video class="god-video" id="video1" muted preload="metadata" playsinline webkit-playsinline onerror="handleVideoError(this, 'video1')">
-      <source src="../photo/god2/1.mp4" type="video/mp4">
-    </video>
-    
-    <!-- 2.mp4動画 -->
-    <video class="god-video" id="video2" muted preload="none" playsinline webkit-playsinline onerror="handleVideoError(this, 'video2')">
-      <source src="../photo/god2/2.mp4" type="video/mp4">
-    </video>
-    
-    <!-- 3.mp4動画 -->
-    <video class="god-video" id="video3" muted preload="none" playsinline webkit-playsinline onerror="handleVideoError(this, 'video3')">
-      <source src="../photo/god2/3.mp4" type="video/mp4">
-    </video>
-  </div>
   
   <!-- 背景動画（4.mp4） -->
   <video class="background-video" id="video4" muted loop preload="metadata" playsinline webkit-playsinline onerror="handleVideoError(this, 'video4')">
@@ -627,59 +496,6 @@
       videoElement.style.display = 'none';
     }
     
-    // 動画準備完了チェック
-    let videoReadyCount = 0;
-    const totalVideos = 4; // video1, video2, video3, video4
-    
-    function checkVideoReady() {
-      videoReadyCount++;
-      console.log(`動画準備完了: ${videoReadyCount}/${totalVideos}`);
-      
-      if (videoReadyCount >= totalVideos) {
-        console.log('すべての動画の準備が完了しました');
-        startVideoSequenceAfterReady();
-      }
-    }
-    
-    function startVideoSequenceAfterReady() {
-      // ローディング画面を非表示
-      hideLoadingScreen();
-      
-      // 動画シーケンス開始
-      setTimeout(() => {
-        startVideoSequence();
-      }, 500);
-    }
-    
-    function setupVideoReadyListeners() {
-      const videoIds = ['video1', 'video2', 'video3', 'video4'];
-      
-      videoIds.forEach(videoId => {
-        const video = document.getElementById(videoId);
-        if (video) {
-          // 既に準備完了している場合
-          if (video.readyState >= 1) {
-            console.log(`${videoId} は既に準備完了しています`);
-            checkVideoReady();
-          } else {
-            // canplayイベントを待つ
-            video.addEventListener('canplay', () => {
-              console.log(`${videoId} の準備が完了しました`);
-              checkVideoReady();
-            }, { once: true });
-            
-            // エラー時の処理
-            video.addEventListener('error', (e) => {
-              console.error(`${videoId} でエラーが発生しました:`, e);
-              checkVideoReady(); // エラーでもカウントを進める
-            }, { once: true });
-          }
-        } else {
-          console.error(`${videoId} が見つかりません`);
-          checkVideoReady(); // 見つからない場合もカウントを進める
-        }
-      });
-    }
     
     // ページ読み込み時の処理
     window.addEventListener("load", function() {
@@ -791,19 +607,13 @@
           console.log("localStorageをURLパラメータから復元したデータで更新しました:", userData);
         }
         
-        // 動画の準備完了を待つ
-        console.log('動画の準備完了を待機中...');
+        // 背景動画と最終画像を表示
+        showBackgroundAndFinalImage();
         
-        // 各動画の準備完了を監視
-        setupVideoReadyListeners();
-        
-        // フォールバック: 10秒で強制的に開始
+        // メール入力フォームを表示
         setTimeout(() => {
-          if (videoReadyCount < totalVideos) {
-            console.log('動画準備タイムアウト、強制的に開始します');
-            startVideoSequenceAfterReady();
-          }
-        }, 10000);
+          showEmailForm();
+        }, 1000);
         
       } catch (error) {
         console.error("ページ読み込みエラー:", error);
@@ -814,211 +624,26 @@
       }
     });
     
-    // ローディング画面を非表示
-    function hideLoadingScreen() {
-      const loadingScreen = document.getElementById('loadingScreen');
-      loadingScreen.style.opacity = '0';
-      setTimeout(() => {
-        loadingScreen.style.display = 'none';
-      }, 200);
-    }
-    
-    // 動画シーケンス開始
-    function startVideoSequence() {
-      console.log('動画シーケンス開始');
+    // 背景動画と最終画像を表示
+    function showBackgroundAndFinalImage() {
+      console.log('背景動画と最終画像を表示');
       
-      // 1.mp4を表示・再生
-      showVideo('video1', () => {
-        console.log('video1完了');
-        
-        // 2.mp4を表示・再生（重なり合うように）
-        showOverlappingVideo('video2', () => {
-          console.log('video2完了');
-          
-          // 3.mp4を表示・再生（重なり合うように）
-          showOverlappingVideo('video3', () => {
-            console.log('video3完了');
-            
-            // 4.mp4を背景として表示（3.mp4終了と同時に開始）
-            showBackgroundVideo();
-            
-            // 最終画像（5.png）を表示
-            setTimeout(() => {
-              showFinalImage();
-              
-              // メール入力フォームを表示
-              setTimeout(() => {
-                showEmailForm();
-              }, 3000);
-            }, 2000);
-          });
-        });
-      });
-    }
-    
-    // 個別動画を表示・再生（最初の動画用）
-    function showVideo(videoId, onComplete) {
-      const video = document.getElementById(videoId);
-      
-      if (!video) {
-        console.error(`動画が見つかりません: ${videoId}`);
-        if (onComplete) onComplete();
-        return;
-      }
-      
-      // 動画の読み込みを確認
-      if (video.readyState < 1) {
-        console.log(`${videoId} の読み込みを待機中...`);
-        video.addEventListener('canplay', () => {
-          playVideo(videoId, video, onComplete);
-        }, { once: true });
-        return;
-      }
-      
-      playVideo(videoId, video, onComplete);
-    }
-    
-    function playVideo(videoId, video, onComplete) {
-      // 動画を滑らかにフェードイン
-      video.classList.add('fade-in');
-      
-      // 動画を再生（iPhone対応）
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          console.log(`${videoId} 再生開始（滑らかなフェードイン）`);
-          
-          // アニメーション完了後にshowクラスを追加
-          setTimeout(() => {
-            video.classList.remove('fade-in');
-            video.classList.add('show');
-          }, 2000);
-        
-        // 動画終了時にコールバック実行
-        video.addEventListener('ended', () => {
-          console.log(`${videoId} 再生完了`);
-          
-          // 滑らかにフェードアウト
-          video.classList.remove('show');
-          video.classList.add('fade-out');
-          
-          // フェードアウト完了後に完全に非表示
-          setTimeout(() => {
-            video.classList.remove('fade-out');
-            video.style.opacity = '0';
-          }, 2000);
-          
-          if (onComplete) onComplete();
-        }, { once: true });
-        
-      }).catch(error => {
-        console.error(`${videoId} 再生エラー:`, error);
-        video.classList.remove('fade-in');
-        if (onComplete) onComplete();
-      });
-    }
-    
-    // 滑らかなクロスフェード動画を表示・再生
-    function showOverlappingVideo(videoId, onComplete) {
-      const video = document.getElementById(videoId);
-      
-      if (!video) {
-        console.error(`動画が見つかりません: ${videoId}`);
-        if (onComplete) onComplete();
-        return;
-      }
-      
-      // 動画の読み込みを確認
-      if (video.readyState < 1) {
-        console.log(`${videoId} の読み込みを待機中...`);
-        video.addEventListener('canplay', () => {
-          playOverlappingVideo(videoId, video, onComplete);
-        }, { once: true });
-        return;
-      }
-      
-      playOverlappingVideo(videoId, video, onComplete);
-    }
-    
-    function playOverlappingVideo(videoId, video, onComplete) {
-      // 動画を滑らかにフェードイン
-      video.classList.add('fade-in');
-      
-      // 動画を再生（iPhone対応）
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          console.log(`${videoId} 再生開始（滑らかなクロスフェード）`);
-          
-          // アニメーション完了後にshowクラスを追加
-          setTimeout(() => {
-            video.classList.remove('fade-in');
-            video.classList.add('show');
-          }, 2000);
-        
-        // 動画終了時にコールバック実行
-        video.addEventListener('ended', () => {
-          console.log(`${videoId} 再生完了`);
-          
-          // コールバックを即座に実行（次の動画を開始）
-          if (onComplete) onComplete();
-          
-          // 少し遅れてフェードアウト開始（次の動画と重なり合うように）
-          setTimeout(() => {
-            video.classList.remove('show');
-            video.classList.add('fade-out');
-            
-            // フェードアウト完了後に完全に非表示
-            setTimeout(() => {
-              video.classList.remove('fade-out');
-              video.style.opacity = '0';
-            }, 2000);
-          }, 500);
-        }, { once: true });
-        
-        }).catch(error => {
-          console.error(`${videoId} 再生エラー:`, error);
-          video.classList.remove('fade-in');
-          if (onComplete) onComplete();
-        });
-      }
-    }
-    
-    // 背景動画（4.mp4）を表示
-    function showBackgroundVideo() {
+      // 背景動画（4.mp4）を表示
       const backgroundVideo = document.getElementById('video4');
-      
-      if (!backgroundVideo) {
-        console.error('背景動画が見つかりません');
-        return;
-      }
-      
-      // 背景動画を表示
-      backgroundVideo.classList.add('show');
-      
-      // 背景動画を再生（iPhone対応）
-      const playPromise = backgroundVideo.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
+      if (backgroundVideo) {
+        backgroundVideo.classList.add('show');
+        backgroundVideo.play().catch(error => {
           console.error('背景動画再生エラー:', error);
         });
       }
+      
+      // 最終画像（5.png）を表示
+      const finalImage = document.getElementById('finalImage');
+      if (finalImage) {
+        finalImage.classList.add('show');
+      }
     }
     
-    // 最終画像（5.png）を表示
-    function showFinalImage() {
-      const finalImage = document.getElementById('finalImage');
-      
-      if (!finalImage) {
-        console.error('最終画像が見つかりません');
-        return;
-      }
-      
-      console.log('最終画像（5.png）を表示開始');
-      
-      // 最終画像を滑らかにフェードイン
-      finalImage.classList.add('show');
-    }
     
     // メール入力フォームを表示
     function showEmailForm() {
@@ -1033,7 +658,6 @@
     
     // エラー時のデフォルト進行
     function proceedToEmailInput() {
-      hideLoadingScreen();
       showEmailForm();
     }
     

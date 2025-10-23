@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>神の世界への導き | AI鑑定師 龍</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #000;
+      font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      color: #fff;
+      overflow: hidden;
+      position: relative;
+      min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      /* iOS Safari対応 */
+      -webkit-overflow-scrolling: touch;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    
+    /* シンプルなローディング画面 */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 1;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid #FFD700;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      position: absolute;
+      bottom: 30%;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #FFD700;
+      font-size: 18px;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+    
+    /* 動画コンテナ */
+    .video-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    
+    .god-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 1.5s ease-in-out;
+    }
+    
+    .god-video.show {
+      opacity: 1;
+    }
+    
+    .god-video.fade-in {
+      animation: smoothFadeIn 2s ease-in-out forwards;
+    }
+    
+    .god-video.fade-out {
+      animation: smoothFadeOut 2s ease-in-out forwards;
+    }
+    
+    @keyframes smoothFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes smoothFadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    
+    /* 背景動画（4.mp4） */
+    .background-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+    
+    .background-video.show {
+      opacity: 1;
+    }
+    
+    /* 最終画像（5.png） */
+    .final-image {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 3s ease-in-out;
+    }
+    
+    .final-image.show {
+      opacity: 1;
+    }
+    
+    /* スマートフォン対応 */
+    @media screen and (max-width: 768px) {
+      .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border-width: 3px;
+      }
+      
+      .loading-text {
+        font-size: 16px;
+        bottom: 25%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- ローディング画面 -->
+  <div id="loadingScreen" class="loading-screen">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">神の世界へ導いています...</div>
+  </div>
+  
+  <!-- 動画コンテナ -->
+  <div class="video-container">
+    <!-- 1.mp4動画 -->
+    <video class="god-video" id="video1" muted preload="metadata" playsinline webkit-playsinline onerror="handleVideoError(this, 'video1')">
+      <source src="../photo/god2/1.mp4" type="video/mp4">
+    </video>
+    
+    <!-- 2.mp4動画 -->
+    <video class="god-video" id="video2" muted preload="none" playsinline webkit-playsinline onerror="handleVideoError(this, 'video2')">
+      <source src="../photo/god2/2.mp4" type="video/mp4">
+    </video>
+    
+    <!-- 3.mp4動画 -->
+    <video class="god-video" id="video3" muted preload="none" playsinline webkit-playsinline onerror="handleVideoError(this, 'video3')">
+      <source src="../photo/god2/3.mp4" type="video/mp4">
+    </video>
+  </div>
+  
+  <!-- 背景動画（4.mp4） -->
+  <video class="background-video" id="video4" muted loop preload="metadata" playsinline webkit-playsinline onerror="handleVideoError(this, 'video4')">
+    <source src="../photo/god2/4.mp4" type="video/mp4">
+  </video>
+  
+  <!-- 最終画像（5.png） -->
+  <img class="final-image" id="finalImage" src="../photo/god2/5.png" alt="最終画像">
+
+  <script>
+    // 動画エラーハンドリング
+    function handleVideoError(videoElement, videoId) {
+      console.error(`動画エラー: ${videoId}`, videoElement.error);
+      
+      // エラー時の処理
+      setTimeout(() => {
+        proceedToCosmos();
+      }, 2000);
+    }
+    
+    // ritual-cosmos.htmlに遷移
+    function proceedToCosmos() {
+      console.log('ritual-cosmos.htmlに遷移します');
+      
+      // URLパラメータを保持して遷移
+      const currentParams = window.location.search;
+      window.location.href = `ritual-cosmos.html${currentParams}`;
+    }
+    
+    // 動画準備完了チェック
+    let videoReadyCount = 0;
+    const totalVideos = 4; // video1, video2, video3, video4
+    
+    function checkVideoReady() {
+      videoReadyCount++;
+      console.log(`動画準備完了: ${videoReadyCount}/${totalVideos}`);
+      
+      if (videoReadyCount >= totalVideos) {
+        console.log('すべての動画の準備が完了しました');
+        startVideoSequenceAfterReady();
+      }
+    }
+    
+    function startVideoSequenceAfterReady() {
+      // ローディング画面を非表示
+      hideLoadingScreen();
+      
+      // 動画シーケンス開始
+      setTimeout(() => {
+        startVideoSequence();
+      }, 500);
+    }
+    
+    function setupVideoReadyListeners() {
+      const videoIds = ['video1', 'video2', 'video3', 'video4'];
+      
+      videoIds.forEach(videoId => {
+        const video = document.getElementById(videoId);
+        if (video) {
+          // 既に準備完了している場合
+          if (video.readyState >= 1) {
+            console.log(`${videoId} は既に準備完了しています`);
+            checkVideoReady();
+          } else {
+            // canplayイベントを待つ
+            video.addEventListener('canplay', () => {
+              console.log(`${videoId} の準備が完了しました`);
+              checkVideoReady();
+            }, { once: true });
+            
+            // エラー時の処理
+            video.addEventListener('error', (e) => {
+              console.error(`${videoId} でエラーが発生しました:`, e);
+              checkVideoReady(); // エラーでもカウントを進める
+            }, { once: true });
+          }
+        } else {
+          console.error(`${videoId} が見つかりません`);
+          checkVideoReady(); // 見つからない場合もカウントを進める
+        }
+      });
+    }
+    
+    // ページ読み込み時の処理
+    window.addEventListener("load", function() {
+      try {
+        console.log("=== ritual-animation.html ページ読み込み開始 ===");
+        
+        // 動画の準備完了を待つ
+        console.log('動画の準備完了を待機中...');
+        
+        // 各動画の準備完了を監視
+        setupVideoReadyListeners();
+        
+        // フォールバック: 10秒で強制的に開始
+        setTimeout(() => {
+          if (videoReadyCount < totalVideos) {
+            console.log('動画準備タイムアウト、強制的に開始します');
+            startVideoSequenceAfterReady();
+          }
+        }, 10000);
+        
+      } catch (error) {
+        console.error("ページ読み込みエラー:", error);
+        // エラー時はデフォルトで進行
+        setTimeout(() => {
+          proceedToCosmos();
+        }, 2000);
+      }
+    });
+    
+    // ローディング画面を非表示
+    function hideLoadingScreen() {
+      const loadingScreen = document.getElementById('loadingScreen');
+      loadingScreen.style.opacity = '0';
+      setTimeout(() => {
+        loadingScreen.style.display = 'none';
+      }, 200);
+    }
+    
+    // 動画シーケンス開始
+    function startVideoSequence() {
+      console.log('動画シーケンス開始');
+      
+      // 1.mp4を表示・再生
+      showVideo('video1', () => {
+        console.log('video1完了');
+        
+        // 2.mp4を表示・再生（重なり合うように）
+        showOverlappingVideo('video2', () => {
+          console.log('video2完了');
+          
+          // 3.mp4を表示・再生（重なり合うように）
+          showOverlappingVideo('video3', () => {
+            console.log('video3完了');
+            
+            // 背景動画（4.mp4）を表示
+            showBackgroundVideo();
+            
+            // 最終画像（5.png）を表示
+            showFinalImage();
+            
+            // ritual-cosmos.htmlに遷移
+            setTimeout(() => {
+              proceedToCosmos();
+            }, 3000);
+          });
+        });
+      });
+    }
+    
+    // 個別動画を表示・再生（最初の動画用）
+    function showVideo(videoId, onComplete) {
+      const video = document.getElementById(videoId);
+      
+      if (!video) {
+        console.error(`動画が見つかりません: ${videoId}`);
+        if (onComplete) onComplete();
+        return;
+      }
+      
+      // 動画の読み込みを確認
+      if (video.readyState < 1) {
+        console.log(`${videoId} の読み込みを待機中...`);
+        video.addEventListener('canplay', () => {
+          playVideo(videoId, video, onComplete);
+        }, { once: true });
+        return;
+      }
+      
+      playVideo(videoId, video, onComplete);
+    }
+    
+    function playVideo(videoId, video, onComplete) {
+      // 動画を滑らかにフェードイン
+      video.classList.add('fade-in');
+      
+      // 動画を再生（iPhone対応）
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          console.log(`${videoId} 再生開始（滑らかなフェードイン）`);
+          
+          // アニメーション完了後にshowクラスを追加
+          setTimeout(() => {
+            video.classList.remove('fade-in');
+            video.classList.add('show');
+          }, 2000);
+        
+        // 動画終了時にコールバック実行
+        video.addEventListener('ended', () => {
+          console.log(`${videoId} 再生完了`);
+          
+          // 滑らかにフェードアウト
+          video.classList.remove('show');
+          video.classList.add('fade-out');
+          
+          // フェードアウト完了後に非表示
+          setTimeout(() => {
+            video.classList.remove('fade-out');
+            video.style.opacity = '0';
+          }, 2000);
+          
+          // コールバック実行
+          if (onComplete) onComplete();
+        }, { once: true });
+        
+        }).catch(error => {
+          console.error(`${videoId} 再生エラー:`, error);
+          video.classList.remove('fade-in');
+          if (onComplete) onComplete();
+        });
+      }
+    }
+    
+    // 滑らかなクロスフェード動画を表示・再生
+    function showOverlappingVideo(videoId, onComplete) {
+      const video = document.getElementById(videoId);
+      
+      if (!video) {
+        console.error(`動画が見つかりません: ${videoId}`);
+        if (onComplete) onComplete();
+        return;
+      }
+      
+      // 動画の読み込みを確認
+      if (video.readyState < 1) {
+        console.log(`${videoId} の読み込みを待機中...`);
+        video.addEventListener('canplay', () => {
+          playOverlappingVideo(videoId, video, onComplete);
+        }, { once: true });
+        return;
+      }
+      
+      playOverlappingVideo(videoId, video, onComplete);
+    }
+    
+    function playOverlappingVideo(videoId, video, onComplete) {
+      // 動画を滑らかにフェードイン
+      video.classList.add('fade-in');
+      
+      // 動画を再生（iPhone対応）
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          console.log(`${videoId} 再生開始（滑らかなクロスフェード）`);
+          
+          // アニメーション完了後にshowクラスを追加
+          setTimeout(() => {
+            video.classList.remove('fade-in');
+            video.classList.add('show');
+          }, 2000);
+        
+        // 動画終了時にコールバック実行
+        video.addEventListener('ended', () => {
+          console.log(`${videoId} 再生完了`);
+          
+          // コールバックを即座に実行（次の動画を開始）
+          if (onComplete) onComplete();
+          
+          // 前の動画を滑らかにフェードアウト
+          setTimeout(() => {
+            video.classList.remove('show');
+            video.classList.add('fade-out');
+            
+            setTimeout(() => {
+              video.classList.remove('fade-out');
+              video.style.opacity = '0';
+            }, 2000);
+          }, 500);
+        }, { once: true });
+        
+        }).catch(error => {
+          console.error(`${videoId} 再生エラー:`, error);
+          video.classList.remove('fade-in');
+          if (onComplete) onComplete();
+        });
+      }
+    }
+    
+    // 背景動画（4.mp4）を表示
+    function showBackgroundVideo() {
+      const backgroundVideo = document.getElementById('video4');
+      
+      if (!backgroundVideo) {
+        console.error('背景動画が見つかりません');
+        return;
+      }
+      
+      // 背景動画を表示
+      backgroundVideo.classList.add('show');
+      
+      // 背景動画を再生（iPhone対応）
+      const playPromise = backgroundVideo.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.error('背景動画再生エラー:', error);
+        });
+      }
+    }
+    
+    // 最終画像（5.png）を表示
+    function showFinalImage() {
+      const finalImage = document.getElementById('finalImage');
+      
+      if (!finalImage) {
+        console.error('最終画像が見つかりません');
+        return;
+      }
+      
+      console.log('最終画像（5.png）を表示開始');
+      
+      // 最終画像を滑らかにフェードイン
+      finalImage.classList.add('show');
+    }
+  </script>
+</body>
+</html>
