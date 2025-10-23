@@ -17,7 +17,7 @@
       min-height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
+      align-items: center;
       padding: 10px;
       overflow-x: hidden;
       overflow-y: auto;
@@ -25,14 +25,13 @@
 
     .success-container {
       background: white;
-      padding: 30px;
+      padding: 40px;
       border-radius: 20px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
       max-width: 600px;
       width: 100%;
       text-align: center;
       animation: fadeIn 1s ease-in;
-      margin: 20px 0;
     }
 
     @keyframes fadeIn {
@@ -47,8 +46,8 @@
     }
 
     .success-icon {
-      font-size: 60px;
-      margin-bottom: 15px;
+      font-size: 70px;
+      margin-bottom: 20px;
       animation: bounce 1s ease-in-out;
     }
 
@@ -66,29 +65,29 @@
 
     h1 {
       color: #667eea;
-      margin-bottom: 15px;
-      font-size: 24px;
+      margin-bottom: 20px;
+      font-size: 28px;
     }
 
     .message {
       color: #555;
-      font-size: 16px;
-      line-height: 1.6;
-      margin-bottom: 20px;
+      font-size: 18px;
+      line-height: 1.7;
+      margin-bottom: 30px;
     }
 
     .user-info {
       background: #f8f9fa;
-      padding: 15px;
+      padding: 20px;
       border-radius: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
       text-align: left;
     }
 
     .user-info-item {
       display: flex;
       justify-content: space-between;
-      padding: 8px 0;
+      padding: 12px 0;
       border-bottom: 1px solid #e0e0e0;
     }
 
@@ -98,27 +97,26 @@
 
     .user-info-label {
       color: #666;
-      font-size: 12px;
+      font-size: 14px;
     }
 
     .user-info-value {
       color: #333;
       font-weight: bold;
-      font-size: 14px;
+      font-size: 16px;
     }
 
     .next-button {
       background: linear-gradient(45deg, #FFD700, #FFA500);
       color: #333;
-      padding: 15px 40px;
+      padding: 18px 50px;
       border: none;
       border-radius: 50px;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: bold;
       cursor: pointer;
       box-shadow: 0 5px 20px rgba(255, 215, 0, 0.5);
       transition: transform 0.3s, box-shadow 0.3s;
-      margin-bottom: 15px;
     }
 
     .next-button:hover {
@@ -126,122 +124,97 @@
       box-shadow: 0 8px 30px rgba(255, 215, 0, 0.7);
     }
 
-    .note {
-      margin-top: 15px;
-      padding: 12px;
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      border-radius: 8px;
-      color: #856404;
-      font-size: 12px;
-      line-height: 1.5;
-    }
 
     /* レスポンシブデザイン */
     @media (max-width: 768px) {
       body {
-        padding: 5px;
+        padding: 10px;
       }
       
       .success-container {
-        padding: 20px;
-        margin: 10px 0;
+        padding: 25px;
       }
       
       .success-icon {
-        font-size: 50px;
-        margin-bottom: 10px;
+        font-size: 60px;
+        margin-bottom: 15px;
       }
       
       h1 {
-        font-size: 20px;
-        margin-bottom: 10px;
+        font-size: 24px;
+        margin-bottom: 15px;
       }
       
       .message {
-        font-size: 14px;
-        line-height: 1.5;
-        margin-bottom: 15px;
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 25px;
       }
       
       .user-info {
-        padding: 12px;
-        margin-bottom: 15px;
+        padding: 15px;
+        margin-bottom: 25px;
       }
       
       .user-info-item {
-        padding: 6px 0;
+        padding: 10px 0;
       }
       
       .user-info-label {
-        font-size: 11px;
-      }
-      
-      .user-info-value {
         font-size: 13px;
       }
       
-      .next-button {
-        padding: 12px 30px;
-        font-size: 16px;
-        margin-bottom: 12px;
+      .user-info-value {
+        font-size: 15px;
       }
       
-      .note {
-        padding: 10px;
-        font-size: 11px;
-        line-height: 1.4;
+      .next-button {
+        padding: 15px 35px;
+        font-size: 18px;
       }
     }
 
     @media (max-width: 480px) {
       .success-container {
-        padding: 15px;
-        margin: 5px 0;
+        padding: 20px;
       }
       
       .success-icon {
-        font-size: 40px;
-        margin-bottom: 8px;
+        font-size: 50px;
+        margin-bottom: 12px;
       }
       
       h1 {
-        font-size: 18px;
-        margin-bottom: 8px;
+        font-size: 20px;
+        margin-bottom: 12px;
       }
       
       .message {
-        font-size: 13px;
-        margin-bottom: 12px;
+        font-size: 14px;
+        line-height: 1.5;
+        margin-bottom: 20px;
       }
       
       .user-info {
-        padding: 10px;
-        margin-bottom: 12px;
+        padding: 12px;
+        margin-bottom: 20px;
       }
       
       .user-info-item {
-        padding: 5px 0;
+        padding: 8px 0;
       }
       
       .user-info-label {
-        font-size: 10px;
-      }
-      
-      .user-info-value {
         font-size: 12px;
       }
       
-      .next-button {
-        padding: 10px 25px;
+      .user-info-value {
         font-size: 14px;
-        margin-bottom: 10px;
       }
       
-      .note {
-        padding: 8px;
-        font-size: 10px;
-        line-height: 1.3;
+      .next-button {
+        padding: 12px 30px;
+        font-size: 16px;
       }
     }
   </style>
@@ -265,10 +238,6 @@
       🔮 次に進む
     </button>
 
-    <div class="note">
-      💡 この後、あなたの守護神から特別な合言葉が授けられます。<br>
-      この合言葉は次回ログイン時に必要となりますので、必ず覚えておいてください。
-    </div>
   </div>
 
   <script>
