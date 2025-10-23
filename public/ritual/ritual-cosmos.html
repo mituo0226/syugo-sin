@@ -79,15 +79,15 @@
       height: 100%;
       object-fit: cover;
       opacity: 0;
-      transition: opacity 2s ease-in-out;
+      transition: opacity 0.5s ease-in-out;
     }
     
     .god-video.show {
       opacity: 1;
     }
     
-    .god-video.fade-out {
-      opacity: 0;
+    .god-video.overlap {
+      opacity: 0.7;
     }
     
     /* 背景動画（4.mp4） */
@@ -722,32 +722,28 @@
         console.log('video1完了');
         
         // 2.mp4を表示・再生（重なり合うように）
-        setTimeout(() => {
-          showVideo('video2', () => {
-            console.log('video2完了');
+        showOverlappingVideo('video2', () => {
+          console.log('video2完了');
+          
+          // 3.mp4を表示・再生（重なり合うように）
+          showOverlappingVideo('video3', () => {
+            console.log('video3完了');
             
-            // 3.mp4を表示・再生（重なり合うように）
+            // 4.mp4を背景として表示
             setTimeout(() => {
-              showVideo('video3', () => {
-                console.log('video3完了');
-                
-                // 4.mp4を背景として表示
-                setTimeout(() => {
-                  showBackgroundVideo();
-                  
-                  // メール入力フォームを表示
-                  setTimeout(() => {
-                    showEmailForm();
-                  }, 2000);
-                }, 1000);
-              });
+              showBackgroundVideo();
+              
+              // メール入力フォームを表示
+              setTimeout(() => {
+                showEmailForm();
+              }, 2000);
             }, 1000);
           });
-        }, 1000);
+        });
       });
     }
     
-    // 個別動画を表示・再生
+    // 個別動画を表示・再生（最初の動画用）
     function showVideo(videoId, onComplete) {
       const video = document.getElementById(videoId);
       
@@ -768,7 +764,6 @@
         video.addEventListener('ended', () => {
           console.log(`${videoId} 再生完了`);
           video.classList.remove('show');
-          video.classList.add('fade-out');
           
           if (onComplete) onComplete();
         }, { once: true });
@@ -776,6 +771,44 @@
       }).catch(error => {
         console.error(`${videoId} 再生エラー:`, error);
         video.classList.remove('show');
+        if (onComplete) onComplete();
+      });
+    }
+    
+    // 重なり合う動画を表示・再生
+    function showOverlappingVideo(videoId, onComplete) {
+      const video = document.getElementById(videoId);
+      
+      if (!video) {
+        console.error(`動画が見つかりません: ${videoId}`);
+        if (onComplete) onComplete();
+        return;
+      }
+      
+      // 動画を重なり合うように表示
+      video.classList.add('overlap');
+      
+      // 動画を再生
+      video.play().then(() => {
+        console.log(`${videoId} 再生開始（重なり合い）`);
+        
+        // 少し遅れて完全表示
+        setTimeout(() => {
+          video.classList.remove('overlap');
+          video.classList.add('show');
+        }, 300);
+        
+        // 動画終了時にコールバック実行
+        video.addEventListener('ended', () => {
+          console.log(`${videoId} 再生完了`);
+          video.classList.remove('show');
+          
+          if (onComplete) onComplete();
+        }, { once: true });
+        
+      }).catch(error => {
+        console.error(`${videoId} 再生エラー:`, error);
+        video.classList.remove('overlap');
         if (onComplete) onComplete();
       });
     }
