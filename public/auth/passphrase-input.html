@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合い言葉入力 - 神域</title>
+    <style>
+        body {
+            font-family: "游明朝", YuMincho, "Hiragino Mincho ProN", serif;
+            background: #000;
+            color: white;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* 星空背景 */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .input-container {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(157, 78, 221, 0.6);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 
+                        0 0 20px rgba(157, 78, 221, 0.5), 
+                        0 0 40px rgba(199, 125, 255, 0.3);
+            max-width: 500px;
+            width: 100%;
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: #FFD700;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.9), 
+                         0 0 25px rgba(199, 125, 255, 0.7);
+        }
+
+        .user-info {
+            background: rgba(157, 78, 221, 0.1);
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .user-info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+        }
+
+        .user-info-label {
+            color: #ccc;
+            font-size: 14px;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+        }
+
+        .user-info-value {
+            color: #FFD700;
+            font-size: 16px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+
+        .passphrase-group {
+            background: rgba(157, 78, 221, 0.1);
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            color: #FFD700;
+            margin-bottom: 10px;
+            font-size: 18px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(157, 78, 221, 0.6);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            font-size: 16px;
+            font-family: inherit;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #FFD700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+
+        input::placeholder {
+            color: #999;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #333;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+            text-shadow: none;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+        }
+
+        .submit-button:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            background: rgba(248, 215, 218, 0.2);
+            color: #ff6b6b;
+            border: 1px solid rgba(245, 198, 203, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: center;
+            text-shadow: 0 0 5px rgba(255, 107, 107, 0.5);
+            display: none;
+        }
+
+        .forgot-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .forgot-link a {
+            color: #FFD700;
+            text-decoration: none;
+            font-size: 14px;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .forgot-link a:hover {
+            color: #FFA500;
+            text-shadow: 0 0 10px rgba(255, 165, 0, 0.9);
+        }
+
+        /* モバイル対応 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .input-container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+            
+            .user-info {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+            
+            .passphrase-group {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+            
+            input[type="text"] {
+                padding: 12px;
+                font-size: 14px;
+            }
+            
+            .submit-button {
+                padding: 15px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 星空背景 -->
+    <div class="stars" id="stars"></div>
+
+    <div class="container">
+        <div class="input-container">
+            <h1>合い言葉を入力してください</h1>
+            
+            <div class="user-info" id="userInfo">
+                <!-- ユーザー情報が表示されます -->
+            </div>
+            
+            <div class="passphrase-group">
+                <label for="passphraseInput">合い言葉</label>
+                <input type="text" id="passphraseInput" placeholder="合い言葉を入力してください" maxlength="50">
+            </div>
+            
+            <button class="submit-button" onclick="verifyPassphrase()">
+                ✨ 確認
+            </button>
+            
+            <div class="error-message" id="errorMessage">
+                <!-- エラーメッセージが表示されます -->
+            </div>
+            
+            <div class="forgot-link">
+                <a href="passphrase-recovery.html">合い言葉を忘れた場合はこちら</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 星空の生成
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const starCount = 100;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                // ランダムな位置とサイズ
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 3 + 1 + 'px';
+                star.style.height = star.style.width;
+                
+                // ランダムなアニメーション遅延
+                star.style.animationDelay = Math.random() * 2 + 's';
+                
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // URLパラメータからユーザーデータを取得
+        function getUserDataFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return {
+                nickname: urlParams.get('nickname') || '',
+                birthdate: urlParams.get('birthdate') || '',
+                guardian: urlParams.get('guardian') || '',
+                passphrase: urlParams.get('passphrase') || ''
+            };
+        }
+
+        // ユーザー情報を表示
+        function displayUserInfo(userData) {
+            const userInfoDiv = document.getElementById('userInfo');
+            userInfoDiv.innerHTML = `
+                <div class="user-info-item">
+                    <span class="user-info-label">ニックネーム:</span>
+                    <span class="user-info-value">${userData.nickname}</span>
+                </div>
+                <div class="user-info-item">
+                    <span class="user-info-label">生年月日:</span>
+                    <span class="user-info-value">${userData.birthdate}</span>
+                </div>
+                <div class="user-info-item">
+                    <span class="user-info-label">守護神:</span>
+                    <span class="user-info-value">${userData.guardian}</span>
+                </div>
+            `;
+        }
+
+        // 合い言葉を検証
+        async function verifyPassphrase() {
+            const inputPassphrase = document.getElementById('passphraseInput').value.trim();
+            const userData = getUserDataFromUrl();
+            const errorDiv = document.getElementById('errorMessage');
+            const submitButton = document.querySelector('.submit-button');
+            
+            // 入力チェック
+            if (!inputPassphrase) {
+                showError('合い言葉を入力してください。');
+                return;
+            }
+            
+            // ボタンの状態を変更
+            submitButton.disabled = true;
+            submitButton.innerHTML = '✨ 確認中...';
+            
+            try {
+                // 合い言葉の検証
+                if (inputPassphrase === userData.passphrase) {
+                    // 成功時
+                    submitButton.innerHTML = '✨ 確認完了！';
+                    setTimeout(() => {
+                        window.location.href = 'login-success.html';
+                    }, 1000);
+                } else {
+                    // 失敗時
+                    showError('合い言葉が正しくありません。もう一度入力してください。');
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = '✨ 確認';
+                }
+            } catch (error) {
+                console.error('検証エラー:', error);
+                showError('エラーが発生しました。もう一度お試しください。');
+                submitButton.disabled = false;
+                submitButton.innerHTML = '✨ 確認';
+            }
+        }
+
+        // エラーメッセージを表示
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            
+            // 3秒後に自動で非表示
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // Enterキーで検証実行
+        document.getElementById('passphraseInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyPassphrase();
+            }
+        });
+
+        // ページ読み込み時の処理
+        window.addEventListener('load', function() {
+            createStars();
+            
+            const userData = getUserDataFromUrl();
+            console.log('ユーザーデータ:', userData);
+            
+            if (userData.nickname && userData.birthdate && userData.guardian) {
+                displayUserInfo(userData);
+            } else {
+                showError('ユーザー情報が不足しています。');
+            }
+        });
+    </script>
+</body>
+</html>

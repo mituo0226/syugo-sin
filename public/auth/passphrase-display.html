@@ -339,7 +339,7 @@
     </div>
 
     <button id="loginButton" class="login-button" onclick="goToLogin()">
-      ✨ 合言葉を覚えた - ログイン画面へ
+      ✨ 合言葉を覚えた
     </button>
 
     <div id="loading" class="loading">合言葉を準備しています...</div>
@@ -426,9 +426,9 @@
       }
     }
 
-    // ログイン画面へ遷移
+    // 合い言葉入力画面へ遷移
     function goToLogin() {
-      console.log('=== ログイン画面へ遷移 ===');
+      console.log('=== 合い言葉入力画面へ遷移 ===');
       
       const button = document.getElementById('loginButton');
       
@@ -437,7 +437,7 @@
       button.innerHTML = '✨ 移動中...';
       
       setTimeout(() => {
-        window.location.href = 'login.html';
+        window.location.href = 'passphrase-input.html';
       }, 500);
     }
 
