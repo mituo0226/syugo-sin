@@ -105,11 +105,11 @@
     }
     
     .god-video.fade-in {
-      animation: smoothFadeIn 1.5s ease-in-out forwards;
+      animation: smoothFadeIn 1s ease-in-out forwards;
     }
     
     .god-video.fade-out {
-      animation: smoothFadeOut 1.5s ease-in-out forwards;
+      animation: smoothFadeOut 1s ease-in-out forwards;
     }
     
     @keyframes smoothFadeIn {
@@ -122,24 +122,8 @@
       to { opacity: 0; }
     }
     
-    /* 背景動画（4.mp4） */
-    .background-video {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: 1;
-      opacity: 0;
-      transition: opacity 1s ease-in-out;
-    }
     
-    .background-video.show {
-      opacity: 1;
-    }
-    
-    /* 最終画像（5.png） */
+    /* 最終画像（4.png） */
     .final-image {
       position: fixed;
       top: 0;
@@ -196,13 +180,8 @@
     </video>
   </div>
   
-  <!-- 背景動画（4.mp4） -->
-  <video class="background-video" id="video4" muted loop preload="auto" playsinline webkit-playsinline onerror="handleVideoError(this, 'video4')" onloadstart="console.log('video4 読み込み開始')" oncanplay="console.log('video4 再生可能')">
-    <source src="../photo/god2/4.mp4" type="video/mp4">
-  </video>
-  
-  <!-- 最終画像（5.png） -->
-  <img class="final-image" id="finalImage" src="../photo/god2/5.png" alt="最終画像" onload="console.log('最終画像 読み込み完了')" onerror="console.error('最終画像 読み込みエラー')">
+  <!-- 最終画像（4.png） -->
+  <img class="final-image" id="finalImage" src="../photo/god2/4.png" alt="最終画像" onload="console.log('最終画像 読み込み完了')" onerror="console.error('最終画像 読み込みエラー')">
 
   <script>
     // ローカルストレージの確認と引き継ぎ
@@ -281,7 +260,7 @@
     
     // 動画準備完了チェック
     let videoReadyCount = 0;
-    const totalVideos = 4; // video1, video2, video3, video4
+    const totalVideos = 3; // video1, video2, video3
     let loadingScreenShown = false;
     
     function showLoadingScreen() {
@@ -315,7 +294,7 @@
     }
     
     function setupVideoReadyListeners() {
-      const videoIds = ['video1', 'video2', 'video3', 'video4'];
+      const videoIds = ['video1', 'video2', 'video3'];
       let hasLoadingStarted = false;
       
       videoIds.forEach(videoId => {
@@ -407,16 +386,13 @@
           showOverlappingVideo('video3', () => {
             console.log('video3完了');
             
-            // 背景動画（4.mp4）を表示
-            showBackgroundVideo();
-            
-            // 最終画像（5.png）を表示
+            // 最終画像（4.png）を表示
             showFinalImage();
             
             // ritual-cosmos.htmlに遷移
             setTimeout(() => {
               proceedToCosmos();
-            }, 3000);
+            }, 2000);
           });
         });
       });
@@ -458,7 +434,7 @@
           setTimeout(() => {
             video.classList.remove('fade-in');
             video.classList.add('show');
-          }, 1500);
+          }, 1000);
         
         // 動画終了時にコールバック実行
         video.addEventListener('ended', () => {
@@ -472,7 +448,7 @@
           setTimeout(() => {
             video.classList.remove('fade-out');
             video.style.opacity = '0';
-          }, 1500);
+          }, 1000);
           
           // コールバック実行
           if (onComplete) onComplete();
@@ -522,7 +498,7 @@
           setTimeout(() => {
             video.classList.remove('fade-in');
             video.classList.add('show');
-          }, 1500);
+          }, 1000);
         
         // 動画終了時にコールバック実行
         video.addEventListener('ended', () => {
@@ -539,7 +515,7 @@
             setTimeout(() => {
               video.classList.remove('fade-out');
               video.style.opacity = '0';
-            }, 1500);
+            }, 1000);
           }, 500);
         }, { once: true });
         
@@ -551,28 +527,7 @@
       }
     }
     
-    // 背景動画（4.mp4）を表示
-    function showBackgroundVideo() {
-      const backgroundVideo = document.getElementById('video4');
-      
-      if (!backgroundVideo) {
-        console.error('背景動画が見つかりません');
-        return;
-      }
-      
-      // 背景動画を表示
-      backgroundVideo.classList.add('show');
-      
-      // 背景動画を再生（iPhone対応）
-      const playPromise = backgroundVideo.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          console.error('背景動画再生エラー:', error);
-        });
-      }
-    }
-    
-    // 最終画像（5.png）を表示
+    // 最終画像（4.png）を表示
     function showFinalImage() {
       const finalImage = document.getElementById('finalImage');
       
@@ -581,7 +536,7 @@
         return;
       }
       
-      console.log('最終画像（5.png）を表示開始');
+      console.log('最終画像（4.png）を表示開始');
       
       // 最終画像を滑らかにフェードイン
       finalImage.classList.add('show');
