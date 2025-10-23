@@ -359,6 +359,43 @@
       errorDiv.classList.remove('show');
     }
 
+    // 残り時間をチェックして遷移先を決定
+    function checkRemainingTimeAndRedirect(userData) {
+      console.log('残り時間をチェック中...');
+      
+      // 残り時間を計算
+      const remainingTime = calculateRemainingTime(userData);
+      console.log('残り時間:', remainingTime, '秒');
+      
+      if (remainingTime > 5) {
+        // 残り時間が5秒以上の場合
+        console.log('残り時間が5秒以上、chat.htmlに遷移');
+        window.location.href = '../consult/chat.html';
+      } else {
+        // 残り時間が5秒以下の場合
+        console.log('残り時間が5秒以下、payment/ticket.htmlに遷移');
+        window.location.href = '../payment/ticket.html';
+      }
+    }
+
+    // 残り時間を計算する関数
+    function calculateRemainingTime(userData) {
+      if (!userData || !userData.session_end_time) {
+        console.log('セッション終了時間が設定されていません');
+        return 0;
+      }
+      
+      const currentTime = new Date().getTime();
+      const sessionEndTime = new Date(userData.session_end_time).getTime();
+      const remainingTime = Math.max(0, Math.floor((sessionEndTime - currentTime) / 1000));
+      
+      console.log('現在時刻:', new Date(currentTime));
+      console.log('セッション終了時刻:', new Date(sessionEndTime));
+      console.log('残り時間:', remainingTime, '秒');
+      
+      return remainingTime;
+    }
+
     // ログインフォーム送信
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -390,7 +427,9 @@
         if (result.success) {
           // ログイン成功
           localStorage.setItem('userData', JSON.stringify(result.userData));
-          window.location.href = 'login-success.html'; // ログイン成功画面へ遷移
+          
+          // 残り時間をチェックして遷移先を決定
+          checkRemainingTimeAndRedirect(result.userData);
         } else {
           showError(result.message || 'ログインに失敗しました');
         }
