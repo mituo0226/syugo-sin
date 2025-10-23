@@ -175,7 +175,7 @@
     </video>
     
     <!-- 3.mp4動画 -->
-    <video class="god-video" id="video3" muted preload="metadata" playsinline webkit-playsinline onerror="handleVideoError(this, 'video3')" onloadstart="console.log('video3 読み込み開始')" oncanplay="console.log('video3 再生可能')">
+    <video class="god-video" id="video3" muted preload="auto" playsinline webkit-playsinline onerror="handleVideoError(this, 'video3')" onloadstart="console.log('video3 読み込み開始')" oncanplay="console.log('video3 再生可能')" onloadeddata="console.log('video3 データ読み込み完了')" oncanplaythrough="console.log('video3 完全再生可能')">
       <source src="../photo/god2/3.mp4" type="video/mp4">
     </video>
   </div>
@@ -311,11 +311,20 @@
               hasLoadingStarted = true;
             }
             
-            // canplayイベントを待つ
-            video.addEventListener('canplay', () => {
+            // 複数のイベントを監視（Android対応）
+            const checkVideoReadyOnce = () => {
               console.log(`${videoId} の準備が完了しました`);
               checkVideoReady();
-            }, { once: true });
+            };
+            
+            // canplayイベントを待つ
+            video.addEventListener('canplay', checkVideoReadyOnce, { once: true });
+            
+            // Android対応: loadeddataイベントも監視
+            video.addEventListener('loadeddata', checkVideoReadyOnce, { once: true });
+            
+            // Android対応: canplaythroughイベントも監視
+            video.addEventListener('canplaythrough', checkVideoReadyOnce, { once: true });
             
             // エラー時の処理
             video.addEventListener('error', (e) => {
@@ -344,13 +353,13 @@
         // 各動画の準備完了を監視
         setupVideoReadyListeners();
         
-        // フォールバック: 10秒で強制的に開始
+        // フォールバック: 15秒で強制的に開始（Android対応で延長）
         setTimeout(() => {
           if (videoReadyCount < totalVideos) {
             console.log('動画準備タイムアウト、強制的に開始します');
             startVideoSequenceAfterReady();
           }
-        }, 10000);
+        }, 15000);
         
       } catch (error) {
         console.error("ページ読み込みエラー:", error);
@@ -488,7 +497,20 @@
       // 動画を滑らかにフェードイン
       video.classList.add('fade-in');
       
-      // 動画を再生（iPhone対応）
+      // Android対応: 動画の読み込み状態を再確認
+      if (video.readyState < 2) {
+        console.log(`${videoId} の読み込みを待機中...`);
+        video.addEventListener('loadeddata', () => {
+          startVideoPlayback(videoId, video, onComplete);
+        }, { once: true });
+        return;
+      }
+      
+      startVideoPlayback(videoId, video, onComplete);
+    }
+    
+    function startVideoPlayback(videoId, video, onComplete) {
+      // 動画を再生（Android対応）
       const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise.then(() => {
