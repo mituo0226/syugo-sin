@@ -40,11 +40,11 @@
       width: 100%;
       height: 100%;
       background: #000;
-      display: flex;
+      display: none;
       justify-content: center;
       align-items: center;
       z-index: 1000;
-      opacity: 1;
+      opacity: 0;
       transition: opacity 0.5s ease-in-out;
     }
 
@@ -282,6 +282,17 @@
     // 動画準備完了チェック
     let videoReadyCount = 0;
     const totalVideos = 4; // video1, video2, video3, video4
+    let loadingScreenShown = false;
+    
+    function showLoadingScreen() {
+      if (!loadingScreenShown) {
+        const loadingScreen = document.getElementById('loadingScreen');
+        loadingScreen.style.display = 'flex';
+        loadingScreen.style.opacity = '1';
+        loadingScreenShown = true;
+        console.log('ローディング画面を表示');
+      }
+    }
     
     function checkVideoReady() {
       videoReadyCount++;
@@ -305,6 +316,7 @@
     
     function setupVideoReadyListeners() {
       const videoIds = ['video1', 'video2', 'video3', 'video4'];
+      let hasLoadingStarted = false;
       
       videoIds.forEach(videoId => {
         const video = document.getElementById(videoId);
@@ -314,6 +326,12 @@
             console.log(`${videoId} は既に準備完了しています`);
             checkVideoReady();
           } else {
+            // 読み込み待機中にローディング画面を表示
+            if (!hasLoadingStarted) {
+              showLoadingScreen();
+              hasLoadingStarted = true;
+            }
+            
             // canplayイベントを待つ
             video.addEventListener('canplay', () => {
               console.log(`${videoId} の準備が完了しました`);
