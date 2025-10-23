@@ -357,13 +357,30 @@
         // 各動画の準備完了を監視
         setupVideoReadyListeners();
         
-        // Android対応: video3の特別な処理
+        // Android対応: 動画の読み込み順序を明示的に制御
+        const video1 = document.getElementById('video1');
+        const video2 = document.getElementById('video2');
         const video3 = document.getElementById('video3');
-        if (video3) {
-          // video3を最初に読み込み開始
-          video3.load();
-          console.log('video3 の読み込みを開始しました');
+        
+        // 動画の読み込み順序を確実にする
+        if (video1) {
+          video1.load();
+          console.log('video1 の読み込みを開始しました');
         }
+        
+        setTimeout(() => {
+          if (video2) {
+            video2.load();
+            console.log('video2 の読み込みを開始しました');
+          }
+        }, 1000);
+        
+        setTimeout(() => {
+          if (video3) {
+            video3.load();
+            console.log('video3 の読み込みを開始しました');
+          }
+        }, 2000);
         
         // フォールバック: 10秒で強制的に開始
         setTimeout(() => {
@@ -396,16 +413,19 @@
       console.log('動画シーケンス開始');
       
       // 1.mp4を表示・再生
+      console.log('1.mp4 の再生を開始します');
       showVideo('video1', () => {
-        console.log('video1完了');
+        console.log('1.mp4 の再生が完了しました');
         
         // 2.mp4を表示・再生（重なり合うように）
+        console.log('2.mp4 の再生を開始します');
         showOverlappingVideo('video2', () => {
-          console.log('video2完了');
+          console.log('2.mp4 の再生が完了しました');
           
           // 3.mp4を表示・再生（重なり合うように）
+          console.log('3.mp4 の再生を開始します');
           showOverlappingVideo('video3', () => {
-            console.log('video3完了');
+            console.log('3.mp4 の再生が完了しました');
             
             // 最終画像（4.png）を表示
             showFinalImage();
@@ -422,6 +442,8 @@
     // 個別動画を表示・再生（最初の動画用）
     function showVideo(videoId, onComplete) {
       const video = document.getElementById(videoId);
+      
+      console.log(`${videoId} の表示処理を開始します`);
       
       if (!video) {
         console.error(`動画が見つかりません: ${videoId}`);
@@ -486,6 +508,8 @@
     // 滑らかなクロスフェード動画を表示・再生
     function showOverlappingVideo(videoId, onComplete) {
       const video = document.getElementById(videoId);
+      
+      console.log(`${videoId} の重なり合う表示処理を開始します`);
       
       if (!video) {
         console.error(`動画が見つかりません: ${videoId}`);
