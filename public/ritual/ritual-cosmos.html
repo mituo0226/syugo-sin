@@ -59,8 +59,39 @@
       text-shadow: 0 0 10px rgba(102, 204, 255, 0.5);
     }
     
-    /* sinden.mp4動画 */
-    .sinden-video {
+    /* 動画コンテナ */
+    .video-container {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+    }
+    
+    .god-video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 2s ease-in-out;
+    }
+    
+    .god-video.show {
+      opacity: 1;
+    }
+    
+    .god-video.fade-out {
+      opacity: 0;
+    }
+    
+    /* 背景動画（4.mp4） */
+    .background-video {
       position: fixed;
       top: 50%;
       left: 50%;
@@ -68,52 +99,13 @@
       width: 100vw;
       height: 100vh;
       object-fit: cover;
-      z-index: 1;
+      z-index: 0;
       opacity: 0;
-      transition: all 4s ease-in-out;
+      transition: opacity 3s ease-in-out;
     }
     
-    .sinden-video.show {
+    .background-video.show {
       opacity: 1;
-    }
-    
-    .sinden-video.move-forward {
-      animation: moveIntoDepth 8s ease-in-out infinite;
-      opacity: 1;
-    }
-    
-    @keyframes moveIntoDepth {
-      0% { 
-        transform: translate(-50%, -50%) scale(1);
-        filter: brightness(1);
-      }
-      50% { 
-        transform: translate(-50%, -50%) scale(1.2);
-        filter: brightness(1);
-      }
-      100% { 
-        transform: translate(-50%, -50%) scale(1.4);
-        filter: brightness(1);
-      }
-    }
-    
-    /* hikari.mp4動画 */
-    .hikari-video {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.3);
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover;
-      z-index: 2;
-      opacity: 0;
-      transition: all 4s ease-in-out;
-    }
-    
-    .hikari-video.show {
-      opacity: 0.9;
-      transform: translate(-50%, -50%) scale(1);
     }
     
     /* メール入力フォーム */
@@ -524,14 +516,27 @@
     </div>
   </div>
   
-  <!-- sinden.mp4動画 -->
-  <video class="sinden-video" id="sindenVideo" autoplay muted onerror="handleVideoError(this, 'sinden')">
-    <source src="../photo/sinden.mp4" type="video/mp4">
-  </video>
+  <!-- 動画コンテナ -->
+  <div class="video-container">
+    <!-- 1.mp4動画 -->
+    <video class="god-video" id="video1" muted onerror="handleVideoError(this, 'video1')">
+      <source src="../photo/god2/1.mp4" type="video/mp4">
+    </video>
+    
+    <!-- 2.mp4動画 -->
+    <video class="god-video" id="video2" muted onerror="handleVideoError(this, 'video2')">
+      <source src="../photo/god2/2.mp4" type="video/mp4">
+    </video>
+    
+    <!-- 3.mp4動画 -->
+    <video class="god-video" id="video3" muted onerror="handleVideoError(this, 'video3')">
+      <source src="../photo/god2/3.mp4" type="video/mp4">
+    </video>
+  </div>
   
-  <!-- hikari.mp4動画 -->
-  <video class="hikari-video" id="hikariVideo" autoplay muted onerror="handleVideoError(this, 'hikari')">
-    <source src="../photo/hikari.mp4" type="video/mp4">
+  <!-- 背景動画（4.mp4） -->
+  <video class="background-video" id="video4" muted loop onerror="handleVideoError(this, 'video4')">
+    <source src="../photo/god2/4.mp4" type="video/mp4">
   </video>
   
   <!-- メール入力フォーム -->
@@ -564,14 +569,7 @@
   <script>
     // 動画エラーハンドリング関数
     function handleVideoError(videoElement, videoName) {
-      console.error(`動画読み込みエラー: ${videoName}.mp4`);
-      
-      // 動画の代わりに背景色を設定
-      if (videoName === 'sinden') {
-        videoElement.parentElement.style.background = 'radial-gradient(circle, #1a1a2e, #16213e)';
-      } else if (videoName === 'hikari') {
-        videoElement.parentElement.style.background = 'radial-gradient(circle, #ffd700, #ffed4e)';
-      }
+      console.error(`動画読み込みエラー: ${videoName}`);
       
       // 動画要素を非表示
       videoElement.style.display = 'none';
@@ -692,25 +690,10 @@
           hideLoadingScreen();
         }, 3000);
         
-        // sinden動画を表示
+        // 動画シーケンス開始
         setTimeout(() => {
-          showSindenVideo();
+          startVideoSequence();
         }, 4000);
-        
-        // sinden動画が奥に進んでいく動きを開始
-        setTimeout(() => {
-          startSindenMoveForward();
-        }, 8000);
-        
-        // hikari動画を表示開始
-        setTimeout(() => {
-          showHikariVideo();
-        }, 12000);
-        
-        // メール入力フォームを表示
-        setTimeout(() => {
-          showEmailForm();
-        }, 16000);
         
       } catch (error) {
         console.error("ページ読み込みエラー:", error);
@@ -730,46 +713,89 @@
       }, 1000);
     }
     
-    // sinden動画を表示
-    function showSindenVideo() {
-      const sindenVideo = document.getElementById('sindenVideo');
-      sindenVideo.classList.add('show');
+    // 動画シーケンス開始
+    function startVideoSequence() {
+      console.log('動画シーケンス開始');
+      
+      // 1.mp4を表示・再生
+      showVideo('video1', () => {
+        console.log('video1完了');
+        
+        // 2.mp4を表示・再生（重なり合うように）
+        setTimeout(() => {
+          showVideo('video2', () => {
+            console.log('video2完了');
+            
+            // 3.mp4を表示・再生（重なり合うように）
+            setTimeout(() => {
+              showVideo('video3', () => {
+                console.log('video3完了');
+                
+                // 4.mp4を背景として表示
+                setTimeout(() => {
+                  showBackgroundVideo();
+                  
+                  // メール入力フォームを表示
+                  setTimeout(() => {
+                    showEmailForm();
+                  }, 2000);
+                }, 1000);
+              });
+            }, 1000);
+          });
+        }, 1000);
+      });
     }
     
-    // sinden動画が奥に進んでいく動きを開始
-    function startSindenMoveForward() {
-      const sindenVideo = document.getElementById('sindenVideo');
-      sindenVideo.classList.add('move-forward');
+    // 個別動画を表示・再生
+    function showVideo(videoId, onComplete) {
+      const video = document.getElementById(videoId);
+      
+      if (!video) {
+        console.error(`動画が見つかりません: ${videoId}`);
+        if (onComplete) onComplete();
+        return;
+      }
+      
+      // 動画を表示
+      video.classList.add('show');
+      
+      // 動画を再生
+      video.play().then(() => {
+        console.log(`${videoId} 再生開始`);
+        
+        // 動画終了時にコールバック実行
+        video.addEventListener('ended', () => {
+          console.log(`${videoId} 再生完了`);
+          video.classList.remove('show');
+          video.classList.add('fade-out');
+          
+          if (onComplete) onComplete();
+        }, { once: true });
+        
+      }).catch(error => {
+        console.error(`${videoId} 再生エラー:`, error);
+        video.classList.remove('show');
+        if (onComplete) onComplete();
+      });
     }
     
-    // hikari動画を表示
-    function showHikariVideo() {
-      const hikariVideo = document.getElementById('hikariVideo');
+    // 背景動画（4.mp4）を表示
+    function showBackgroundVideo() {
+      const backgroundVideo = document.getElementById('video4');
       
-      // hikari動画を神殿MP4の奥から自然に現れるように表示
-      setTimeout(() => {
-        hikariVideo.style.opacity = '0.1';
-        hikariVideo.style.transform = 'translate(-50%, -50%) scale(0.2)';
-      }, 200);
+      if (!backgroundVideo) {
+        console.error('背景動画が見つかりません');
+        return;
+      }
       
-      setTimeout(() => {
-        hikariVideo.style.opacity = '0.3';
-        hikariVideo.style.transform = 'translate(-50%, -50%) scale(0.4)';
-      }, 800);
+      // 背景動画を表示
+      backgroundVideo.classList.add('show');
       
-      setTimeout(() => {
-        hikariVideo.style.opacity = '0.6';
-        hikariVideo.style.transform = 'translate(-50%, -50%) scale(0.7)';
-      }, 1500);
-      
-      setTimeout(() => {
-        hikariVideo.style.opacity = '0.8';
-        hikariVideo.style.transform = 'translate(-50%, -50%) scale(0.9)';
-      }, 2200);
-      
-      setTimeout(() => {
-        hikariVideo.classList.add('show');
-      }, 3000);
+      // 背景動画を再生
+      backgroundVideo.play().catch(error => {
+        console.error('背景動画再生エラー:', error);
+      });
     }
     
     // メール入力フォームを表示
