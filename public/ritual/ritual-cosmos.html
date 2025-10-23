@@ -773,20 +773,18 @@
           showOverlappingVideo('video3', () => {
             console.log('video3完了');
             
-                // 4.mp4を背景として表示
-                setTimeout(() => {
-                  showBackgroundVideo();
-                  
-                  // 最終画像（5.png）を表示
-                  setTimeout(() => {
-                    showFinalImage();
-                    
-                    // メール入力フォームを表示
-                    setTimeout(() => {
-                      showEmailForm();
-                    }, 3000);
-                  }, 2000);
-                }, 1000);
+            // 4.mp4を背景として表示（3.mp4終了と同時に開始）
+            showBackgroundVideo();
+            
+            // 最終画像（5.png）を表示
+            setTimeout(() => {
+              showFinalImage();
+              
+              // メール入力フォームを表示
+              setTimeout(() => {
+                showEmailForm();
+              }, 3000);
+            }, 2000);
           });
         });
       });
@@ -866,17 +864,20 @@
         video.addEventListener('ended', () => {
           console.log(`${videoId} 再生完了`);
           
-          // 滑らかにフェードアウト
-          video.classList.remove('show');
-          video.classList.add('fade-out');
-          
-          // フェードアウト完了後に完全に非表示
-          setTimeout(() => {
-            video.classList.remove('fade-out');
-            video.style.opacity = '0';
-          }, 2000);
-          
+          // コールバックを即座に実行（次の動画を開始）
           if (onComplete) onComplete();
+          
+          // 少し遅れてフェードアウト開始（次の動画と重なり合うように）
+          setTimeout(() => {
+            video.classList.remove('show');
+            video.classList.add('fade-out');
+            
+            // フェードアウト完了後に完全に非表示
+            setTimeout(() => {
+              video.classList.remove('fade-out');
+              video.style.opacity = '0';
+            }, 2000);
+          }, 500);
         }, { once: true });
         
       }).catch(error => {
