@@ -27,19 +27,8 @@
     }
     
     
-    /* 背景動画（4.mp4） */
-    .background-video {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: 1;
-      opacity: 1;
-    }
     
-    /* 最終画像（5.png） */
+    /* 最終画像（4.png） */
     .final-image {
       position: fixed;
       top: 0;
@@ -452,13 +441,8 @@
 </head>
 <body>
   
-  <!-- 背景動画（4.mp4） -->
-  <video class="background-video" id="video4" muted loop preload="metadata" playsinline webkit-playsinline onerror="handleVideoError(this, 'video4')">
-    <source src="../photo/god2/4.mp4" type="video/mp4">
-  </video>
-  
-  <!-- 最終画像（5.png） -->
-  <img class="final-image" id="finalImage" src="../photo/god2/5.png" alt="最終画像">
+  <!-- 最終画像（4.png） -->
+  <img class="final-image" id="finalImage" src="../photo/god2/4.png" alt="最終画像">
   
   <!-- メール入力フォーム -->
   <div class="email-form-container" id="emailFormContainer">
@@ -607,13 +591,13 @@
           console.log("localStorageをURLパラメータから復元したデータで更新しました:", userData);
         }
         
-        // 背景動画と最終画像を表示
-        showBackgroundAndFinalImage();
+        // 最終画像を表示
+        showFinalImage();
         
         // メール入力フォームを表示
         setTimeout(() => {
           showEmailForm();
-        }, 1000);
+        }, 500);
         
       } catch (error) {
         console.error("ページ読み込みエラー:", error);
@@ -624,20 +608,11 @@
       }
     });
     
-    // 背景動画と最終画像を表示
-    function showBackgroundAndFinalImage() {
-      console.log('背景動画と最終画像を表示');
+    // 最終画像を表示
+    function showFinalImage() {
+      console.log('最終画像を表示');
       
-      // 背景動画（4.mp4）を表示
-      const backgroundVideo = document.getElementById('video4');
-      if (backgroundVideo) {
-        backgroundVideo.classList.add('show');
-        backgroundVideo.play().catch(error => {
-          console.error('背景動画再生エラー:', error);
-        });
-      }
-      
-      // 最終画像（5.png）を表示
+      // 最終画像（4.png）を表示
       const finalImage = document.getElementById('finalImage');
       if (finalImage) {
         finalImage.classList.add('show');
