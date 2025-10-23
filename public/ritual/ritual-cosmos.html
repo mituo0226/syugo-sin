@@ -18,256 +18,45 @@
       -moz-osx-font-smoothing: grayscale;
     }
     
-    /* 神秘的な宇宙背景 */
-    .cosmic-background {
+    /* シンプルなローディング画面 */
+    .loading-screen {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      z-index: -2;
-      background: 
-        radial-gradient(circle at 20% 80%, rgba(102, 204, 255, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(199, 125, 255, 0.05) 0%, transparent 50%),
-        linear-gradient(45deg, #000428 0%, #004e92 50%, #000428 100%);
-      animation: cosmicPulse 8s ease-in-out infinite, cosmicVortex 12s linear infinite;
-      transition: opacity 3s ease-in-out;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      transition: opacity 1s ease-out;
     }
     
-    @keyframes cosmicPulse {
-      0%, 100% {
-        opacity: 0.8;
-        background: 
-          radial-gradient(circle at 20% 80%, rgba(102, 204, 255, 0.1) 0%, transparent 50%),
-          radial-gradient(circle at 80% 20%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
-          radial-gradient(circle at 40% 40%, rgba(199, 125, 255, 0.05) 0%, transparent 50%),
-          linear-gradient(45deg, #000428 0%, #004e92 50%, #000428 100%);
-      }
-      50% {
-        opacity: 1;
-        background: 
-          radial-gradient(circle at 20% 80%, rgba(102, 204, 255, 0.2) 0%, transparent 50%),
-          radial-gradient(circle at 80% 20%, rgba(157, 78, 221, 0.2) 0%, transparent 50%),
-          radial-gradient(circle at 40% 40%, rgba(199, 125, 255, 0.1) 0%, transparent 50%),
-          linear-gradient(45deg, #000428 0%, #004e92 50%, #000428 100%);
-      }
+    .loading-content {
+      text-align: center;
+      color: white;
     }
     
-    @keyframes cosmicVortex {
-      0% {
-        transform: scale(1) rotate(0deg);
-        filter: hue-rotate(0deg) brightness(1);
-      }
-      25% {
-        transform: scale(1.1) rotate(90deg);
-        filter: hue-rotate(90deg) brightness(1.2);
-      }
-      50% {
-        transform: scale(1.2) rotate(180deg);
-        filter: hue-rotate(180deg) brightness(1.4);
-      }
-      75% {
-        transform: scale(1.1) rotate(270deg);
-        filter: hue-rotate(270deg) brightness(1.2);
-      }
-      100% {
-        transform: scale(1) rotate(360deg);
-        filter: hue-rotate(360deg) brightness(1);
-      }
-    }
-    
-    /* 浮遊する星 */
-    .stars {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      pointer-events: none;
-      transition: opacity 3s ease-in-out;
-    }
-    
-    .star {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      background: #fff;
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(102, 204, 255, 0.3);
+      border-top: 3px solid #66ccff;
       border-radius: 50%;
-      animation: twinkle 3s ease-in-out infinite, starVortex 15s linear infinite;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
     }
     
-    .star:nth-child(1) { top: 10%; left: 20%; animation-delay: 0s; }
-    .star:nth-child(2) { top: 20%; left: 80%; animation-delay: 1s; }
-    .star:nth-child(3) { top: 30%; left: 40%; animation-delay: 2s; }
-    .star:nth-child(4) { top: 40%; left: 70%; animation-delay: 0.5s; }
-    .star:nth-child(5) { top: 50%; left: 10%; animation-delay: 1.5s; }
-    .star:nth-child(6) { top: 60%; left: 90%; animation-delay: 2.5s; }
-    .star:nth-child(7) { top: 70%; left: 30%; animation-delay: 0.8s; }
-    .star:nth-child(8) { top: 80%; left: 60%; animation-delay: 1.8s; }
-    .star:nth-child(9) { top: 90%; left: 15%; animation-delay: 2.2s; }
-    .star:nth-child(10) { top: 15%; left: 85%; animation-delay: 0.3s; }
-    .star:nth-child(11) { top: 35%; left: 25%; animation-delay: 1.2s; }
-    .star:nth-child(12) { top: 55%; left: 75%; animation-delay: 2.8s; }
-    
-    @keyframes twinkle {
-      0%, 100% {
-        opacity: 0.3;
-        transform: scale(1);
-      }
-      50% {
-        opacity: 1;
-        transform: scale(1.5);
-      }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
     
-    @keyframes starVortex {
-      0% {
-        transform: translate(0, 0) scale(1);
-      }
-      25% {
-        transform: translate(-20px, -20px) scale(1.2);
-      }
-      50% {
-        transform: translate(-40px, -40px) scale(1.5);
-      }
-      75% {
-        transform: translate(-20px, -20px) scale(1.2);
-      }
-      100% {
-        transform: translate(0, 0) scale(1);
-      }
-    }
-    
-    /* 神秘的な光の流れ */
-    .cosmic-light {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      pointer-events: none;
-      background: 
-        conic-gradient(from 0deg at 30% 30%, transparent 0deg, rgba(102, 204, 255, 0.1) 45deg, transparent 90deg),
-        conic-gradient(from 180deg at 70% 70%, transparent 0deg, rgba(157, 78, 221, 0.1) 45deg, transparent 90deg);
-      animation: cosmicRotate 20s linear infinite, lightVortex 8s ease-in-out infinite;
-      transition: opacity 3s ease-in-out;
-    }
-    
-    @keyframes cosmicRotate {
-      0% {
-        transform: rotate(0deg);
-        opacity: 0.3;
-      }
-      50% {
-        opacity: 0.6;
-      }
-      100% {
-        transform: rotate(360deg);
-        opacity: 0.3;
-      }
-    }
-    
-    @keyframes lightVortex {
-      0% {
-        transform: scale(1) rotate(0deg);
-        filter: brightness(1) contrast(1);
-      }
-      25% {
-        transform: scale(1.3) rotate(90deg);
-        filter: brightness(1.5) contrast(1.2);
-      }
-      50% {
-        transform: scale(1.6) rotate(180deg);
-        filter: brightness(2) contrast(1.5);
-      }
-      75% {
-        transform: scale(1.3) rotate(270deg);
-        filter: brightness(1.5) contrast(1.2);
-      }
-      100% {
-        transform: scale(1) rotate(360deg);
-        filter: brightness(1) contrast(1);
-      }
-    }
-    
-    /* 異次元吸い込み効果 */
-    .vortex-effect {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      width: 200px;
-      height: 200px;
-      transform: translate(-50%, -50%);
-      background: 
-        radial-gradient(circle, transparent 30%, rgba(102, 204, 255, 0.1) 50%, rgba(157, 78, 221, 0.2) 70%, transparent 100%);
-      border-radius: 50%;
-      z-index: 0;
-      animation: vortexSuck 6s ease-in-out infinite;
-    }
-    
-    @keyframes vortexSuck {
-      0% {
-        transform: translate(-50%, -50%) scale(0.5);
-        opacity: 0.3;
-      }
-      25% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 0.6;
-      }
-      50% {
-        transform: translate(-50%, -50%) scale(1.5);
-        opacity: 0.8;
-      }
-      75% {
-        transform: translate(-50%, -50%) scale(2);
-        opacity: 0.6;
-      }
-      100% {
-        transform: translate(-50%, -50%) scale(2.5);
-        opacity: 0.3;
-      }
-    }
-    
-    /* 高速粒子 */
-    .particle-stream {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      pointer-events: none;
-      background: 
-        radial-gradient(ellipse at 20% 20%, rgba(102, 204, 255, 0.1) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 80%, rgba(157, 78, 221, 0.1) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 50%, rgba(199, 125, 255, 0.05) 0%, transparent 50%);
-      animation: particleRush 4s linear infinite;
-    }
-    
-    @keyframes particleRush {
-      0% {
-        transform: translateX(-100%) translateY(-100%) scale(0.5);
-        opacity: 0;
-      }
-      25% {
-        transform: translateX(-50%) translateY(-50%) scale(0.8);
-        opacity: 0.5;
-      }
-      50% {
-        transform: translateX(0%) translateY(0%) scale(1);
-        opacity: 0.8;
-      }
-      75% {
-        transform: translateX(50%) translateY(50%) scale(1.2);
-        opacity: 0.5;
-      }
-      100% {
-        transform: translateX(100%) translateY(100%) scale(1.5);
-        opacity: 0;
-      }
+    .loading-text {
+      font-size: 1.2em;
+      color: #66ccff;
+      text-shadow: 0 0 10px rgba(102, 204, 255, 0.5);
     }
     
     /* sinden.mp4動画 */
@@ -325,51 +114,6 @@
     .hikari-video.show {
       opacity: 0.9;
       transform: translate(-50%, -50%) scale(1);
-    }
-    
-    /* 神秘的なメッセージ */
-    .cosmic-message {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      z-index: 10;
-      opacity: 0;
-      transition: opacity 2s ease-in-out;
-      background: rgba(0, 0, 0, 0.8);
-      padding: 30px;
-      border-radius: 20px;
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-      border: 2px solid rgba(102, 204, 255, 0.5);
-      box-shadow: 0 0 30px rgba(102, 204, 255, 0.3);
-      max-width: 90vw;
-    }
-    
-    .cosmic-message.show {
-      opacity: 1;
-    }
-    
-    .cosmic-message.fade-out {
-      opacity: 0;
-      transition: opacity 2s ease-in-out;
-    }
-    
-    .cosmic-text {
-      font-size: 1.2em;
-      line-height: 1.8;
-      text-shadow: 0 0 20px rgba(102, 204, 255, 0.8);
-      animation: cosmicGlow 3s ease-in-out infinite alternate;
-    }
-    
-    @keyframes cosmicGlow {
-      0% {
-        text-shadow: 0 0 20px rgba(102, 204, 255, 0.8);
-      }
-      100% {
-        text-shadow: 0 0 30px rgba(102, 204, 255, 1), 0 0 40px rgba(157, 78, 221, 0.5);
-      }
     }
     
     /* メール入力フォーム */
@@ -670,64 +414,6 @@
       .notice-timer {
         font-size: 0.8em;
       }
-    }
-    
-    /* スマートフォン向け調整 */
-    @media (max-width: 480px) {
-      .success-message-large {
-        padding: 10px;
-      }
-      
-      .email-check-notice {
-        padding: 20px 12px;
-        max-width: 100%;
-        width: 100%;
-        max-height: 80vh;
-      }
-      
-      .notice-icon {
-        font-size: 2.5em;
-        margin-bottom: 12px;
-      }
-      
-      .notice-title {
-        font-size: 1.2em;
-        margin-bottom: 10px;
-      }
-      
-      .notice-email {
-        font-size: 0.8em;
-        padding: 6px;
-        margin-bottom: 12px;
-        word-break: break-all;
-      }
-      
-      .notice-main {
-        font-size: 1em;
-        margin-bottom: 6px;
-      }
-      
-      .notice-sub {
-        font-size: 0.8em;
-        line-height: 1.4;
-      }
-      
-      .notice-timer {
-        font-size: 0.7em;
-      }
-    }
-    
-    /* モバイル向け調整 */
-    @media (max-width: 768px) {
-      .cosmic-message {
-        padding: 15px;
-        max-width: 95vw;
-      }
-      
-      .cosmic-text {
-        font-size: 1.1em;
-        line-height: 1.6;
-      }
       
       .sinden-video {
         width: 100vw;
@@ -770,6 +456,48 @@
     
     /* iPhone向け調整 */
     @media (max-width: 480px) {
+      .success-message-large {
+        padding: 10px;
+      }
+      
+      .email-check-notice {
+        padding: 20px 12px;
+        max-width: 100%;
+        width: 100%;
+        max-height: 80vh;
+      }
+      
+      .notice-icon {
+        font-size: 2.5em;
+        margin-bottom: 12px;
+      }
+      
+      .notice-title {
+        font-size: 1.2em;
+        margin-bottom: 10px;
+      }
+      
+      .notice-email {
+        font-size: 0.8em;
+        padding: 6px;
+        margin-bottom: 12px;
+        word-break: break-all;
+      }
+      
+      .notice-main {
+        font-size: 1em;
+        margin-bottom: 6px;
+      }
+      
+      .notice-sub {
+        font-size: 0.8em;
+        line-height: 1.4;
+      }
+      
+      .notice-timer {
+        font-size: 0.7em;
+      }
+      
       .email-form-container {
         padding: 20px;
         width: 98vw;
@@ -788,33 +516,13 @@
   </style>
 </head>
 <body>
-  <!-- 神秘的な宇宙背景 -->
-  <div class="cosmic-background"></div>
-  
-  <!-- 浮遊する星 -->
-  <div class="stars">
-    <div class="star"></div>
-    <div class="star"></div>
-    <div class="star"></div>
-    <div class="star"></div>
-    <div class="star"></div>
-    <div class="star"></div>
-    <div class="star"></div>
-    <div class="star"></div>
-    <div class="star"></div>
-    <div class="star"></div>
-    <div class="star"></div>
-    <div class="star"></div>
+  <!-- シンプルなローディング画面 -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">神の世界に入っていく...</div>
+    </div>
   </div>
-  
-  <!-- 神秘的な光の流れ -->
-  <div class="cosmic-light"></div>
-  
-  <!-- 異次元吸い込み効果 -->
-  <div class="vortex-effect"></div>
-  
-  <!-- 高速粒子 -->
-  <div class="particle-stream"></div>
   
   <!-- sinden.mp4動画 -->
   <video class="sinden-video" id="sindenVideo" autoplay muted onerror="handleVideoError(this, 'sinden')">
@@ -825,11 +533,6 @@
   <video class="hikari-video" id="hikariVideo" autoplay muted onerror="handleVideoError(this, 'hikari')">
     <source src="../photo/hikari.mp4" type="video/mp4">
   </video>
-  
-  <!-- 神秘的なメッセージ -->
-  <div class="cosmic-message" id="cosmicMessage">
-    <div class="cosmic-text" id="cosmicText"></div>
-  </div>
   
   <!-- メール入力フォーム -->
   <div class="email-form-container" id="emailFormContainer">
@@ -984,46 +687,30 @@
           console.log("localStorageをURLパラメータから復元したデータで更新しました:", userData);
         }
         
-        const displayNickname = userData.nickname || userData.name || "あなた";
-        
-        // 1. 神秘的な宇宙背景を表示
+        // シンプルなローディング画面を3秒表示
         setTimeout(() => {
-          showCosmicBackground();
-        }, 500);
+          hideLoadingScreen();
+        }, 3000);
         
-        // 2. 神秘的なメッセージを表示
+        // sinden動画を表示
         setTimeout(() => {
-          const cosmicText = document.getElementById('cosmicText');
-          const message = `神の世界に入っていく...`;
-          
-          // タイプライター効果でメッセージを表示
-          typeWriter(cosmicText, message, 120);
-        }, 2000);
+          showSindenVideo();
+        }, 4000);
         
-        // 3. メッセージをフェードアウト
-        setTimeout(() => {
-          fadeOutMessage();
-        }, 6000);
-        
-        // 4. cosmo.mp4からsinden.mp4にゆっくり切り替え
-        setTimeout(() => {
-          transitionToSindenVideo();
-        }, 8000);
-        
-        // 5. sinden.mp4が奥に進んでいく動きを開始
+        // sinden動画が奥に進んでいく動きを開始
         setTimeout(() => {
           startSindenMoveForward();
-        }, 12000);
+        }, 8000);
         
-        // 6. hikari動画を表示開始
+        // hikari動画を表示開始
         setTimeout(() => {
           showHikariVideo();
-        }, 16000);
+        }, 12000);
         
-        // 7. メール入力フォームを表示
+        // メール入力フォームを表示
         setTimeout(() => {
           showEmailForm();
-        }, 20000);
+        }, 16000);
         
       } catch (error) {
         console.error("ページ読み込みエラー:", error);
@@ -1034,128 +721,13 @@
       }
     });
     
-    // タイプライター効果
-    function typeWriter(element, text, speed) {
-      let i = 0;
-      element.textContent = "";
-      
-      function type() {
-        if (i < text.length) {
-          element.textContent += text.charAt(i);
-          i++;
-          setTimeout(type, speed);
-        }
-      }
-      
-      type();
-    }
-    
-    // 神秘的な宇宙背景を表示
-    function showCosmicBackground() {
-      const cosmicMessage = document.getElementById('cosmicMessage');
-      cosmicMessage.classList.add('show');
-      
-      // 星のアニメーションを開始
-      createFloatingStars();
-      
-      // 異次元吸い込み効果を開始
-      startVortexEffect();
-      
-      // 高速粒子効果を開始
-      startParticleStream();
-    }
-    
-    // 動的に星を生成して浮遊させる
-    function createFloatingStars() {
-      const starsContainer = document.querySelector('.stars');
-      
-      // 追加の星を動的に生成
-      for (let i = 0; i < 20; i++) {
-        const star = document.createElement('div');
-        star.className = 'star';
-        star.style.top = Math.random() * 100 + '%';
-        star.style.left = Math.random() * 100 + '%';
-        star.style.animationDelay = Math.random() * 3 + 's';
-        star.style.animationDuration = (2 + Math.random() * 4) + 's';
-        starsContainer.appendChild(star);
-      }
-    }
-    
-    // 異次元吸い込み効果を開始
-    function startVortexEffect() {
-      const vortexEffect = document.querySelector('.vortex-effect');
-      vortexEffect.style.opacity = '1';
-      
-      // 追加の渦巻き効果を動的に生成
-      for (let i = 0; i < 3; i++) {
-        const vortex = document.createElement('div');
-        vortex.className = 'vortex-effect';
-        vortex.style.position = 'fixed';
-        vortex.style.top = (30 + Math.random() * 40) + '%';
-        vortex.style.left = (30 + Math.random() * 40) + '%';
-        vortex.style.width = (100 + Math.random() * 200) + 'px';
-        vortex.style.height = (100 + Math.random() * 200) + 'px';
-        vortex.style.animationDelay = Math.random() * 2 + 's';
-        vortex.style.animationDuration = (4 + Math.random() * 4) + 's';
-        vortex.style.zIndex = '0';
-        document.body.appendChild(vortex);
-      }
-    }
-    
-    // 高速粒子効果を開始
-    function startParticleStream() {
-      const particleStream = document.querySelector('.particle-stream');
-      particleStream.style.opacity = '1';
-      
-      // 追加の粒子ストリームを動的に生成
-      for (let i = 0; i < 5; i++) {
-        const stream = document.createElement('div');
-        stream.className = 'particle-stream';
-        stream.style.position = 'fixed';
-        stream.style.top = Math.random() * 100 + '%';
-        stream.style.left = Math.random() * 100 + '%';
-        stream.style.width = (50 + Math.random() * 100) + 'px';
-        stream.style.height = (50 + Math.random() * 100) + 'px';
-        stream.style.animationDelay = Math.random() * 3 + 's';
-        stream.style.animationDuration = (2 + Math.random() * 3) + 's';
-        stream.style.zIndex = '1';
-        stream.style.pointerEvents = 'none';
-        stream.style.background = 
-          `radial-gradient(ellipse, rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.1) 0%, transparent 50%)`;
-        document.body.appendChild(stream);
-      }
-    }
-    
-    // メッセージをフェードアウト
-    function fadeOutMessage() {
-      const cosmicMessage = document.getElementById('cosmicMessage');
-      cosmicMessage.classList.add('fade-out');
-    }
-    
-    // 神秘的な背景からsindenにゆっくり切り替え
-    function transitionToSindenVideo() {
-      const sindenVideo = document.getElementById('sindenVideo');
-      
-      // sindenを先にフェードイン
-      sindenVideo.classList.add('show');
-      
-      // 神秘的な背景をゆっくりフェードアウト
-      const cosmicBackground = document.querySelector('.cosmic-background');
-      const stars = document.querySelector('.stars');
-      const cosmicLight = document.querySelector('.cosmic-light');
-      
-      // 段階的にフェードアウト
+    // ローディング画面を非表示
+    function hideLoadingScreen() {
+      const loadingScreen = document.getElementById('loadingScreen');
+      loadingScreen.style.opacity = '0';
       setTimeout(() => {
-        cosmicBackground.style.opacity = '0.5';
-        stars.style.opacity = '0.5';
-        cosmicLight.style.opacity = '0.5';
+        loadingScreen.style.display = 'none';
       }, 1000);
-      
-      setTimeout(() => {
-        cosmicBackground.style.opacity = '0';
-        stars.style.opacity = '0';
-        cosmicLight.style.opacity = '0';
-      }, 3000);
     }
     
     // sinden動画を表示
@@ -1209,6 +781,12 @@
       setTimeout(() => {
         document.getElementById('email').focus();
       }, 500);
+    }
+    
+    // エラー時のデフォルト進行
+    function proceedToEmailInput() {
+      hideLoadingScreen();
+      showEmailForm();
     }
     
     // フォーム送信処理
