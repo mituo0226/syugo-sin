@@ -105,11 +105,11 @@
     }
     
     .god-video.fade-in {
-      animation: smoothFadeIn 2s ease-in-out forwards;
+      animation: smoothFadeIn 1.5s ease-in-out forwards;
     }
     
     .god-video.fade-out {
-      animation: smoothFadeOut 2s ease-in-out forwards;
+      animation: smoothFadeOut 1.5s ease-in-out forwards;
     }
     
     @keyframes smoothFadeIn {
@@ -181,28 +181,28 @@
   <!-- 動画コンテナ -->
   <div class="video-container">
     <!-- 1.mp4動画 -->
-    <video class="god-video" id="video1" muted preload="metadata" playsinline webkit-playsinline onerror="handleVideoError(this, 'video1')">
+    <video class="god-video" id="video1" muted preload="auto" playsinline webkit-playsinline onerror="handleVideoError(this, 'video1')" onloadstart="console.log('video1 読み込み開始')" oncanplay="console.log('video1 再生可能')">
       <source src="../photo/god2/1.mp4" type="video/mp4">
     </video>
     
     <!-- 2.mp4動画 -->
-    <video class="god-video" id="video2" muted preload="none" playsinline webkit-playsinline onerror="handleVideoError(this, 'video2')">
+    <video class="god-video" id="video2" muted preload="metadata" playsinline webkit-playsinline onerror="handleVideoError(this, 'video2')" onloadstart="console.log('video2 読み込み開始')" oncanplay="console.log('video2 再生可能')">
       <source src="../photo/god2/2.mp4" type="video/mp4">
     </video>
     
     <!-- 3.mp4動画 -->
-    <video class="god-video" id="video3" muted preload="none" playsinline webkit-playsinline onerror="handleVideoError(this, 'video3')">
+    <video class="god-video" id="video3" muted preload="metadata" playsinline webkit-playsinline onerror="handleVideoError(this, 'video3')" onloadstart="console.log('video3 読み込み開始')" oncanplay="console.log('video3 再生可能')">
       <source src="../photo/god2/3.mp4" type="video/mp4">
     </video>
   </div>
   
   <!-- 背景動画（4.mp4） -->
-  <video class="background-video" id="video4" muted loop preload="metadata" playsinline webkit-playsinline onerror="handleVideoError(this, 'video4')">
+  <video class="background-video" id="video4" muted loop preload="auto" playsinline webkit-playsinline onerror="handleVideoError(this, 'video4')" onloadstart="console.log('video4 読み込み開始')" oncanplay="console.log('video4 再生可能')">
     <source src="../photo/god2/4.mp4" type="video/mp4">
   </video>
   
   <!-- 最終画像（5.png） -->
-  <img class="final-image" id="finalImage" src="../photo/god2/5.png" alt="最終画像">
+  <img class="final-image" id="finalImage" src="../photo/god2/5.png" alt="最終画像" onload="console.log('最終画像 読み込み完了')" onerror="console.error('最終画像 読み込みエラー')">
 
   <script>
     // ローカルストレージの確認と引き継ぎ
@@ -458,7 +458,7 @@
           setTimeout(() => {
             video.classList.remove('fade-in');
             video.classList.add('show');
-          }, 2000);
+          }, 1500);
         
         // 動画終了時にコールバック実行
         video.addEventListener('ended', () => {
@@ -472,7 +472,7 @@
           setTimeout(() => {
             video.classList.remove('fade-out');
             video.style.opacity = '0';
-          }, 2000);
+          }, 1500);
           
           // コールバック実行
           if (onComplete) onComplete();
@@ -522,7 +522,7 @@
           setTimeout(() => {
             video.classList.remove('fade-in');
             video.classList.add('show');
-          }, 2000);
+          }, 1500);
         
         // 動画終了時にコールバック実行
         video.addEventListener('ended', () => {
@@ -539,7 +539,7 @@
             setTimeout(() => {
               video.classList.remove('fade-out');
               video.style.opacity = '0';
-            }, 2000);
+            }, 1500);
           }, 500);
         }, { once: true });
         
