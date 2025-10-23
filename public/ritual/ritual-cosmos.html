@@ -568,23 +568,23 @@
   <!-- 動画コンテナ -->
   <div class="video-container">
     <!-- 1.mp4動画 -->
-    <video class="god-video" id="video1" muted preload="auto" playsinline webkit-playsinline onerror="handleVideoError(this, 'video1')">
+    <video class="god-video" id="video1" muted preload="metadata" playsinline webkit-playsinline onerror="handleVideoError(this, 'video1')">
       <source src="../photo/god2/1.mp4" type="video/mp4">
     </video>
     
     <!-- 2.mp4動画 -->
-    <video class="god-video" id="video2" muted preload="auto" playsinline webkit-playsinline onerror="handleVideoError(this, 'video2')">
+    <video class="god-video" id="video2" muted preload="none" playsinline webkit-playsinline onerror="handleVideoError(this, 'video2')">
       <source src="../photo/god2/2.mp4" type="video/mp4">
     </video>
     
     <!-- 3.mp4動画 -->
-    <video class="god-video" id="video3" muted preload="auto" playsinline webkit-playsinline onerror="handleVideoError(this, 'video3')">
+    <video class="god-video" id="video3" muted preload="none" playsinline webkit-playsinline onerror="handleVideoError(this, 'video3')">
       <source src="../photo/god2/3.mp4" type="video/mp4">
     </video>
   </div>
   
   <!-- 背景動画（4.mp4） -->
-  <video class="background-video" id="video4" muted loop preload="auto" playsinline webkit-playsinline onerror="handleVideoError(this, 'video4')">
+  <video class="background-video" id="video4" muted loop preload="metadata" playsinline webkit-playsinline onerror="handleVideoError(this, 'video4')">
     <source src="../photo/god2/4.mp4" type="video/mp4">
   </video>
   
@@ -625,6 +625,60 @@
       
       // 動画要素を非表示
       videoElement.style.display = 'none';
+    }
+    
+    // 動画準備完了チェック
+    let videoReadyCount = 0;
+    const totalVideos = 4; // video1, video2, video3, video4
+    
+    function checkVideoReady() {
+      videoReadyCount++;
+      console.log(`動画準備完了: ${videoReadyCount}/${totalVideos}`);
+      
+      if (videoReadyCount >= totalVideos) {
+        console.log('すべての動画の準備が完了しました');
+        startVideoSequenceAfterReady();
+      }
+    }
+    
+    function startVideoSequenceAfterReady() {
+      // ローディング画面を非表示
+      hideLoadingScreen();
+      
+      // 動画シーケンス開始
+      setTimeout(() => {
+        startVideoSequence();
+      }, 500);
+    }
+    
+    function setupVideoReadyListeners() {
+      const videoIds = ['video1', 'video2', 'video3', 'video4'];
+      
+      videoIds.forEach(videoId => {
+        const video = document.getElementById(videoId);
+        if (video) {
+          // 既に準備完了している場合
+          if (video.readyState >= 1) {
+            console.log(`${videoId} は既に準備完了しています`);
+            checkVideoReady();
+          } else {
+            // canplayイベントを待つ
+            video.addEventListener('canplay', () => {
+              console.log(`${videoId} の準備が完了しました`);
+              checkVideoReady();
+            }, { once: true });
+            
+            // エラー時の処理
+            video.addEventListener('error', (e) => {
+              console.error(`${videoId} でエラーが発生しました:`, e);
+              checkVideoReady(); // エラーでもカウントを進める
+            }, { once: true });
+          }
+        } else {
+          console.error(`${videoId} が見つかりません`);
+          checkVideoReady(); // 見つからない場合もカウントを進める
+        }
+      });
     }
     
     // ページ読み込み時の処理
@@ -737,15 +791,19 @@
           console.log("localStorageをURLパラメータから復元したデータで更新しました:", userData);
         }
         
-        // シンプルなローディング画面を0.5秒表示
-        setTimeout(() => {
-          hideLoadingScreen();
-        }, 500);
+        // 動画の準備完了を待つ
+        console.log('動画の準備完了を待機中...');
         
-        // 動画シーケンス開始
+        // 各動画の準備完了を監視
+        setupVideoReadyListeners();
+        
+        // フォールバック: 10秒で強制的に開始
         setTimeout(() => {
-          startVideoSequence();
-        }, 1000);
+          if (videoReadyCount < totalVideos) {
+            console.log('動画準備タイムアウト、強制的に開始します');
+            startVideoSequenceAfterReady();
+          }
+        }, 10000);
         
       } catch (error) {
         console.error("ページ読み込みエラー:", error);
@@ -808,6 +866,19 @@
         return;
       }
       
+      // 動画の読み込みを確認
+      if (video.readyState < 1) {
+        console.log(`${videoId} の読み込みを待機中...`);
+        video.addEventListener('canplay', () => {
+          playVideo(videoId, video, onComplete);
+        }, { once: true });
+        return;
+      }
+      
+      playVideo(videoId, video, onComplete);
+    }
+    
+    function playVideo(videoId, video, onComplete) {
       // 動画を滑らかにフェードイン
       video.classList.add('fade-in');
       
@@ -857,6 +928,19 @@
         return;
       }
       
+      // 動画の読み込みを確認
+      if (video.readyState < 1) {
+        console.log(`${videoId} の読み込みを待機中...`);
+        video.addEventListener('canplay', () => {
+          playOverlappingVideo(videoId, video, onComplete);
+        }, { once: true });
+        return;
+      }
+      
+      playOverlappingVideo(videoId, video, onComplete);
+    }
+    
+    function playOverlappingVideo(videoId, video, onComplete) {
       // 動画を滑らかにフェードイン
       video.classList.add('fade-in');
       
