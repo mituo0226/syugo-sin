@@ -131,6 +131,24 @@
       opacity: 1;
     }
     
+    /* 最終画像（5.png） */
+    .final-image {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 3s ease-in-out;
+    }
+    
+    .final-image.show {
+      opacity: 1;
+    }
+    
     /* メール入力フォーム */
     .email-form-container {
       position: fixed;
@@ -562,6 +580,9 @@
     <source src="../photo/god2/4.mp4" type="video/mp4">
   </video>
   
+  <!-- 最終画像（5.png） -->
+  <img class="final-image" id="finalImage" src="../photo/god2/5.png" alt="最終画像">
+  
   <!-- メール入力フォーム -->
   <div class="email-form-container" id="emailFormContainer">
     <h2 class="form-title">メールアドレスを入力</h2>
@@ -752,15 +773,20 @@
           showOverlappingVideo('video3', () => {
             console.log('video3完了');
             
-            // 4.mp4を背景として表示
-            setTimeout(() => {
-              showBackgroundVideo();
-              
-              // メール入力フォームを表示
-              setTimeout(() => {
-                showEmailForm();
-              }, 2000);
-            }, 1000);
+                // 4.mp4を背景として表示
+                setTimeout(() => {
+                  showBackgroundVideo();
+                  
+                  // 最終画像（5.png）を表示
+                  setTimeout(() => {
+                    showFinalImage();
+                    
+                    // メール入力フォームを表示
+                    setTimeout(() => {
+                      showEmailForm();
+                    }, 3000);
+                  }, 2000);
+                }, 1000);
           });
         });
       });
@@ -876,6 +902,21 @@
       backgroundVideo.play().catch(error => {
         console.error('背景動画再生エラー:', error);
       });
+    }
+    
+    // 最終画像（5.png）を表示
+    function showFinalImage() {
+      const finalImage = document.getElementById('finalImage');
+      
+      if (!finalImage) {
+        console.error('最終画像が見つかりません');
+        return;
+      }
+      
+      console.log('最終画像（5.png）を表示開始');
+      
+      // 最終画像を滑らかにフェードイン
+      finalImage.classList.add('show');
     }
     
     // メール入力フォームを表示
