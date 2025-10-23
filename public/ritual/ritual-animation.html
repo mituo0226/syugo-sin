@@ -175,7 +175,7 @@
     </video>
     
     <!-- 3.mp4動画 -->
-    <video class="god-video" id="video3" muted preload="auto" playsinline webkit-playsinline onerror="handleVideoError(this, 'video3')" onloadstart="console.log('video3 読み込み開始')" oncanplay="console.log('video3 再生可能')" onloadeddata="console.log('video3 データ読み込み完了')" oncanplaythrough="console.log('video3 完全再生可能')">
+    <video class="god-video" id="video3" muted preload="metadata" playsinline webkit-playsinline onerror="handleVideoError(this, 'video3')" onloadstart="console.log('video3 読み込み開始')" oncanplay="console.log('video3 再生可能')">
       <source src="../photo/god2/3.mp4" type="video/mp4">
     </video>
   </div>
@@ -357,6 +357,14 @@
         // 各動画の準備完了を監視
         setupVideoReadyListeners();
         
+        // Android対応: video3の特別な処理
+        const video3 = document.getElementById('video3');
+        if (video3) {
+          // video3を最初に読み込み開始
+          video3.load();
+          console.log('video3 の読み込みを開始しました');
+        }
+        
         // フォールバック: 10秒で強制的に開始
         setTimeout(() => {
           if (videoReadyCount < totalVideos) {
@@ -501,29 +509,12 @@
       // 動画を滑らかにフェードイン
       video.classList.add('fade-in');
       
-      // Android対応: 動画の読み込み状態を詳細に確認
-      console.log(`${videoId} readyState: ${video.readyState}`);
-      
-      if (video.readyState < 2) {
+      // 動画の読み込み状態を確認
+      if (video.readyState < 1) {
         console.log(`${videoId} の読み込みを待機中...`);
-        
-        // Android対応: 複数のイベントを監視
-        const startPlayback = () => {
-          console.log(`${videoId} 読み込み完了、再生開始`);
+        video.addEventListener('canplay', () => {
           startVideoPlayback(videoId, video, onComplete);
-        };
-        
-        // 複数のイベントを監視（Android対応）
-        video.addEventListener('canplay', startPlayback, { once: true });
-        video.addEventListener('loadeddata', startPlayback, { once: true });
-        video.addEventListener('canplaythrough', startPlayback, { once: true });
-        
-        // タイムアウト処理（Android対応）
-        setTimeout(() => {
-          console.log(`${videoId} 読み込みタイムアウト、強制再生`);
-          startVideoPlayback(videoId, video, onComplete);
-        }, 3000);
-        
+        }, { once: true });
         return;
       }
       
@@ -531,10 +522,7 @@
     }
     
     function startVideoPlayback(videoId, video, onComplete) {
-      // Android対応: 動画の再生を確実に実行
-      console.log(`${videoId} 再生処理開始`);
-      
-      // 動画を再生（Android対応）
+      // 動画を再生
       const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise.then(() => {
@@ -568,20 +556,7 @@
         }).catch(error => {
           console.error(`${videoId} 再生エラー:`, error);
           video.classList.remove('fade-in');
-          
-          // Android対応: エラー時の再試行
-          console.log(`${videoId} 再生エラー、再試行します`);
-          setTimeout(() => {
-            const retryPromise = video.play();
-            if (retryPromise !== undefined) {
-              retryPromise.catch(retryError => {
-                console.error(`${videoId} 再試行も失敗:`, retryError);
-                if (onComplete) onComplete();
-              });
-            } else {
-              if (onComplete) onComplete();
-            }
-          }, 1000);
+          if (onComplete) onComplete();
         });
       }
     }
