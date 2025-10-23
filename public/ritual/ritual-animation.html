@@ -32,7 +32,7 @@
       user-select: none;
     }
     
-    /* シンプルなローディング画面 */
+    /* ローディング画面 */
     .loading-screen {
       position: fixed;
       top: 0;
@@ -142,11 +142,10 @@
     /* 最終画像（5.png） */
     .final-image {
       position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 100vw;
-      height: 100vh;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
       z-index: 1;
       opacity: 0;
@@ -206,6 +205,61 @@
   <img class="final-image" id="finalImage" src="../photo/god2/5.png" alt="最終画像">
 
   <script>
+    // ローカルストレージの確認と引き継ぎ
+    function ensureLocalStorageData() {
+      console.log("=== ローカルストレージデータの確認と引き継ぎ ===");
+      
+      // 現在のURLパラメータを取得
+      const urlParams = new URLSearchParams(window.location.search);
+      console.log("URLパラメータ:", urlParams.toString());
+      
+      // localStorageから既存データを取得
+      const existingData = localStorage.getItem("userData");
+      let userData = {};
+      
+      if (existingData) {
+        try {
+          userData = JSON.parse(existingData);
+          console.log("既存のlocalStorageデータ:", userData);
+        } catch (error) {
+          console.error("localStorageデータのパースエラー:", error);
+          userData = {};
+        }
+      }
+      
+      // URLパラメータからデータを取得
+      const urlData = {
+        nickname: urlParams.get('nickname'),
+        birthYear: urlParams.get('birthYear'),
+        birthMonth: urlParams.get('birthMonth'),
+        birthDay: urlParams.get('birthDay'),
+        guardianKey: urlParams.get('guardianKey'),
+        worry: urlParams.get('worry')
+      };
+      
+      console.log("URLパラメータデータ:", urlData);
+      
+      // データの統合（URLパラメータを優先）
+      const finalData = { ...userData, ...urlData };
+      
+      // 空の値を削除
+      Object.keys(finalData).forEach(key => {
+        if (!finalData[key]) {
+          delete finalData[key];
+        }
+      });
+      
+      console.log("統合後のデータ:", finalData);
+      
+      // localStorageに保存
+      if (Object.keys(finalData).length > 0) {
+        localStorage.setItem("userData", JSON.stringify(finalData));
+        console.log("localStorageにデータを保存しました");
+      }
+      
+      return finalData;
+    }
+    
     // 動画エラーハンドリング
     function handleVideoError(videoElement, videoId) {
       console.error(`動画エラー: ${videoId}`, videoElement.error);
@@ -220,7 +274,7 @@
     function proceedToCosmos() {
       console.log('ritual-cosmos.htmlに遷移します');
       
-      // URLパラメータを保持して遷移
+      // 現在のURLパラメータを保持して遷移
       const currentParams = window.location.search;
       window.location.href = `ritual-cosmos.html${currentParams}`;
     }
@@ -283,6 +337,9 @@
     window.addEventListener("load", function() {
       try {
         console.log("=== ritual-animation.html ページ読み込み開始 ===");
+        
+        // ローカルストレージデータの確認と引き継ぎ
+        const userData = ensureLocalStorageData();
         
         // 動画の準備完了を待つ
         console.log('動画の準備完了を待機中...');
