@@ -912,6 +912,18 @@
       
       updateTimerDisplay();
       
+      // タイマーは表示のみで、カウントダウンは停止状態
+      console.log('タイマー表示開始（カウントダウンは停止状態）');
+    }
+
+    // チャット送信時のカウントダウン開始
+    function startCountdown() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+      
+      console.log('チャット送信時のカウントダウン開始');
+      
       timerInterval = setInterval(() => {
         if (unlimitedMode) {
           // 無制限モード時は何もしない
@@ -939,6 +951,18 @@
           handleSessionExpired();
         }
       }, 1000);
+    }
+
+    // カウントダウン停止（表示のみに戻る）
+    function stopCountdown() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+      
+      console.log('カウントダウン停止（表示のみに戻る）');
+      
+      // 表示のみのタイマーに戻す
+      updateTimerDisplay();
     }
     
     // タイマー表示更新
@@ -993,6 +1017,9 @@
       const message = messageInput.value.trim();
       
       if (!message) return;
+      
+      // チャット送信時のカウントダウン開始
+      startCountdown();
       
       // ユーザーメッセージを追加
       addUserMessage(message);
@@ -1191,11 +1218,17 @@
             // タイプライター効果でAI応答を表示
             addAIMessageWithTyping(responseText);
             
+            // AI応答完了時にカウントダウン停止
+            stopCountdown();
+            
           } else {
             console.error('API呼び出しエラー:', response.status);
             // 鑑定中メッセージを削除
             readingDiv.remove();
             addAIMessage('鑑定中にエラーが発生しました。しばらく時間をおいて再度お試しください。');
+            
+            // エラー時もカウントダウン停止
+            stopCountdown();
           }
           
         } catch (error) {
@@ -1203,6 +1236,9 @@
           // 鑑定中メッセージを削除
           readingDiv.remove();
           addAIMessage('鑑定中にエラーが発生しました。しばらく時間をおいて再度お試しください。');
+          
+          // エラー時もカウントダウン停止
+          stopCountdown();
         }
       }, waitTime);
     }
