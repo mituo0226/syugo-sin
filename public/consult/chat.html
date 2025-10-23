@@ -300,21 +300,36 @@
     /* 購入ボタン */
     .purchase-button {
       display: none;
-      background: linear-gradient(90deg, #ff6b6b, #ee5a52);
-      border: none;
+      background: linear-gradient(45deg, #FFD700, #FFA500);
+      border: 2px solid #FFD700;
       border-radius: 15px;
-      padding: 12px 20px;
-      color: #fff;
+      padding: 15px 25px;
+      color: #333;
       font-weight: bold;
+      font-size: 16px;
       cursor: pointer;
       transition: all 0.3s ease;
       white-space: nowrap;
       text-decoration: none;
+      box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+      animation: purchaseButtonGlow 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes purchaseButtonGlow {
+      0% { 
+        box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        transform: scale(1);
+      }
+      100% { 
+        box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
+        transform: scale(1.02);
+      }
     }
     
     .purchase-button:hover {
-      background: linear-gradient(90deg, #ff8e8e, #ff6b6b);
-      transform: translateY(-2px);
+      background: linear-gradient(45deg, #FFA500, #FFD700);
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5);
     }
     
     .purchase-button.show {
@@ -489,7 +504,7 @@
           rows="1"
         ></textarea>
         <button class="send-button" id="sendButton">送信</button>
-        <a href="../../ticket.html" class="purchase-button" id="purchaseButton">チケット購入</a>
+        <a href="../payment/ticket.html" class="purchase-button" id="purchaseButton">チケット購入</a>
       </div>
     </div>
     
@@ -1006,7 +1021,7 @@
       timerText.classList.add('timer-warning');
       
       // 終了メッセージを追加
-      addSystemMessage('鑑定時間が終了しました。追加チケットをご購入ください。');
+      addSystemMessage('⏰ 鑑定時間が終了しました。\n\n✨ チケットを購入して鑑定を続けることができます。\n\n下の「チケット購入」ボタンから購入ページに移動してください。');
     }
     
     // メッセージ送信
