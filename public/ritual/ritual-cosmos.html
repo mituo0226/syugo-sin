@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <title>宇宙の神秘とメール入力 | AI鑑定師 龍</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <style>
     body {
       margin: 0;
@@ -16,6 +19,11 @@
       -webkit-text-size-adjust: 100%;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      /* iOS Safari対応 */
+      -webkit-overflow-scrolling: touch;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
     }
     
     /* シンプルなローディング画面 */
@@ -560,23 +568,23 @@
   <!-- 動画コンテナ -->
   <div class="video-container">
     <!-- 1.mp4動画 -->
-    <video class="god-video" id="video1" muted onerror="handleVideoError(this, 'video1')">
+    <video class="god-video" id="video1" muted preload="auto" playsinline webkit-playsinline onerror="handleVideoError(this, 'video1')">
       <source src="../photo/god2/1.mp4" type="video/mp4">
     </video>
     
     <!-- 2.mp4動画 -->
-    <video class="god-video" id="video2" muted onerror="handleVideoError(this, 'video2')">
+    <video class="god-video" id="video2" muted preload="auto" playsinline webkit-playsinline onerror="handleVideoError(this, 'video2')">
       <source src="../photo/god2/2.mp4" type="video/mp4">
     </video>
     
     <!-- 3.mp4動画 -->
-    <video class="god-video" id="video3" muted onerror="handleVideoError(this, 'video3')">
+    <video class="god-video" id="video3" muted preload="auto" playsinline webkit-playsinline onerror="handleVideoError(this, 'video3')">
       <source src="../photo/god2/3.mp4" type="video/mp4">
     </video>
   </div>
   
   <!-- 背景動画（4.mp4） -->
-  <video class="background-video" id="video4" muted loop onerror="handleVideoError(this, 'video4')">
+  <video class="background-video" id="video4" muted loop preload="auto" playsinline webkit-playsinline onerror="handleVideoError(this, 'video4')">
     <source src="../photo/god2/4.mp4" type="video/mp4">
   </video>
   
@@ -803,15 +811,17 @@
       // 動画を滑らかにフェードイン
       video.classList.add('fade-in');
       
-      // 動画を再生
-      video.play().then(() => {
-        console.log(`${videoId} 再生開始（滑らかなフェードイン）`);
-        
-        // アニメーション完了後にshowクラスを追加
-        setTimeout(() => {
-          video.classList.remove('fade-in');
-          video.classList.add('show');
-        }, 2000);
+      // 動画を再生（iPhone対応）
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          console.log(`${videoId} 再生開始（滑らかなフェードイン）`);
+          
+          // アニメーション完了後にshowクラスを追加
+          setTimeout(() => {
+            video.classList.remove('fade-in');
+            video.classList.add('show');
+          }, 2000);
         
         // 動画終了時にコールバック実行
         video.addEventListener('ended', () => {
@@ -850,15 +860,17 @@
       // 動画を滑らかにフェードイン
       video.classList.add('fade-in');
       
-      // 動画を再生
-      video.play().then(() => {
-        console.log(`${videoId} 再生開始（滑らかなクロスフェード）`);
-        
-        // アニメーション完了後にshowクラスを追加
-        setTimeout(() => {
-          video.classList.remove('fade-in');
-          video.classList.add('show');
-        }, 2000);
+      // 動画を再生（iPhone対応）
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          console.log(`${videoId} 再生開始（滑らかなクロスフェード）`);
+          
+          // アニメーション完了後にshowクラスを追加
+          setTimeout(() => {
+            video.classList.remove('fade-in');
+            video.classList.add('show');
+          }, 2000);
         
         // 動画終了時にコールバック実行
         video.addEventListener('ended', () => {
@@ -880,11 +892,12 @@
           }, 500);
         }, { once: true });
         
-      }).catch(error => {
-        console.error(`${videoId} 再生エラー:`, error);
-        video.classList.remove('fade-in');
-        if (onComplete) onComplete();
-      });
+        }).catch(error => {
+          console.error(`${videoId} 再生エラー:`, error);
+          video.classList.remove('fade-in');
+          if (onComplete) onComplete();
+        });
+      }
     }
     
     // 背景動画（4.mp4）を表示
@@ -899,10 +912,13 @@
       // 背景動画を表示
       backgroundVideo.classList.add('show');
       
-      // 背景動画を再生
-      backgroundVideo.play().catch(error => {
-        console.error('背景動画再生エラー:', error);
-      });
+      // 背景動画を再生（iPhone対応）
+      const playPromise = backgroundVideo.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.error('背景動画再生エラー:', error);
+        });
+      }
     }
     
     // 最終画像（5.png）を表示
