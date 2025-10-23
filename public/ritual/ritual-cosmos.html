@@ -79,15 +79,38 @@
       height: 100%;
       object-fit: cover;
       opacity: 0;
-      transition: opacity 0.5s ease-in-out;
+      transition: opacity 1.5s ease-in-out;
     }
     
     .god-video.show {
       opacity: 1;
     }
     
-    .god-video.overlap {
-      opacity: 0.7;
+    .god-video.fade-in {
+      opacity: 0;
+      animation: smoothFadeIn 2s ease-in-out forwards;
+    }
+    
+    .god-video.fade-out {
+      animation: smoothFadeOut 2s ease-in-out forwards;
+    }
+    
+    @keyframes smoothFadeIn {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+    
+    @keyframes smoothFadeOut {
+      0% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+      }
     }
     
     /* 背景動画（4.mp4） */
@@ -753,29 +776,44 @@
         return;
       }
       
-      // 動画を表示
-      video.classList.add('show');
+      // 動画を滑らかにフェードイン
+      video.classList.add('fade-in');
       
       // 動画を再生
       video.play().then(() => {
-        console.log(`${videoId} 再生開始`);
+        console.log(`${videoId} 再生開始（滑らかなフェードイン）`);
+        
+        // アニメーション完了後にshowクラスを追加
+        setTimeout(() => {
+          video.classList.remove('fade-in');
+          video.classList.add('show');
+        }, 2000);
         
         // 動画終了時にコールバック実行
         video.addEventListener('ended', () => {
           console.log(`${videoId} 再生完了`);
+          
+          // 滑らかにフェードアウト
           video.classList.remove('show');
+          video.classList.add('fade-out');
+          
+          // フェードアウト完了後に完全に非表示
+          setTimeout(() => {
+            video.classList.remove('fade-out');
+            video.style.opacity = '0';
+          }, 2000);
           
           if (onComplete) onComplete();
         }, { once: true });
         
       }).catch(error => {
         console.error(`${videoId} 再生エラー:`, error);
-        video.classList.remove('show');
+        video.classList.remove('fade-in');
         if (onComplete) onComplete();
       });
     }
     
-    // 重なり合う動画を表示・再生
+    // 滑らかなクロスフェード動画を表示・再生
     function showOverlappingVideo(videoId, onComplete) {
       const video = document.getElementById(videoId);
       
@@ -785,30 +823,39 @@
         return;
       }
       
-      // 動画を重なり合うように表示
-      video.classList.add('overlap');
+      // 動画を滑らかにフェードイン
+      video.classList.add('fade-in');
       
       // 動画を再生
       video.play().then(() => {
-        console.log(`${videoId} 再生開始（重なり合い）`);
+        console.log(`${videoId} 再生開始（滑らかなクロスフェード）`);
         
-        // 少し遅れて完全表示
+        // アニメーション完了後にshowクラスを追加
         setTimeout(() => {
-          video.classList.remove('overlap');
+          video.classList.remove('fade-in');
           video.classList.add('show');
-        }, 300);
+        }, 2000);
         
         // 動画終了時にコールバック実行
         video.addEventListener('ended', () => {
           console.log(`${videoId} 再生完了`);
+          
+          // 滑らかにフェードアウト
           video.classList.remove('show');
+          video.classList.add('fade-out');
+          
+          // フェードアウト完了後に完全に非表示
+          setTimeout(() => {
+            video.classList.remove('fade-out');
+            video.style.opacity = '0';
+          }, 2000);
           
           if (onComplete) onComplete();
         }, { once: true });
         
       }).catch(error => {
         console.error(`${videoId} 再生エラー:`, error);
-        video.classList.remove('overlap');
+        video.classList.remove('fade-in');
         if (onComplete) onComplete();
       });
     }
