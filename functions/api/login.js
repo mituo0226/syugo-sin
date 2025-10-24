@@ -69,7 +69,8 @@ export async function onRequestPost(context) {
         worry: user.worry,
         birthYear: user.birth_year,
         birthMonth: user.birth_month,
-        birthDay: user.birth_day
+        birthDay: user.birth_day,
+        passphrase: user.guardian_passphrase
       }
     }), { headers });
 

@@ -437,6 +437,12 @@
             submitButton.innerHTML = '✨ 確認中...';
             
             try {
+                console.log('検証データ:', {
+                    selectedPassphrase: selectedPassphrase,
+                    userDataPassphrase: userData.passphrase,
+                    userData: userData
+                });
+                
                 // 合い言葉の検証
                 if (selectedPassphrase === userData.passphrase) {
                     // 成功時
