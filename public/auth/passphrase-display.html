@@ -436,8 +436,20 @@
       button.style.transform = 'scale(0.95)';
       button.innerHTML = '✨ 移動中...';
       
+      // ユーザーデータと合い言葉を取得
+      const userData = getUserDataFromUrl();
+      const passphrase = document.getElementById('passphraseWord').textContent;
+      
+      // URLパラメータとして渡す
+      const params = new URLSearchParams();
+      params.set('nickname', userData.nickname || '');
+      params.set('email', userData.email || '');
+      params.set('guardianName', userData.guardianName || '');
+      params.set('guardianKey', userData.guardianKey || '');
+      params.set('passphrase', passphrase || '');
+      
       setTimeout(() => {
-        window.location.href = 'passphrase-input.html';
+        window.location.href = `passphrase-input.html?${params.toString()}`;
       }, 500);
     }
 

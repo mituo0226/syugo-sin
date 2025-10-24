@@ -302,8 +302,11 @@
             const urlParams = new URLSearchParams(window.location.search);
             return {
                 nickname: urlParams.get('nickname') || '',
+                email: urlParams.get('email') || '',
                 birthdate: urlParams.get('birthdate') || '',
                 guardian: urlParams.get('guardian') || '',
+                guardianName: urlParams.get('guardianName') || '',
+                guardianKey: urlParams.get('guardianKey') || '',
                 passphrase: urlParams.get('passphrase') || ''
             };
         }
@@ -488,8 +491,10 @@
             // 合い言葉のドロップダウンリストを生成
             generatePassphraseOptions();
             
-            // ユーザー情報を取得（localStorage優先、URLパラメータはフォールバック）
-            const userData = getUserDataFromStorage() || getUserDataFromUrl();
+            // ユーザー情報を取得（URLパラメータ優先、localStorageはフォールバック）
+            const urlData = getUserDataFromUrl();
+            const storageData = getUserDataFromStorage();
+            const userData = { ...storageData, ...urlData }; // URLパラメータで上書き
             console.log('ユーザーデータ:', userData);
             
             if (userData) {
