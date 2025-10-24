@@ -323,19 +323,36 @@
 
         // ユーザー情報を表示
         function displayUserInfo(userData) {
+            console.log('displayUserInfo - 受信したユーザーデータ:', userData);
             const userInfoDiv = document.getElementById('userInfo');
             
             // 生年月日をフォーマット
             let formattedBirthdate = '';
-            if (userData.year && userData.month && userData.day) {
+            console.log('生年月日データ:', {
+                birthYear: userData.birthYear,
+                birthMonth: userData.birthMonth,
+                birthDay: userData.birthDay,
+                year: userData.year,
+                month: userData.month,
+                day: userData.day,
+                birthdate: userData.birthdate
+            });
+            
+            if (userData.birthYear && userData.birthMonth && userData.birthDay) {
+                formattedBirthdate = `${userData.birthYear}年${userData.birthMonth}月${userData.birthDay}日`;
+            } else if (userData.year && userData.month && userData.day) {
                 formattedBirthdate = `${userData.year}年${userData.month}月${userData.day}日`;
             } else if (userData.birthdate) {
                 formattedBirthdate = userData.birthdate;
             }
             
+            console.log('フォーマットされた生年月日:', formattedBirthdate);
+            
             // 守護神名を取得
             let guardianName = '';
-            if (userData.guardian) {
+            if (userData.guardianName) {
+                guardianName = userData.guardianName;
+            } else if (userData.guardian) {
                 guardianName = userData.guardian.name || userData.guardian;
             } else if (userData.guardianKey) {
                 guardianName = userData.guardianKey;
