@@ -130,8 +130,8 @@ async function processPayment() {
     localStorage.setItem('selectedTicket', JSON.stringify(ticketData));
     console.log('チケット情報を保存:', ticketData);
     
-    // Square決済ページへの遷移
-    await redirectToSquarePayment(uid, ticketData);
+    // 決済処理を直接実行
+    await processPaymentDirectly(uid, ticketData);
     
   } catch (error) {
     console.error('決済処理エラー:', error);
@@ -475,6 +475,53 @@ function redirectToLogin() {
   console.log('ログイン画面にリダイレクトします');
   // ログイン画面にリダイレクト
   window.location.href = '../auth/login.html';
+}
+
+// 決済処理を直接実行
+async function processPaymentDirectly(uid, ticketData) {
+  try {
+    console.log('決済処理を直接実行:', { uid, ticketData });
+    
+    // テスト決済の場合は直接confirm.htmlに遷移
+    const checkoutId = `test-checkout-${Date.now()}`;
+    console.log('テスト決済を実行:', checkoutId);
+    
+    // 決済確認APIを呼び出し
+    const response = await fetch('/api/verify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        uid: uid,
+        checkoutId: checkoutId,
+        ticketData: ticketData
+      })
+    });
+    
+    const result = await response.json();
+    console.log('決済確認API結果:', result);
+    
+    if (result.ok) {
+      // localStorageに有効期限を保存
+      localStorage.setItem('expireAt', result.expireAt);
+      console.log('決済確認完了');
+      
+      // confirm.htmlに遷移
+      window.location.href = `./confirm.html?uid=${uid}&checkoutId=${checkoutId}`;
+    } else {
+      console.error('決済確認失敗:', result);
+      showError('決済の確認に失敗しました。サポートにお問い合わせください。');
+      hideLoading();
+      resetPaymentButton();
+    }
+    
+  } catch (error) {
+    console.error('決済処理エラー:', error);
+    showError('決済処理中にエラーが発生しました。サポートにお問い合わせください。');
+    hideLoading();
+    resetPaymentButton();
+  }
 }
 
 // 会員情報を非表示
