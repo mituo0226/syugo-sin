@@ -94,6 +94,13 @@ async function processPayment() {
   // ローディング表示
   showLoading();
   
+  // 戻るボタンを無効化
+  const backButton = document.getElementById('backButton');
+  if (backButton) {
+    backButton.style.pointerEvents = 'none';
+    backButton.style.opacity = '0.5';
+  }
+  
   try {
     // UIDを取得
     let uid = localStorage.getItem('currentUID');
@@ -125,6 +132,13 @@ async function processPayment() {
     
     // ボタンを復元
     resetPaymentButton();
+    
+    // 戻るボタンを再有効化
+    const backButton = document.getElementById('backButton');
+    if (backButton) {
+      backButton.style.pointerEvents = 'auto';
+      backButton.style.opacity = '1';
+    }
   }
 }
 
@@ -190,6 +204,7 @@ async function redirectToSquarePayment(uid, ticketData) {
     // フォールバック: 直接payment.htmlに遷移
     console.log('フォールバック: payment.htmlに遷移');
     const fallbackUrl = `./payment.html?uid=${uid}&ticketType=${ticketData.type}&price=${ticketData.price}&minutes=${ticketData.minutes}`;
+    console.log('遷移URL:', fallbackUrl);
     window.location.href = fallbackUrl;
     
   } catch (error) {

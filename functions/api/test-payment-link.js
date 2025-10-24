@@ -17,7 +17,10 @@ export async function onRequestPost(context) {
 
     // テスト用の決済リンク生成（環境変数が設定されていない場合）
     if (!env.SQUARE_LOCATION_ID || !env.SQUARE_ACCESS_TOKEN) {
-      const testCheckoutUrl = `${new URL(request.url).origin}/payment.html?uid=test&ticketType=first-time&price=100&minutes=5`;
+      const requestBody = await request.json();
+      const { uid, ticketType, price, minutes } = requestBody;
+      
+      const testCheckoutUrl = `${new URL(request.url).origin}/payment.html?uid=${uid || 'test'}&ticketType=${ticketType || 'first-time'}&price=${price || 100}&minutes=${minutes || 5}`;
       
       return createSuccessResponse({
         success: true,
