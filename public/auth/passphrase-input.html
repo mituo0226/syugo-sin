@@ -435,27 +435,55 @@
                 return;
             }
             
+            if (!userData.nickname || !userData.birthYear || !userData.birthMonth || !userData.birthDay) {
+                showError('ユーザー情報が不足しています。ログイン画面から再度ログインしてください。');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+                return;
+            }
+            
             // ボタンの状態を変更
             submitButton.disabled = true;
             submitButton.innerHTML = '✨ 確認中...';
             
             try {
-                console.log('検証データ:', {
-                    selectedPassphrase: selectedPassphrase,
-                    userDataPassphrase: userData.passphrase,
-                    userData: userData
+                console.log('データベース認証開始:', {
+                    nickname: userData.nickname,
+                    birthYear: userData.birthYear,
+                    birthMonth: userData.birthMonth,
+                    birthDay: userData.birthDay,
+                    passphrase: selectedPassphrase
                 });
                 
-                // 合い言葉の検証
-                if (selectedPassphrase === userData.passphrase) {
-                    // 成功時
+                // データベースで認証
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nickname: userData.nickname,
+                        birthYear: userData.birthYear,
+                        birthMonth: userData.birthMonth,
+                        birthDay: userData.birthDay,
+                        passphrase: selectedPassphrase
+                    })
+                });
+                
+                const result = await response.json();
+                console.log('認証結果:', result);
+                
+                if (result.success) {
+                    // 認証成功 - ユーザーデータをlocalStorageに保存
+                    localStorage.setItem('userData', JSON.stringify(result.userData));
+                    
                     submitButton.innerHTML = '✨ 確認完了！';
                     setTimeout(() => {
                         window.location.href = 'login-success.html';
                     }, 1000);
                 } else {
-                    // 失敗時
-                    showError('合い言葉が正しくありません。もう一度選択してください。');
+                    showError(result.message || '合い言葉が正しくありません。もう一度選択してください。');
                     submitButton.disabled = false;
                     submitButton.innerHTML = '✨ 確認';
                 }
@@ -497,10 +525,13 @@
             const userData = { ...storageData, ...urlData }; // URLパラメータで上書き
             console.log('ユーザーデータ:', userData);
             
-            if (userData) {
+            if (userData && userData.nickname && userData.birthYear && userData.birthMonth && userData.birthDay) {
                 displayUserInfo(userData);
             } else {
-                showError('ユーザー情報が見つかりません。ログイン画面から再度お試しください。');
+                showError('ユーザー情報が不足しています。ログイン画面から再度お試しください。');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 3000);
             }
         });
     </script>
