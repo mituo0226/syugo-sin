@@ -868,67 +868,92 @@
     }
     
     // タイマー開始
-    function startTimer() {
+    async function startTimer() {
       if (timerInterval) {
         clearInterval(timerInterval);
       }
       
-      // 決済完了後のチケット時間を確認
-      const selectedTicket = localStorage.getItem('selectedTicket');
-      if (selectedTicket) {
-        try {
-          const ticketData = JSON.parse(selectedTicket);
-          console.log('購入したチケット情報:', ticketData);
-          
-          // チケットの時間を分から秒に変換
-          const ticketSeconds = (ticketData.minutes || 5) * 60;
-          
-          // 現在時刻からチケット時間分後の有効期限を設定
-          const expireTime = new Date().getTime() + (ticketSeconds * 1000);
-          const expireAtString = new Date(expireTime).toISOString();
-          
-          // localStorageに保存
-          localStorage.setItem('expireAt', expireAtString);
-          
-          // 残り時間を設定
-          remainingSeconds = ticketSeconds;
-          
-          console.log('チケット時間を設定:', {
-            ticketMinutes: ticketData.minutes,
-            ticketSeconds: ticketSeconds,
-            expireAt: expireAtString,
-            remainingSeconds: remainingSeconds
-          });
-          
-          // チケット購入完了メッセージを表示
-          addSystemMessage(`✨ ${ticketData.name}（${ticketData.minutes}分）を購入しました！鑑定を開始できます。`);
-          
-          // チケット情報をクリア（重複購入を防ぐ）
-          localStorage.removeItem('selectedTicket');
-          
-        } catch (error) {
-          console.error('チケット情報の解析エラー:', error);
-        }
-      }
-      
-      // expireAtから残り時間を計算
-      const expireAt = localStorage.getItem('expireAt');
-      if (expireAt && remainingSeconds === 0) {
-        const expireTime = new Date(expireAt).getTime();
-        const currentTime = new Date().getTime();
-        const remainingTime = Math.max(0, Math.floor((expireTime - currentTime) / 1000));
-        remainingSeconds = remainingTime;
-        
-        console.log('expireAtから残り時間を計算:', {
-          expireAt: expireAt,
-          remainingSeconds: remainingSeconds
-        });
-      }
+      // データベースから残り時間を取得
+      await loadRemainingTimeFromDatabase();
       
       updateTimerDisplay();
       
       // タイマーは表示のみで、カウントダウンは停止状態
       console.log('タイマー表示開始（カウントダウンは停止状態）');
+    }
+
+    // データベースから残り時間を取得
+    async function loadRemainingTimeFromDatabase() {
+      try {
+        // ユーザーデータを取得
+        const userData = getUserDataFromStorage();
+        if (!userData || !userData.email) {
+          console.log('ユーザーデータが見つかりません');
+          return;
+        }
+
+        console.log('データベースから残り時間を取得中...', userData.email);
+
+        const response = await fetch('/api/user-session', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: null
+        });
+
+        const url = new URL('/api/user-session', window.location.origin);
+        url.searchParams.set('userId', userData.email);
+
+        const sessionResponse = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const sessionData = await sessionResponse.json();
+        console.log('セッションデータ取得結果:', sessionData);
+
+        if (sessionData.success && sessionData.hasActiveSession) {
+          remainingSeconds = sessionData.remainingSeconds;
+          
+          // localStorageにも同期（フォールバック用）
+          if (sessionData.sessionEndTime) {
+            localStorage.setItem('expireAt', sessionData.sessionEndTime);
+          }
+          
+          console.log('データベースから残り時間を取得:', {
+            remainingSeconds: remainingSeconds,
+            sessionEndTime: sessionData.sessionEndTime
+          });
+        } else {
+          console.log('アクティブなセッションが見つかりません');
+          
+          // フォールバック: localStorageから取得
+          const expireAt = localStorage.getItem('expireAt');
+          if (expireAt) {
+            const expireTime = new Date(expireAt).getTime();
+            const currentTime = new Date().getTime();
+            const remainingTime = Math.max(0, Math.floor((expireTime - currentTime) / 1000));
+            remainingSeconds = remainingTime;
+            console.log('localStorageから残り時間を取得:', remainingSeconds);
+          }
+        }
+
+      } catch (error) {
+        console.error('データベースから残り時間取得エラー:', error);
+        
+        // フォールバック: localStorageから取得
+        const expireAt = localStorage.getItem('expireAt');
+        if (expireAt) {
+          const expireTime = new Date(expireAt).getTime();
+          const currentTime = new Date().getTime();
+          const remainingTime = Math.max(0, Math.floor((expireTime - currentTime) / 1000));
+          remainingSeconds = remainingTime;
+          console.log('フォールバック: localStorageから残り時間を取得:', remainingSeconds);
+        }
+      }
     }
 
     // チャット送信時のカウントダウン開始
@@ -939,20 +964,14 @@
       
       console.log('チャット送信時のカウントダウン開始');
       
-      timerInterval = setInterval(() => {
+      timerInterval = setInterval(async () => {
         if (unlimitedMode) {
           // 無制限モード時は何もしない
           return;
         }
         
-        // expireAtから残り時間を再計算
-        const expireAt = localStorage.getItem('expireAt');
-        if (expireAt) {
-          const expireTime = new Date(expireAt).getTime();
-          const currentTime = new Date().getTime();
-          const remainingTime = Math.max(0, Math.floor((expireTime - currentTime) / 1000));
-          remainingSeconds = remainingTime;
-        }
+        // データベースから残り時間を再取得
+        await loadRemainingTimeFromDatabase();
         
         if (remainingSeconds > 0) {
           updateTimerDisplay();
@@ -966,6 +985,44 @@
           handleSessionExpired();
         }
       }, 1000);
+    }
+
+    // 残り時間をデータベースに保存
+    async function saveRemainingTimeToDatabase(remainingSeconds) {
+      try {
+        const userData = getUserDataFromStorage();
+        if (!userData || !userData.email) {
+          console.log('ユーザーデータが見つかりません');
+          return;
+        }
+
+        const sessionEndTime = new Date(Date.now() + remainingSeconds * 1000).toISOString();
+
+        const response = await fetch('/api/user-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId: userData.email,
+            remainingSeconds: remainingSeconds,
+            sessionEndTime: sessionEndTime,
+            action: 'update'
+          })
+        });
+
+        const result = await response.json();
+        console.log('残り時間保存結果:', result);
+
+        if (result.success) {
+          // localStorageにも同期
+          localStorage.setItem('expireAt', sessionEndTime);
+          console.log('残り時間をデータベースに保存しました');
+        }
+
+      } catch (error) {
+        console.error('残り時間保存エラー:', error);
+      }
     }
 
     // カウントダウン停止（表示のみに戻る）
