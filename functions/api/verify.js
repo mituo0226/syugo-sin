@@ -5,7 +5,7 @@ async function savePurchaseHistory(db, uid, ticketData, orderId, isTest) {
   try {
     // ユーザーIDを取得（UIDから）
     const user = await db.prepare(`
-      SELECT id FROM users WHERE email = ?
+      SELECT id FROM user_profiles WHERE user_id = ?
     `).bind(uid).first();
 
     if (!user) {
@@ -14,6 +14,31 @@ async function savePurchaseHistory(db, uid, ticketData, orderId, isTest) {
     }
 
     const userId = user.id;
+    
+    // 購入履歴テーブルが存在するかチェック
+    const tableExists = await db.prepare(`
+      SELECT name FROM sqlite_master WHERE type='table' AND name='purchases'
+    `).first();
+
+    if (!tableExists) {
+      // 購入履歴テーブルを作成
+      await db.prepare(`
+        CREATE TABLE purchases (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER NOT NULL,
+          ticket_type TEXT,
+          ticket_name TEXT,
+          price INTEGER,
+          minutes INTEGER,
+          payment_method TEXT,
+          payment_status TEXT,
+          square_order_id TEXT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id) REFERENCES user_profiles (id)
+        )
+      `).run();
+      console.log('購入履歴テーブルを作成しました');
+    }
     
     // 購入履歴を保存
     const result = await db.prepare(`

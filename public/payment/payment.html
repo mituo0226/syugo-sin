@@ -265,6 +265,9 @@
               // URLパラメータからUIDを取得
               const urlParams = new URLSearchParams(window.location.search);
               const uid = urlParams.get('uid');
+              const ticketType = urlParams.get('ticketType');
+              const price = urlParams.get('price');
+              const minutes = urlParams.get('minutes');
               
               if (!uid) {
                 showError('ユーザーIDが取得できませんでした。');
@@ -272,6 +275,20 @@
               }
               
               console.log('UID:', uid);
+              
+              // チケット情報をlocalStorageに保存
+              if (ticketType && price && minutes) {
+                const ticketData = {
+                  type: ticketType,
+                  name: '体験チケット',
+                  price: parseInt(price),
+                  minutes: parseInt(minutes),
+                  uid: uid,
+                  timestamp: new Date().toISOString()
+                };
+                localStorage.setItem('selectedTicket', JSON.stringify(ticketData));
+                console.log('チケット情報を保存:', ticketData);
+              }
               
               // 前回の決済情報をチェック
               checkPreviousPaymentInfo();
@@ -470,7 +487,8 @@
                 
                 // 3秒後にconfirm.htmlにリダイレクト
                 setTimeout(() => {
-                  window.location.href = `./confirm.html?uid=${uid}&checkoutId=test-checkout-${Date.now()}`;
+                  const checkoutId = `test-checkout-${Date.now()}`;
+                  window.location.href = `./confirm.html?uid=${uid}&checkoutId=${checkoutId}`;
                 }, 3000);
               } else {
                 showError('テストカード番号を使用してください: 4111 1111 1111 1111');

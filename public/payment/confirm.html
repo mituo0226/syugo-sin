@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>決済完了 - 守護神占い</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%);
+      font-family: "游明朝", YuMincho, "Hiragino Mincho ProN", serif;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      position: relative;
+    }
+    
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 2s infinite;
+    }
+    
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+    
+    .container {
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid rgba(157, 78, 221, 0.6);
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+      max-width: 600px;
+      margin: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 20px rgba(157, 78, 221, 0.5), 0 0 40px rgba(199, 125, 255, 0.3);
+      position: relative;
+      z-index: 10;
+      animation: fadeIn 1s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .success-icon {
+      font-size: 80px;
+      color: #FFD700;
+      margin-bottom: 20px;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    h1 {
+      color: #FFD700;
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      text-shadow: 0 0 15px rgba(255, 215, 0, 0.9), 0 0 25px rgba(199, 125, 255, 0.7);
+    }
+    
+    .message {
+      font-size: 1.2em;
+      line-height: 1.6;
+      margin-bottom: 30px;
+      color: #ccc;
+    }
+    
+    .ticket-info {
+      background: rgba(157, 78, 221, 0.1);
+      border: 1px solid rgba(157, 78, 221, 0.3);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .ticket-info h3 {
+      color: #FFD700;
+      margin-bottom: 15px;
+      font-size: 1.3em;
+    }
+    
+    .ticket-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      text-align: left;
+    }
+    
+    .ticket-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(157, 78, 221, 0.2);
+    }
+    
+    .ticket-label {
+      color: #ccc;
+      font-weight: normal;
+    }
+    
+    .ticket-value {
+      color: #FFD700;
+      font-weight: bold;
+    }
+    
+    .start-button {
+      background: linear-gradient(45deg, #FFD700, #FFA500);
+      border: 2px solid #FFD700;
+      border-radius: 15px;
+      padding: 18px 50px;
+      color: #333;
+      font-weight: bold;
+      font-size: 1.2em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+      animation: buttonGlow 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes buttonGlow {
+      0% { 
+        box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        transform: scale(1);
+      }
+      100% { 
+        box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
+        transform: scale(1.02);
+      }
+    }
+    
+    .start-button:hover {
+      background: linear-gradient(45deg, #FFA500, #FFD700);
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5);
+    }
+    
+    .loading {
+      display: none;
+      margin-top: 20px;
+    }
+    
+    .loading-text {
+      color: #ccc;
+      font-size: 1em;
+    }
+    
+    .spinner {
+      border: 3px solid rgba(157, 78, 221, 0.3);
+      border-top: 3px solid #FFD700;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 10px auto;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 30px 20px;
+        margin: 10px;
+      }
+      
+      h1 {
+        font-size: 2em;
+      }
+      
+      .success-icon {
+        font-size: 60px;
+      }
+      
+      .ticket-details {
+        grid-template-columns: 1fr;
+      }
+      
+      .start-button {
+        padding: 15px 30px;
+        font-size: 1.1em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 星空背景 -->
+  <div class="stars" id="stars"></div>
+  
+  <div class="container">
+    <div class="success-icon">✨</div>
+    <h1>決済完了！</h1>
+    
+    <div class="message">
+      チケットの購入が完了しました。<br>
+      神秘的な鑑定体験を開始しましょう。
+    </div>
+    
+    <div class="ticket-info">
+      <h3>購入チケット情報</h3>
+      <div class="ticket-details">
+        <div class="ticket-item">
+          <span class="ticket-label">チケット名:</span>
+          <span class="ticket-value" id="ticketName">体験チケット</span>
+        </div>
+        <div class="ticket-item">
+          <span class="ticket-label">価格:</span>
+          <span class="ticket-value" id="ticketPrice">100円</span>
+        </div>
+        <div class="ticket-item">
+          <span class="ticket-label">鑑定時間:</span>
+          <span class="ticket-value" id="ticketMinutes">5分間</span>
+        </div>
+        <div class="ticket-item">
+          <span class="ticket-label">有効期限:</span>
+          <span class="ticket-value" id="expireTime">-</span>
+        </div>
+      </div>
+    </div>
+    
+    <a href="#" class="start-button" id="startButton" onclick="startConsultation()">
+      🐉 鑑定を開始する
+    </a>
+    
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <div class="loading-text">鑑定画面を準備中...</div>
+    </div>
+  </div>
+
+  <script>
+    // 星空生成
+    function createStars() {
+      const starsContainer = document.getElementById('stars');
+      const starCount = 100;
+      
+      for (let i = 0; i < starCount; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        
+        // ランダムな位置とサイズ
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.width = Math.random() * 3 + 1 + 'px';
+        star.style.height = star.style.width;
+        
+        // ランダムなアニメーション遅延
+        star.style.animationDelay = Math.random() * 2 + 's';
+        
+        starsContainer.appendChild(star);
+      }
+    }
+    
+    // ページ読み込み時の処理
+    window.addEventListener('load', function() {
+      createStars();
+      
+      // URLパラメータから情報を取得
+      const urlParams = new URLSearchParams(window.location.search);
+      const uid = urlParams.get('uid');
+      const checkoutId = urlParams.get('checkoutId');
+      
+      console.log('確認ページ読み込み完了:', { uid, checkoutId });
+      
+      if (!uid || !checkoutId) {
+        console.error('UIDまたはcheckoutIdが取得できません');
+        return;
+      }
+      
+      // 決済確認処理
+      verifyPayment(uid, checkoutId);
+    });
+    
+    // 決済確認処理
+    async function verifyPayment(uid, checkoutId) {
+      try {
+        console.log('決済確認開始:', { uid, checkoutId });
+        
+        // チケット情報を取得
+        const ticketData = JSON.parse(localStorage.getItem('selectedTicket') || '{}');
+        
+        const response = await fetch('/api/verify', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            uid: uid,
+            checkoutId: checkoutId,
+            ticketData: ticketData
+          })
+        });
+        
+        const result = await response.json();
+        console.log('決済確認結果:', result);
+        
+        if (result.ok) {
+          // 有効期限を表示
+          if (result.expireAt) {
+            const expireTime = new Date(result.expireAt);
+            document.getElementById('expireTime').textContent = expireTime.toLocaleString('ja-JP');
+            
+            // localStorageに有効期限を保存
+            localStorage.setItem('expireAt', result.expireAt);
+          }
+          
+          // チケット情報を更新
+          if (ticketData && ticketData.name) {
+            document.getElementById('ticketName').textContent = ticketData.name;
+            document.getElementById('ticketPrice').textContent = `${ticketData.price}円`;
+            document.getElementById('ticketMinutes').textContent = `${ticketData.minutes}分間`;
+          }
+          
+          console.log('決済確認完了');
+        } else {
+          console.error('決済確認失敗:', result);
+          alert('決済の確認に失敗しました。サポートにお問い合わせください。');
+        }
+        
+      } catch (error) {
+        console.error('決済確認エラー:', error);
+        alert('決済の確認中にエラーが発生しました。');
+      }
+    }
+    
+    // 鑑定開始
+    function startConsultation() {
+      const startButton = document.getElementById('startButton');
+      const loading = document.getElementById('loading');
+      
+      // ボタンを無効化
+      startButton.style.display = 'none';
+      loading.style.display = 'block';
+      
+      // 3秒後にチャット画面に遷移
+      setTimeout(() => {
+        window.location.href = '../consult/chat.html';
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
