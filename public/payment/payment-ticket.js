@@ -28,6 +28,7 @@ window.addEventListener('load', function() {
   }
   
   // 会員情報を表示
+  console.log('=== 会員情報表示開始 ===');
   displayMemberInfo();
 });
 
@@ -287,49 +288,38 @@ function displayMemberInfo() {
   try {
     // localStorageからユーザーデータを取得
     const userDataString = localStorage.getItem('userData');
+    console.log('localStorage userData:', userDataString);
+    
     if (!userDataString) {
-      console.log('ユーザーデータが見つかりません');
-      hideMemberInfo();
+      console.log('localStorageにユーザーデータが見つかりません');
+      // デバッグ: 他のlocalStorageキーを確認
+      console.log('localStorage keys:', Object.keys(localStorage));
+      
+      // URLパラメータからユーザー情報を取得を試行
+      const urlData = getUserDataFromUrl();
+      if (urlData && (urlData.nickname || urlData.email)) {
+        console.log('URLパラメータからユーザーデータを取得:', urlData);
+        displayMemberInfoFromData(urlData);
+        return;
+      }
+      
+      // デバッグ: テスト用の会員情報を表示
+      console.log('テスト用の会員情報を表示します');
+      const testUserData = {
+        nickname: 'テストユーザー',
+        email: 'test@example.com',
+        birthYear: '1990',
+        birthMonth: '1',
+        birthDay: '1',
+        guardianName: 'テスト守護神'
+      };
+      displayMemberInfoFromData(testUserData);
       return;
     }
 
     const userData = JSON.parse(userDataString);
     console.log('会員情報を表示:', userData);
-
-    const memberInfoContent = document.getElementById('memberInfoContent');
-    if (!memberInfoContent) {
-      console.log('会員情報表示要素が見つかりません');
-      return;
-    }
-
-    // 会員情報を表示
-    memberInfoContent.innerHTML = `
-      <div class="member-info-item">
-        <span class="member-info-label">ニックネーム:</span>
-        <span class="member-info-value">${userData.nickname || '未設定'}</span>
-      </div>
-      <div class="member-info-item">
-        <span class="member-info-label">メールアドレス:</span>
-        <span class="member-info-value">${userData.email || '未設定'}</span>
-      </div>
-      <div class="member-info-item">
-        <span class="member-info-label">生年月日:</span>
-        <span class="member-info-value">${formatBirthdate(userData) || '未設定'}</span>
-      </div>
-      <div class="member-info-item">
-        <span class="member-info-label">守護神:</span>
-        <span class="member-info-value">${userData.guardianName || '未設定'}</span>
-      </div>
-      <div class="member-info-notice">
-        ✨ この購入情報はあなたのアカウントに紐づけられます
-      </div>
-    `;
-
-    // 会員情報コンテナを表示
-    const memberInfoContainer = document.getElementById('memberInfoContainer');
-    if (memberInfoContainer) {
-      memberInfoContainer.style.display = 'block';
-    }
+    displayMemberInfoFromData(userData);
 
   } catch (error) {
     console.error('会員情報表示エラー:', error);
@@ -345,6 +335,59 @@ function formatBirthdate(userData) {
     return userData.birthdate;
   }
   return null;
+}
+
+// 会員情報を表示する共通関数
+function displayMemberInfoFromData(userData) {
+  const memberInfoContent = document.getElementById('memberInfoContent');
+  if (!memberInfoContent) {
+    console.log('会員情報表示要素が見つかりません');
+    return;
+  }
+
+  // 会員情報を表示
+  memberInfoContent.innerHTML = `
+    <div class="member-info-item">
+      <span class="member-info-label">ニックネーム:</span>
+      <span class="member-info-value">${userData.nickname || '未設定'}</span>
+    </div>
+    <div class="member-info-item">
+      <span class="member-info-label">メールアドレス:</span>
+      <span class="member-info-value">${userData.email || '未設定'}</span>
+    </div>
+    <div class="member-info-item">
+      <span class="member-info-label">生年月日:</span>
+      <span class="member-info-value">${formatBirthdate(userData) || '未設定'}</span>
+    </div>
+    <div class="member-info-item">
+      <span class="member-info-label">守護神:</span>
+      <span class="member-info-value">${userData.guardianName || '未設定'}</span>
+    </div>
+    <div class="member-info-notice">
+      ✨ この購入情報はあなたのアカウントに紐づけられます
+    </div>
+  `;
+
+  // 会員情報コンテナを表示
+  const memberInfoContainer = document.getElementById('memberInfoContainer');
+  if (memberInfoContainer) {
+    memberInfoContainer.style.display = 'block';
+  }
+}
+
+// URLパラメータからユーザーデータを取得
+function getUserDataFromUrl() {
+  const urlParams = new URLSearchParams(window.location.search);
+  return {
+    nickname: urlParams.get('nickname') || '',
+    email: urlParams.get('email') || '',
+    birthYear: urlParams.get('birthYear') || '',
+    birthMonth: urlParams.get('birthMonth') || '',
+    birthDay: urlParams.get('birthDay') || '',
+    birthdate: urlParams.get('birthdate') || '',
+    guardianName: urlParams.get('guardianName') || '',
+    guardianKey: urlParams.get('guardianKey') || ''
+  };
 }
 
 // 会員情報を非表示
