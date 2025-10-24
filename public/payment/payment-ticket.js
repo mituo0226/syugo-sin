@@ -26,6 +26,9 @@ window.addEventListener('load', function() {
     localStorage.setItem('currentUID', newUID);
     console.log('新しいUIDを生成:', newUID);
   }
+  
+  // 会員情報を表示
+  displayMemberInfo();
 });
 
 // フォームのイベントリスナー設定
@@ -102,11 +105,15 @@ async function processPayment() {
   }
   
   try {
-    // UIDを取得
-    let uid = localStorage.getItem('currentUID');
+    // ユーザーIDを取得（会員情報から）
+    let uid = getUserIdFromUserData();
     if (!uid) {
-      uid = generateUID();
-      localStorage.setItem('currentUID', uid);
+      // フォールバック: 生成されたUIDを使用
+      uid = localStorage.getItem('currentUID');
+      if (!uid) {
+        uid = generateUID();
+        localStorage.setItem('currentUID', uid);
+      }
     }
     
     // チケット情報を保存
@@ -273,6 +280,103 @@ function fillTestCardInfo() {
   document.getElementById('expiryDate').value = '12/25';
   document.getElementById('cvv').value = '111';
   document.getElementById('postalCode').value = '12345';
+}
+
+// 会員情報を表示
+function displayMemberInfo() {
+  try {
+    // localStorageからユーザーデータを取得
+    const userDataString = localStorage.getItem('userData');
+    if (!userDataString) {
+      console.log('ユーザーデータが見つかりません');
+      hideMemberInfo();
+      return;
+    }
+
+    const userData = JSON.parse(userDataString);
+    console.log('会員情報を表示:', userData);
+
+    const memberInfoContent = document.getElementById('memberInfoContent');
+    if (!memberInfoContent) {
+      console.log('会員情報表示要素が見つかりません');
+      return;
+    }
+
+    // 会員情報を表示
+    memberInfoContent.innerHTML = `
+      <div class="member-info-item">
+        <span class="member-info-label">ニックネーム:</span>
+        <span class="member-info-value">${userData.nickname || '未設定'}</span>
+      </div>
+      <div class="member-info-item">
+        <span class="member-info-label">メールアドレス:</span>
+        <span class="member-info-value">${userData.email || '未設定'}</span>
+      </div>
+      <div class="member-info-item">
+        <span class="member-info-label">生年月日:</span>
+        <span class="member-info-value">${formatBirthdate(userData) || '未設定'}</span>
+      </div>
+      <div class="member-info-item">
+        <span class="member-info-label">守護神:</span>
+        <span class="member-info-value">${userData.guardianName || '未設定'}</span>
+      </div>
+      <div class="member-info-notice">
+        ✨ この購入情報はあなたのアカウントに紐づけられます
+      </div>
+    `;
+
+    // 会員情報コンテナを表示
+    const memberInfoContainer = document.getElementById('memberInfoContainer');
+    if (memberInfoContainer) {
+      memberInfoContainer.style.display = 'block';
+    }
+
+  } catch (error) {
+    console.error('会員情報表示エラー:', error);
+    hideMemberInfo();
+  }
+}
+
+// 生年月日をフォーマット
+function formatBirthdate(userData) {
+  if (userData.birthYear && userData.birthMonth && userData.birthDay) {
+    return `${userData.birthYear}年${userData.birthMonth}月${userData.birthDay}日`;
+  } else if (userData.birthdate) {
+    return userData.birthdate;
+  }
+  return null;
+}
+
+// 会員情報を非表示
+function hideMemberInfo() {
+  const memberInfoContainer = document.getElementById('memberInfoContainer');
+  if (memberInfoContainer) {
+    memberInfoContainer.style.display = 'none';
+  }
+}
+
+// ユーザーデータからユーザーIDを取得
+function getUserIdFromUserData() {
+  try {
+    const userDataString = localStorage.getItem('userData');
+    if (!userDataString) {
+      return null;
+    }
+
+    const userData = JSON.parse(userDataString);
+    console.log('ユーザーデータからIDを取得:', userData);
+
+    // メールアドレスをユーザーIDとして使用
+    if (userData.email) {
+      console.log('ユーザーIDとして使用:', userData.email);
+      return userData.email;
+    }
+
+    return null;
+  } catch (error) {
+    console.error('ユーザーID取得エラー:', error);
+    return null;
+  }
 }
 
 // 開発環境でのデバッグ機能

@@ -160,6 +160,74 @@ body {
   font-size: 1.2em;
 }
 
+/* 会員情報表示 */
+.member-info-container {
+  background: rgba(157, 78, 221, 0.1);
+  border: 2px solid rgba(157, 78, 221, 0.3);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.member-info-title {
+  color: #FFD700;
+  font-size: 1.3em;
+  margin-bottom: 15px;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.member-info-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  text-align: left;
+}
+
+.member-info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(157, 78, 221, 0.2);
+}
+
+.member-info-label {
+  color: #ccc;
+  font-weight: normal;
+  font-size: 0.9em;
+}
+
+.member-info-value {
+  color: #FFD700;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+
+.member-info-notice {
+  grid-column: 1 / -1;
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 10px;
+  text-align: center;
+  color: #FFD700;
+  font-size: 0.85em;
+}
+
+@media (max-width: 768px) {
+  .member-info-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .member-info-container {
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+}
+
 /* チケットカード */
 .ticket-card {
   background: rgba(13, 13, 26, 0.9);
