@@ -1,7 +1,7 @@
 // 決済ページのJavaScript
 
 // ページ読み込み時の処理
-window.addEventListener('load', function() {
+window.addEventListener('load', async function() {
   console.log('決済ページ読み込み完了');
   
   // メインコンテンツを表示
@@ -29,7 +29,7 @@ window.addEventListener('load', function() {
   
   // 会員情報を表示
   console.log('=== 会員情報表示開始 ===');
-  displayMemberInfo();
+  await displayMemberInfo();
 });
 
 // フォームのイベントリスナー設定
@@ -284,46 +284,31 @@ function fillTestCardInfo() {
 }
 
 // 会員情報を表示
-function displayMemberInfo() {
+async function displayMemberInfo() {
   try {
-    // localStorageからユーザーデータを取得
-    const userDataString = localStorage.getItem('userData');
-    console.log('localStorage userData:', userDataString);
-    
-    if (!userDataString) {
-      console.log('localStorageにユーザーデータが見つかりません');
-      // デバッグ: 他のlocalStorageキーを確認
-      console.log('localStorage keys:', Object.keys(localStorage));
-      
-      // URLパラメータからユーザー情報を取得を試行
-      const urlData = getUserDataFromUrl();
-      if (urlData && (urlData.nickname || urlData.email)) {
-        console.log('URLパラメータからユーザーデータを取得:', urlData);
-        displayMemberInfoFromData(urlData);
-        return;
-      }
-      
-      // デバッグ: テスト用の会員情報を表示
-      console.log('テスト用の会員情報を表示します');
-      const testUserData = {
-        nickname: 'テストユーザー',
-        email: 'test@example.com',
-        birthYear: '1990',
-        birthMonth: '1',
-        birthDay: '1',
-        guardianName: 'テスト守護神'
-      };
-      displayMemberInfoFromData(testUserData);
+    // ユーザー認証情報を取得
+    const authInfo = getAuthInfo();
+    if (!authInfo) {
+      console.log('認証情報が見つかりません。ログイン画面にリダイレクトします。');
+      redirectToLogin();
       return;
     }
 
-    const userData = JSON.parse(userDataString);
-    console.log('会員情報を表示:', userData);
-    displayMemberInfoFromData(userData);
+    // Cloudflareデータベースから会員情報を取得
+    console.log('データベースから会員情報を取得中...', authInfo);
+    const userData = await fetchUserDataFromDatabase(authInfo);
+    
+    if (userData) {
+      console.log('会員情報を取得しました:', userData);
+      displayMemberInfoFromData(userData);
+    } else {
+      console.log('会員情報の取得に失敗しました。ログイン画面にリダイレクトします。');
+      redirectToLogin();
+    }
 
   } catch (error) {
     console.error('会員情報表示エラー:', error);
-    hideMemberInfo();
+    redirectToLogin();
   }
 }
 
@@ -375,19 +360,92 @@ function displayMemberInfoFromData(userData) {
   }
 }
 
-// URLパラメータからユーザーデータを取得
-function getUserDataFromUrl() {
-  const urlParams = new URLSearchParams(window.location.search);
-  return {
-    nickname: urlParams.get('nickname') || '',
-    email: urlParams.get('email') || '',
-    birthYear: urlParams.get('birthYear') || '',
-    birthMonth: urlParams.get('birthMonth') || '',
-    birthDay: urlParams.get('birthDay') || '',
-    birthdate: urlParams.get('birthdate') || '',
-    guardianName: urlParams.get('guardianName') || '',
-    guardianKey: urlParams.get('guardianKey') || ''
-  };
+// 認証情報を取得
+function getAuthInfo() {
+  try {
+    // localStorageからユーザーデータを取得
+    const userDataString = localStorage.getItem('userData');
+    if (userDataString) {
+      const userData = JSON.parse(userDataString);
+      // メールアドレスまたはニックネームと生年月日があれば認証情報として使用
+      if (userData.email || (userData.nickname && userData.birthYear && userData.birthMonth && userData.birthDay)) {
+        return userData;
+      }
+    }
+    
+    // URLパラメータから認証情報を取得
+    const urlParams = new URLSearchParams(window.location.search);
+    const email = urlParams.get('email');
+    const nickname = urlParams.get('nickname');
+    const birthYear = urlParams.get('birthYear');
+    const birthMonth = urlParams.get('birthMonth');
+    const birthDay = urlParams.get('birthDay');
+    
+    if (email || (nickname && birthYear && birthMonth && birthDay)) {
+      return {
+        email: email || '',
+        nickname: nickname || '',
+        birthYear: birthYear || '',
+        birthMonth: birthMonth || '',
+        birthDay: birthDay || ''
+      };
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('認証情報取得エラー:', error);
+    return null;
+  }
+}
+
+// Cloudflareデータベースからユーザーデータを取得
+async function fetchUserDataFromDatabase(authInfo) {
+  try {
+    const url = new URL('/api/get-user-data', window.location.origin);
+    
+    // 認証情報をパラメータとして送信
+    if (authInfo.email) {
+      url.searchParams.set('email', authInfo.email);
+    }
+    if (authInfo.nickname && authInfo.birthYear && authInfo.birthMonth && authInfo.birthDay) {
+      url.searchParams.set('nickname', authInfo.nickname);
+      url.searchParams.set('birthYear', authInfo.birthYear);
+      url.searchParams.set('birthMonth', authInfo.birthMonth);
+      url.searchParams.set('birthDay', authInfo.birthDay);
+    }
+    
+    console.log('ユーザーデータ取得API呼び出し:', url.toString());
+    
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const result = await response.json();
+    console.log('ユーザーデータ取得結果:', result);
+    
+    if (result.success && result.userData) {
+      // 取得したデータをlocalStorageに保存
+      localStorage.setItem('userData', JSON.stringify(result.userData));
+      return result.userData;
+    } else {
+      console.log('ユーザーデータの取得に失敗:', result.message);
+      return null;
+    }
+    
+  } catch (error) {
+    console.error('データベースからユーザーデータ取得エラー:', error);
+    return null;
+  }
+}
+
+// ログイン画面にリダイレクト
+function redirectToLogin() {
+  console.log('ログイン画面にリダイレクトします');
+  // ログイン画面にリダイレクト
+  window.location.href = '../auth/login.html';
 }
 
 // 会員情報を非表示
@@ -401,18 +459,23 @@ function hideMemberInfo() {
 // ユーザーデータからユーザーIDを取得
 function getUserIdFromUserData() {
   try {
-    const userDataString = localStorage.getItem('userData');
-    if (!userDataString) {
+    // 認証情報を取得
+    const authInfo = getAuthInfo();
+    if (!authInfo) {
       return null;
     }
 
-    const userData = JSON.parse(userDataString);
-    console.log('ユーザーデータからIDを取得:', userData);
+    // メールアドレスを優先的にユーザーIDとして使用
+    if (authInfo.email) {
+      console.log('ユーザーIDとして使用:', authInfo.email);
+      return authInfo.email;
+    }
 
-    // メールアドレスをユーザーIDとして使用
-    if (userData.email) {
-      console.log('ユーザーIDとして使用:', userData.email);
-      return userData.email;
+    // メールアドレスがない場合は、ニックネームと生年月日の組み合わせを使用
+    if (authInfo.nickname && authInfo.birthYear && authInfo.birthMonth && authInfo.birthDay) {
+      const userId = `${authInfo.nickname}_${authInfo.birthYear}_${authInfo.birthMonth}_${authInfo.birthDay}`;
+      console.log('ユーザーIDとして使用:', userId);
+      return userId;
     }
 
     return null;
