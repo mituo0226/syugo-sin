@@ -122,7 +122,7 @@
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
         }
 
-        input[type="text"] {
+        input[type="text"], select {
             width: 100%;
             padding: 15px;
             border: 2px solid rgba(157, 78, 221, 0.6);
@@ -135,7 +135,7 @@
             transition: all 0.3s ease;
         }
 
-        input[type="text"]:focus {
+        input[type="text"]:focus, select:focus {
             outline: none;
             border-color: #FFD700;
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
@@ -143,6 +143,11 @@
 
         input::placeholder {
             color: #999;
+        }
+
+        select option {
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
         }
 
         .submit-button {
@@ -249,8 +254,10 @@
             </div>
             
             <div class="passphrase-group">
-                <label for="passphraseInput">合い言葉</label>
-                <input type="text" id="passphraseInput" placeholder="合い言葉を入力してください" maxlength="50">
+                <label for="passphraseSelect">合い言葉を選択してください</label>
+                <select id="passphraseSelect">
+                    <option value="">合い言葉を選択してください</option>
+                </select>
             </div>
             
             <button class="submit-button" onclick="verifyPassphrase()">
@@ -301,35 +308,102 @@
             };
         }
 
+        // ユーザー情報をlocalStorageから取得（会員登録完了済み）
+        function getUserDataFromStorage() {
+            try {
+                const userData = localStorage.getItem('userData');
+                if (userData) {
+                    return JSON.parse(userData);
+                }
+            } catch (error) {
+                console.error('ユーザーデータの取得エラー:', error);
+            }
+            return null;
+        }
+
         // ユーザー情報を表示
         function displayUserInfo(userData) {
             const userInfoDiv = document.getElementById('userInfo');
+            
+            // 生年月日をフォーマット
+            let formattedBirthdate = '';
+            if (userData.year && userData.month && userData.day) {
+                formattedBirthdate = `${userData.year}年${userData.month}月${userData.day}日`;
+            } else if (userData.birthdate) {
+                formattedBirthdate = userData.birthdate;
+            }
+            
+            // 守護神名を取得
+            let guardianName = '';
+            if (userData.guardian) {
+                guardianName = userData.guardian.name || userData.guardian;
+            } else if (userData.guardianKey) {
+                guardianName = userData.guardianKey;
+            }
+            
             userInfoDiv.innerHTML = `
                 <div class="user-info-item">
                     <span class="user-info-label">ニックネーム:</span>
-                    <span class="user-info-value">${userData.nickname}</span>
+                    <span class="user-info-value">${userData.nickname || '未設定'}</span>
                 </div>
                 <div class="user-info-item">
                     <span class="user-info-label">生年月日:</span>
-                    <span class="user-info-value">${userData.birthdate}</span>
+                    <span class="user-info-value">${formattedBirthdate || '未設定'}</span>
                 </div>
                 <div class="user-info-item">
                     <span class="user-info-label">守護神:</span>
-                    <span class="user-info-value">${userData.guardian}</span>
+                    <span class="user-info-value">${guardianName || '未設定'}</span>
                 </div>
             `;
         }
 
+        // 合い言葉のドロップダウンリストを生成
+        function generatePassphraseOptions() {
+            const selectElement = document.getElementById('passphraseSelect');
+            
+            // 合い言葉の候補（実際の合い言葉リスト）
+            const passphrases = [
+                '光の導き',
+                '星の加護',
+                '月の神秘',
+                '風の自由',
+                '水の浄化',
+                '火の情熱',
+                '大地の力',
+                '天空の翼',
+                '深海の知恵',
+                '森の精霊',
+                '山の威厳',
+                '川の流れ',
+                '雲の夢想',
+                '雷の閃光',
+                '雪の純潔',
+                '花の美しさ',
+                '樹の成長',
+                '石の堅固',
+                '砂の旅路',
+                '氷の冷静'
+            ];
+            
+            // オプションを追加
+            passphrases.forEach(passphrase => {
+                const option = document.createElement('option');
+                option.value = passphrase;
+                option.textContent = passphrase;
+                selectElement.appendChild(option);
+            });
+        }
+
         // 合い言葉を検証
         async function verifyPassphrase() {
-            const inputPassphrase = document.getElementById('passphraseInput').value.trim();
-            const userData = getUserDataFromUrl();
+            const selectedPassphrase = document.getElementById('passphraseSelect').value;
+            const userData = getUserDataFromStorage() || getUserDataFromUrl();
             const errorDiv = document.getElementById('errorMessage');
             const submitButton = document.querySelector('.submit-button');
             
             // 入力チェック
-            if (!inputPassphrase) {
-                showError('合い言葉を入力してください。');
+            if (!selectedPassphrase) {
+                showError('合い言葉を選択してください。');
                 return;
             }
             
@@ -339,7 +413,7 @@
             
             try {
                 // 合い言葉の検証
-                if (inputPassphrase === userData.passphrase) {
+                if (selectedPassphrase === userData.passphrase) {
                     // 成功時
                     submitButton.innerHTML = '✨ 確認完了！';
                     setTimeout(() => {
@@ -347,7 +421,7 @@
                     }, 1000);
                 } else {
                     // 失敗時
-                    showError('合い言葉が正しくありません。もう一度入力してください。');
+                    showError('合い言葉が正しくありません。もう一度選択してください。');
                     submitButton.disabled = false;
                     submitButton.innerHTML = '✨ 確認';
                 }
@@ -372,23 +446,25 @@
         }
 
         // Enterキーで検証実行
-        document.getElementById('passphraseInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                verifyPassphrase();
-            }
+        document.getElementById('passphraseSelect').addEventListener('change', function() {
+            // 選択が変更された時の処理（必要に応じて）
         });
 
         // ページ読み込み時の処理
         window.addEventListener('load', function() {
             createStars();
             
-            const userData = getUserDataFromUrl();
+            // 合い言葉のドロップダウンリストを生成
+            generatePassphraseOptions();
+            
+            // ユーザー情報を取得（localStorage優先、URLパラメータはフォールバック）
+            const userData = getUserDataFromStorage() || getUserDataFromUrl();
             console.log('ユーザーデータ:', userData);
             
-            if (userData.nickname && userData.birthdate && userData.guardian) {
+            if (userData) {
                 displayUserInfo(userData);
             } else {
-                showError('ユーザー情報が不足しています。');
+                showError('ユーザー情報が見つかりません。ログイン画面から再度お試しください。');
             }
         });
     </script>
