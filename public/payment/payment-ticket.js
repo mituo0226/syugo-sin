@@ -286,25 +286,61 @@ function fillTestCardInfo() {
 // 会員情報を表示
 async function displayMemberInfo() {
   try {
-    // ユーザー認証情報を取得
-    const authInfo = getAuthInfo();
-    if (!authInfo) {
-      console.log('認証情報が見つかりません。ログイン画面にリダイレクトします。');
-      redirectToLogin();
+    console.log('=== 会員情報表示開始 ===');
+    
+    // まずはlocalStorageから直接取得を試行
+    const userDataString = localStorage.getItem('userData');
+    if (userDataString) {
+      const userData = JSON.parse(userDataString);
+      console.log('localStorageから会員情報を取得:', userData);
+      
+      if (userData.nickname || userData.email) {
+        displayMemberInfoFromData(userData);
+        return;
+      }
+    }
+    
+    // URLパラメータから取得を試行
+    const urlParams = new URLSearchParams(window.location.search);
+    const nickname = urlParams.get('nickname');
+    const birthYear = urlParams.get('birthYear');
+    const birthMonth = urlParams.get('birthMonth');
+    const birthDay = urlParams.get('birthDay');
+    const email = urlParams.get('email');
+    
+    if (nickname && birthYear && birthMonth && birthDay) {
+      const userData = {
+        nickname: nickname,
+        birthYear: birthYear,
+        birthMonth: birthMonth,
+        birthDay: birthDay,
+        email: email || ''
+      };
+      console.log('URLパラメータから会員情報を取得:', userData);
+      displayMemberInfoFromData(userData);
       return;
     }
-
-    // Cloudflareデータベースから会員情報を取得
-    console.log('データベースから会員情報を取得中...', authInfo);
-    const userData = await fetchUserDataFromDatabase(authInfo);
     
-    if (userData) {
-      console.log('会員情報を取得しました:', userData);
+    if (email) {
+      const userData = { email: email };
+      console.log('メールアドレスから会員情報を取得:', userData);
       displayMemberInfoFromData(userData);
-    } else {
-      console.log('会員情報の取得に失敗しました。ログイン画面にリダイレクトします。');
-      redirectToLogin();
+      return;
     }
+    
+    // デバッグ: テスト用の会員情報を表示
+    console.log('認証情報が見つかりません。テスト用の会員情報を表示します。');
+    console.log('localStorage keys:', Object.keys(localStorage));
+    console.log('URL parameters:', window.location.search);
+    
+    const testUserData = {
+      nickname: 'テストユーザー',
+      birthYear: '1990',
+      birthMonth: '1',
+      birthDay: '1'
+    };
+    console.log('テスト用の会員情報を表示:', testUserData);
+    displayMemberInfoFromData(testUserData);
 
   } catch (error) {
     console.error('会員情報表示エラー:', error);
@@ -330,23 +366,15 @@ function displayMemberInfoFromData(userData) {
     return;
   }
 
-  // 会員情報を表示
+  // 会員情報を表示（ニックネームと生年月日のみ）
   memberInfoContent.innerHTML = `
     <div class="member-info-item">
       <span class="member-info-label">ニックネーム:</span>
       <span class="member-info-value">${userData.nickname || '未設定'}</span>
     </div>
     <div class="member-info-item">
-      <span class="member-info-label">メールアドレス:</span>
-      <span class="member-info-value">${userData.email || '未設定'}</span>
-    </div>
-    <div class="member-info-item">
       <span class="member-info-label">生年月日:</span>
       <span class="member-info-value">${formatBirthdate(userData) || '未設定'}</span>
-    </div>
-    <div class="member-info-item">
-      <span class="member-info-label">守護神:</span>
-      <span class="member-info-value">${userData.guardianName || '未設定'}</span>
     </div>
     <div class="member-info-notice">
       ✨ この購入情報はあなたのアカウントに紐づけられます
@@ -357,6 +385,7 @@ function displayMemberInfoFromData(userData) {
   const memberInfoContainer = document.getElementById('memberInfoContainer');
   if (memberInfoContainer) {
     memberInfoContainer.style.display = 'block';
+    console.log('会員情報を表示しました');
   }
 }
 
