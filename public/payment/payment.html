@@ -196,13 +196,55 @@
       margin: 5px 0;
       color: #ccc;
     }
+    
+    .member-info {
+      background: rgba(157, 78, 221, 0.1);
+      border: 2px solid rgba(157, 78, 221, 0.3);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .member-info h3 {
+      color: #FFD700;
+      margin: 0 0 15px 0;
+      text-align: center;
+      font-size: 1.2em;
+    }
+    
+    .member-info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(157, 78, 221, 0.2);
+    }
+    
+    .member-info-item:last-child {
+      border-bottom: none;
+    }
+    
+    .member-info-label {
+      color: #ccc;
+      font-weight: normal;
+    }
+    
+    .member-info-value {
+      color: #FFD700;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1 class="title">決済</h1>
     
-    <div class="product-info">
+    <!-- 会員情報表示 -->
+    <div id="member-info" class="member-info" style="display: none;">
+      <h3>会員情報</h3>
+      <div id="member-info-content"></div>
+    </div>
+    
+    <div id="product-info" class="product-info">
       <div class="product-name">AI鑑定師 龍 - 鑑定チケット</div>
       <div class="product-price">¥10</div>
     </div>
@@ -259,42 +301,25 @@
 
   <script>
             // ページ読み込み時の処理
-            window.addEventListener('load', function() {
+            window.addEventListener('load', async function() {
               console.log('決済ページ読み込み完了');
               
-              // URLパラメータからUIDを取得
-              const urlParams = new URLSearchParams(window.location.search);
-              const uid = urlParams.get('uid');
-              const ticketType = urlParams.get('ticketType');
-              const price = urlParams.get('price');
-              const minutes = urlParams.get('minutes');
-              
-              if (!uid) {
-                showError('ユーザーIDが取得できませんでした。');
-                return;
+              try {
+                // 会員情報を表示
+                await displayMemberInfo();
+                
+                // チケット情報を表示
+                displayTicketInfo();
+                
+                // 前回の決済情報をチェック
+                checkPreviousPaymentInfo();
+                
+                // フォームのイベントリスナーを設定
+                setupFormEventListeners();
+              } catch (error) {
+                console.error('初期化エラー:', error);
+                showError('ページの初期化に失敗しました。');
               }
-              
-              console.log('UID:', uid);
-              
-              // チケット情報をlocalStorageに保存
-              if (ticketType && price && minutes) {
-                const ticketData = {
-                  type: ticketType,
-                  name: '体験チケット',
-                  price: parseInt(price),
-                  minutes: parseInt(minutes),
-                  uid: uid,
-                  timestamp: new Date().toISOString()
-                };
-                localStorage.setItem('selectedTicket', JSON.stringify(ticketData));
-                console.log('チケット情報を保存:', ticketData);
-              }
-              
-              // 前回の決済情報をチェック
-              checkPreviousPaymentInfo();
-              
-              // フォームのイベントリスナーを設定
-              setupFormEventListeners();
             });
     
             // 前回の決済情報をチェック
@@ -371,9 +396,13 @@
               quickPayButton.textContent = '処理中...';
               
               try {
-                // URLパラメータからUIDを取得
-                const urlParams = new URLSearchParams(window.location.search);
-                const uid = urlParams.get('uid');
+                // ユーザーIDを取得
+                const uid = getUserId();
+                
+                if (!uid) {
+                  showError('ユーザーIDが取得できませんでした。ログインしてください。');
+                  return;
+                }
                 
                 // 前回の決済情報を取得
                 const paymentKey = `paymentInfo_${uid}`;
@@ -458,9 +487,15 @@
       payButton.textContent = '処理中...';
       
       try {
-        // URLパラメータからUIDを取得
-        const urlParams = new URLSearchParams(window.location.search);
-        const uid = urlParams.get('uid');
+        // ユーザーIDを取得
+        const uid = getUserId();
+        
+        if (!uid) {
+          showError('ユーザーIDが取得できませんでした。ログインしてください。');
+          return;
+        }
+        
+        console.log('決済処理開始 - UID:', uid);
         
         // 決済処理をシミュレート
         await simulatePayment(uid, cardNumber, expiryDate, cvv, postalCode);
@@ -482,14 +517,66 @@
                 // 決済情報を保存（次回のクイック決済用）
                 savePaymentInfo(cardNumber, expiryDate, cvv, postalCode);
                 
-                // 成功をシミュレート
-                showSuccess('決済が完了しました！');
+                // チケット情報を取得
+                const selectedTicketString = localStorage.getItem('selectedTicket');
+                let ticketData = {
+                  type: 'standard',
+                  name: 'スタンダードプラン',
+                  price: 500,
+                  minutes: 10
+                };
                 
-                // 3秒後にconfirm.htmlにリダイレクト
-                setTimeout(() => {
+                if (selectedTicketString) {
+                  try {
+                    const selectedTicket = JSON.parse(selectedTicketString);
+                    ticketData = {
+                      type: selectedTicket.id || selectedTicket.type,
+                      name: selectedTicket.name,
+                      price: selectedTicket.price,
+                      minutes: selectedTicket.minutes
+                    };
+                  } catch (error) {
+                    console.error('チケット情報の解析エラー:', error);
+                  }
+                }
+                
+                // 決済確認APIを呼び出し
+                try {
                   const checkoutId = `test-checkout-${Date.now()}`;
-                  window.location.href = `./confirm.html?uid=${uid}&checkoutId=${checkoutId}`;
-                }, 3000);
+                  
+                  const response = await fetch('/api/verify', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                      uid: uid,
+                      checkoutId: checkoutId,
+                      ticketData: ticketData
+                    })
+                  });
+                  
+                  const result = await response.json();
+                  console.log('決済確認API結果:', result);
+                  
+                  if (result.ok) {
+                    // localStorageに有効期限を保存
+                    localStorage.setItem('expireAt', result.expireAt);
+                    
+                    // 成功をシミュレート
+                    showSuccess('決済が完了しました！');
+                    
+                    // 3秒後にconfirm.htmlにリダイレクト
+                    setTimeout(() => {
+                      window.location.href = `./confirm.html?uid=${uid}&checkoutId=${checkoutId}`;
+                    }, 3000);
+                  } else {
+                    showError('決済の確認に失敗しました。サポートにお問い合わせください。');
+                  }
+                } catch (error) {
+                  console.error('決済確認APIエラー:', error);
+                  showError('決済処理中にエラーが発生しました。サポートにお問い合わせください。');
+                }
               } else {
                 showError('テストカード番号を使用してください: 4111 1111 1111 1111');
               }
@@ -539,6 +626,158 @@
       successDiv.textContent = message;
       successDiv.style.display = 'block';
       errorDiv.style.display = 'none';
+    }
+    
+    // 会員情報を表示
+    async function displayMemberInfo() {
+      try {
+        // localStorageからユーザーデータを取得
+        const userDataString = localStorage.getItem('userData');
+        if (userDataString) {
+          const userData = JSON.parse(userDataString);
+          
+          if (userData.nickname || userData.email) {
+            displayMemberInfoFromData(userData);
+            return;
+          }
+        }
+        
+        // URLパラメータから取得を試行
+        const urlParams = new URLSearchParams(window.location.search);
+        const nickname = urlParams.get('nickname');
+        const birthYear = urlParams.get('birthYear');
+        const birthMonth = urlParams.get('birthMonth');
+        const birthDay = urlParams.get('birthDay');
+        const email = urlParams.get('email');
+        
+        if (nickname && birthYear && birthMonth && birthDay) {
+          const userData = {
+            nickname: nickname,
+            birthYear: birthYear,
+            birthMonth: birthMonth,
+            birthDay: birthDay,
+            email: email || ''
+          };
+          displayMemberInfoFromData(userData);
+          return;
+        }
+        
+      } catch (error) {
+        console.error('会員情報表示エラー:', error);
+      }
+    }
+    
+    // 会員情報を表示する共通関数
+    function displayMemberInfoFromData(userData) {
+      const memberInfo = document.getElementById('member-info');
+      const memberInfoContent = document.getElementById('member-info-content');
+      
+      if (!memberInfo || !memberInfoContent) {
+        console.log('会員情報表示要素が見つかりません');
+        return;
+      }
+      
+      // 生年月日をフォーマット
+      let birthdate = '未設定';
+      if (userData.birthYear && userData.birthMonth && userData.birthDay) {
+        birthdate = `${userData.birthYear}年${userData.birthMonth}月${userData.birthDay}日`;
+      } else if (userData.birthdate) {
+        birthdate = userData.birthdate;
+      }
+      
+      // 会員情報を表示（ニックネームと生年月日のみ）
+      memberInfoContent.innerHTML = `
+        <div class="member-info-item">
+          <span class="member-info-label">ニックネーム:</span>
+          <span class="member-info-value">${userData.nickname || '未設定'}</span>
+        </div>
+        <div class="member-info-item">
+          <span class="member-info-label">生年月日:</span>
+          <span class="member-info-value">${birthdate}</span>
+        </div>
+      `;
+      
+      // 会員情報コンテナを表示
+      memberInfo.style.display = 'block';
+      console.log('会員情報を表示しました');
+    }
+    
+    // チケット情報を表示
+    function displayTicketInfo() {
+      // localStorageから選択されたチケットを取得
+      const selectedTicketString = localStorage.getItem('selectedTicket');
+      
+      if (selectedTicketString) {
+        try {
+          const selectedTicket = JSON.parse(selectedTicketString);
+          const productInfo = document.getElementById('product-info');
+          
+          if (productInfo && selectedTicket.name && selectedTicket.price) {
+            const productName = productInfo.querySelector('.product-name');
+            const productPrice = productInfo.querySelector('.product-price');
+            
+            if (productName && productPrice) {
+              productName.textContent = selectedTicket.name;
+              productPrice.textContent = `¥${selectedTicket.price}`;
+              
+              // 決済ボタンのテキストも更新
+              const payButton = document.getElementById('pay-button');
+              if (payButton) {
+                payButton.textContent = `決済する (¥${selectedTicket.price})`;
+              }
+            }
+          }
+        } catch (error) {
+          console.error('チケット情報の解析エラー:', error);
+        }
+      }
+    }
+    
+    // ユーザーIDを取得
+    function getUserId() {
+      // localStorageからユーザーデータを取得
+      const userDataString = localStorage.getItem('userData');
+      if (userDataString) {
+        const userData = JSON.parse(userDataString);
+        
+        // メールアドレスを優先的にユーザーIDとして使用
+        if (userData.email) {
+          console.log('ユーザーIDとして使用:', userData.email);
+          return userData.email;
+        }
+        
+        // メールアドレスがない場合は、ニックネームと生年月日の組み合わせを使用
+        if (userData.nickname && userData.birthYear && userData.birthMonth && userData.birthDay) {
+          const userId = `${userData.nickname}_${userData.birthYear}_${userData.birthMonth}_${userData.birthDay}`;
+          console.log('ユーザーIDとして使用:', userId);
+          return userId;
+        }
+      }
+      
+      // URLパラメータから取得を試行
+      const urlParams = new URLSearchParams(window.location.search);
+      const email = urlParams.get('email');
+      const nickname = urlParams.get('nickname');
+      const birthYear = urlParams.get('birthYear');
+      const birthMonth = urlParams.get('birthMonth');
+      const birthDay = urlParams.get('birthDay');
+      
+      if (email) {
+        return email;
+      }
+      
+      if (nickname && birthYear && birthMonth && birthDay) {
+        return `${nickname}_${birthYear}_${birthMonth}_${birthDay}`;
+      }
+      
+      // UIDがない場合はlocalStorageから取得を試行
+      const currentUID = localStorage.getItem('currentUID');
+      if (currentUID) {
+        return currentUID;
+      }
+      
+      console.error('ユーザーIDが取得できません');
+      return null;
     }
   </script>
 </body>
