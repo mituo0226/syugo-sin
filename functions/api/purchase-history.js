@@ -10,9 +10,10 @@ export async function onRequestGet(context) {
   try {
     const url = new URL(request.url);
     const email = url.searchParams.get('email');
+    const userId = url.searchParams.get('userId');
     
-    if (!email) {
-      return createErrorResponse("Email parameter is required", 400, corsHeaders);
+    if (!email && !userId) {
+      return createErrorResponse("Email or userId parameter is required", 400, corsHeaders);
     }
 
     // D1データベースのバインド確認
@@ -21,12 +22,21 @@ export async function onRequestGet(context) {
       throw new Error("Database not available");
     }
 
-    console.log("Fetching purchase history for email:", email);
+    console.log("Fetching purchase history for:", { email, userId });
 
     // ユーザーIDを取得
-    const user = await env.DB.prepare(`
-      SELECT id, nickname FROM users WHERE email = ?
-    `).bind(email).first();
+    let user;
+    if (email) {
+      // emailで検索
+      user = await env.DB.prepare(`
+        SELECT id, nickname, user_id as email FROM user_profiles WHERE user_id = ?
+      `).bind(email).first();
+    } else if (userId) {
+      // userIdで検索
+      user = await env.DB.prepare(`
+        SELECT id, nickname, user_id as email FROM user_profiles WHERE user_id = ?
+      `).bind(userId).first();
+    }
 
     if (!user) {
       return createErrorResponse("User not found", 404, corsHeaders);
@@ -43,10 +53,10 @@ export async function onRequestGet(context) {
         p.payment_method,
         p.payment_status,
         p.square_order_id,
-        p.purchase_date
+        p.purchased_at as purchase_date
       FROM purchases p
       WHERE p.user_id = ?
-      ORDER BY p.purchase_date DESC
+      ORDER BY p.purchased_at DESC
     `).bind(user.id).all();
 
     console.log('Purchase history result:', {
@@ -63,7 +73,7 @@ export async function onRequestGet(context) {
       user: {
         id: user.id,
         nickname: user.nickname,
-        email: email
+        email: user.email || email || userId
       },
       purchases: purchases.results || [],
       statistics: {
