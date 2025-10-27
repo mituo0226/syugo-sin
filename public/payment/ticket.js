@@ -724,7 +724,16 @@ function displayTicketPlans(isFirstTime) {
     const purchaseButton = card.querySelector('.purchase-button');
     purchaseButton.addEventListener('click', (e) => {
       e.stopPropagation(); // カードのクリックイベントを阻止
-      selectTicket(plan, card);
+      // 選択されたプランの情報をlocalStorageに保存
+      localStorage.setItem('selectedTicket', JSON.stringify({
+        id: plan.id,
+        name: plan.name,
+        price: plan.price,
+        minutes: plan.minutes,
+        emoji: plan.emoji
+      }));
+      // 決済ページに遷移
+      window.location.href = 'payment.html';
     });
     
     container.appendChild(card);
