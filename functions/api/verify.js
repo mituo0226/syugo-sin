@@ -175,8 +175,16 @@ export async function onRequestPost(context) {
       }, corsHeaders);
     }
 
+    // 環境に応じてSquare APIエンドポイントを決定
+    const isProduction = env.ENVIRONMENT === 'production';
+    const squareApiUrl = isProduction 
+      ? 'https://connect.squareup.com'  // 本番環境
+      : 'https://connect.squareupsandbox.com';  // サンドボックス環境
+    
+    console.log(`Using Square API for verification: ${isProduction ? 'PRODUCTION' : 'SANDBOX'} (${squareApiUrl})`);
+
     // Square API Ordersを直接HTTPリクエストで呼び出し
-    const squareResponse = await fetch(`https://connect.squareupsandbox.com/v2/orders/${checkoutId}`, {
+    const squareResponse = await fetch(`${squareApiUrl}/v2/orders/${checkoutId}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${env.SQUARE_ACCESS_TOKEN}`,
