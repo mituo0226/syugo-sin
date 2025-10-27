@@ -2,8 +2,8 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>体験チケット購入 - 守護神占い</title>
-  <meta name="description" content="初回限定100円で5分間の体験チケット。守護神や龍とつながる神秘的な鑑定体験を始めましょう。">
+  <title>チケット購入 - 守護神占い</title>
+  <meta name="description" content="守護神や龍とつながる神秘的な鑑定体験。お試しプランから月額サブスクまで、あなたに最適なプランをお選びいただけます。">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
   <link rel="stylesheet" href="ticket.css">
 </head>
@@ -27,7 +27,7 @@
   <div class="container">
     <div class="main-content" id="mainContent">
       <!-- タイトル -->
-      <h1 class="title">体験チケット購入</h1>
+      <h1 class="title">チケット購入</h1>
       
       <!-- 会員情報表示 -->
       <div class="member-info-container" id="memberInfoContainer">
@@ -37,47 +37,16 @@
         </div>
       </div>
       
-      <!-- 初回限定バッジ -->
-      <div class="first-time-badge">
-        <div class="badge-content">
-          <span class="badge-icon">✨</span>
-          <span class="badge-text">初回限定</span>
-        </div>
-      </div>
+      <!-- 購入履歴判定用（非表示） -->
+      <div id="isFirstTimeUser" style="display: none;"></div>
       
-      <!-- チケットカード -->
-      <div class="ticket-card">
-        <div class="ticket-header">
-          <h2 class="ticket-title">体験チケット</h2>
-          <div class="ticket-price">
-            <span class="price-amount">100円</span>
-            <span class="price-period">5分間</span>
-          </div>
-        </div>
-        
-        <div class="ticket-description">
-          <p class="main-description">まずは体験から。100円で5分間、守護神や龍とつながれます</p>
-          <p class="sub-description">神秘的な鑑定体験を気軽にお試しください</p>
-        </div>
-        
-        <div class="ticket-features">
-          <div class="feature-item">
-            <span class="feature-icon">🔮</span>
-            <span class="feature-text">守護神との対話</span>
-          </div>
-          <div class="feature-item">
-            <span class="feature-icon">🐉</span>
-            <span class="feature-text">龍の導き</span>
-          </div>
-          <div class="feature-item">
-            <span class="feature-icon">✨</span>
-            <span class="feature-text">神秘的な鑑定</span>
-          </div>
-        </div>
+      <!-- チケットプラン一覧 -->
+      <div class="tickets-container" id="ticketsContainer">
+        <!-- チケットカードはJavaScriptで動的に生成 -->
       </div>
       
       <!-- 決済フォーム -->
-      <div class="payment-form-container">
+      <div class="payment-form-container" id="paymentFormContainer" style="display: none;">
         <h3 class="form-title">決済情報</h3>
         
         <form id="paymentForm" class="payment-form">
@@ -140,8 +109,8 @@
           
           <button type="submit" class="payment-button" id="paymentButton">
             <span class="button-icon">✨</span>
-            <span class="button-text">100円で体験を開始</span>
-            <span class="button-subtext">5分間の神秘的な鑑定</span>
+            <span class="button-text" id="buttonText">決済を進める</span>
+            <span class="button-subtext" id="buttonSubtext">安全な決済処理</span>
           </button>
         </form>
       </div>
@@ -151,8 +120,8 @@
         <h4>ご利用上の注意</h4>
         <ul>
           <li>決済は安全なSquare決済システムを使用しています</li>
-          <li>体験チケットは購入後、即座にご利用いただけます</li>
-          <li>5分間の鑑定時間が付与されます</li>
+          <li>チケットは購入後、即座にご利用いただけます</li>
+          <li>購入した時間分、鑑定にご利用いただけます</li>
           <li>追加チケットは鑑定画面からご購入いただけます</li>
         </ul>
       </div>

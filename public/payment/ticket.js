@@ -1,5 +1,64 @@
 // 決済ページのJavaScript
 
+// プランデータ定義
+const TICKET_PLANS = [
+  {
+    id: 'first-time',
+    emoji: '🌸',
+    name: 'おためしプラン',
+    minutes: 5,
+    price: 100,
+    pricePerMinute: 20,
+    description: '初回限定。AIとの相性を試せる。原価提供で体験重視。',
+    badge: '初回限定',
+    firstTimeOnly: true
+  },
+  {
+    id: 'standard',
+    emoji: '🌙',
+    name: 'スタンダードプラン',
+    minutes: 10,
+    price: 500,
+    pricePerMinute: 50,
+    description: '最も利用される基本プラン。短い相談や恋愛診断向け。',
+    firstTimeOnly: false
+  },
+  {
+    id: 'premium',
+    emoji: '🔮',
+    name: 'プレミアムプラン',
+    minutes: 20,
+    price: 1000,
+    pricePerMinute: 50,
+    description: '深めの悩みや複数質問対応。リピーターの中心層。',
+    firstTimeOnly: false
+  },
+  {
+    id: 'long',
+    emoji: '💎',
+    name: 'ロングセッション',
+    minutes: 45,
+    price: 2000,
+    pricePerMinute: 44,
+    description: 'じっくり鑑定・複数テーマ相談向け。特別感を演出。',
+    firstTimeOnly: false
+  },
+  {
+    id: 'monthly',
+    emoji: '☯️',
+    name: '月額サブスク',
+    minutes: 120,
+    price: 4000,
+    pricePerMinute: 33,
+    description: '常連ユーザー向け。安心して継続できるコスパ設計。',
+    badge: '定期鑑定',
+    firstTimeOnly: false
+  }
+];
+
+// 選択されたチケット
+let selectedTicket = null;
+
 // ページ読み込み時の処理
 window.addEventListener('load', async function() {
   console.log('決済ページ読み込み完了');
@@ -30,6 +89,12 @@ window.addEventListener('load', async function() {
   // 会員情報を表示
   console.log('=== 会員情報表示開始 ===');
   await displayMemberInfo();
+  
+  // 購入履歴をチェックして初回購入者かどうかを判定
+  const isFirstTime = await checkFirstTimeUser();
+  
+  // チケットプランを表示
+  displayTicketPlans(isFirstTime);
 });
 
 // フォームのイベントリスナー設定
@@ -106,6 +171,12 @@ async function processPayment() {
   }
   
   try {
+    // チケットが選択されているかチェック
+    if (!selectedTicket) {
+      showError('プランを選択してください');
+      return;
+    }
+    
     // ユーザーIDを取得（会員情報から）
     let uid = getUserIdFromUserData();
     if (!uid) {
@@ -119,10 +190,10 @@ async function processPayment() {
     
     // チケット情報を保存
     const ticketData = {
-      type: 'first-time',
-      name: '体験チケット',
-      price: 100,
-      minutes: 5,
+      type: selectedTicket.id,
+      name: selectedTicket.name,
+      price: selectedTicket.price,
+      minutes: selectedTicket.minutes,
       uid: uid,
       timestamp: new Date().toISOString()
     };
@@ -530,6 +601,148 @@ function hideMemberInfo() {
   if (memberInfoContainer) {
     memberInfoContainer.style.display = 'none';
   }
+}
+
+// 初回購入者かどうかをチェック
+async function checkFirstTimeUser() {
+  try {
+    // ユーザーIDを取得
+    let uid = getUserIdFromUserData();
+    if (!uid) {
+      // ユーザーIDが取得できない場合は初回購入者として扱う
+      console.log('ユーザーIDが取得できないため、初回購入者として扱います');
+      return true;
+    }
+    
+    // データベースから購入履歴を取得
+    console.log('購入履歴をチェック中...');
+    const response = await fetch(`/api/purchase-history?userId=${encodeURIComponent(uid)}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      console.log('購入履歴:', data);
+      
+      // 購入履歴がある場合は初回購入者ではない
+      if (data.purchases && data.purchases.length > 0) {
+        console.log('リピーター購入者です');
+        return false;
+      }
+    }
+    
+    // 購入履歴がない場合は初回購入者
+    console.log('初回購入者です');
+    return true;
+    
+  } catch (error) {
+    console.error('購入履歴チェックエラー:', error);
+    // エラーが発生した場合は安全のため初回購入者として扱う
+    return true;
+  }
+}
+
+// チケットプランを表示
+function displayTicketPlans(isFirstTime) {
+  const container = document.getElementById('ticketsContainer');
+  if (!container) {
+    console.error('チケットコンテナが見つかりません');
+    return;
+  }
+  
+  container.innerHTML = '';
+  
+  TICKET_PLANS.forEach(plan => {
+    // 初回購入者でない場合は、初回限定プランを非表示
+    if (!isFirstTime && plan.firstTimeOnly) {
+      return;
+    }
+    
+    // チケットカードを作成
+    const card = document.createElement('div');
+    card.className = `ticket-card ${plan.firstTimeOnly ? 'first-time' : ''}`;
+    card.dataset.planId = plan.id;
+    
+    // バッジ表示
+    const badgeHtml = plan.badge ? `<span class="ticket-badge">${plan.badge}</span>` : '';
+    
+    // 料金表示（月額サブスクは特別な表示）
+    const priceHtml = plan.id === 'monthly' 
+      ? `<span class="price-amount">${plan.price}円/月</span>`
+      : `<span class="price-amount ${plan.firstTimeOnly ? 'first-time' : ''}">${plan.price}円</span><span class="price-period">${plan.minutes}分</span>`;
+    
+    card.innerHTML = `
+      <div class="ticket-header">
+        <div class="ticket-emoji">${plan.emoji}</div>
+        <div class="ticket-header-content">
+          <h2 class="ticket-title">${plan.name}</h2>
+          ${badgeHtml}
+          <div class="ticket-price">
+            ${priceHtml}
+          </div>
+        </div>
+      </div>
+      
+      <div class="ticket-info">
+        <div class="ticket-info-item">
+          <span class="ticket-info-label">時間</span>
+          <span class="ticket-info-value">${plan.minutes}分</span>
+        </div>
+        <div class="ticket-info-item">
+          <span class="ticket-info-label">単価</span>
+          <span class="ticket-info-value">${plan.pricePerMinute}円/分</span>
+        </div>
+      </div>
+      
+      <div class="ticket-description">
+        <p class="main-description">${plan.description}</p>
+      </div>
+    `;
+    
+    // クリックイベント
+    card.addEventListener('click', () => selectTicket(plan, card));
+    
+    container.appendChild(card);
+  });
+  
+  console.log('チケットプランを表示しました。初回購入者:', isFirstTime);
+}
+
+// チケットを選択
+function selectTicket(plan, cardElement) {
+  // すべてのカードから選択状態を解除
+  document.querySelectorAll('.ticket-card').forEach(card => {
+    card.classList.remove('selected');
+  });
+  
+  // 選択したカードをハイライト
+  cardElement.classList.add('selected');
+  
+  // 選択されたチケットを保存
+  selectedTicket = plan;
+  
+  // 決済フォームを表示
+  const paymentForm = document.getElementById('paymentFormContainer');
+  if (paymentForm) {
+    paymentForm.style.display = 'block';
+    
+    // ボタンテキストを更新
+    const buttonText = document.getElementById('buttonText');
+    const buttonSubtext = document.getElementById('buttonSubtext');
+    
+    if (buttonText && buttonSubtext) {
+      buttonText.textContent = `${plan.price}円で${plan.name}を購入`;
+      buttonSubtext.textContent = `${plan.minutes}分間の神秘的な鑑定`;
+    }
+    
+    // スクロールしてフォームを表示
+    paymentForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  
+  console.log('チケットを選択:', plan);
 }
 
 // ユーザーデータからユーザーIDを取得
