@@ -86,15 +86,26 @@ window.addEventListener('load', async function() {
     console.log('新しいUIDを生成:', newUID);
   }
   
-  // 会員情報を表示
-  console.log('=== 会員情報表示開始 ===');
-  await displayMemberInfo();
-  
-  // 購入履歴をチェックして初回購入者かどうかを判定
-  const isFirstTime = await checkFirstTimeUser();
-  
-  // チケットプランを表示
-  displayTicketPlans(isFirstTime);
+  try {
+    // 会員情報を表示
+    console.log('=== 会員情報表示開始 ===');
+    await displayMemberInfo();
+    console.log('会員情報表示完了');
+    
+    // 購入履歴をチェックして初回購入者かどうかを判定
+    console.log('=== 初回購入者チェック開始 ===');
+    const isFirstTime = await checkFirstTimeUser();
+    console.log('初回購入者チェック完了:', isFirstTime);
+    
+    // チケットプランを表示
+    console.log('=== チケットプラン表示開始 ===');
+    displayTicketPlans(isFirstTime);
+    console.log('チケットプラン表示完了');
+  } catch (error) {
+    console.error('初期化エラー:', error);
+    // エラーが発生してもプランは表示する
+    displayTicketPlans(true);
+  }
 });
 
 // フォームのイベントリスナー設定
