@@ -41,7 +41,7 @@ function setupFormEventListeners() {
   const postalCode = document.getElementById('postalCode');
   
   // カード番号のフォーマット
-  cardNumber.addEventListener('input', functionLook(e) {
+  cardNumber.addEventListener('input', function(e) {
     let value = e.target.value.replace(/\D/g, '');
     value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
     e.target.value = value;
