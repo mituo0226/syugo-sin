@@ -711,10 +711,21 @@ function displayTicketPlans(isFirstTime) {
       <div class="ticket-description">
         <p class="main-description">${plan.description}</p>
       </div>
+      
+      <div class="ticket-action">
+        <button class="purchase-button" data-plan-id="${plan.id}">
+          <span class="purchase-icon">✨</span>
+          <span class="purchase-text">このプランを購入する</span>
+        </button>
+      </div>
     `;
     
-    // クリックイベント
-    card.addEventListener('click', () => selectTicket(plan, card));
+    // 購入ボタンのクリックイベント
+    const purchaseButton = card.querySelector('.purchase-button');
+    purchaseButton.addEventListener('click', (e) => {
+      e.stopPropagation(); // カードのクリックイベントを阻止
+      selectTicket(plan, card);
+    });
     
     container.appendChild(card);
   });

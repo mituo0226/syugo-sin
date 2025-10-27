@@ -388,6 +388,64 @@ body {
   line-height: 1.5;
 }
 
+/* 購入ボタン */
+.ticket-action {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(102, 204, 255, 0.2);
+}
+
+.purchase-button {
+  width: 100%;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #66ccff 0%, #9d4edd 100%);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 204, 255, 0.3);
+}
+
+.purchase-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 204, 255, 0.5);
+}
+
+.purchase-button:active {
+  transform: translateY(0);
+}
+
+.purchase-icon {
+  font-size: 1.2em;
+  animation: purchasePulse 2s ease-in-out infinite;
+}
+
+@keyframes purchasePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.purchase-text {
+  letter-spacing: 0.5px;
+}
+
+/* 選択されたカードの購入ボタン */
+.ticket-card.selected .purchase-button {
+  background: linear-gradient(135deg, #9d4edd 0%, #66ccff 100%);
+  box-shadow: 0 6px 25px rgba(157, 78, 221, 0.5);
+}
+
+.ticket-card.selected .purchase-icon {
+  animation: purchasePulse 1s ease-in-out infinite;
+}
+
 /* チケット機能 */
 .ticket-features {
   display: flex;
