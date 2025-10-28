@@ -697,6 +697,9 @@ document.addEventListener('DOMContentLoaded', function() {
     setupMagicLinkTest();
     setupRegistrationTest();
     setupPurchaseHistory();
+    if (typeof setupPaymentHistory === 'function') {
+        setupPaymentHistory();
+    }
 });
 
 // 会員登録テスト機能のセットアップ
