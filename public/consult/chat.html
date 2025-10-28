@@ -464,6 +464,79 @@
     .debug-button.unlimited:hover {
       background: linear-gradient(90deg, #b366e6, #9d4edd);
     }
+    
+    /* フッター */
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(13, 13, 26, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(102, 204, 255, 0.3);
+      padding: 15px 20px;
+      padding-bottom: max(15px, env(safe-area-inset-bottom));
+      z-index: 50;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .footer-link {
+      color: #66ccff;
+      text-decoration: none;
+      font-size: 0.9em;
+      padding: 8px 12px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      text-align: center;
+      min-width: 80px;
+      background: rgba(102, 204, 255, 0.1);
+      border: 1px solid rgba(102, 204, 255, 0.2);
+    }
+    
+    .footer-link:hover {
+      background: rgba(102, 204, 255, 0.2);
+      color: #99e0ff;
+      transform: translateY(-2px);
+    }
+    
+    .footer-link.logout {
+      color: #ff6b6b;
+      background: rgba(255, 107, 107, 0.1);
+      border: 1px solid rgba(255, 107, 107, 0.2);
+    }
+    
+    .footer-link.logout:hover {
+      background: rgba(255, 107, 107, 0.2);
+      color: #ff8e8e;
+    }
+    
+    /* フッター表示時の入力領域調整 */
+    .input-area.with-footer {
+      bottom: 60px;
+    }
+    
+    /* モバイル向けフッター調整 */
+    @media (max-width: 600px) {
+      .footer {
+        padding: 10px 15px;
+        gap: 8px;
+      }
+      
+      .footer-link {
+        font-size: 0.8em;
+        padding: 6px 10px;
+        min-width: 70px;
+      }
+      
+      .input-area.with-footer {
+        bottom: 50px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -495,7 +568,7 @@
     </div>
     
     <!-- 入力領域 -->
-    <div class="input-area">
+    <div class="input-area" id="inputArea">
       <div class="input-container">
         <textarea 
           class="message-input" 
@@ -514,6 +587,15 @@
       <button class="debug-button unlimited" id="unlimitedButton">無制限モード</button>
       <button class="debug-button" id="adminButton" onclick="openAdminPanel()">管理画面</button>
     </div>
+  </div>
+  
+  <!-- フッター -->
+  <div class="footer">
+    <a href="../payment/ticket.html" class="footer-link">チケット購入</a>
+    <a href="../rule/terms.html" class="footer-link">利用規約</a>
+    <a href="../rule/privacy.html" class="footer-link">プライバシー</a>
+    <a href="../rule/contact.html" class="footer-link">お問い合わせ</a>
+    <a href="#" class="footer-link logout" id="logoutLink">ログアウト</a>
   </div>
 
   <script>
@@ -605,6 +687,17 @@
     // ページ読み込み時の処理
     window.addEventListener("load", function() {
       console.log("チャットページ読み込み開始");
+      
+      // フッター表示時の入力領域調整
+      const inputArea = document.getElementById('inputArea');
+      inputArea.classList.add('with-footer');
+      
+      // ログアウトリンクのイベントリスナー
+      const logoutLink = document.getElementById('logoutLink');
+      logoutLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        logout();
+      });
       
       // デバッグパネルの表示（開発環境のみ）
       if (isDevelopment()) {
@@ -1483,6 +1576,25 @@
     function openAdminPanel() {
       // 新しいタブで管理画面を開く
       window.open('/admin/admin.html', '_blank');
+    }
+    
+    // ログアウト機能
+    function logout() {
+      if (confirm('ログアウトしますか？')) {
+        // セッション関連のデータをクリア
+        localStorage.removeItem('userData');
+        localStorage.removeItem('chatHistory');
+        localStorage.removeItem('expireAt');
+        sessionStorage.removeItem('ss_credit_minutes');
+        
+        // タイマーを停止
+        if (timerInterval) {
+          clearInterval(timerInterval);
+        }
+        
+        // ログイン画面にリダイレクト
+        window.location.href = '../auth/login.html';
+      }
     }
     
     // 管理画面からの通知を受信
