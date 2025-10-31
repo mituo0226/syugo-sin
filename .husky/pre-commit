@@ -1,6 +1,3 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 # Windows環境でのbashパス対応
 if command -v bash >/dev/null 2>&1; then
   bash scripts/precommit-check.sh
