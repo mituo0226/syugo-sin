@@ -37,7 +37,7 @@ async function searchPayments(period, date, month) {
     tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center"><i class="fas fa-spinner fa-spin mr-2"></i>検索中...</td></tr>';
     
     try {
-        let url = '/api/purchase-history';
+        let url = '/api/payment-history';
         const params = new URLSearchParams();
         
         if (period === 'daily' && date) {
@@ -45,6 +45,8 @@ async function searchPayments(period, date, month) {
         } else if (period === 'monthly' && month) {
             params.append('month', month);
         }
+        // テスト決済も含める（既定trueだが明示）
+        params.append('includeTest', 'true');
         
         if (params.toString()) {
             url += '?' + params.toString();
