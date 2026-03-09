@@ -537,6 +537,90 @@
         bottom: 50px;
       }
     }
+
+    /* 時間切れ 全画面モーダル */
+    .expired-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .expired-modal-overlay.show {
+      display: flex;
+    }
+    .expired-modal {
+      background: linear-gradient(160deg, #12122a 0%, #1a1a3a 100%);
+      border: 1px solid rgba(102, 204, 255, 0.4);
+      border-radius: 20px;
+      padding: 40px 30px 30px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(102, 204, 255, 0.15);
+      animation: modalFadeIn 0.35s ease-out;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(30px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0)    scale(1);    }
+    }
+    .expired-modal-title {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #fff;
+      margin-bottom: 14px;
+      text-shadow: 0 0 12px rgba(102, 204, 255, 0.5);
+    }
+    .expired-modal-body {
+      font-size: 0.95em;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+    .expired-modal-tickets {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .ticket-btn {
+      display: block;
+      background: linear-gradient(90deg, #FFD700, #FFA500);
+      color: #1a1a00;
+      font-weight: bold;
+      font-size: 1em;
+      padding: 14px 20px;
+      border-radius: 12px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 15px rgba(255, 200, 0, 0.3);
+    }
+    .ticket-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 22px rgba(255, 200, 0, 0.5);
+    }
+    .expired-modal-skip {
+      display: inline-block;
+      margin-top: 6px;
+      color: rgba(255,255,255,0.45);
+      font-size: 0.85em;
+      text-decoration: underline;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+    .expired-modal-skip:hover {
+      color: rgba(255,255,255,0.7);
+    }
+    @media (max-width: 600px) {
+      .expired-modal { padding: 30px 20px 24px; }
+      .expired-modal-title { font-size: 1.3em; }
+    }
   </style>
 </head>
 <body>
@@ -589,6 +673,23 @@
     </div>
   </div>
   
+  <!-- 時間切れ 全画面モーダル -->
+  <div class="expired-modal-overlay" id="expiredModalOverlay">
+    <div class="expired-modal">
+      <div class="expired-modal-title">✨ 鑑定を続けますか？</div>
+      <div class="expired-modal-body">
+        龍との対話はまだ続いています。<br>
+        チケットを選んで鑑定を再開してください。
+      </div>
+      <div class="expired-modal-tickets">
+        <a href="../payment/ticket.html?plan=5min" class="ticket-btn">🎟 5分チケット &nbsp;500円</a>
+        <a href="../payment/ticket.html?plan=10min" class="ticket-btn">🎟 10分チケット &nbsp;1,000円</a>
+        <a href="../payment/ticket.html?plan=30min" class="ticket-btn">🎟 30分チケット &nbsp;3,000円</a>
+      </div>
+      <button class="expired-modal-skip" id="expiredModalSkip">今はやめておく</button>
+    </div>
+  </div>
+
   <!-- フッター -->
   <div class="footer">
     <a href="../payment/ticket.html" class="footer-link">チケット購入</a>
@@ -1057,6 +1158,10 @@
       
       console.log('チャット送信時のカウントダウン開始');
       
+      // TODO: 現状は1秒ごとに /api/user-session → DB アクセスが発生しており、
+      //       負荷・コストが高い。将来的には初回ロード時に session_end_time を取得し
+      //       クライアント側でカウントダウンする方式（setInterval で remainingSeconds--）
+      //       に変更することを推奨する。DBへのポーリングは不要になる。
       timerInterval = setInterval(async () => {
         if (unlimitedMode) {
           // 無制限モード時は何もしない
@@ -1156,7 +1261,7 @@
       isSessionExpired = true;
       clearInterval(timerInterval);
       
-      // 入力欄と送信ボタンを無効化
+      // 入力欄と送信ボタンを無効化（既存処理を維持）
       const messageInput = document.getElementById('messageInput');
       const sendButton = document.getElementById('sendButton');
       const purchaseButton = document.getElementById('purchaseButton');
@@ -1172,6 +1277,24 @@
       
       // 終了メッセージを追加
       addSystemMessage('⏰ 鑑定時間が終了しました。\n\n✨ チケットを購入して鑑定を続けることができます。\n\n下の「チケット購入」ボタンから購入ページに移動してください。');
+
+      // 全画面モーダルを表示
+      showExpiredModal();
+    }
+
+    // 時間切れ 全画面モーダル表示
+    function showExpiredModal() {
+      const overlay = document.getElementById('expiredModalOverlay');
+      if (!overlay) return;
+      overlay.classList.add('show');
+
+      // 「今はやめておく」で閉じる
+      const skipBtn = document.getElementById('expiredModalSkip');
+      if (skipBtn) {
+        skipBtn.addEventListener('click', function() {
+          overlay.classList.remove('show');
+        }, { once: true });
+      }
     }
     
     // メッセージ送信
@@ -1357,6 +1480,14 @@
             },
             body: JSON.stringify(requestData)
           });
+
+          // セッション切れ（401）はサーバー側で確定判定 → 購入導線へ
+          if (response.status === 401) {
+            readingDiv.remove();
+            stopCountdown();
+            handleSessionExpired();
+            return;
+          }
           
           if (response.ok) {
             const data = await response.json();

@@ -36,10 +36,15 @@ fi
 if git diff --cached | grep -Ei "(secret|token|apikey|api_key|credential|password)" > /dev/null; then
   echo "⚠️ WARNING: Possible secret detected. Please double-check before committing."
   echo "   Make sure you're not committing sensitive information."
-  read -p "Continue anyway? (y/N): " -n 1 -r
-  echo
-  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    exit 1
+  # 非対話環境（GitHub Desktop 等）では stdin が TTY でないため自動続行
+  if [ -t 0 ]; then
+    read -p "Continue anyway? (y/N): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+      exit 1
+    fi
+  else
+    echo "   (Non-interactive environment detected — continuing automatically)"
   fi
 fi
 

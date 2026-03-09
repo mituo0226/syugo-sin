@@ -5,6 +5,42 @@ export async function onRequestPost(context) {
   const origin = request.headers.get("Origin");
   const corsHeaders = getCorsHeaders(origin);
 
+  // --- セッション認証ガード ---
+  try {
+    const cookieHeader = request.headers.get('Cookie') || '';
+    const sessionMatch = cookieHeader.match(/(?:^|;\s*)session_user=([^;]+)/);
+    const sessionUserId = sessionMatch ? sessionMatch[1] : null;
+
+    if (!sessionUserId) {
+      return new Response(
+        JSON.stringify({ error: 'SESSION_EXPIRED', message: '鑑定時間が終了しました' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const activeSession = await env.DB.prepare(`
+      SELECT id FROM user_sessions
+      WHERE user_id = ?
+        AND is_active = 1
+        AND session_end_time > datetime('now')
+      LIMIT 1
+    `).bind(sessionUserId).first();
+
+    if (!activeSession) {
+      return new Response(
+        JSON.stringify({ error: 'SESSION_EXPIRED', message: '鑑定時間が終了しました' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+  } catch (authError) {
+    console.error('Session auth error:', authError);
+    return new Response(
+      JSON.stringify({ error: 'SESSION_EXPIRED', message: '鑑定時間が終了しました' }),
+      { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+  // --- セッション認証ガード ここまで ---
+
   try {
     const requestText = await request.text();
     console.log('Raw request body length:', requestText.length);

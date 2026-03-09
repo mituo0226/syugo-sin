@@ -8,6 +8,19 @@ export async function onRequestGet(context) {
   const url = new URL(request.url);
   const userId = url.searchParams.get('userId');
 
+  // --- 簡易認証: Cookie の session_user とクエリの userId を照合 ---
+  const cookieHeader = request.headers.get('Cookie') || '';
+  const sessionMatch = cookieHeader.match(/(?:^|;\s*)session_user=([^;]+)/);
+  const cookieUserId = sessionMatch ? decodeURIComponent(sessionMatch[1]) : null;
+
+  if (cookieUserId && userId && cookieUserId !== userId) {
+    return new Response(
+      JSON.stringify({ success: false, message: '認証エラー' }),
+      { status: 401, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+  // --- 簡易認証 ここまで ---
+
   try {
     console.log('=== ユーザーセッション取得開始 ===');
     console.log('ユーザーID:', userId);

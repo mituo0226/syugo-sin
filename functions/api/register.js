@@ -29,7 +29,29 @@ export async function onRequestPost(context) {
       return createErrorResponse("Invalid JSON format", 400, corsHeaders);
     }
     
-    const { email, nickname, birthdate, guardian, topic } = requestBody;
+    // guardian_id/theme は ritual-guardian.html 側が送る新フィールド名
+    const {
+      email,
+      nickname,
+      birthdate,
+      guardian,
+      guardian_id,
+      topic,
+      theme
+    } = requestBody;
+
+    // フィールド名の揺れを吸収
+    const guardianKey = guardian || guardian_id || null;
+    const worryText   = topic || theme || null;
+
+    // birthdate (YYYY-MM-DD) を年月日に分割
+    let birthYear = null, birthMonth = null, birthDay = null;
+    if (birthdate) {
+      const parts = birthdate.split('-');
+      birthYear  = parts[0] || null;
+      birthMonth = parts[1] ? String(parseInt(parts[1])) : null;
+      birthDay   = parts[2] ? String(parseInt(parts[2])) : null;
+    }
     
     if (!email || !nickname) {
       return createErrorResponse("Email and nickname are required", 400, corsHeaders);
@@ -41,44 +63,45 @@ export async function onRequestPost(context) {
       throw new Error("Database not available");
     }
 
-    console.log("Attempting to insert user data:", { email, nickname, birthdate, guardian, topic });
+    console.log("Attempting to insert/update user_profiles:", { email, nickname, birthdate, guardianKey, worryText });
 
-    // 重複チェック：同じメールアドレスが既に存在するか確認
+    // 旧registerフロー。現在はマジックリンクフローへ統一。
+    // user_profiles テーブルをベースに最小差分で動作させる。
     const existingUser = await env.DB.prepare(`
-      SELECT id FROM users WHERE email = ?
+      SELECT user_id FROM user_profiles WHERE user_id = ?
     `).bind(email).first();
 
-    let userId;
     if (existingUser) {
-      console.log("Duplicate email found, updating existing user:", email);
-      userId = existingUser.id;
-      
-      // 既存ユーザーの情報を更新
+      console.log("Duplicate email found, updating existing user_profiles:", email);
+
       await env.DB.prepare(`
-        UPDATE users SET nickname=?, birthdate=?, guardian=?, topic=? WHERE id=?
+        UPDATE user_profiles
+        SET nickname=?, birth_year=?, birth_month=?, birth_day=?,
+            guardian_key=?, worry=?
+        WHERE user_id=?
       `).bind(
         nickname,
-        birthdate || null,
-        guardian || null,
-        topic || null,
-        userId
+        birthYear,
+        birthMonth,
+        birthDay,
+        guardianKey,
+        worryText,
+        email
       ).run();
     } else {
-      // 新規ユーザーを作成
-      userId = "usr_" + crypto.randomUUID();
-      
       const result = await env.DB.prepare(`
-        INSERT INTO users (id, email, nickname, birthdate, guardian, topic)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO user_profiles (user_id, nickname, birth_year, birth_month, birth_day, guardian_key, worry)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
       `).bind(
-        userId,
         email,
         nickname,
-        birthdate || null,
-        guardian || null,
-        topic || null
+        birthYear,
+        birthMonth,
+        birthDay,
+        guardianKey,
+        worryText
       ).run();
-      
+
       if (!result.success) {
         throw new Error("Failed to insert user data");
       }
@@ -86,12 +109,12 @@ export async function onRequestPost(context) {
 
     // 保存されたデータを取得
     const savedUser = await env.DB.prepare(`
-      SELECT * FROM users WHERE id = ?
-    `).bind(userId).first();
+      SELECT * FROM user_profiles WHERE user_id = ?
+    `).bind(email).first();
 
-    // セッションCookieを設定
+    // セッションCookieを設定（user_id = email）
     const cookie = [
-      `session_user=${userId}`,
+      `session_user=${encodeURIComponent(email)}`,
       "Path=/",
       "SameSite=Lax",
       "HttpOnly",
@@ -101,12 +124,12 @@ export async function onRequestPost(context) {
 
     return new Response(JSON.stringify({ 
       success: true,
-      id: userId,
-      email: savedUser.email,
+      id: savedUser.user_id,
+      email: savedUser.user_id,
       nickname: savedUser.nickname,
-      birthdate: savedUser.birthdate,
-      guardian: savedUser.guardian,
-      topic: savedUser.topic,
+      birthdate: birthdate || null,
+      guardian: savedUser.guardian_key,
+      topic: savedUser.worry,
       created_at: savedUser.created_at
     }), {
       status: 200,

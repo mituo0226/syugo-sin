@@ -151,6 +151,47 @@ export async function onRequestGet(context) {
       console.log('認証更新結果:', updateResult);
       console.log('✅ ユーザー認証が完了しました:', userResult.user_id);
 
+      // --- 無料体験セッション付与 ---
+      // 将来的には trial_granted カラムで「付与済みフラグ」を持つことが望ましい
+      try {
+        const FREE_TRIAL_SECONDS = 180;
+        const sessionEndTime = new Date(Date.now() + FREE_TRIAL_SECONDS * 1000).toISOString();
+
+        // user_sessions テーブルが無ければ作成
+        await env.DB.prepare(`
+          CREATE TABLE IF NOT EXISTS user_sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL,
+            remaining_seconds INTEGER DEFAULT 0,
+            session_end_time TEXT,
+            is_active INTEGER DEFAULT 1,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+          )
+        `).run();
+
+        // 既存の有効セッションがなければ INSERT
+        const existingSession = await env.DB.prepare(`
+          SELECT id FROM user_sessions
+          WHERE user_id = ? AND is_active = 1 AND session_end_time > datetime('now')
+          LIMIT 1
+        `).bind(userResult.user_id).first();
+
+        if (!existingSession) {
+          await env.DB.prepare(`
+            INSERT INTO user_sessions (user_id, remaining_seconds, session_end_time, is_active)
+            VALUES (?, ?, ?, 1)
+          `).bind(userResult.user_id, FREE_TRIAL_SECONDS, sessionEndTime).run();
+          console.log('✅ 無料体験セッション（3分）を付与しました:', userResult.user_id);
+        } else {
+          console.log('既存の有効セッションがあるため無料付与をスキップ:', userResult.user_id);
+        }
+      } catch (trialError) {
+        // セッション付与失敗はリダイレクトを妨げない
+        console.error('無料体験セッション付与エラー:', trialError);
+      }
+      // --- 無料体験セッション付与 ここまで ---
+
       // ユーザー詳細情報を取得
       const userDetails = await env.DB.prepare(`
         SELECT user_id, nickname, guardian_name, guardian_key
